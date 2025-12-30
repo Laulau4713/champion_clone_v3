@@ -27,14 +27,15 @@
 
 | Métrique | Valeur |
 |----------|--------|
-| **Tests** | 283 passed (100%) |
+| **Tests** | 375 passed (100%) |
 | **Coverage** | 85% |
 | **Score Sécurité** | 8.8/10 |
-| **Endpoints API** | 56 (41 admin + 15 public) |
+| **Endpoints API** | 72 (41 admin + 15 public + 16 learning) |
 | **Endpoints audités** | 11 |
 | **Rate-limités** | 12 |
-| **Lignes de code** | 12,154 (production) |
-| **Lignes de tests** | 5,282 |
+| **Lignes de code** | ~15,000 (production) |
+| **Lignes de tests** | ~7,000 |
+| **Contenu pédagogique** | 13 skills, 6 secteurs, 15 cours, 13 quiz |
 
 ## Stack Technologique
 
@@ -68,6 +69,7 @@ backend/
 │   │   ├── auth.py           # Authentification (265 lignes)
 │   │   ├── champions.py      # Gestion champions (357 lignes)
 │   │   ├── training.py       # Entraînement (411 lignes)
+│   │   ├── learning.py       # Parcours pédagogique (617 lignes)
 │   │   └── admin/            # Module admin (12 fichiers)
 │   │       ├── __init__.py          # Router principal (71 lignes)
 │   │       ├── dependencies.py      # require_admin (19 lignes)
@@ -84,12 +86,14 @@ backend/
 │   │       └── audit.py             # Audit logs (99 lignes)
 │   └── schemas/
 │
-├── services/                  # Logique métier (1561 lignes)
+├── services/                  # Logique métier (~2000 lignes)
 │   ├── auth.py               # JWT, hashing (143 lignes)
 │   ├── activity.py           # Activité, analytics (426 lignes)
 │   ├── email.py              # Templates, envoi (390 lignes)
 │   ├── webhooks.py           # Webhooks (443 lignes)
-│   └── audit.py              # Audit logging (156 lignes)
+│   ├── audit.py              # Audit logging (156 lignes)
+│   ├── interruption_service.py # Interruptions prospect (186 lignes)
+│   └── audio_analyzer.py     # Analyse émotions (297 lignes)
 │
 ├── agents/                    # Agents IA (3051 lignes)
 │   ├── base_agent.py         # Classe abstraite (397 lignes)
@@ -101,10 +105,14 @@ backend/
 │   │   ├── agent.py          # PatternAgent
 │   │   ├── tools.py          # Claude API, embeddings
 │   │   └── memory.py         # Qdrant vector store
-│   └── training_agent/       # Sessions training (1034 lignes)
-│       ├── agent.py          # TrainingAgent
-│       ├── tools.py          # Session management
-│       └── memory.py         # Redis sessions
+│   ├── training_agent/       # Sessions training (1034 lignes)
+│   │   ├── agent.py          # TrainingAgent
+│   │   ├── tools.py          # Session management
+│   │   └── memory.py         # Redis sessions
+│   └── content_agent/        # Contenu pédagogique (440 lignes)
+│       ├── agent.py          # ContentAgent
+│       ├── tools.py          # Génération scénarios
+│       └── prompts.py        # Prompts LLM
 │
 ├── memory/                    # Mémoire agents
 │   ├── schemas.py            # Structures données (92 lignes)
@@ -129,42 +137,55 @@ backend/
 ├── scripts/
 │   ├── create_admin.py       # Création admin sécurisé
 │   ├── seed_email_templates.py
-│   └── seed_test_data.py
+│   ├── seed_test_data.py
+│   └── import_content.py     # Import contenu pédagogique
 │
-└── tests/                     # Tests (5282 lignes)
+├── content/                   # Contenu pédagogique (JSON)
+│   ├── skills.json           # 13 compétences vente
+│   ├── sectors.json          # 6 secteurs métier
+│   ├── courses.json          # 15 cours journaliers
+│   ├── quizzes.json          # 13 quiz (65 questions)
+│   └── difficulty_levels.json # 3 niveaux
+│
+└── tests/                     # Tests (~7000 lignes)
     ├── conftest.py           # Fixtures pytest (178 lignes)
     ├── integration/
     │   ├── test_admin.py     # 74 tests admin (1175 lignes)
     │   ├── test_api.py       # 18 tests auth (303 lignes)
     │   ├── test_champions.py # 16 tests (301 lignes)
-    │   └── test_training.py  # 20 tests (438 lignes)
+    │   ├── test_training.py  # 20 tests (438 lignes)
+    │   └── test_learning_endpoints.py # 35 tests (581 lignes)
     └── unit/
         ├── test_activity_service.py  # 19 tests (455 lignes)
         ├── test_agents.py            # (565 lignes)
         ├── test_email_service.py     # 21 tests (540 lignes)
         ├── test_repositories.py      # 14 tests (185 lignes)
         ├── test_services.py          # 14 tests (165 lignes)
-        └── test_webhook_service.py   # 23 tests (615 lignes)
+        ├── test_webhook_service.py   # 23 tests (615 lignes)
+        ├── test_interruption_service.py # 16 tests (217 lignes)
+        ├── test_audio_analyzer.py    # 17 tests (238 lignes)
+        └── test_content_agent.py     # 23 tests (347 lignes)
 ```
 
 ## 2.2 Statistiques du Code
 
 | Catégorie | Fichiers | Lignes | % |
 |-----------|----------|--------|---|
-| API Routers | 15 | 2,930 | 24% |
-| Agents | 12 | 3,051 | 25% |
-| Services | 5 | 1,561 | 13% |
-| Core | 5 | 1,566 | 13% |
-| Memory/Orchestrator | 5 | 1,046 | 9% |
-| **Production Total** | **47** | **12,154** | |
-| Tests | 13 | 5,282 | |
-| **Grand Total** | **60** | **17,436** | |
+| API Routers | 16 | 3,547 | 24% |
+| Agents | 15 | 3,491 | 23% |
+| Services | 7 | 2,044 | 14% |
+| Core | 5 | 1,566 | 10% |
+| Memory/Orchestrator | 5 | 1,046 | 7% |
+| Content (JSON) | 5 | 5,192 | - |
+| **Production Total** | **53** | **~15,000** | |
+| Tests | 16 | ~7,000 | |
+| **Grand Total** | **69** | **~22,000** | |
 
 ---
 
 # 3. ENDPOINTS API
 
-## 3.1 Endpoints Publics (15)
+## 3.1 Endpoints Publics (23)
 
 | Endpoint | Méthode | Description | Rate Limit |
 |----------|---------|-------------|------------|
@@ -186,8 +207,29 @@ backend/
 | `/training/end` | POST | Terminer session | - |
 | `/training/sessions` | GET | Lister sessions | - |
 | `/training/sessions/{id}` | GET | Détail session | - |
+| `/learning/skills` | GET | Liste compétences | - |
+| `/learning/skills/{slug}` | GET | Détail compétence | - |
+| `/learning/sectors` | GET | Liste secteurs | - |
+| `/learning/sectors/{slug}` | GET | Détail secteur | - |
+| `/learning/courses` | GET | Liste cours | - |
+| `/learning/courses/day/{day}` | GET | Cours du jour | - |
+| `/learning/difficulty-levels` | GET | Niveaux difficulté | - |
+| `/learning/quiz/{slug}` | GET | Quiz (sans réponses) | - |
 
-## 3.2 Endpoints Admin (41)
+## 3.2 Endpoints Learning Protégés (8)
+
+| Endpoint | Méthode | Description | Rate Limit |
+|----------|---------|-------------|------------|
+| `/learning/progress` | GET | Progression utilisateur | - |
+| `/learning/progress/skills` | GET | Progression par skill | - |
+| `/learning/progress/select-sector` | POST | Sélection secteur | - |
+| `/learning/session/start` | POST | Démarrer session | - |
+| `/learning/session/{id}/complete-course` | POST | Marquer cours lu | - |
+| `/learning/session/{id}/listen-script` | POST | Écouter script | - |
+| `/learning/session/today` | GET | Session du jour | - |
+| `/learning/quiz/{slug}/submit` | POST | Soumettre quiz | - |
+
+## 3.3 Endpoints Admin (41)
 
 | Endpoint | Méthode | Rate Limit | Audit |
 |----------|---------|------------|-------|
@@ -355,24 +397,28 @@ RATE_LIMIT_ADMIN_EXPORT = "5/minute"
 
 ```
 ================================ tests coverage ================================
-TOTAL                                  5492    842    85%
-======================= 283 passed in 137.25s (0:02:17) ========================
+TOTAL                                  6908   1057    85%
+======================= 375 passed in 172.09s (0:02:52) ========================
 ```
 
 ## 6.2 Coverage par Module
 
 | Module | Stmts | Miss | Cover |
 |--------|-------|------|-------|
-| `models.py` | 276 | 0 | **100%** |
+| `models.py` | 410 | 0 | **100%** |
 | `schemas.py` | 128 | 0 | **100%** |
+| `services/interruption_service.py` | 40 | 0 | **100%** |
 | `services/auth.py` | 32 | 1 | **97%** |
 | `memory/schemas.py` | 92 | 4 | **96%** |
+| `agents/content_agent/agent.py` | 106 | 5 | **95%** |
 | `services/activity.py` | 164 | 17 | **90%** |
 | `repositories/user_repository.py` | 28 | 3 | **89%** |
 | `services/email.py` | 174 | 26 | **85%** |
 | `services/webhooks.py` | 171 | 26 | **85%** |
 | `config.py` | 84 | 15 | **82%** |
+| `services/audio_analyzer.py` | 129 | 40 | **69%** |
 | `api/routers/admin/*` | ~800 | ~300 | **60-80%** |
+| `api/routers/learning.py` | 273 | 112 | **59%** |
 | `api/routers/champions.py` | 138 | 90 | **35%** |
 | `api/routers/training.py` | 130 | 86 | **34%** |
 
@@ -381,6 +427,7 @@ TOTAL                                  5492    842    85%
 | Catégorie | Tests |
 |-----------|-------|
 | Admin Integration | 74 |
+| Learning Integration | 35 |
 | API Integration | 18 |
 | Champions Integration | 16 |
 | Training Integration | 20 |
@@ -389,10 +436,13 @@ TOTAL                                  5492    842    85%
 | Activity Service | 19 |
 | Email Service | 21 |
 | Webhook Service | 23 |
+| Interruption Service | 16 |
+| Audio Analyzer | 17 |
+| Content Agent | 23 |
 | Repositories | 14 |
 | Auth Services | 14 |
-| Autres | 44 |
-| **Total** | **283** |
+| Autres | 45 |
+| **Total** | **375** |
 
 ## 6.4 Modules Exclus (Services Externes)
 
@@ -416,6 +466,7 @@ orchestrator/main.py          - Multi-agents
 | **AudioAgent** | Sonnet | FFmpeg, Whisper, ElevenLabs | JSON files |
 | **PatternAgent** | Opus | Claude API, embeddings | Qdrant |
 | **TrainingAgent** | Sonnet | Session CRUD, scoring | Redis |
+| **ContentAgent** | - | Génération scénarios, adaptation secteur | PostgreSQL (cache) |
 
 ## 7.2 Flux de Données
 
@@ -447,7 +498,7 @@ Response
 
 # 8. MODÈLES DE DONNÉES
 
-## 8.1 Modèles Principaux (16)
+## 8.1 Modèles Principaux (24)
 
 ```python
 # Utilisateurs
@@ -482,6 +533,26 @@ AdminNote(id, user_id, admin_id, content, is_pinned)
 AdminAlert(id, type, severity, message, is_read, dismissed_at)
 SubscriptionEvent(id, user_id, event_type, from_plan, to_plan)
 RefreshToken(id, user_id, token_hash, expires_at, revoked)
+
+# Contenu pédagogique
+Skill(id, slug, name, level, description, order, pass_threshold,
+      scenarios_required, learning_objectives, evaluation_criteria)
+Sector(id, slug, name, description, vocabulary, prospect_personas,
+       typical_objections, agent_context_prompt)
+Course(id, day, level, skill_id, title, objective, key_points,
+       common_mistakes, emotional_tips, takeaways)
+Quiz(id, skill_id, questions)  # questions: JSON array
+DifficultyLevel(id, level, name, description, days_range,
+                ai_behavior, prospect_personality, conversation_dynamics)
+CachedScenario(id, cache_key, skill_id, sector_id, level, scenario_json)
+
+# Progression utilisateur
+UserProgress(id, user_id, current_level, current_day, sector_id,
+             total_training_minutes, total_scenarios_completed, average_score)
+UserSkillProgress(id, user_progress_id, skill_id, scenarios_completed,
+                  scenarios_passed, best_score, quiz_passed, is_validated)
+DailySession(id, user_progress_id, date, course_read, scripts_listened,
+             training_minutes, scenarios_attempted, is_complete)
 ```
 
 ---
@@ -549,6 +620,35 @@ RefreshToken(id, user_id, token_hash, expires_at, revoked)
 - get_log(log_id)
 ```
 
+## 9.6 InterruptionService (186 lignes)
+
+Gère les interruptions du prospect selon le niveau de difficulté.
+
+```python
+- should_interrupt(speaking_duration, hesitation_count, emotions, context) → InterruptionDecision
+- get_random_phrase(interruption_type) → str
+```
+
+| Niveau | Interruption | Patience | Triggers |
+|--------|-------------|----------|----------|
+| Easy | Jamais | - | - |
+| Medium | Occasionnel | 20s | Parole trop longue |
+| Expert | Fréquent | 8s | Hésitations, confiance faible, erreurs |
+
+## 9.7 AudioAnalyzer (297 lignes)
+
+Analyse la parole et détecte les émotions.
+
+```python
+- analyze_prosody(audio_data, sample_rate) → ProsodyAnalysis
+- detect_emotions(transcript, prosody) → EmotionAnalysis
+- count_hesitations(transcript) → int
+```
+
+**Détection:** euh, donc, voilà, en fait, peut-être, je pense...
+
+**Scores:** confidence, hesitation, stress, enthusiasm (0-1)
+
 ---
 
 # 10. HISTORIQUE DES SESSIONS
@@ -579,6 +679,15 @@ RefreshToken(id, user_id, token_hash, expires_at, revoked)
 - Emails: CREATE, UPDATE, DELETE
 - Notes: CREATE, UPDATE, DELETE
 - Score sécurité: 8.8/10
+
+## Session 10 - Parcours Pédagogique
+- 16 endpoints `/learning` créés (8 publics + 8 protégés)
+- Contenu pédagogique importé: 13 skills, 6 secteurs, 15 cours, 13 quiz
+- InterruptionService: gestion interruptions prospect par niveau
+- AudioAnalyzer: détection émotions et hésitations
+- ContentAgent: génération scénarios adaptatifs
+- +92 tests (283 → 375)
+- 8 nouveaux modèles SQLAlchemy
 
 ---
 
@@ -633,16 +742,19 @@ python scripts/seed_email_templates.py
 ## Priorité Haute
 1. Augmenter coverage sur `champions.py` (35%) et `training.py` (34%)
 2. Tests E2E pour les flows complets
+3. Intégrer ContentAgent avec TrainingAgent
 
 ## Priorité Moyenne
 1. Session timeout admin après inactivité
 2. Alertes automatiques pour actions suspectes
 3. Audit sur ERROR_RESOLVE et ALERT_DISMISS
+4. Génération audio avec voix clonée (ElevenLabs)
 
 ## Priorité Basse
 1. Export audit logs CSV/JSON
 2. Rétention automatique vieux logs
 3. Monitoring en temps réel
+4. Dashboard progression frontend
 
 ---
 
@@ -652,11 +764,17 @@ python scripts/seed_email_templates.py
 ╔═══════════════════════════════════════════════════════════════╗
 ║                 CHAMPION CLONE BACKEND                         ║
 ║                                                                ║
-║   Code:     12,154 lignes  |  Tests: 5,282 lignes             ║
-║   Endpoints: 56            |  Modèles: 16                     ║
+║   Code:     ~15,000 lignes |  Tests: ~7,000 lignes            ║
+║   Endpoints: 72            |  Modèles: 24                     ║
 ║                                                                ║
-║   Tests:    283 passed     |  Coverage: 85%                   ║
+║   Tests:    375 passed     |  Coverage: 85%                   ║
 ║   Sécurité: 8.8/10         |  Audit: 11 actions               ║
+║                                                                ║
+║   Contenu pédagogique:                                         ║
+║   - 13 Skills (easy/medium/expert)                            ║
+║   - 6 Secteurs métier                                         ║
+║   - 15 Cours journaliers                                      ║
+║   - 13 Quiz (65 questions)                                    ║
 ║                                                                ║
 ║   Status: PRODUCTION READY                                     ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -664,4 +782,4 @@ python scripts/seed_email_templates.py
 
 ---
 
-*Rapport Backend généré le 30 Décembre 2025*
+*Rapport Backend mis à jour le 30 Décembre 2025 - Session 10*
