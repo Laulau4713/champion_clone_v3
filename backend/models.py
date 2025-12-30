@@ -744,3 +744,322 @@ class AdminAuditLog(Base):
 
     def __repr__(self) -> str:
         return f"<AdminAuditLog(admin_id={self.admin_id}, action='{self.action}', resource='{self.resource_type}:{self.resource_id}')>"
+
+
+# =============================================================================
+# PEDAGOGICAL CONTENT MODELS
+# =============================================================================
+
+class Skill(Base):
+    """
+    Represents a sales skill that users can learn and practice.
+    Skills have levels (beginner, intermediate, advanced) and evaluation criteria.
+    """
+    __tablename__ = "skills"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    slug: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    level: Mapped[str] = mapped_column(String(20), nullable=False, index=True)  # beginner, intermediate, advanced
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+    # Duration settings
+    theory_duration_minutes: Mapped[int] = mapped_column(Integer, default=5, nullable=False)
+    practice_duration_minutes: Mapped[int] = mapped_column(Integer, default=15, nullable=False)
+
+    # Learning content (JSON arrays)
+    learning_objectives: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    key_concepts: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    evaluation_criteria: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # Training settings
+    pass_threshold: Mapped[int] = mapped_column(Integer, default=65, nullable=False)
+    scenarios_required: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
+
+    # AI instructions
+    prospect_instructions: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    emotional_focus: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    common_mistakes: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+
+    # Relationships
+    courses: Mapped[list["Course"]] = relationship("Course", back_populates="skill")
+    quizzes: Mapped[list["Quiz"]] = relationship("Quiz", back_populates="skill")
+    cached_scenarios: Mapped[list["CachedScenario"]] = relationship("CachedScenario", back_populates="skill")
+
+    def __repr__(self) -> str:
+        return f"<Skill(slug='{self.slug}', level='{self.level}')>"
+
+
+class DifficultyLevel(Base):
+    """
+    Defines difficulty progression settings for AI behavior.
+    Controls how the AI prospect behaves at different difficulty levels.
+    """
+    __tablename__ = "difficulty_levels"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    level: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)  # beginner, intermediate, advanced
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Day range for this level
+    days_range_start: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    days_range_end: Mapped[int] = mapped_column(Integer, default=30, nullable=False)
+
+    # AI behavior settings (JSON)
+    ai_behavior: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    prospect_personality: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    conversation_dynamics: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    feedback_settings: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # Interruption phrases for this difficulty
+    interruption_phrases: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    def __repr__(self) -> str:
+        return f"<DifficultyLevel(level='{self.level}')>"
+
+
+class Sector(Base):
+    """
+    Business sector for contextualizing training scenarios.
+    Each sector has its own vocabulary, personas, and objections.
+    """
+    __tablename__ = "sectors"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    slug: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    icon: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)  # Emoji
+
+    # Sector-specific content (JSON)
+    vocabulary: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # [{term, definition}]
+    prospect_personas: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # [{name, role, description}]
+    typical_objections: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # [{objection, response}]
+
+    # AI context prompt for this sector
+    agent_context_prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+
+    # Relationships
+    cached_scenarios: Mapped[list["CachedScenario"]] = relationship("CachedScenario", back_populates="sector")
+
+    def __repr__(self) -> str:
+        return f"<Sector(slug='{self.slug}', name='{self.name}')>"
+
+
+class Course(Base):
+    """
+    Daily course content for structured learning path.
+    Each course corresponds to a day in the training program.
+    """
+    __tablename__ = "courses"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    day: Mapped[int] = mapped_column(Integer, unique=True, nullable=False, index=True)
+    level: Mapped[str] = mapped_column(String(20), nullable=False)
+    skill_id: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        ForeignKey("skills.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    # Course content
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    objective: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    duration_minutes: Mapped[int] = mapped_column(Integer, default=5, nullable=False)
+
+    # Learning content (JSON arrays)
+    key_points: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    common_mistakes: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    emotional_tips: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    takeaways: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+
+    # Relationships
+    skill: Mapped[Optional["Skill"]] = relationship("Skill", back_populates="courses")
+
+    def __repr__(self) -> str:
+        return f"<Course(day={self.day}, title='{self.title}')>"
+
+
+class Quiz(Base):
+    """
+    Quiz questions for skill assessment.
+    Each quiz is associated with a skill.
+    """
+    __tablename__ = "quizzes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    skill_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("skills.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    # Questions stored as JSON array
+    # Structure: [{question, options: [], correct_index, explanation}]
+    questions: Mapped[list] = mapped_column(JSON, nullable=False)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+
+    # Relationships
+    skill: Mapped["Skill"] = relationship("Skill", back_populates="quizzes")
+
+    def __repr__(self) -> str:
+        return f"<Quiz(skill_id={self.skill_id}, questions={len(self.questions)})>"
+
+
+class CachedScenario(Base):
+    """
+    Cache for generated training scenarios.
+    Avoids regenerating similar scenarios repeatedly.
+    """
+    __tablename__ = "cached_scenarios"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    cache_key: Mapped[str] = mapped_column(String(32), unique=True, nullable=False, index=True)
+
+    # Reference to skill and sector
+    skill_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("skills.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    sector_id: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        ForeignKey("sectors.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    level: Mapped[str] = mapped_column(String(20), nullable=False)
+
+    # The generated scenario
+    scenario_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+
+    # Usage tracking
+    use_count: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    last_used_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    # Relationships
+    skill: Mapped["Skill"] = relationship("Skill", back_populates="cached_scenarios")
+    sector: Mapped[Optional["Sector"]] = relationship("Sector", back_populates="cached_scenarios")
+
+    def __repr__(self) -> str:
+        return f"<CachedScenario(cache_key='{self.cache_key}', use_count={self.use_count})>"
+
+
+class UserSkillProgress(Base):
+    """
+    Tracks user progress on each skill.
+    """
+    __tablename__ = "user_skill_progress"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    skill_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("skills.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    # Progress tracking
+    scenarios_completed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    best_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    average_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    is_passed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    passed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Quiz tracking
+    quiz_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    quiz_completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+
+    def __repr__(self) -> str:
+        return f"<UserSkillProgress(user_id={self.user_id}, skill_id={self.skill_id}, passed={self.is_passed})>"
