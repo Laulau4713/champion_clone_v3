@@ -40,6 +40,7 @@ class ContentAgent:
     def __init__(self, db: AsyncSession, llm_client=None):
         self.db = db
         self.llm = llm_client  # Claude or Ollama
+        self._current_level = "intermediate"  # Track current level for default scenario
         logger.info("content_agent_initialized")
 
     def _generate_cache_key(
@@ -76,6 +77,9 @@ class ContentAgent:
             Generated scenario dictionary
         """
         sector_id = sector.id if sector else None
+
+        # Store current level for default scenario fallback
+        self._current_level = level
 
         # Check cache
         if use_cache:
@@ -275,11 +279,11 @@ class ContentAgent:
                 return await self.llm.generate(prompt)
             except Exception as e:
                 logger.error("llm_call_error", error=str(e))
-                return self._get_default_scenario_json()
+                return self._get_default_scenario_json(self._current_level)
         else:
             # Fallback: return default template
             logger.warning("no_llm_client_using_default")
-            return self._get_default_scenario_json()
+            return self._get_default_scenario_json(self._current_level)
 
     def _parse_json_response(self, response: str) -> dict:
         """Parse JSON response from LLM."""
@@ -296,29 +300,54 @@ class ContentAgent:
             return json.loads(response)
         except json.JSONDecodeError as e:
             logger.error("json_parse_error", error=str(e))
-            return self._get_default_scenario()
+            return self._get_default_scenario(self._current_level)
 
-    def _get_default_scenario_json(self) -> str:
+    def _get_default_scenario_json(self, level: str = "intermediate") -> str:
         """Return default scenario as JSON string."""
-        return json.dumps(self._get_default_scenario(), ensure_ascii=False)
+        return json.dumps(self._get_default_scenario(level), ensure_ascii=False)
 
-    def _get_default_scenario(self) -> dict:
-        """Default scenario if generation fails."""
+    def _get_default_scenario(self, level: str = "intermediate") -> dict:
+        """
+        Default scenario if generation fails.
+        Adapts personality based on difficulty level for voice selection.
+
+        Level mapping:
+        - beginner: friendly, curious prospect (FRIENDLY voice)
+        - intermediate: neutral, professional prospect (NEUTRAL voice)
+        - advanced/expert: skeptical, busy, aggressive prospect (AGGRESSIVE voice)
+        """
+        # Adapt personality and mood based on level
+        if level in ("beginner", "easy"):
+            personality = "friendly"
+            mood = "open"
+            opening = "Bonjour ! Merci de me rappeler. J'ai vu votre solution et je suis vraiment curieux d'en savoir plus !"
+            difficulty_score = 30
+        elif level in ("advanced", "expert", "hard"):
+            personality = "skeptical"
+            mood = "busy"
+            opening = "Oui ? J'ai très peu de temps, on m'a transféré votre appel. C'est pour quoi exactement ?"
+            difficulty_score = 80
+        else:  # intermediate
+            personality = "neutral"
+            mood = "professional"
+            opening = "Bonjour. On m'a parlé de votre solution. Pouvez-vous me présenter ce que vous proposez ?"
+            difficulty_score = 50
+
         return {
             "title": "Scénario de découverte",
             "prospect": {
                 "name": "Marie Martin",
                 "role": "Directrice Marketing",
                 "company": "TechStart",
-                "personality": "curious",
-                "mood": "open",
+                "personality": personality,
+                "mood": mood,
                 "pain_points": ["manque de temps", "budget serré", "équipe réduite"],
                 "hidden_need": "Cherche à automatiser les tâches répétitives",
                 "budget_situation": "flexible",
                 "decision_power": "decides"
             },
             "context": "Premier appel de découverte suite à une demande sur le site. Marie a téléchargé un livre blanc sur l'automatisation marketing.",
-            "opening_message": "Bonjour ! Merci de me rappeler. J'ai vu votre solution et je me demandais si ça pourrait nous aider.",
+            "opening_message": opening,
             "key_moments": [
                 "Découverte des besoins réels",
                 "Gestion de l'objection budget",
@@ -329,5 +358,5 @@ class ContentAgent:
                 "Comprendre le contexte de l'entreprise",
                 "Obtenir un RDV de démo"
             ],
-            "difficulty_score": 50
+            "difficulty_score": difficulty_score
         }
