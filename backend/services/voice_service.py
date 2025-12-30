@@ -276,8 +276,14 @@ class VoiceService:
                 headers={"xi-api-key": self.elevenlabs_key}
             )
 
+            # Fallback to configured voices if API fails (permission issue)
             if response.status_code != 200:
-                raise Exception(f"ElevenLabs error: {response.status_code}")
+                logger.warning(
+                    "elevenlabs_voices_fallback",
+                    status=response.status_code,
+                    reason="Using configured voices"
+                )
+                return self._get_configured_voices()
 
             data = response.json()
             return [
@@ -290,6 +296,32 @@ class VoiceService:
                 for v in data.get("voices", [])
             ]
 
+    def _get_configured_voices(self) -> list[dict]:
+        """Retourne les voix configurées dans .env."""
+        voices = []
+        if settings.ELEVENLABS_VOICE_FRIENDLY:
+            voices.append({
+                "voice_id": settings.ELEVENLABS_VOICE_FRIENDLY,
+                "name": "Friendly (Rachel)",
+                "category": "configured",
+                "labels": {"level": "beginner"}
+            })
+        if settings.ELEVENLABS_VOICE_NEUTRAL:
+            voices.append({
+                "voice_id": settings.ELEVENLABS_VOICE_NEUTRAL,
+                "name": "Neutral",
+                "category": "configured",
+                "labels": {"level": "intermediate"}
+            })
+        if settings.ELEVENLABS_VOICE_AGGRESSIVE:
+            voices.append({
+                "voice_id": settings.ELEVENLABS_VOICE_AGGRESSIVE,
+                "name": "Aggressive (Senior)",
+                "category": "configured",
+                "labels": {"level": "expert"}
+            })
+        return voices
+
     async def check_elevenlabs_quota(self) -> dict:
         """Vérifie le quota ElevenLabs restant."""
         if not self.elevenlabs_key:
@@ -301,15 +333,29 @@ class VoiceService:
                 headers={"xi-api-key": self.elevenlabs_key}
             )
 
+            # Fallback if API fails (permission issue)
             if response.status_code != 200:
-                raise Exception(f"ElevenLabs error: {response.status_code}")
+                logger.warning(
+                    "elevenlabs_quota_fallback",
+                    status=response.status_code,
+                    reason="Quota check unavailable"
+                )
+                return {
+                    "character_count": -1,
+                    "character_limit": -1,
+                    "remaining": -1,
+                    "tier": "unknown",
+                    "status": "unavailable",
+                    "message": "Quota API requires elevated permissions"
+                }
 
             data = response.json()
             return {
                 "character_count": data.get("character_count", 0),
                 "character_limit": data.get("character_limit", 0),
                 "remaining": data.get("character_limit", 0) - data.get("character_count", 0),
-                "tier": data.get("tier", "unknown")
+                "tier": data.get("tier", "unknown"),
+                "status": "available"
             }
 
     def is_configured(self) -> dict:
