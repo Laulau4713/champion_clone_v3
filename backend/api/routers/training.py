@@ -409,3 +409,182 @@ async def get_session(
         raise HTTPException(status_code=404, detail="Session not found")
 
     return SessionResponse.model_validate(session)
+
+
+# ============================================
+# VOICE TRAINING ENDPOINTS
+# ============================================
+
+from pydantic import BaseModel
+from services.training_service import TrainingService
+from services.voice_service import voice_service
+
+
+class VoiceSessionStartRequest(BaseModel):
+    """Request to start a voice training session."""
+    skill_slug: str
+    sector_slug: Optional[str] = None
+
+
+class VoiceMessageRequest(BaseModel):
+    """Request to send a message in voice training."""
+    audio_base64: Optional[str] = None
+    text: Optional[str] = None
+
+
+class ProspectResponseSchema(BaseModel):
+    """Response from the prospect in voice training."""
+    text: str
+    audio_base64: Optional[str] = None
+    emotion: str
+    should_interrupt: bool
+    interruption_reason: Optional[str] = None
+    feedback: Optional[dict] = None
+
+
+@router.post("/voice/session/start")
+async def start_voice_training_session(
+    request: VoiceSessionStartRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Start a new voice training session.
+
+    Uses the pedagogical skills/sectors system.
+    Returns scenario and opening message with audio (if ElevenLabs is configured).
+    """
+    service = TrainingService(db)
+
+    try:
+        session = await service.create_session(
+            user=current_user,
+            skill_slug=request.skill_slug,
+            sector_slug=request.sector_slug
+        )
+        return session
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("voice_session_start_error", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to start session: {str(e)}")
+
+
+@router.post("/voice/session/{session_id}/message", response_model=ProspectResponseSchema)
+async def send_voice_message(
+    session_id: int,
+    request: VoiceMessageRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Send a message (audio or text) and receive prospect response.
+
+    If audio_base64 is provided, it will be transcribed via Whisper.
+    The prospect response includes audio (if ElevenLabs is configured).
+    """
+    if not request.audio_base64 and not request.text:
+        raise HTTPException(status_code=400, detail="audio_base64 or text required")
+
+    service = TrainingService(db)
+
+    try:
+        response = await service.process_user_message(
+            session_id=session_id,
+            user=current_user,
+            audio_base64=request.audio_base64,
+            text=request.text
+        )
+        return response
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("voice_message_error", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to process message: {str(e)}")
+
+
+@router.post("/voice/session/{session_id}/end")
+async def end_voice_training_session(
+    session_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    End the voice training session and get final evaluation.
+
+    Returns detailed scores and feedback based on skill criteria.
+    """
+    service = TrainingService(db)
+
+    try:
+        result = await service.end_session(
+            session_id=session_id,
+            user=current_user
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("voice_session_end_error", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to end session: {str(e)}")
+
+
+@router.get("/voice/session/{session_id}")
+async def get_voice_session(
+    session_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get details of a voice training session."""
+    service = TrainingService(db)
+    session = await service.get_session(session_id, current_user)
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    return session
+
+
+@router.get("/voice/config")
+async def get_voice_config(
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Check voice service configuration status.
+
+    Returns which services are available (ElevenLabs, Whisper).
+    """
+    return {
+        "status": "ok",
+        "services": voice_service.is_configured()
+    }
+
+
+@router.get("/voice/voices")
+async def list_available_voices(
+    current_user: User = Depends(get_current_user)
+):
+    """List available ElevenLabs voices."""
+    if not voice_service.is_configured().get("elevenlabs"):
+        raise HTTPException(status_code=503, detail="ElevenLabs not configured")
+
+    try:
+        voices = await voice_service.get_elevenlabs_voices()
+        return {"voices": voices}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/voice/quota")
+async def check_voice_quota(
+    current_user: User = Depends(get_current_user)
+):
+    """Check ElevenLabs character quota."""
+    if not voice_service.is_configured().get("elevenlabs"):
+        raise HTTPException(status_code=503, detail="ElevenLabs not configured")
+
+    try:
+        quota = await voice_service.check_elevenlabs_quota()
+        return quota
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

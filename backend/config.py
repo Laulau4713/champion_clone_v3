@@ -75,6 +75,14 @@ class Settings(BaseSettings):
     ELEVENLABS_API_KEY: str = ""
 
     # ===========================================
+    # ElevenLabs Voice Configuration
+    # ===========================================
+    ELEVENLABS_VOICE_FRIENDLY: str = ""    # Voix amicale (niveau facile)
+    ELEVENLABS_VOICE_NEUTRAL: str = ""     # Voix neutre (niveau moyen)
+    ELEVENLABS_VOICE_AGGRESSIVE: str = ""  # Voix pressée (niveau expert)
+    ELEVENLABS_MODEL: str = "eleven_multilingual_v2"
+
+    # ===========================================
     # Claude Models
     # ===========================================
     CLAUDE_OPUS_MODEL: str = "claude-opus-4-20250514"

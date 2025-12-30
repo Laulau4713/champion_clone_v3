@@ -1167,3 +1167,105 @@ class DailySession(Base):
 
     def __repr__(self) -> str:
         return f"<DailySession(date={self.date}, complete={self.is_complete})>"
+
+
+# =============================================================================
+# VOICE TRAINING MODELS
+# =============================================================================
+
+class VoiceTrainingSession(Base):
+    """
+    Voice training session with TTS/STT support.
+
+    Uses pedagogical skills and sectors for scenario generation.
+    """
+    __tablename__ = "voice_training_sessions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    skill_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("skills.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    sector_id: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        ForeignKey("sectors.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    level: Mapped[str] = mapped_column(String(20), nullable=False)
+
+    # Scenario generated for this session
+    scenario_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+
+    # Session status
+    status: Mapped[str] = mapped_column(String(20), default="active", nullable=False)  # active, completed, abandoned
+
+    # Results
+    score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    feedback_json: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Relationships
+    user: Mapped["User"] = relationship("User", backref="voice_training_sessions")
+    skill: Mapped["Skill"] = relationship("Skill")
+    sector: Mapped[Optional["Sector"]] = relationship("Sector")
+    messages: Mapped[list["VoiceTrainingMessage"]] = relationship(
+        "VoiceTrainingMessage", back_populates="session", cascade="all, delete-orphan"
+    )
+
+    def __repr__(self) -> str:
+        return f"<VoiceTrainingSession(id={self.id}, skill_id={self.skill_id}, status='{self.status}')>"
+
+
+class VoiceTrainingMessage(Base):
+    """
+    Message in a voice training session.
+
+    Stores both user messages (transcribed from audio) and prospect responses.
+    """
+    __tablename__ = "voice_training_messages"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    session_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("voice_training_sessions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    role: Mapped[str] = mapped_column(String(20), nullable=False)  # "user" or "prospect"
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    audio_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    duration_seconds: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    # For user messages: detected emotion/hesitations
+    emotion_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    # Relationships
+    session: Mapped["VoiceTrainingSession"] = relationship(
+        "VoiceTrainingSession", back_populates="messages"
+    )
+
+    def __repr__(self) -> str:
+        return f"<VoiceTrainingMessage(session_id={self.session_id}, role='{self.role}')>"
