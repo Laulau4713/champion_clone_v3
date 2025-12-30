@@ -1,0 +1,14 @@
+{
+  "name": "champion-clone-mcp-servers",
+  "version": "1.0.0",
+  "description": "MCP servers for Champion Clone agents",
+  "type": "module",
+  "scripts": {
+    "audio": "node audio_server.js",
+    "pattern": "node pattern_server.js",
+    "training": "node training_server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0"
+  }
+}

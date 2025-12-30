@@ -1,0 +1,47 @@
+{
+  "agent": "training",
+  "tools": [
+    {
+      "name": "start_session",
+      "description": "Start training session",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "champion_id": {
+            "type": "integer"
+          },
+          "scenario": {
+            "type": "object"
+          },
+          "patterns": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "champion_id",
+          "scenario",
+          "patterns"
+        ]
+      }
+    },
+    {
+      "name": "process_response",
+      "description": "Process user response",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string"
+          },
+          "user_response": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id",
+          "user_response"
+        ]
+      }
+    }
+  ]
+}

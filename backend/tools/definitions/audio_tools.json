@@ -1,0 +1,45 @@
+{
+  "agent": "audio",
+  "tools": [
+    {
+      "name": "extract_audio",
+      "description": "Extract audio from video file",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "video_path": {
+            "type": "string"
+          },
+          "output_format": {
+            "type": "string",
+            "enum": [
+              "mp3",
+              "wav"
+            ]
+          }
+        },
+        "required": [
+          "video_path"
+        ]
+      }
+    },
+    {
+      "name": "transcribe",
+      "description": "Transcribe audio to text",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "audio_path": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "audio_path"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+[run]
+source = .
+omit =
+    venv/*
+    */migrations/*
+    # Agents use external services (Claude API, Whisper, ElevenLabs)
+    agents/audio_agent/*
+    agents/pattern_agent/agent.py
+    agents/pattern_agent/memory.py
+    agents/training_agent/agent.py
+    agents/training_agent/memory.py
+    # Memory stores use external services (Redis, Qdrant)
+    memory/session_store.py
+    memory/vector_store.py
+    # Orchestrator depends on agents
+    orchestrator/main.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    pass

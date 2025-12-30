@@ -1,0 +1,38 @@
+{
+  "agent": "pattern",
+  "tools": [
+    {
+      "name": "extract_patterns",
+      "description": "Extract sales patterns from transcript",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "transcript": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "transcript"
+        ]
+      }
+    },
+    {
+      "name": "generate_scenarios",
+      "description": "Generate training scenarios",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "patterns": {
+            "type": "object"
+          },
+          "count": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "patterns"
+        ]
+      }
+    }
+  ]
+}
