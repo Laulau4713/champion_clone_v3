@@ -88,7 +88,7 @@ EXAMPLE_SCRIPT_PROMPT = """Génère un script d'exemple {script_type} pour le sk
 {sector_context}
 
 ## TYPE DE SCRIPT
-{"BON exemple (à suivre)" if good_example else "MAUVAIS exemple (à éviter)"}
+{script_type_description}
 
 ## FORMAT
 Génère un dialogue naturel entre un commercial et un prospect.

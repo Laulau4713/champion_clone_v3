@@ -195,8 +195,8 @@ class ContentAgent:
             skill_name=skill.name,
             skill_description=skill.description,
             sector_context=sector.agent_context_prompt if sector else "Contexte générique",
-            good_example=good_example,
-            script_type="BON" if good_example else "MAUVAIS"
+            script_type="BON" if good_example else "MAUVAIS",
+            script_type_description="BON exemple (à suivre)" if good_example else "MAUVAIS exemple (à éviter)"
         )
 
         response = await self._call_llm(prompt)

@@ -1,0 +1,414 @@
+{
+  "difficulty_levels": [
+    {
+      "level": "easy",
+      "name": "Débutant",
+      "description": "Pour les commerciaux qui débutent ou qui veulent reprendre les fondamentaux. L'IA est patiente, bienveillante et donne beaucoup de feedback.",
+      "days_range": [1, 8],
+      "target_audience": [
+        "Nouveaux commerciaux (< 1 an d'expérience)",
+        "Reconversion professionnelle vers la vente",
+        "Commerciaux qui veulent revoir les bases",
+        "Première expérience en cold calling"
+      ],
+      
+      "ai_behavior": {
+        "response_delay_min": 2.5,
+        "response_delay_max": 4.0,
+        "patience_level": "high",
+        "interruption_probability": 0.0,
+        "hints_enabled": true,
+        "forgiveness": "high",
+        "max_speaking_time_before_interrupt": null,
+        "repetition_tolerance": 3,
+        "mistake_tolerance": "high",
+        "guidance_level": "proactive"
+      },
+      
+      "prospect_personality": {
+        "default_mood": "curious",
+        "aggression_level": 0.1,
+        "negotiation_hardness": 0.2,
+        "openness": 0.8,
+        "patience": 0.9,
+        "detail_sharing": "generous",
+        "objection_intensity": "soft"
+      },
+      
+      "conversation_dynamics": {
+        "interruption_probability": 0.0,
+        "topic_change_frequency": "rare",
+        "information_volunteering": "high",
+        "question_complexity": "simple",
+        "emotional_volatility": "stable"
+      },
+      
+      "feedback_settings": {
+        "feedback_level": "detailed",
+        "feedback_timing": "after_each_response",
+        "positive_reinforcement": "frequent",
+        "correction_style": "encouraging",
+        "examples_provided": true,
+        "improvement_suggestions": "specific"
+      },
+      
+      "hints_system": {
+        "enabled": true,
+        "trigger_on_silence": 5,
+        "trigger_on_mistake": true,
+        "hint_style": "question",
+        "max_hints_per_scenario": 5
+      },
+      
+      "scoring_modifiers": {
+        "bonus_for_basics": 1.2,
+        "penalty_reduction": 0.5,
+        "partial_credit": true
+      },
+      
+      "prospect_behaviors": {
+        "gives_clear_signals": true,
+        "responds_fully": true,
+        "stays_on_topic": true,
+        "expresses_needs_clearly": true,
+        "reacts_predictably": true
+      },
+      
+      "example_prospect_phrases": [
+        "Oui, je vous écoute, allez-y.",
+        "C'est intéressant, continuez.",
+        "Je vois ce que vous voulez dire.",
+        "Effectivement, c'est un point important pour nous.",
+        "Pouvez-vous m'en dire plus sur ce point?",
+        "D'accord, je comprends mieux maintenant."
+      ],
+      
+      "scenario_adaptations": {
+        "objection_style": "L'objection est claire et directe, facile à identifier. Le prospect accepte facilement les réponses bien argumentées.",
+        "information_access": "Le prospect partage volontiers les informations (budget, timing, décideur) quand on pose les bonnes questions.",
+        "closing_readiness": "Le prospect montre des signaux d'achat clairs et accepte de s'engager quand la valeur est démontrée."
+      }
+    },
+    
+    {
+      "level": "medium",
+      "name": "Intermédiaire",
+      "description": "Pour les commerciaux avec quelques bases qui veulent se perfectionner. L'IA est réaliste, pose des défis modérés et donne un feedback équilibré.",
+      "days_range": [9, 20],
+      "target_audience": [
+        "Commerciaux avec 1-3 ans d'expérience",
+        "Vendeurs B2C passant au B2B",
+        "Commerciaux voulant augmenter leur taux de closing",
+        "Managers préparant leurs équipes"
+      ],
+      
+      "ai_behavior": {
+        "response_delay_min": 1.5,
+        "response_delay_max": 3.0,
+        "patience_level": "medium",
+        "interruption_probability": 0.15,
+        "hints_enabled": true,
+        "forgiveness": "medium",
+        "max_speaking_time_before_interrupt": 45,
+        "repetition_tolerance": 2,
+        "mistake_tolerance": "medium",
+        "guidance_level": "reactive"
+      },
+      
+      "prospect_personality": {
+        "default_mood": "neutral",
+        "aggression_level": 0.3,
+        "negotiation_hardness": 0.5,
+        "openness": 0.5,
+        "patience": 0.6,
+        "detail_sharing": "selective",
+        "objection_intensity": "moderate"
+      },
+      
+      "conversation_dynamics": {
+        "interruption_probability": 0.15,
+        "topic_change_frequency": "occasional",
+        "information_volunteering": "moderate",
+        "question_complexity": "medium",
+        "emotional_volatility": "moderate"
+      },
+      
+      "feedback_settings": {
+        "feedback_level": "moderate",
+        "feedback_timing": "end_of_scenario",
+        "positive_reinforcement": "balanced",
+        "correction_style": "direct",
+        "examples_provided": true,
+        "improvement_suggestions": "targeted"
+      },
+      
+      "hints_system": {
+        "enabled": true,
+        "trigger_on_silence": 8,
+        "trigger_on_mistake": false,
+        "hint_style": "subtle",
+        "max_hints_per_scenario": 2
+      },
+      
+      "scoring_modifiers": {
+        "bonus_for_basics": 1.0,
+        "penalty_reduction": 0.8,
+        "partial_credit": true
+      },
+      
+      "prospect_behaviors": {
+        "gives_clear_signals": false,
+        "responds_fully": false,
+        "stays_on_topic": true,
+        "expresses_needs_clearly": false,
+        "reacts_predictably": true
+      },
+      
+      "example_prospect_phrases": [
+        "Hmm, je ne sais pas trop...",
+        "On verra, ce n'est pas notre priorité.",
+        "J'ai déjà vu ce genre de solutions.",
+        "C'est intéressant mais c'est pas donné.",
+        "Rappelez-moi, pourquoi je devrais changer?",
+        "On travaille déjà avec quelqu'un là-dessus."
+      ],
+      
+      "interruption_triggers": [
+        "L'élève parle plus de 45 secondes sans pause",
+        "L'élève fait un pitch produit trop long",
+        "L'élève ne pose pas de questions",
+        "L'élève répète la même chose"
+      ],
+      
+      "interruption_phrases": [
+        "Attendez, je vous arrête deux secondes...",
+        "Oui mais concrètement, ça donne quoi?",
+        "Pardon de vous couper, mais...",
+        "OK j'ai compris le principe, maintenant..."
+      ],
+      
+      "scenario_adaptations": {
+        "objection_style": "Les objections sont réalistes et nécessitent une vraie réponse. Le prospect peut empiler 2-3 objections. Il faut creuser pour trouver la vraie raison.",
+        "information_access": "Le prospect ne donne pas toutes les informations spontanément. Il faut poser les bonnes questions et parfois reformuler pour obtenir les détails.",
+        "closing_readiness": "Le prospect hésite naturellement. Il faut identifier les signaux d'achat subtils et traiter les derniers doutes avant de closer."
+      }
+    },
+    
+    {
+      "level": "expert",
+      "name": "Expert",
+      "description": "Pour les commerciaux confirmés qui veulent se confronter aux situations les plus difficiles. L'IA est exigeante, imprévisible et simule des prospects réellement difficiles.",
+      "days_range": [21, 30],
+      "target_audience": [
+        "Commerciaux seniors (3+ ans)",
+        "Account Executives",
+        "Business Developers",
+        "Managers qui forment leurs équipes"
+      ],
+      
+      "ai_behavior": {
+        "response_delay_min": 0.5,
+        "response_delay_max": 2.0,
+        "patience_level": "low",
+        "interruption_probability": 0.4,
+        "hints_enabled": false,
+        "forgiveness": "low",
+        "max_speaking_time_before_interrupt": 20,
+        "repetition_tolerance": 1,
+        "mistake_tolerance": "low",
+        "guidance_level": "minimal"
+      },
+      
+      "prospect_personality": {
+        "default_mood": "skeptical",
+        "aggression_level": 0.6,
+        "negotiation_hardness": 0.8,
+        "openness": 0.3,
+        "patience": 0.3,
+        "detail_sharing": "reluctant",
+        "objection_intensity": "strong"
+      },
+      
+      "conversation_dynamics": {
+        "interruption_probability": 0.4,
+        "topic_change_frequency": "frequent",
+        "information_volunteering": "minimal",
+        "question_complexity": "challenging",
+        "emotional_volatility": "high"
+      },
+      
+      "feedback_settings": {
+        "feedback_level": "minimal",
+        "feedback_timing": "end_of_scenario",
+        "positive_reinforcement": "rare",
+        "correction_style": "concise",
+        "examples_provided": false,
+        "improvement_suggestions": "high_level"
+      },
+      
+      "hints_system": {
+        "enabled": false,
+        "trigger_on_silence": null,
+        "trigger_on_mistake": false,
+        "hint_style": null,
+        "max_hints_per_scenario": 0
+      },
+      
+      "scoring_modifiers": {
+        "bonus_for_basics": 0.8,
+        "penalty_reduction": 1.0,
+        "partial_credit": false
+      },
+      
+      "prospect_behaviors": {
+        "gives_clear_signals": false,
+        "responds_fully": false,
+        "stays_on_topic": false,
+        "expresses_needs_clearly": false,
+        "reacts_predictably": false
+      },
+      
+      "example_prospect_phrases": [
+        "Écoutez, j'ai pas le temps.",
+        "C'est quoi le prix? Dites-moi juste le prix.",
+        "Tous les commerciaux me disent la même chose.",
+        "Vous croyez vraiment que ça va marcher?",
+        "J'en ai vu passer, des comme vous.",
+        "Bon, c'est fini? J'ai une réunion."
+      ],
+      
+      "interruption_triggers": [
+        "L'élève parle plus de 20 secondes",
+        "L'élève commence un pitch classique",
+        "L'élève hésite ou fait des 'euh'",
+        "L'élève ne répond pas directement à une question",
+        "L'élève semble perdre le fil"
+      ],
+      
+      "interruption_phrases": [
+        "Stop. Venez-en au fait.",
+        "Oui, et donc?",
+        "Je vous arrête là. C'est pas ce que j'ai demandé.",
+        "Attendez, j'ai pas compris. Reprenez.",
+        "OK mais moi ce qui m'intéresse c'est...",
+        "Écoutez, on va pas y passer la journée.",
+        "Vous pouvez être plus concis?",
+        "C'est du blabla commercial tout ça."
+      ],
+      
+      "advanced_behaviors": {
+        "contradiction": "Le prospect peut se contredire pour tester la réactivité de l'élève",
+        "false_objections": "Les premières objections sont souvent des écrans de fumée",
+        "power_plays": "Le prospect teste l'autorité et la confiance de l'élève",
+        "time_pressure": "Le prospect crée de l'urgence artificielle",
+        "competitive_pressure": "Le prospect mentionne régulièrement la concurrence"
+      },
+      
+      "scenario_adaptations": {
+        "objection_style": "Objections multiples, parfois contradictoires. Certaines sont des tests. Le prospect peut changer d'objection si la première est bien traitée. Il faut rester concentré et méthodique.",
+        "information_access": "Le prospect ne partage rien gratuitement. Chaque information doit être gagnée. Il peut mentir ou exagérer pour tester. Les vrais enjeux sont cachés.",
+        "closing_readiness": "Le prospect ne montre pas de signaux clairs. Il peut sembler prêt puis reculer. Il faut créer le momentum et le maintenir. Les hésitations de dernière minute sont la norme."
+      },
+      
+      "expert_challenges": [
+        {
+          "name": "Le prospect pressé",
+          "description": "N'a que 5 minutes, coupe la parole, veut aller à l'essentiel",
+          "success_criteria": "Captiver en 30 secondes, obtenir un RDV de suivi"
+        },
+        {
+          "name": "Le décideur caché",
+          "description": "Prétend décider mais doit en référer à quelqu'un",
+          "success_criteria": "Identifier le vrai décideur, accéder à lui"
+        },
+        {
+          "name": "Le négociateur dur",
+          "description": "Demande 30% de remise, menace de partir",
+          "success_criteria": "Tenir son prix, obtenir des contreparties"
+        },
+        {
+          "name": "Le sceptique absolu",
+          "description": "Remet tout en question, ne croit rien",
+          "success_criteria": "Créer la confiance par les preuves"
+        },
+        {
+          "name": "Le prospect en colère",
+          "description": "A eu une mauvaise expérience, projette sur vous",
+          "success_criteria": "Désamorcer, écouter, différencier"
+        }
+      ]
+    }
+  ],
+  
+  "progression_rules": {
+    "level_unlock": {
+      "easy_to_medium": {
+        "required_skills_passed": 4,
+        "minimum_average_score": 70,
+        "days_completed": 8
+      },
+      "medium_to_expert": {
+        "required_skills_passed": 9,
+        "minimum_average_score": 75,
+        "days_completed": 20
+      }
+    },
+    "skill_unlock": {
+      "prerequisites": {
+        "objections_prix": ["questions_ouvertes", "reformulation"],
+        "objections_timing": ["questions_ouvertes", "reformulation"],
+        "objections_concurrence": ["questions_ouvertes", "reformulation"],
+        "negociation": ["objections_prix"],
+        "closing": ["negociation"],
+        "prospect_difficile": ["objections_prix", "objections_timing", "objections_concurrence"],
+        "pression_temporelle": ["closing", "negociation"],
+        "multi_objections": ["objections_prix", "objections_timing", "objections_concurrence"],
+        "closing_pression": ["closing", "prospect_difficile"]
+      }
+    },
+    "retry_policy": {
+      "easy": {
+        "max_retries": "unlimited",
+        "cooldown_minutes": 0
+      },
+      "medium": {
+        "max_retries": 5,
+        "cooldown_minutes": 30
+      },
+      "expert": {
+        "max_retries": 3,
+        "cooldown_minutes": 60
+      }
+    }
+  },
+  
+  "adaptive_difficulty": {
+    "enabled": true,
+    "adjustment_triggers": {
+      "increase_difficulty": {
+        "consecutive_high_scores": 3,
+        "average_score_above": 85,
+        "completion_time_below": 0.7
+      },
+      "decrease_difficulty": {
+        "consecutive_failures": 2,
+        "average_score_below": 50,
+        "frustration_signals": ["abandon_mid_scenario", "long_pauses", "repeated_mistakes"]
+      }
+    },
+    "micro_adjustments": {
+      "prospect_patience": {
+        "decrease_on_success": 0.05,
+        "increase_on_failure": 0.1
+      },
+      "interruption_probability": {
+        "increase_on_high_score": 0.05,
+        "decrease_on_low_score": 0.1
+      },
+      "objection_complexity": {
+        "add_layer_on_success": true,
+        "simplify_on_failure": true
+      }
+    }
+  }
+}

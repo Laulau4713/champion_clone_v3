@@ -1,0 +1,562 @@
+{
+  "sectors": [
+    {
+      "slug": "immo",
+      "name": "Immobilier",
+      "description": "Agents immobiliers, négociateurs, mandataires, promoteurs",
+      "icon": "🏠",
+      "vocabulary": [
+        {
+          "term": "Mandat exclusif",
+          "definition": "Contrat donnant l'exclusivité de vente à une seule agence"
+        },
+        {
+          "term": "DPE",
+          "definition": "Diagnostic de Performance Énergétique (A à G)"
+        },
+        {
+          "term": "Compromis",
+          "definition": "Avant-contrat engageant vendeur et acheteur"
+        },
+        {
+          "term": "Condition suspensive",
+          "definition": "Clause suspendant la vente à une condition (ex: prêt)"
+        },
+        {
+          "term": "Net vendeur",
+          "definition": "Prix reçu par le vendeur après déduction des frais"
+        },
+        {
+          "term": "FAI",
+          "definition": "Frais d'Agence Inclus"
+        },
+        {
+          "term": "Séquestre",
+          "definition": "Dépôt de garantie à la signature du compromis"
+        },
+        {
+          "term": "Primo-accédant",
+          "definition": "Acheteur réalisant son premier achat"
+        },
+        {
+          "term": "Passoire thermique",
+          "definition": "Bien classé F ou G au DPE"
+        }
+      ],
+      "prospect_personas": [
+        {
+          "id": "primo_accedant",
+          "name": "Le primo-accédant stressé",
+          "description": "Jeune couple, premier achat, budget serré, peur de se tromper",
+          "typical_objections": [
+            "On doit réfléchir",
+            "C'est au-dessus de notre budget",
+            "On attend la réponse de la banque"
+          ],
+          "personality": "anxious"
+        },
+        {
+          "id": "investisseur",
+          "name": "L'investisseur calculateur",
+          "description": "Analytique, cherche la rentabilité, négocie dur",
+          "typical_objections": [
+            "La rentabilité est insuffisante",
+            "Le prix au m² est trop élevé",
+            "J'ai vu mieux ailleurs"
+          ],
+          "personality": "analytical"
+        }
+      ],
+      "typical_objections": [
+        {
+          "objection": "C'est trop cher pour le quartier",
+          "category": "price",
+          "responses": [
+            "Comparons avec les dernières ventes du secteur",
+            "Le prix reflète [caractéristique unique]"
+          ]
+        },
+        {
+          "objection": "Vos honoraires sont élevés",
+          "category": "price",
+          "responses": [
+            "Nos honoraires reflètent [services inclus]",
+            "Quel est votre objectif en net vendeur?"
+          ]
+        },
+        {
+          "objection": "Le DPE est mauvais",
+          "category": "product",
+          "responses": [
+            "C'est une opportunité de négociation",
+            "Les aides MaPrimeRénov' peuvent couvrir 90% des travaux"
+          ]
+        }
+      ],
+      "agent_context_prompt": "Tu es dans le contexte de l'immobilier français. Tu connais le marché, les prix, les taux, la réglementation (DPE, loi Alur). Tu adaptes ton discours: acheteur, vendeur, investisseur."
+    },
+    {
+      "slug": "b2b_saas",
+      "name": "B2B SaaS",
+      "description": "Commerciaux vendant des solutions logicielles en mode SaaS",
+      "icon": "💻",
+      "vocabulary": [
+        {
+          "term": "ARR",
+          "definition": "Annual Recurring Revenue - revenu annuel récurrent"
+        },
+        {
+          "term": "Churn",
+          "definition": "Taux d'attrition clients"
+        },
+        {
+          "term": "POC",
+          "definition": "Proof of Concept - test avant achat"
+        },
+        {
+          "term": "Onboarding",
+          "definition": "Intégration des nouveaux utilisateurs"
+        },
+        {
+          "term": "API",
+          "definition": "Interface de connexion entre logiciels"
+        },
+        {
+          "term": "SSO",
+          "definition": "Single Sign-On - authentification unique"
+        },
+        {
+          "term": "SLA",
+          "definition": "Service Level Agreement - engagement de service"
+        },
+        {
+          "term": "Champion",
+          "definition": "Sponsor interne qui pousse pour l'achat"
+        },
+        {
+          "term": "Procurement",
+          "definition": "Service achats de l'entreprise"
+        }
+      ],
+      "prospect_personas": [
+        {
+          "id": "head_of_ops",
+          "name": "Le Directeur des Opérations pragmatique",
+          "description": "Cherche l'efficacité, veut du concret, pas du bullshit",
+          "typical_objections": [
+            "On a déjà un outil",
+            "Comment ça s'intègre?",
+            "Quels résultats chez vos autres clients?"
+          ],
+          "personality": "pragmatic"
+        },
+        {
+          "id": "it_manager",
+          "name": "Le Responsable IT prudent",
+          "description": "Obsédé par la sécurité et l'intégration, souvent bloqueur",
+          "typical_objections": [
+            "Quelle politique sécurité?",
+            "API ouverte?",
+            "Que se passe-t-il si on part?"
+          ],
+          "personality": "skeptical"
+        }
+      ],
+      "typical_objections": [
+        {
+          "objection": "On a déjà un outil qui fait ça",
+          "category": "competition",
+          "responses": [
+            "Qu'est-ce qui fonctionne bien? Et qu'est-ce qui pourrait être mieux?",
+            "Vos équipes sont satisfaites à 100%?"
+          ]
+        },
+        {
+          "objection": "C'est trop cher",
+          "category": "price",
+          "responses": [
+            "Calculons le ROI ensemble",
+            "Par rapport à quoi? Budget ou valeur?"
+          ]
+        },
+        {
+          "objection": "On va construire ça en interne",
+          "category": "competition",
+          "responses": [
+            "Avez-vous estimé le coût de développement et maintenance?",
+            "Combien de temps pour développer?"
+          ]
+        }
+      ],
+      "agent_context_prompt": "Tu es dans le contexte B2B SaaS. Tu connais les cycles longs, les multiples parties prenantes (métier, IT, procurement), l'importance du ROI. Tu traduis les features en bénéfices business."
+    },
+    {
+      "slug": "assurance",
+      "name": "Assurance & Mutuelle",
+      "description": "Conseillers en assurance, courtiers, agents généraux",
+      "icon": "🛡️",
+      "vocabulary": [
+        {
+          "term": "Prime",
+          "definition": "Montant payé pour la couverture"
+        },
+        {
+          "term": "Franchise",
+          "definition": "Montant restant à charge en cas de sinistre"
+        },
+        {
+          "term": "Sinistre",
+          "definition": "Événement déclenchant l'assurance"
+        },
+        {
+          "term": "Loi Hamon",
+          "definition": "Résiliation après 1 an à tout moment"
+        },
+        {
+          "term": "Bonus-malus",
+          "definition": "Coefficient ajustant la prime selon l'historique"
+        },
+        {
+          "term": "Complémentaire santé",
+          "definition": "Assurance remboursant ce que la Sécu ne couvre pas"
+        },
+        {
+          "term": "Tiers payant",
+          "definition": "Dispense d'avance de frais"
+        },
+        {
+          "term": "Prévoyance",
+          "definition": "Assurance décès, invalidité, incapacité"
+        }
+      ],
+      "prospect_personas": [
+        {
+          "id": "jeune_actif",
+          "name": "Le jeune actif qui s'en fiche",
+          "description": "Ne voit pas l'intérêt, veut payer le minimum",
+          "typical_objections": [
+            "Je n'ai jamais de sinistre",
+            "C'est trop cher",
+            "J'ai trouvé moins cher en ligne"
+          ],
+          "personality": "dismissive"
+        },
+        {
+          "id": "famille_securite",
+          "name": "La famille qui veut être couverte",
+          "description": "Parents responsables, acceptent de payer plus pour plus de garanties",
+          "typical_objections": [
+            "Les enfants sont bien couverts?",
+            "Je veux comprendre les remboursements",
+            "Pourquoi changer?"
+          ],
+          "personality": "responsible"
+        }
+      ],
+      "typical_objections": [
+        {
+          "objection": "J'ai trouvé moins cher sur un comparateur",
+          "category": "price",
+          "responses": [
+            "À garanties identiques? Comparons point par point",
+            "Le moins cher n'est pas toujours le moins coûteux en cas de sinistre"
+          ]
+        },
+        {
+          "objection": "Je n'ai jamais de sinistre",
+          "category": "value",
+          "responses": [
+            "Tant mieux! Mais le jour où ça arrive...",
+            "C'est comme un parachute: on est content de ne pas s'en servir"
+          ]
+        },
+        {
+          "objection": "Je suis bien avec ma mutuelle actuelle",
+          "category": "competition",
+          "responses": [
+            "Quand avez-vous comparé pour la dernière fois?",
+            "Vous êtes satisfait de vos remboursements?"
+          ]
+        }
+      ],
+      "agent_context_prompt": "Tu es dans le contexte assurance/mutuelle. Tu connais les produits, la réglementation (Hamon, DDA). Tu parles avec pédagogie car l'assurance est complexe. Tu rassures sur les peurs classiques."
+    },
+    {
+      "slug": "auto",
+      "name": "Automobile",
+      "description": "Vendeurs automobiles en concession, VN et VO",
+      "icon": "🚗",
+      "vocabulary": [
+        {
+          "term": "VN/VO",
+          "definition": "Véhicule Neuf / Véhicule d'Occasion"
+        },
+        {
+          "term": "LOA",
+          "definition": "Location avec Option d'Achat"
+        },
+        {
+          "term": "LLD",
+          "definition": "Location Longue Durée sans option d'achat"
+        },
+        {
+          "term": "Reprise",
+          "definition": "Rachat de l'ancien véhicule"
+        },
+        {
+          "term": "Argus",
+          "definition": "Cote officielle des VO"
+        },
+        {
+          "term": "Malus",
+          "definition": "Taxe sur les véhicules polluants"
+        },
+        {
+          "term": "Bonus écologique",
+          "definition": "Aide pour véhicules électriques"
+        },
+        {
+          "term": "ZFE",
+          "definition": "Zone à Faibles Émissions"
+        }
+      ],
+      "prospect_personas": [
+        {
+          "id": "famille_pratique",
+          "name": "La famille pratique",
+          "description": "Parents avec enfants, besoin d'espace et sécurité",
+          "typical_objections": [
+            "On hésite SUV ou monospace",
+            "C'est économique en carburant?",
+            "Délais trop longs"
+          ],
+          "personality": "practical"
+        },
+        {
+          "id": "passionne",
+          "name": "Le passionné exigeant",
+          "description": "Connaît tout, a fait ses recherches, négocie dur",
+          "typical_objections": [
+            "J'ai vu ce prix ailleurs",
+            "Vous faites quoi sur les options?",
+            "Reprise trop basse"
+          ],
+          "personality": "informed"
+        }
+      ],
+      "typical_objections": [
+        {
+          "objection": "Les délais sont trop longs",
+          "category": "timing",
+          "responses": [
+            "En stock j'ai [modèles]",
+            "J'ai un véhicule de démonstration disponible immédiatement"
+          ]
+        },
+        {
+          "objection": "J'ai trouvé moins cher ailleurs",
+          "category": "price",
+          "responses": [
+            "À équipement identique? Comparons",
+            "Le prix affiché c'est une chose, le coût total sur 3 ans c'est autre chose"
+          ]
+        },
+        {
+          "objection": "Votre reprise est trop basse",
+          "category": "price",
+          "responses": [
+            "Mon estimation est basée sur [critères]",
+            "Avez-vous une meilleure offre écrite?"
+          ]
+        }
+      ],
+      "agent_context_prompt": "Tu es dans le contexte automobile. Tu connais les gammes, motorisations, financements (LOA, LLD). Tu sais que la marge sur le véhicule est faible et que les services sont essentiels."
+    },
+    {
+      "slug": "energie",
+      "name": "Énergie & Rénovation",
+      "description": "Commerciaux en rénovation énergétique: isolation, PAC, solaire",
+      "icon": "⚡",
+      "vocabulary": [
+        {
+          "term": "Audit énergétique",
+          "definition": "Diagnostic des déperditions"
+        },
+        {
+          "term": "MaPrimeRénov'",
+          "definition": "Aide principale de l'État"
+        },
+        {
+          "term": "CEE",
+          "definition": "Certificats d'Économies d'Énergie"
+        },
+        {
+          "term": "RGE",
+          "definition": "Reconnu Garant de l'Environnement"
+        },
+        {
+          "term": "PAC",
+          "definition": "Pompe À Chaleur"
+        },
+        {
+          "term": "Autoconsommation",
+          "definition": "Consommer l'électricité produite"
+        },
+        {
+          "term": "ITE",
+          "definition": "Isolation Thermique par l'Extérieur"
+        },
+        {
+          "term": "VMC double flux",
+          "definition": "Ventilation récupérant la chaleur"
+        }
+      ],
+      "prospect_personas": [
+        {
+          "id": "proprietaire_sensibilise",
+          "name": "Le propriétaire sensibilisé",
+          "description": "Veut réduire ses factures, ouvert mais méfiant (arnaques)",
+          "typical_objections": [
+            "J'ai entendu parler d'arnaques",
+            "Combien je vais économiser?",
+            "Les aides c'est compliqué"
+          ],
+          "personality": "cautious"
+        },
+        {
+          "id": "bailleur_contraint",
+          "name": "Le bailleur contraint",
+          "description": "Obligé de rénover pour continuer à louer, cherche le minimum",
+          "typical_objections": [
+            "Je veux juste passer de G à E",
+            "Ça coûte combien au minimum?",
+            "Le locataire peut pas partir"
+          ],
+          "personality": "reluctant"
+        }
+      ],
+      "typical_objections": [
+        {
+          "objection": "J'ai entendu parler d'arnaques",
+          "category": "trust",
+          "responses": [
+            "Nous sommes RGE, voici nos certifications",
+            "La transparence c'est la clé, posez toutes vos questions"
+          ]
+        },
+        {
+          "objection": "C'est trop cher",
+          "category": "price",
+          "responses": [
+            "Regardons le reste à charge après aides",
+            "L'investissement est amorti en [X] années"
+          ]
+        },
+        {
+          "objection": "Les aides c'est compliqué",
+          "category": "process",
+          "responses": [
+            "Je m'occupe de tout le dossier",
+            "On a un service dédié aux aides"
+          ]
+        }
+      ],
+      "agent_context_prompt": "Tu es dans le contexte rénovation énergétique. Tu connais les travaux, les aides, la réglementation DPE. Tu es conscient de l'image ternie du secteur et tu rassures par la transparence et les certifications RGE."
+    },
+    {
+      "slug": "generic",
+      "name": "Générique",
+      "description": "Formation généraliste applicable à tous les secteurs",
+      "icon": "📊",
+      "vocabulary": [
+        {
+          "term": "Prospect",
+          "definition": "Client potentiel"
+        },
+        {
+          "term": "Lead",
+          "definition": "Contact ayant montré un intérêt"
+        },
+        {
+          "term": "Qualification",
+          "definition": "Évaluation du potentiel d'un lead"
+        },
+        {
+          "term": "Discovery",
+          "definition": "Phase de découverte des besoins"
+        },
+        {
+          "term": "Closing",
+          "definition": "Conclusion de la vente"
+        },
+        {
+          "term": "Objection",
+          "definition": "Frein exprimé par le prospect"
+        },
+        {
+          "term": "Decision maker",
+          "definition": "Personne qui décide"
+        },
+        {
+          "term": "Pain point",
+          "definition": "Problème du prospect"
+        },
+        {
+          "term": "ROI",
+          "definition": "Retour sur investissement"
+        }
+      ],
+      "prospect_personas": [
+        {
+          "id": "decision_maker",
+          "name": "Le décideur pressé",
+          "description": "A le pouvoir de décider, peu de temps, veut l'essentiel",
+          "typical_objections": [
+            "Allez à l'essentiel",
+            "Quel est le ROI?",
+            "On verra plus tard"
+          ],
+          "personality": "decisive"
+        },
+        {
+          "id": "evaluator",
+          "name": "L'évaluateur technique",
+          "description": "Doit valider la solution, pose des questions techniques",
+          "typical_objections": [
+            "Comment ça marche?",
+            "Vous avez des références?",
+            "Et si ça ne fonctionne pas?"
+          ],
+          "personality": "analytical"
+        }
+      ],
+      "typical_objections": [
+        {
+          "objection": "C'est trop cher",
+          "category": "price",
+          "responses": [
+            "Par rapport à quoi?",
+            "Regardons le ROI"
+          ]
+        },
+        {
+          "objection": "Je dois réfléchir",
+          "category": "timing",
+          "responses": [
+            "À quoi exactement?",
+            "Quel est le coût d'attendre?"
+          ]
+        },
+        {
+          "objection": "On travaille déjà avec quelqu'un",
+          "category": "competition",
+          "responses": [
+            "Qu'est-ce qui fonctionne bien?",
+            "Quand avez-vous comparé?"
+          ]
+        }
+      ],
+      "agent_context_prompt": "Tu es un prospect générique adaptable à différents contextes. Tu utilises un vocabulaire professionnel standard. Tu représentes les défis classiques de la vente."
+    }
+  ]
+}

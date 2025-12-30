@@ -21,7 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sqlalchemy import select
-from database import async_session_maker
+from database import AsyncSessionLocal as async_session_maker
 from models import Skill, DifficultyLevel, Sector, Course, Quiz
 
 

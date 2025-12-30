@@ -200,6 +200,32 @@ POST /training/end
 GET /training/sessions
 ```
 
+### Learning (Pedagogical Path)
+
+**Public endpoints:**
+```http
+GET /learning/skills                    # List all skills (13)
+GET /learning/skills/{slug}             # Skill details
+GET /learning/sectors                   # List sectors (6)
+GET /learning/sectors/{slug}            # Sector details
+GET /learning/courses                   # List courses (15 days)
+GET /learning/courses/day/{day}         # Course for specific day
+GET /learning/difficulty-levels         # Easy, Medium, Expert
+GET /learning/quiz/{skill_slug}         # Quiz questions (no answers)
+```
+
+**Protected endpoints (require auth):**
+```http
+GET  /learning/progress                 # User progression
+GET  /learning/progress/skills          # Progress per skill
+POST /learning/progress/select-sector   # Select sector (expert level)
+POST /learning/session/start            # Start daily session
+POST /learning/session/{id}/complete-course  # Mark course as read
+POST /learning/session/{id}/listen-script    # Listen to script
+GET  /learning/session/today            # Today's session
+POST /learning/quiz/{slug}/submit       # Submit quiz answers
+```
+
 ## Agent Details
 
 ### AudioAgent
@@ -240,6 +266,60 @@ GET /training/sessions
 - `generate_tips` - Contextual hints
 
 **Memory:** Redis session store
+
+### ContentAgent
+
+**Purpose:** Generate and adapt pedagogical content
+
+**Tools:**
+- `generate_scenario` - Create training scenarios from skills
+- `adapt_to_sector` - Adapt scenario to business sector
+- `generate_example_script` - Create good/bad example scripts
+- `personalize_difficulty` - Adjust difficulty based on performance
+- `get_scenario_variants` - Generate multiple scenario variants
+
+**Memory:** Cached scenarios (PostgreSQL)
+
+## Services
+
+### InterruptionService
+
+Manages prospect interruptions based on difficulty level:
+
+| Level | Interruption | Patience | Triggers |
+|-------|-------------|----------|----------|
+| Easy | Never | - | - |
+| Medium | Occasional | 20s | Long speech |
+| Expert | Frequent | 8s | Hesitations, low confidence, errors |
+
+**Phrases types:** impatient, skeptical, disagreement
+
+### AudioAnalyzer
+
+Analyzes speech patterns and emotions:
+
+- **Hesitation detection:** euh, donc, voila, en fait, peut-etre...
+- **Prosody analysis:** pitch, tempo, volume (requires librosa)
+- **Emotion scores:** confidence, hesitation, stress, enthusiasm
+- **Feedback generation:** Automatic coaching tips
+
+## Pedagogical Content
+
+The platform includes a 15-day learning path with:
+
+| Content | Count | Description |
+|---------|-------|-------------|
+| Skills | 13 | Sales competencies (easy/medium/expert) |
+| Sectors | 6 | Business domains with vocabulary |
+| Courses | 15 | Daily theory lessons |
+| Quizzes | 13 | 5 questions per skill (65 total) |
+| Difficulty Levels | 3 | Easy, Medium, Expert |
+
+### Importing Content
+
+```bash
+python scripts/import_content.py content/
+```
 
 ## MCP Integration
 
@@ -377,7 +457,7 @@ CORS_ORIGINS=https://your-domain.com
 ## Testing
 
 ```bash
-# Run all tests
+# Run all tests (375 tests, 85% coverage)
 pytest tests/ -v
 
 # Run specific test file
@@ -385,6 +465,36 @@ pytest tests/test_agents.py -v
 
 # With coverage
 pytest tests/ --cov=. --cov-report=html
+```
+
+### Test Coverage Summary
+
+| Module | Coverage |
+|--------|----------|
+| `services/interruption_service.py` | 100% |
+| `services/audio_analyzer.py` | 69% |
+| `agents/content_agent/agent.py` | 95% |
+| `api/routers/learning.py` | 59% |
+| `models.py` | 100% |
+| **Total** | **85%** |
+
+### Test Structure
+
+```
+tests/
+├── unit/
+│   ├── test_interruption_service.py   # 16 tests
+│   ├── test_audio_analyzer.py         # 17 tests
+│   ├── test_content_agent.py          # 23 tests
+│   ├── test_services.py
+│   ├── test_repositories.py
+│   └── ...
+├── integration/
+│   ├── test_learning_endpoints.py     # 35 tests
+│   ├── test_api.py
+│   ├── test_champions.py
+│   └── ...
+└── conftest.py
 ```
 
 ## Development

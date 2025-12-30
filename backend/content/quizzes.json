@@ -1,0 +1,822 @@
+{
+  "quizzes": [
+    {
+      "skill_id": "ecoute_active",
+      "skill_name": "Écoute Active",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Un prospect explique sa situation pendant 2 minutes. À la fin, quelle est la MEILLEURE réaction?",
+          "options": [
+            "A) Enchaîner directement avec votre pitch en montrant que vous avez la solution",
+            "B) Faire une pause de 2 secondes, puis reformuler ce que vous avez compris",
+            "C) Poser immédiatement une question sur le budget",
+            "D) Dire 'C'est très intéressant' et changer de sujet"
+          ],
+          "correct": "B",
+          "explanation": "La pause de 2 secondes montre que vous réfléchissez et évite de couper. La reformulation prouve que vous avez vraiment écouté et permet de valider votre compréhension."
+        },
+        {
+          "question": "Qu'est-ce qui caractérise le niveau 3 d'écoute (écoute empathique)?",
+          "options": [
+            "A) Préparer sa réponse pendant que l'autre parle",
+            "B) Retenir les informations factuelles données",
+            "C) Percevoir les émotions et motivations profondes du prospect",
+            "D) Prendre des notes détaillées de tout ce qui est dit"
+          ],
+          "correct": "C",
+          "explanation": "Le niveau 3 va au-delà des faits (niveau 2) pour capter ce que le prospect ressent vraiment et ce qui le motive profondément. C'est là que se crée la vraie connexion."
+        },
+        {
+          "question": "Quel signal d'écoute est le plus efficace pendant que le prospect parle?",
+          "options": [
+            "A) Répéter 'D'accord, d'accord, d'accord' toutes les 5 secondes",
+            "B) Rester totalement silencieux pour ne pas interrompre",
+            "C) Placer un signal ('Je vois', 'Hmm') toutes les 10-15 secondes",
+            "D) Hocher la tête en disant 'Oui' continuellement"
+          ],
+          "correct": "C",
+          "explanation": "Des signaux espacés de 10-15 secondes montrent l'attention sans être intrusifs. Trop fréquents, ils paraissent robotiques. Aucun signal donne l'impression de désintérêt."
+        },
+        {
+          "question": "Le prospect mentionne: 'On a un projet avec Marie pour le 15 juin avec 50K de budget'. Que devez-vous retenir?",
+          "options": [
+            "A) Uniquement le budget car c'est le plus important",
+            "B) Le nom (Marie), la date (15 juin) et le budget (50K)",
+            "C) Juste la date car c'est l'urgence qui compte",
+            "D) Rien de spécial, ce sont des détails"
+          ],
+          "correct": "B",
+          "explanation": "Retenir ces 3 éléments (nom, date, budget) vous permettra de les réutiliser plus tard, montrant que vous avez vraiment écouté. Ex: 'Pour respecter le timing avec Marie sur le projet du 15 juin...'"
+        },
+        {
+          "question": "Que faire si vous n'avez pas bien compris quelque chose?",
+          "options": [
+            "A) Faire semblant d'avoir compris et continuer",
+            "B) Demander de répéter en disant 'Pardon?'",
+            "C) Dire 'Je veux être sûr de bien comprendre...' et reformuler",
+            "D) Changer de sujet pour éviter l'embarras"
+          ],
+          "correct": "C",
+          "explanation": "'Je veux être sûr de bien comprendre' est honnête et montre votre intérêt. C'est beaucoup mieux que faire semblant (qui vous fera faire des erreurs) ou un simple 'Pardon?' (trop sec)."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "questions_ouvertes",
+      "skill_name": "Questions Ouvertes",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Quelle est la meilleure façon de découvrir le budget du prospect?",
+          "options": [
+            "A) 'Vous avez un budget?'",
+            "B) 'Comment envisagez-vous l'investissement sur ce projet?'",
+            "C) 'Votre budget est de combien?'",
+            "D) 'Vous pouvez mettre combien maximum?'"
+          ],
+          "correct": "B",
+          "explanation": "Question ouverte qui invite le prospect à expliquer son contexte budgétaire, ses contraintes, ses marges de manœuvre. Les autres questions sont fermées et n'apportent qu'une réponse courte."
+        },
+        {
+          "question": "Que signifie la règle QQOQCP?",
+          "options": [
+            "A) Six types de questions à poser dans cet ordre exact",
+            "B) Six mots (Qui, Quoi, Où, Quand, Comment, Pourquoi) qui commencent les bonnes questions ouvertes",
+            "C) Une technique de closing en 6 étapes",
+            "D) Les 6 informations obligatoires à collecter"
+          ],
+          "correct": "B",
+          "explanation": "QQOQCP (Qui, Quoi, Où, Quand, Comment, Pourquoi) donne les mots qui démarrent les questions ouvertes. 80% de vos questions devraient commencer par l'un de ces mots."
+        },
+        {
+          "question": "L'entonnoir de découverte consiste à:",
+          "options": [
+            "A) Commencer par les questions de budget puis élargir au contexte",
+            "B) Poser toutes les questions d'un coup pour gagner du temps",
+            "C) Commencer large (contexte) puis resserrer (détails, budget, timing)",
+            "D) Alterner questions ouvertes et fermées"
+          ],
+          "correct": "C",
+          "explanation": "L'entonnoir commence large pour comprendre le contexte, puis resserre vers les détails spécifiques (budget, timing, décideur). Commencer par le budget trop tôt fait fuir le prospect."
+        },
+        {
+          "question": "Après avoir identifié un problème, quelle question creuse les motivations profondes?",
+          "options": [
+            "A) 'Depuis quand avez-vous ce problème?'",
+            "B) 'Qu'est-ce que ça changerait si c'était résolu?'",
+            "C) 'Combien de personnes sont impactées?'",
+            "D) 'Avez-vous essayé d'autres solutions?'"
+          ],
+          "correct": "B",
+          "explanation": "'Qu'est-ce que ça changerait?' fait projeter le prospect dans un futur positif et révèle ses vraies motivations (ex: 'Je pourrais enfin me concentrer sur la stratégie'). C'est plus puissant que des faits."
+        },
+        {
+          "question": "Que faire après avoir posé 3-4 questions?",
+          "options": [
+            "A) Continuer avec 3-4 questions de plus",
+            "B) Passer directement à la présentation de la solution",
+            "C) Faire une mini-synthèse: 'Si je résume...'",
+            "D) Demander si le prospect a des questions"
+          ],
+          "correct": "C",
+          "explanation": "Une mini-synthèse après quelques questions prouve que vous écoutez, structure l'information et permet au prospect de corriger si vous avez mal compris. Ça crée aussi une transition naturelle."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "reformulation",
+      "skill_name": "Reformulation",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Quels sont les 3 bénéfices principaux de la reformulation?",
+          "options": [
+            "A) Gagner du temps, montrer son expertise, impressionner le prospect",
+            "B) Vérifier sa compréhension, montrer qu'on écoute, structurer l'information",
+            "C) Remplir les silences, préparer son pitch, créer une transition",
+            "D) Démontrer son intelligence, corriger le prospect, prendre le contrôle"
+          ],
+          "correct": "B",
+          "explanation": "La reformulation vérifie qu'on a bien compris (évite les malentendus), montre au prospect qu'on l'écoute vraiment (crée du rapport), et structure les informations pour la suite."
+        },
+        {
+          "question": "Qu'est-ce qu'une 'reformulation écho'?",
+          "options": [
+            "A) Répéter exactement ce que le prospect a dit",
+            "B) Répéter les derniers mots avec une intonation montante pour encourager à développer",
+            "C) Résumer en 2-3 phrases ce que le prospect a expliqué",
+            "D) Reformuler l'émotion plutôt que les faits"
+          ],
+          "correct": "B",
+          "explanation": "L'écho reprend les derniers mots ('Le timing...?') avec une intonation interrogative. Simple mais puissant pour encourager le prospect à développer sans le diriger."
+        },
+        {
+          "question": "Quelle reformulation est la plus appropriée face à un prospect frustré?",
+          "options": [
+            "A) 'Donc vous avez un problème de productivité.'",
+            "B) 'Si je comprends bien, votre équipe fait X et Y.'",
+            "C) 'Je sens que cette situation vous pèse vraiment...'",
+            "D) 'En résumé, vous cherchez une solution moins chère.'"
+          ],
+          "correct": "C",
+          "explanation": "Face à la frustration, la reformulation émotionnelle ('Je sens que...') crée une connexion profonde. Elle montre que vous captez l'émotion, pas juste les faits. Ça désarme et ouvre le dialogue."
+        },
+        {
+          "question": "Pourquoi terminer une reformulation par 'C'est bien ça?'",
+          "options": [
+            "A) Pour montrer qu'on est sûr de soi",
+            "B) Pour que le prospect valide ou corrige notre compréhension",
+            "C) Pour gagner du temps",
+            "D) Pour passer à la suite plus vite"
+          ],
+          "correct": "B",
+          "explanation": "Demander validation permet au prospect de corriger si vous avez mal compris. Mieux vaut une correction maintenant qu'un malentendu qui fait échouer la vente plus tard."
+        },
+        {
+          "question": "À quelle fréquence faut-il reformuler dans une conversation de vente?",
+          "options": [
+            "A) Après chaque phrase du prospect",
+            "B) 2-3 fois dans la conversation, aux moments clés",
+            "C) Une seule fois à la fin",
+            "D) Jamais, c'est une perte de temps"
+          ],
+          "correct": "B",
+          "explanation": "2-3 reformulations bien placées (après un bloc d'info important, avant de changer de sujet, avant de présenter la solution) montrent l'écoute sans ralentir la conversation. Trop fréquent = perroquet."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "gestion_silence",
+      "skill_name": "Gestion du Silence",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Vous venez d'annoncer le prix: 15 000€. Quelle est la MEILLEURE réaction?",
+          "options": [
+            "A) Justifier immédiatement: 'C'est parce que notre solution inclut...'",
+            "B) Proposer directement une remise: 'Mais on peut négocier...'",
+            "C) Se taire et attendre que le prospect réagisse",
+            "D) Demander: 'Qu'est-ce que vous en pensez?'"
+          ],
+          "correct": "C",
+          "explanation": "Après avoir annoncé un prix, celui qui parle en premier perd. Le silence met le prospect en position de réagir. S'il négocie, c'est qu'il est intéressé. Ne vous négociez pas vous-même!"
+        },
+        {
+          "question": "Combien de temps devriez-vous attendre après avoir posé une question importante?",
+          "options": [
+            "A) 1 seconde maximum",
+            "B) 5 secondes, en comptant mentalement",
+            "C) 10 secondes minimum",
+            "D) Il ne faut pas attendre, enchaînez"
+          ],
+          "correct": "B",
+          "explanation": "5 secondes de silence après une question importante permet au prospect de vraiment réfléchir. Ça paraît long mais c'est souvent là qu'il révèle quelque chose d'important."
+        },
+        {
+          "question": "Le prospect réfléchit en silence après votre question. Que se passe-t-il?",
+          "options": [
+            "A) Il n'a pas compris, reformulez la question",
+            "B) Il est en train de se convaincre lui-même, ne le dérangez pas",
+            "C) La conversation est bloquée, changez de sujet",
+            "D) Il cherche une excuse pour dire non"
+          ],
+          "correct": "B",
+          "explanation": "Un prospect qui réfléchit en silence est en train de traiter l'information et souvent de se convaincre lui-même. L'interrompre casse ce processus. Laissez-le réfléchir."
+        },
+        {
+          "question": "Comment gérer l'inconfort du silence?",
+          "options": [
+            "A) Meubler avec des 'Euh...', 'Donc...', 'Voilà...'",
+            "B) Respirer lentement et rester calme",
+            "C) Répéter la question différemment",
+            "D) Proposer une réponse au prospect"
+          ],
+          "correct": "B",
+          "explanation": "Respirer lentement vous calme et cette sérénité se ressent. Les tics verbaux ('Euh', 'Donc') montrent votre nervosité. Le silence n'est pas un problème, c'est un outil."
+        },
+        {
+          "question": "Quand le silence devient-il contre-productif?",
+          "options": [
+            "A) Après 3 secondes",
+            "B) Quand le prospect montre des signes de confusion ou de malaise",
+            "C) Jamais, le silence est toujours bon",
+            "D) Dès qu'il y a un blanc"
+          ],
+          "correct": "B",
+          "explanation": "Le silence est un outil, pas une fin en soi. Si le prospect semble confus ou mal à l'aise (pas juste en réflexion), il faut intervenir avec une question ou une clarification."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "objections_prix",
+      "skill_name": "Objections Prix",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Le prospect dit 'C'est trop cher'. Quelle est la PREMIÈRE question à poser?",
+          "options": [
+            "A) 'Quel est votre budget?'",
+            "B) 'Trop cher par rapport à quoi?'",
+            "C) 'Je peux vous faire une remise'",
+            "D) 'Vous avez vu nos concurrents?'"
+          ],
+          "correct": "B",
+          "explanation": "'Trop cher par rapport à quoi?' force le prospect à préciser: budget? concurrence? valeur perçue? Chaque réponse appelle un traitement différent. Ne proposez jamais de remise sans comprendre le vrai problème."
+        },
+        {
+          "question": "Qu'est-ce que 'l'isolation de l'objection'?",
+          "options": [
+            "A) Ignorer l'objection et passer à autre chose",
+            "B) Vérifier que le prix est le seul obstacle avant de négocier",
+            "C) Traiter l'objection prix en dernier",
+            "D) Isoler le prospect pour le convaincre"
+          ],
+          "correct": "B",
+          "explanation": "'Si on trouve une solution sur le prix, on avance?' Cette question évite de négocier pour découvrir ensuite d'autres objections cachées. Vous validez que le prix est le dernier obstacle."
+        },
+        {
+          "question": "Quelle est la meilleure façon de justifier un prix élevé?",
+          "options": [
+            "A) Expliquer que vous êtes les meilleurs du marché",
+            "B) Comparer le coût de votre solution au coût du problème non résolu",
+            "C) Lister toutes les fonctionnalités incluses",
+            "D) Dire que vos prix sont non négociables"
+          ],
+          "correct": "B",
+          "explanation": "Comparer le coût de la solution (10K€) au coût du problème (50K€/an) montre le ROI. Le prospect ne voit plus un coût mais un investissement rentable. Les features ne justifient pas le prix, la valeur si."
+        },
+        {
+          "question": "Le prospect demande une remise. Quelle est la bonne approche?",
+          "options": [
+            "A) Refuser catégoriquement",
+            "B) Accepter pour signer le deal",
+            "C) Proposer une remise en échange d'une contrepartie",
+            "D) Dire que vous devez demander à votre manager"
+          ],
+          "correct": "C",
+          "explanation": "Toute concession a une contrepartie: 'Je peux faire -10% si vous vous engagez sur 24 mois' ou 'si vous payez en une fois'. Donner sans recevoir vous décrédibilise et invite à demander plus."
+        },
+        {
+          "question": "Un prospect intéressé qui négocie le prix est:",
+          "options": [
+            "A) Un prospect perdu, il ne signera jamais",
+            "B) Un prospect difficile à éviter",
+            "C) Un prospect qui montre son intérêt - bon signe",
+            "D) Un prospect qui veut juste perdre votre temps"
+          ],
+          "correct": "C",
+          "explanation": "Un prospect qui négocie le prix est intéressé! S'il n'était pas intéressé, il dirait simplement non. La négociation est une étape normale du processus de vente."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "objections_timing",
+      "skill_name": "Objections Timing",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Comment distinguer une vraie contrainte de timing d'un faux-fuyant?",
+          "options": [
+            "A) Impossible à distinguer",
+            "B) Une vraie contrainte a une réponse précise à 'Qu'est-ce qui sera différent dans 3 mois?'",
+            "C) Les prospects disent toujours la vérité",
+            "D) Les vraies contraintes concernent uniquement le budget"
+          ],
+          "correct": "B",
+          "explanation": "Vraie contrainte: 'Le budget Q2 est voté en mars.' Faux-fuyant: 'Euh... on sera moins occupés.' La précision de la réponse révèle si c'est réel ou une excuse."
+        },
+        {
+          "question": "Le prospect dit 'Rappellez-moi dans 3 mois'. Quelle est la meilleure réponse?",
+          "options": [
+            "A) 'D'accord, je vous rappelle dans 3 mois'",
+            "B) 'Le 15 janvier à 10h, ça vous va? Et qu'est-ce qui sera différent à ce moment-là?'",
+            "C) 'Pourquoi pas maintenant?'",
+            "D) 'Je refuse d'attendre 3 mois'"
+          ],
+          "correct": "B",
+          "explanation": "Obtenez une date précise et une raison concrète. 'Rappellez-moi plus tard' vague = vous ne rappellerez jamais utilement. Une date fixe avec un contexte = un vrai RDV qualifié."
+        },
+        {
+          "question": "Qu'est-ce que le 'coût de l'inaction'?",
+          "options": [
+            "A) Le prix de votre solution",
+            "B) Le coût pour le prospect de ne pas résoudre son problème",
+            "C) Le coût de rappeler le prospect",
+            "D) Les frais de résiliation d'un concurrent"
+          ],
+          "correct": "B",
+          "explanation": "Le coût de l'inaction = ce que le problème coûte chaque mois où il n'est pas résolu. 'Ce problème vous coûte 5K€/mois. Attendre 6 mois = 30K€ perdus. Ça vaut le coup d'attendre?'"
+        },
+        {
+          "question": "Le prospect repousse mais vous sentez qu'il est intéressé. Que proposer?",
+          "options": [
+            "A) Insister pour signer maintenant",
+            "B) Abandonner et passer au suivant",
+            "C) Un petit engagement intermédiaire (étude de cas, démo, pilote)",
+            "D) Baisser le prix"
+          ],
+          "correct": "C",
+          "explanation": "Le 'pied dans la porte': si le grand OUI est bloqué, proposez un petit pas. Envoyer une étude de cas, faire une démo ciblée, démarrer un pilote. Vous restez dans la course."
+        },
+        {
+          "question": "Quelle urgence est LÉGITIME vs MANIPULATOIRE?",
+          "options": [
+            "A) Légitime: 'C'est la dernière fois!' / Manipulatoire: 'Notre agenda se remplit'",
+            "B) Légitime: 'Le tarif change au 1er janvier' / Manipulatoire: 'C'est maintenant ou jamais'",
+            "C) Tout type d'urgence est manipulatoire",
+            "D) Toute urgence est légitime si vous la dites avec conviction"
+          ],
+          "correct": "B",
+          "explanation": "Urgence légitime = basée sur des faits vérifiables (changement de tarif, disponibilité limitée). Manipulation = fausse urgence créée pour presser ('maintenant ou jamais'). La première renforce la confiance, la seconde la détruit."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "objections_concurrence",
+      "skill_name": "Objections Concurrence",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Le prospect dit 'On travaille déjà avec [concurrent]'. Quelle est la PIRE réponse?",
+          "options": [
+            "A) 'Je connais [concurrent], c'est une bonne entreprise. Qu'est-ce qui fonctionne bien avec eux?'",
+            "B) 'Ah, [concurrent]? Leurs clients sont souvent déçus du service.'",
+            "C) 'Qu'est-ce qui vous plaît chez eux? Et qu'est-ce qui pourrait être amélioré?'",
+            "D) 'Quand avez-vous comparé pour la dernière fois?'"
+          ],
+          "correct": "B",
+          "explanation": "Dénigrer la concurrence dégrade VOTRE crédibilité, pas la leur. Ça montre un manque de confiance en vous. Toujours du respect pour les concurrents, même si vous pensez être meilleur."
+        },
+        {
+          "question": "Quelle question révèle le mieux les failles du concurrent actuel?",
+          "options": [
+            "A) 'Pourquoi travaillez-vous avec eux?'",
+            "B) 'Combien vous coûtent-ils?'",
+            "C) 'Si vous pouviez améliorer une chose dans cette relation, ce serait quoi?'",
+            "D) 'Depuis combien de temps êtes-vous avec eux?'"
+          ],
+          "correct": "C",
+          "explanation": "Cette question fait réfléchir le prospect sur ce qui manque sans le mettre sur la défensive. S'il a une réponse précise, vous avez trouvé une ouverture. C'est non agressif et très efficace."
+        },
+        {
+          "question": "Comment positionner votre différenciation face à un concurrent?",
+          "options": [
+            "A) Lister tout ce que vous faites mieux qu'eux",
+            "B) Identifier 2-3 points clés et les relier aux besoins exprimés par le prospect",
+            "C) Dire que vous êtes moins cher",
+            "D) Critiquer leurs points faibles"
+          ],
+          "correct": "B",
+          "explanation": "2-3 différenciateurs clairs reliés aux besoins du prospect. Pas 10 avantages génériques. 'Notre support en 2h, vous m'avez dit que les pannes vous coûtent 1000€/h, ça vous économise X.'"
+        },
+        {
+          "question": "La stratégie du 'second fournisseur' consiste à:",
+          "options": [
+            "A) Proposer d'être le plan B en attendant que le concurrent échoue",
+            "B) Proposer de commencer en parallèle sur un périmètre limité pour comparer",
+            "C) Devenir sous-traitant du concurrent",
+            "D) Attendre que le contrat concurrent expire"
+          ],
+          "correct": "B",
+          "explanation": "'Et si on démarrait sur une équipe pilote pendant 3 mois?' Moins menaçant que remplacer totalement, vous permet de faire vos preuves en conditions réelles. Si ça marche, vous gagnez."
+        },
+        {
+          "question": "Le prospect dit 'Pourquoi vous et pas [concurrent] qui est moins cher?'",
+          "options": [
+            "A) 'Nous sommes meilleurs sur tout'",
+            "B) 'Le prix n'est pas tout, regardons la valeur: [différenciateur clé] vous fait économiser [montant]'",
+            "C) 'Je peux m'aligner sur leur prix'",
+            "D) 'Ils sont moins chers parce qu'ils sont moins bons'"
+          ],
+          "correct": "B",
+          "explanation": "Recentrez sur la valeur, pas le prix. 'Moins cher à l'achat mais plus cher à l'usage' ou 'Notre support vous fait économiser X'. Jamais dénigrer, jamais s'aligner sans contrepartie."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "negociation",
+      "skill_name": "Négociation",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Quel est le principe fondamental de la négociation commerciale?",
+          "options": [
+            "A) Toujours obtenir le meilleur prix possible",
+            "B) Ne jamais céder sur rien",
+            "C) Toute concession doit avoir une contrepartie",
+            "D) Le client a toujours raison"
+          ],
+          "correct": "C",
+          "explanation": "'Je peux faire X si vous faites Y.' Jamais de concession gratuite. Donner sans recevoir vous affaiblit et invite à demander encore plus. C'est du respect mutuel, pas de la rigidité."
+        },
+        {
+          "question": "Qu'est-ce que la BATNA en négociation?",
+          "options": [
+            "A) La meilleure technique de négociation",
+            "B) Votre meilleure alternative si la négociation échoue",
+            "C) Le prix maximum acceptable",
+            "D) Le budget du client"
+          ],
+          "correct": "B",
+          "explanation": "BATNA = Best Alternative To Negotiated Agreement. Plus votre alternative est forte, plus vous pouvez dire non. Si vous DEVEZ signer ce deal, vous êtes en position de faiblesse."
+        },
+        {
+          "question": "'Créer le gâteau avant de le partager' signifie:",
+          "options": [
+            "A) Négocier le prix en premier",
+            "B) Explorer des options qui augmentent la valeur totale avant de négocier le prix",
+            "C) Faire une offre généreuse pour créer la confiance",
+            "D) Diviser le contrat en plusieurs phases"
+          ],
+          "correct": "B",
+          "explanation": "Plutôt que se battre sur 5% de remise, explorez: engagement plus long, paiement anticipé, services additionnels, recommandations... Vous pouvez créer plus de valeur ensemble plutôt que vous battre sur le partage."
+        },
+        {
+          "question": "Comment clôturer une négociation?",
+          "options": [
+            "A) Dire 'On est d'accord, plus ou moins'",
+            "B) Récapituler les termes précis et demander confirmation: 'Donc on part sur X, Y, Z. C'est OK?'",
+            "C) Envoyer le contrat et attendre la signature",
+            "D) Remercier et raccrocher rapidement"
+          ],
+          "correct": "B",
+          "explanation": "Récapitulez clairement: 'Donc: 15K€ sur 18 mois, paiement trimestriel, support inclus. On se serre la main là-dessus?' Pas de flou. Les deux parties doivent être alignées sur les mêmes termes."
+        },
+        {
+          "question": "Le prospect demande 30% de remise. Quelle est la meilleure réponse?",
+          "options": [
+            "A) 'Non, impossible'",
+            "B) 'OK, je vous fais 30%'",
+            "C) '30% ce n'est pas possible. En revanche, si vous vous engagez sur 36 mois, je peux faire 15%'",
+            "D) 'Je dois demander à mon manager'"
+          ],
+          "correct": "C",
+          "explanation": "Refusez l'exigence mais proposez une alternative avec contrepartie. Vous montrez de la flexibilité tout en obtenant quelque chose. Le prospect comprend que c'est un échange, pas une capitulation."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "closing",
+      "skill_name": "Closing",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Le prospect demande 'Comment se passe l'implémentation?'. Qu'est-ce que c'est?",
+          "options": [
+            "A) Une objection sur la complexité",
+            "B) Un signal d'achat - il se projette dans l'utilisation",
+            "C) Une demande de documentation",
+            "D) Un signe de désintérêt"
+          ],
+          "correct": "B",
+          "explanation": "Les questions sur la mise en œuvre, les délais, les prochaines étapes sont des signaux d'achat. Le prospect se projette dans l'après-achat. C'est le moment de closer, pas de continuer à vendre!"
+        },
+        {
+          "question": "Qu'est-ce que le 'closing assumptif'?",
+          "options": [
+            "A) Assumer que le prospect va refuser",
+            "B) Parler comme si la décision était déjà prise: 'Quand on démarre...'",
+            "C) Demander directement 'Vous voulez acheter?'",
+            "D) Assumer que le prix est accepté"
+          ],
+          "correct": "B",
+          "explanation": "'Pour le démarrage, vous préférez début mars ou mi-mars?' présuppose que c'est oui. 'Vous êtes intéressé?' permet de dire non facilement. Le closing assumptif guide naturellement vers l'engagement."
+        },
+        {
+          "question": "Avant de closer, que devez-vous faire?",
+          "options": [
+            "A) Rappeler le prix une dernière fois",
+            "B) Récapituler la valeur: 'On résout X, vous gagnez Y, on démarre Z'",
+            "C) Demander s'il y a des questions",
+            "D) Proposer une dernière remise"
+          ],
+          "correct": "B",
+          "explanation": "Le récapitulatif valeur rappelle au prospect pourquoi c'est une bonne décision. Ce n'est pas de la répétition, c'est un ancrage mental avant l'engagement. Puis seulement: 'On y va?'"
+        },
+        {
+          "question": "Le prospect dit 'Je ne suis pas sûr...' au moment de signer. Que faire?",
+          "options": [
+            "A) Lui dire de prendre son temps et de rappeler",
+            "B) Demander 'Qu'est-ce qui vous ferait être sûr à 100%?' et traiter ce dernier doute",
+            "C) Proposer une remise supplémentaire",
+            "D) Répéter tous les avantages depuis le début"
+          ],
+          "correct": "B",
+          "explanation": "L'hésitation de dernière minute cache souvent une question non résolue. Identifiez-la ('Qu'est-ce qui vous ferait être sûr?'), traitez-la, puis relancez le closing. Ne fuyez pas, n'insistez pas: résolvez."
+        },
+        {
+          "question": "Après avoir demandé l'engagement ('On part là-dessus?'), que faire?",
+          "options": [
+            "A) Justifier votre demande avec des arguments supplémentaires",
+            "B) Proposer une alternative au cas où",
+            "C) Se taire et attendre que le prospect réponde",
+            "D) Enchaîner avec les détails du contrat"
+          ],
+          "correct": "C",
+          "explanation": "Après avoir demandé, TAISEZ-VOUS. Le premier qui parle perd. Le silence met le prospect face à sa décision. 5 secondes, 10 secondes... Il finira par répondre. Ne vous sabotez pas en parlant."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "prospect_difficile",
+      "skill_name": "Prospect Difficile",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Le prospect dit agressivement 'Vous êtes tous les mêmes!'. Comment réagir?",
+          "options": [
+            "A) 'Non, nous sommes différents parce que...'",
+            "B) 'Je refuse qu'on me parle comme ça'",
+            "C) 'Je comprends votre frustration. Vous avez eu de mauvaises expériences. Qu'est-ce qui s'est passé?'",
+            "D) Raccrocher poliment"
+          ],
+          "correct": "C",
+          "explanation": "Validez l'émotion, montrez de l'empathie, puis cherchez à comprendre. Le prospect teste votre professionnalisme. Réagir défensivement ou agressivement vous fait perdre. Absorber et questionner désarme."
+        },
+        {
+          "question": "Qu'est-ce que 'l'éponge émotionnelle' en vente?",
+          "options": [
+            "A) Pleurer avec le prospect",
+            "B) Absorber l'énergie négative sans la renvoyer, répondre au fond pas à l'émotion",
+            "C) Ignorer les émotions du prospect",
+            "D) Devenir émotionnel pour créer de l'empathie"
+          ],
+          "correct": "B",
+          "explanation": "Absorber la négativité sans escalader. 'Je comprends' + réponse factuelle. Jamais 'Calmez-vous' (condescendant) ni contre-attaque. Vous répondez au contenu du message, pas à son ton."
+        },
+        {
+          "question": "Comment poser une limite face à un prospect irrespectueux?",
+          "options": [
+            "A) L'insulter en retour",
+            "B) Accepter et continuer",
+            "C) 'Je suis là pour vous aider, mais j'ai besoin qu'on puisse échanger de manière constructive'",
+            "D) Raccrocher sans rien dire"
+          ],
+          "correct": "C",
+          "explanation": "Assertif mais pro. Vous posez une limite claire tout en gardant la porte ouverte. Ce n'est pas de la faiblesse de demander du respect, c'est une condition de travail."
+        },
+        {
+          "question": "Quelle question peut désarmer un prospect méfiant?",
+          "options": [
+            "A) 'Pourquoi êtes-vous si méfiant?'",
+            "B) 'Qu'est-ce qui vous permettrait de vous sentir en confiance avec nous?'",
+            "C) 'Vous avez tort de ne pas nous faire confiance'",
+            "D) 'Tous nos clients sont satisfaits'"
+          ],
+          "correct": "B",
+          "explanation": "Cette question force le prospect à réfléchir à ce qui le rassurerait, et vous donne la marche à suivre. C'est lui qui définit les conditions de confiance. Beaucoup plus puissant que défendre ou affirmer."
+        },
+        {
+          "question": "Un prospect difficile qui devient client est souvent:",
+          "options": [
+            "A) Un client qui va continuer à être difficile",
+            "B) Un des clients les plus fidèles et les meilleurs ambassadeurs",
+            "C) Un client à éviter",
+            "D) Un client qui va résilier rapidement"
+          ],
+          "correct": "B",
+          "explanation": "Les prospects difficiles testent avant de s'engager. Une fois convaincus, ils sont souvent très loyaux et recommandent activement. Ils savent que vous avez passé le test."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "pression_temporelle",
+      "skill_name": "Pression Temporelle",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Le prospect dit 'J'ai 5 minutes, pas plus'. Que faire?",
+          "options": [
+            "A) Faire votre pitch complet en parlant très vite",
+            "B) Dire 'En 5 minutes, voici les 3 points clés: [X, Y, Z]. Si ça vous parle, on cale un créneau plus long'",
+            "C) Demander plus de temps",
+            "D) Envoyer un email plutôt"
+          ],
+          "correct": "B",
+          "explanation": "Adaptez-vous en priorisant l'essentiel. 3 points clés, pas 10. Objectif: créer assez d'intérêt pour obtenir un vrai RDV. Parler vite ne compresse pas le message, ça le rend incompréhensible."
+        },
+        {
+          "question": "Comment vérifier si une urgence est réelle?",
+          "options": [
+            "A) Impossible à vérifier",
+            "B) Demander 'Quelle est la deadline exacte?' et 'Qu'est-ce qui se passe si on la dépasse?'",
+            "C) Faire confiance au prospect",
+            "D) Les urgences sont toujours fausses"
+          ],
+          "correct": "B",
+          "explanation": "Vraie urgence = deadline précise + conséquences concrètes. 'Le 15 mars, sinon on perd le marché.' Fausse urgence = réponses vagues. 'Euh, le plus vite possible.' Adaptez votre réaction."
+        },
+        {
+          "question": "Comment gérer votre propre stress sous pression temporelle?",
+          "options": [
+            "A) Parler plus vite pour tout dire",
+            "B) Parler légèrement plus lentement et respirer profondément",
+            "C) Montrer au prospect que vous êtes stressé pour qu'il soit indulgent",
+            "D) Demander une pause"
+          ],
+          "correct": "B",
+          "explanation": "Contre-intuitif mais efficace: ralentir quand la pression monte vous calme et calme le prospect. Votre sérénité inspire confiance. Un commercial stressé fait des erreurs et perd en crédibilité."
+        },
+        {
+          "question": "Qu'est-ce qu'un 'pitch éclair'?",
+          "options": [
+            "A) Un pitch d'une heure très détaillé",
+            "B) Une version 30 secondes de votre offre: problème résolu + solution + résultat concret",
+            "C) Un pitch sans préparation",
+            "D) Un pitch envoyé par email"
+          ],
+          "correct": "B",
+          "explanation": "Gardez en réserve une version ultra-courte: 'Les équipes commerciales perdent 5h/semaine sur l'admin. Notre outil automatise ça. Nos clients gagnent 20% de productivité.' 30 secondes, impact maximum."
+        },
+        {
+          "question": "L'accélération structurée signifie:",
+          "options": [
+            "A) Sauter des étapes pour aller plus vite",
+            "B) Faire plus vite mais garder l'essentiel: compresser les temps morts, pas le contenu",
+            "C) Parler en accéléré",
+            "D) Envoyer tout par écrit pour gagner du temps"
+          ],
+          "correct": "B",
+          "explanation": "Aller vite ≠ bâcler. Compressez les temps morts (attentes, digressions) pas le contenu essentiel. Priorisez les 2-3 points critiques. Qualité > vitesse."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "multi_objections",
+      "skill_name": "Multi-Objections",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Le prospect a 3 objections: prix, timing, références. Par où commencer?",
+          "options": [
+            "A) Traiter les 3 en même temps pour être efficace",
+            "B) Demander 'Parmi ces 3, lequel pèse le plus dans votre décision?'",
+            "C) Toujours commencer par le prix",
+            "D) Les ignorer et continuer le pitch"
+          ],
+          "correct": "B",
+          "explanation": "Identifier l'objection principale évite de gaspiller de l'énergie sur des écrans de fumée. Souvent, une seule objection est vraiment bloquante. Traitez-la d'abord, les autres peuvent devenir secondaires."
+        },
+        {
+          "question": "Que faire AVANT de traiter des objections multiples?",
+          "options": [
+            "A) Demander une remise",
+            "B) Faire l'inventaire complet: 'Y a-t-il autre chose qui vous fait hésiter?'",
+            "C) Traiter immédiatement la première objection",
+            "D) Proposer de rappeler plus tard"
+          ],
+          "correct": "B",
+          "explanation": "Faites la liste complète avant de traiter. Sinon, après avoir traité 2 objections, une 3ème apparaît. 'Autre chose?' permet de tout mettre sur la table et d'éviter les surprises."
+        },
+        {
+          "question": "Le traitement séquentiel consiste à:",
+          "options": [
+            "A) Traiter toutes les objections en une seule réponse",
+            "B) Traiter une objection, valider, puis passer à la suivante",
+            "C) Reporter le traitement des objections",
+            "D) Demander au prospect de choisir une seule objection"
+          ],
+          "correct": "B",
+          "explanation": "'Prenons le prix. [Argument]. Ça vous convient? Bien. Passons au timing.' Une à la fois, avec validation. Pas en vrac. Ça structure la conversation et évite la confusion."
+        },
+        {
+          "question": "Après avoir traité 4 objections, le prospect en sort une 5ème. Que faire?",
+          "options": [
+            "A) Traiter la 5ème comme les autres",
+            "B) Confronter: 'J'ai l'impression qu'il y a quelque chose de plus fondamental. Qu'est-ce que c'est vraiment?'",
+            "C) Abandonner le prospect",
+            "D) Proposer une remise générale"
+          ],
+          "correct": "B",
+          "explanation": "Après 4-5 objections, il y a probablement un problème plus profond non dit (pas décideur, pas convaincu, concurrence...). Confrontez poliment pour révéler le vrai blocage."
+        },
+        {
+          "question": "Comment détecter une stratégie d'obstruction?",
+          "options": [
+            "A) Impossible à détecter",
+            "B) Les objections changent ou augmentent sans cesse, les réponses restent vagues",
+            "C) Le prospect pose beaucoup de questions",
+            "D) Le prospect demande une remise"
+          ],
+          "correct": "B",
+          "explanation": "Si les objections se multiplient, changent quand vous les traitez, et les réponses sont vagues... c'est probablement une stratégie d'évitement. Le prospect n'ose pas dire non directement. Confrontez."
+        }
+      ]
+    },
+    
+    {
+      "skill_id": "closing_pression",
+      "skill_name": "Closing Sous Pression",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Le prospect dit 'Je dois en parler à mon directeur'. Meilleure réponse:",
+          "options": [
+            "A) 'D'accord, tenez-moi au courant'",
+            "B) 'Quelles questions va-t-il poser? Je vous prépare les réponses'",
+            "C) 'Puis-je lui parler directement?'",
+            "D) 'Votre directeur n'a pas besoin de décider'"
+          ],
+          "correct": "B",
+          "explanation": "Équipez votre champion interne! Il va devoir 'vendre' à votre place. Préparez-le: objections probables, arguments clés, one-pager. Plus il est armé, plus vous avez de chances."
+        },
+        {
+          "question": "'On a quasi signé avec [concurrent]'. Comment réagir?",
+          "options": [
+            "A) 'Dommage, bonne chance avec eux'",
+            "B) 'Ils sont mauvais, ne faites pas ça'",
+            "C) 'Avant de finaliser, 15 minutes pour vous montrer [différenciateur clé]?'",
+            "D) 'Je peux m'aligner sur leur prix'"
+          ],
+          "correct": "C",
+          "explanation": "Ne baissez pas les bras et ne dénigrez pas. Demandez une dernière chance ciblée sur votre point fort. Si ça ne change rien, vous n'aurez rien perdu. Mais parfois, ça renverse tout."
+        },
+        {
+          "question": "Qu'est-ce que l'engagement incrémental?",
+          "options": [
+            "A) Demander un engagement total immédiatement",
+            "B) Avancer par petits pas: pilote, test, première commande limitée",
+            "C) Augmenter le prix progressivement",
+            "D) Réduire progressivement les fonctionnalités"
+          ],
+          "correct": "B",
+          "explanation": "Quand le grand OUI est bloqué, proposez un petit pas: pilote de 3 mois, test sur une équipe, première commande limitée. Vous entrez, vous faites vos preuves, vous élargissez ensuite."
+        },
+        {
+          "question": "Une urgence légitime en closing c'est:",
+          "options": [
+            "A) 'C'est maintenant ou jamais!'",
+            "B) 'Notre capacité d'implémentation ce trimestre est limitée'",
+            "C) 'Si vous ne signez pas, je ne vous rappellerai jamais'",
+            "D) 'Mon manager va me virer si je ne signe pas'"
+          ],
+          "correct": "B",
+          "explanation": "Urgence légitime = basée sur des faits réels et vérifiables. Capacité limitée, changement de tarif daté, deadline externe. Pas de fausse pression qui détruit la confiance."
+        },
+        {
+          "question": "Après avoir demandé l'engagement final dans une négociation tendue:",
+          "options": [
+            "A) Répétez vos arguments pour être sûr",
+            "B) Proposez une remise de dernière minute",
+            "C) Taisez-vous et attendez, le silence travaille pour vous",
+            "D) Demandez si le prospect a besoin de plus de temps"
+          ],
+          "correct": "C",
+          "explanation": "Le silence après la question de closing est votre allié. Le premier qui parle perd en négociation. 5 secondes, 10 secondes... Le prospect doit répondre. Ne vous sabotez pas."
+        }
+      ]
+    }
+  ]
+}

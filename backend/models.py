@@ -1017,6 +1017,61 @@ class CachedScenario(Base):
         return f"<CachedScenario(cache_key='{self.cache_key}', use_count={self.use_count})>"
 
 
+class UserProgress(Base):
+    """
+    Overall user learning progress.
+    Tracks current level, day, and global stats.
+    """
+    __tablename__ = "user_progress"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+        index=True
+    )
+
+    # Current position in the program
+    current_level: Mapped[str] = mapped_column(String(20), default="beginner", nullable=False)
+    current_day: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    sector_id: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        ForeignKey("sectors.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    # Global stats
+    total_training_minutes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    total_scenarios_completed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    average_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+
+    # Timestamps
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    last_activity_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+
+    # Relationships
+    user: Mapped["User"] = relationship("User", backref="learning_progress")
+    sector: Mapped[Optional["Sector"]] = relationship("Sector")
+    skill_progress: Mapped[list["UserSkillProgress"]] = relationship(
+        "UserSkillProgress", back_populates="user_progress", cascade="all, delete-orphan"
+    )
+    daily_sessions: Mapped[list["DailySession"]] = relationship(
+        "DailySession", back_populates="user_progress", cascade="all, delete-orphan"
+    )
+
+    def __repr__(self) -> str:
+        return f"<UserProgress(user_id={self.user_id}, level='{self.current_level}', day={self.current_day})>"
+
+
 class UserSkillProgress(Base):
     """
     Tracks user progress on each skill.
@@ -1024,9 +1079,9 @@ class UserSkillProgress(Base):
     __tablename__ = "user_skill_progress"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(
+    user_progress_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE"),
+        ForeignKey("user_progress.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -1037,16 +1092,20 @@ class UserSkillProgress(Base):
         index=True
     )
 
-    # Progress tracking
+    # Scenario progress
     scenarios_completed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    best_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    average_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    is_passed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    passed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    scenarios_passed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    best_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    average_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
 
     # Quiz tracking
-    quiz_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    quiz_completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    quiz_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    quiz_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    quiz_passed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    # Validation
+    is_validated: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    validated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
@@ -1061,5 +1120,50 @@ class UserSkillProgress(Base):
         nullable=False
     )
 
+    # Relationships
+    user_progress: Mapped["UserProgress"] = relationship("UserProgress", back_populates="skill_progress")
+    skill: Mapped["Skill"] = relationship("Skill")
+
     def __repr__(self) -> str:
-        return f"<UserSkillProgress(user_id={self.user_id}, skill_id={self.skill_id}, passed={self.is_passed})>"
+        return f"<UserSkillProgress(skill_id={self.skill_id}, validated={self.is_validated})>"
+
+
+class DailySession(Base):
+    """
+    Tracks daily learning sessions.
+    """
+    __tablename__ = "daily_sessions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_progress_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("user_progress.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
+
+    # Session progress
+    course_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    course_read_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    scripts_listened: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    training_minutes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    scenarios_attempted: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    average_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    # Completion
+    is_complete: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    # Relationships
+    user_progress: Mapped["UserProgress"] = relationship("UserProgress", back_populates="daily_sessions")
+
+    def __repr__(self) -> str:
+        return f"<DailySession(date={self.date}, complete={self.is_complete})>"
