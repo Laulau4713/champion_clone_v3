@@ -30,6 +30,7 @@ import {
 import { JaugeEmotionnelle } from "@/components/training/JaugeEmotionnelle";
 import { AudioRecorder } from "@/components/training/AudioRecorder";
 import { AudioPlayer } from "@/components/training/AudioPlayer";
+import { PremiumModal } from "@/components/ui/premium-modal";
 import { voiceAPI } from "@/lib/api";
 import type {
   DifficultyLevel,
@@ -74,6 +75,7 @@ export default function TrainingSessionPage() {
   const [sessionComplete, setSessionComplete] = useState(false);
   const [summary, setSummary] = useState<VoiceSessionSummary | null>(null);
   const [inputMode, setInputMode] = useState<"text" | "voice">("text");
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -109,9 +111,17 @@ export default function TrainingSessionPage() {
         "",
         `/training/session/${data.session_id}?level=${level}`
       );
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error starting session:", err);
-      setError("Impossible de démarrer la session. Veuillez réessayer.");
+
+      // Handle trial expired (402)
+      const axiosError = err as { response?: { status: number; data?: { code?: string } } };
+      if (axiosError.response?.status === 402 && axiosError.response?.data?.code === "TRIAL_EXPIRED") {
+        setShowPremiumModal(true);
+        setError("Votre essai gratuit est termin\u00e9. Passez \u00e0 Premium pour continuer.");
+      } else {
+        setError("Impossible de d\u00e9marrer la session. Veuillez r\u00e9essayer.");
+      }
     } finally {
       setIsStarting(false);
     }
@@ -612,6 +622,12 @@ export default function TrainingSessionPage() {
           </div>
         </div>
       </div>
+
+      {/* Premium Modal */}
+      <PremiumModal
+        open={showPremiumModal}
+        onOpenChange={setShowPremiumModal}
+      />
     </TooltipProvider>
   );
 }

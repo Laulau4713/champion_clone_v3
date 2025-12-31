@@ -457,6 +457,15 @@ class ProspectResponseSchema(BaseModel):
     feedback: Optional[dict] = None
 
 
+# Free trial constants
+FREE_TRIAL_MAX_SESSIONS = 3
+
+
+def is_premium_user(user: User) -> bool:
+    """Check if user has a premium subscription."""
+    return user.subscription_plan in ("starter", "pro", "enterprise")
+
+
 @router.post("/voice/session/start")
 async def start_voice_training_session(
     request: VoiceSessionStartRequest,
@@ -472,8 +481,24 @@ async def start_voice_training_session(
     - Situational events (medium/expert)
     - Reversals (expert)
 
+    Free trial users get 3 free sessions (easy/medium only).
+    Returns 402 if trial expired and not premium.
+
     Returns scenario, opening message with audio, and initial jauge/mood.
     """
+    # Check trial/premium status
+    if not is_premium_user(current_user):
+        if current_user.trial_sessions_used >= FREE_TRIAL_MAX_SESSIONS:
+            raise HTTPException(
+                status_code=402,
+                detail={
+                    "code": "TRIAL_EXPIRED",
+                    "message": "Votre essai gratuit est termin\u00e9. Passez \u00e0 Premium pour continuer.",
+                    "sessions_used": current_user.trial_sessions_used,
+                    "max_sessions": FREE_TRIAL_MAX_SESSIONS
+                }
+            )
+
     service = TrainingServiceV2(db)
 
     try:
@@ -482,6 +507,12 @@ async def start_voice_training_session(
             skill_slug=request.skill_slug,
             sector_slug=request.sector_slug
         )
+
+        # Increment trial counter for free users
+        if not is_premium_user(current_user):
+            current_user.trial_sessions_used += 1
+            await db.commit()
+
         return session
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

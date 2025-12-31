@@ -4,7 +4,7 @@
       "day": 1,
       "level": "easy",
       "skill_id": "ecoute_active",
-      "title": "L'Écoute qui Vend: Comment Écouter pour Mieux Convaincre",
+      "title": "L'écoute qui vend : comment écouter pour mieux convaincre",
       "objective": "Maîtriser les fondamentaux de l'écoute active pour créer une connexion authentique avec le prospect.",
       "duration_minutes": 5,
       
@@ -70,7 +70,7 @@
       "day": 2,
       "level": "easy",
       "skill_id": "questions_ouvertes",
-      "title": "L'Art de Poser les Bonnes Questions",
+      "title": "L'art de poser les bonnes questions",
       "objective": "Maîtriser les questions ouvertes pour découvrir les vrais besoins du prospect.",
       "duration_minutes": 5,
       
@@ -136,7 +136,7 @@
       "day": 3,
       "level": "easy",
       "skill_id": "reformulation",
-      "title": "Reformuler pour Mieux Convaincre",
+      "title": "Reformuler pour mieux convaincre",
       "objective": "Utiliser la reformulation pour valider la compréhension et créer du rapport.",
       "duration_minutes": 5,
       
@@ -202,7 +202,7 @@
       "day": 4,
       "level": "easy",
       "skill_id": "gestion_silence",
-      "title": "Le Pouvoir du Silence en Vente",
+      "title": "Le pouvoir du silence en vente",
       "objective": "Maîtriser l'utilisation stratégique du silence comme outil de vente.",
       "duration_minutes": 5,
       
@@ -268,7 +268,7 @@
       "day": 5,
       "level": "medium",
       "skill_id": "objections_prix",
-      "title": "Maîtriser les Objections Prix",
+      "title": "Maîtriser les objections prix",
       "objective": "Traiter les objections liées au prix sans baisser ses tarifs.",
       "duration_minutes": 5,
       
@@ -334,7 +334,7 @@
       "day": 6,
       "level": "medium",
       "skill_id": "objections_timing",
-      "title": "Vaincre les Objections Timing",
+      "title": "Vaincre les objections timing",
       "objective": "Traiter efficacement les 'ce n'est pas le moment' et 'rappellez-moi plus tard'.",
       "duration_minutes": 5,
       
@@ -400,7 +400,7 @@
       "day": 7,
       "level": "medium",
       "skill_id": "objections_concurrence",
-      "title": "Gagner Face à la Concurrence",
+      "title": "Gagner face à la concurrence",
       "objective": "Traiter les objections liées aux concurrents sans les dénigrer.",
       "duration_minutes": 5,
       
@@ -466,7 +466,7 @@
       "day": 8,
       "level": "medium",
       "skill_id": "negociation",
-      "title": "Les Fondamentaux de la Négociation",
+      "title": "Les fondamentaux de la négociation",
       "objective": "Maîtriser les principes clés de la négociation commerciale.",
       "duration_minutes": 5,
       
@@ -532,7 +532,7 @@
       "day": 9,
       "level": "medium",
       "skill_id": "closing",
-      "title": "L'Art du Closing",
+      "title": "L'art du closing",
       "objective": "Maîtriser les techniques pour conclure naturellement la vente.",
       "duration_minutes": 5,
       
@@ -598,7 +598,7 @@
       "day": 10,
       "level": "expert",
       "skill_id": "prospect_difficile",
-      "title": "Maîtriser les Prospects Difficiles",
+      "title": "Maîtriser les prospects difficiles",
       "objective": "Gérer avec sang-froid les prospects agressifs, méfiants ou particulièrement exigeants.",
       "duration_minutes": 5,
       
@@ -664,7 +664,7 @@
       "day": 11,
       "level": "expert",
       "skill_id": "pression_temporelle",
-      "title": "Performer Sous Pression Temporelle",
+      "title": "Performer sous pression temporelle",
       "objective": "Garder son efficacité quand le temps est compté.",
       "duration_minutes": 5,
       
@@ -730,7 +730,7 @@
       "day": 12,
       "level": "expert",
       "skill_id": "multi_objections",
-      "title": "Gérer les Objections en Cascade",
+      "title": "Gérer les objections en cascade",
       "objective": "Traiter méthodiquement les situations où le prospect empile les objections.",
       "duration_minutes": 5,
       
@@ -796,7 +796,7 @@
       "day": 13,
       "level": "expert",
       "skill_id": "closing_pression",
-      "title": "Closing en Conditions Difficiles",
+      "title": "Closing en conditions difficiles",
       "objective": "Maîtriser les techniques de closing avancées pour situations complexes.",
       "duration_minutes": 5,
       
@@ -862,7 +862,7 @@
       "day": 14,
       "level": "expert",
       "skill_id": "prospect_difficile",
-      "title": "Transformer le Conflit en Opportunité",
+      "title": "Transformer le conflit en opportunité",
       "objective": "Techniques avancées pour retourner les situations tendues en victoires commerciales.",
       "duration_minutes": 5,
       
@@ -928,7 +928,7 @@
       "day": 15,
       "level": "expert",
       "skill_id": "closing_pression",
-      "title": "Le Closing d'Excellence",
+      "title": "Le closing d'excellence",
       "objective": "Intégrer toutes les compétences pour des closings de niveau expert.",
       "duration_minutes": 5,
       

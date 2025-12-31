@@ -114,6 +114,9 @@ class User(Base):
     )
     login_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
+    # Free trial tracking (3 free voice sessions)
+    trial_sessions_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
     # Journey stage
     journey_stage: Mapped[str] = mapped_column(
         String(30), default=JourneyStage.REGISTERED.value, nullable=False

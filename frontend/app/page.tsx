@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Users,
   Trophy,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,67 +33,67 @@ const staggerContainer = {
 const features = [
   {
     icon: Mic,
-    title: "Voice Cloning",
+    title: "Entraînement Vocal",
     description:
-      "Train with your champion's actual voice. Our AI captures tone, pace, and personality.",
+      "Pratiquez avec des simulations vocales réalistes. L'IA adapte le prospect selon votre niveau.",
     gradient: "from-violet-500 to-purple-500",
   },
   {
     icon: Brain,
-    title: "Pattern Analysis",
+    title: "Analyse des Patterns",
     description:
-      "AI extracts proven sales techniques from your top performers automatically.",
+      "Apprenez les techniques des meilleurs commerciaux grâce à notre système pédagogique structuré.",
     gradient: "from-blue-500 to-cyan-500",
   },
   {
     icon: BarChart3,
-    title: "Real Feedback",
+    title: "Feedback en Temps Réel",
     description:
-      "Improve with instant coaching. Get actionable insights after every practice session.",
+      "Suivez votre progression avec la jauge émotionnelle et recevez des conseils personnalisés.",
     gradient: "from-emerald-500 to-teal-500",
   },
 ];
 
 const stats = [
-  { value: "1,250+", label: "Sales managers validated" },
-  { value: "78/100", label: "Market validation score" },
-  { value: "3x", label: "Faster onboarding" },
+  { value: "15", label: "Cours structurés" },
+  { value: "13", label: "Compétences clés" },
+  { value: "3", label: "Niveaux de difficulté" },
 ];
 
 const pricingPlans = [
   {
-    name: "Solo",
-    price: "99",
-    description: "Pour les commerciaux individuels",
+    name: "Essai Gratuit",
+    price: "0",
+    description: "Découvrez la plateforme",
     features: [
-      "1 champion clone",
-      "10 sessions/mois",
-      "Feedback basique",
-      "Support email",
+      "1 cours d'introduction",
+      "1 quiz de compétence",
+      "3 sessions d'entraînement",
+      "Niveau facile uniquement",
     ],
   },
   {
-    name: "Team",
-    price: "249",
-    description: "Pour les équipes commerciales",
+    name: "Pro",
+    price: "49",
+    description: "Pour les commerciaux ambitieux",
     features: [
-      "5 champion clones",
+      "15 cours complets",
+      "13 quiz de compétences",
       "Sessions illimitées",
-      "Analytics avancés",
-      "Support prioritaire",
-      "API access",
+      "Tous les niveaux",
+      "Feedback avancé",
     ],
     popular: true,
   },
   {
-    name: "Enterprise",
-    price: "Custom",
-    description: "Pour les grandes organisations",
+    name: "Entreprise",
+    price: "Sur mesure",
+    description: "Pour les équipes commerciales",
     features: [
-      "Champions illimités",
-      "Sessions illimitées",
-      "SSO & intégrations",
-      "Account manager dédié",
+      "Tout le plan Pro",
+      "Tableau de bord équipe",
+      "Champions personnalisés",
+      "Support dédié",
       "Formation sur site",
     ],
   },
@@ -113,21 +114,28 @@ export default function HomePage() {
             animate="animate"
             variants={staggerContainer}
           >
+            <motion.div variants={fadeInUp} className="mb-6">
+              <Badge className="bg-primary-500/20 text-primary-400 border-primary-500/30 px-4 py-1">
+                <Sparkles className="h-3 w-3 mr-1 inline" />
+                Plateforme d&apos;entraînement IA
+              </Badge>
+            </motion.div>
+
             <motion.h1
               variants={fadeInUp}
               className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6"
             >
-              Clone Your{" "}
-              <span className="gradient-text">Sales Champions</span>
+              Devenez un{" "}
+              <span className="gradient-text">Champion de la Vente</span>
             </motion.h1>
 
             <motion.p
               variants={fadeInUp}
               className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
             >
-              AI-Powered Training from Your Best Performers. Upload a video of
-              your top salesperson and let AI teach their techniques to your
-              entire team.
+              Maîtrisez l&apos;art de la vente grâce à notre programme de 15 jours.
+              Cours structurés, quiz de validation et entraînements vocaux avec
+              IA pour devenir un commercial d&apos;élite.
             </motion.p>
 
             <motion.div
@@ -139,8 +147,8 @@ export default function HomePage() {
                 size="lg"
                 className="bg-gradient-primary hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl"
               >
-                <Link href="/upload" className="inline-flex items-center">
-                  <span>Start Free Trial</span>
+                <Link href="/register" className="inline-flex items-center">
+                  <span>Essai Gratuit</span>
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -150,7 +158,7 @@ export default function HomePage() {
                 size="lg"
                 className="text-lg px-8 py-6 rounded-xl border-white/20 hover:bg-white/5"
               >
-                <Link href="#features">Learn More</Link>
+                <Link href="/features">En savoir plus</Link>
               </Button>
             </motion.div>
           </motion.div>
@@ -186,12 +194,12 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl lg:text-5xl font-bold mb-4">
-              Everything you need to{" "}
-              <span className="gradient-text">scale excellence</span>
+              Une méthode{" "}
+              <span className="gradient-text">éprouvée</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Our AI-powered platform captures what makes your best performers
-              great and teaches it to everyone.
+              Notre programme combine théorie, pratique et feedback pour une
+              progression rapide et mesurable.
             </p>
           </motion.div>
 
@@ -235,7 +243,7 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl lg:text-5xl font-bold mb-4">
-              How it <span className="gradient-text">works</span>
+              Comment ça <span className="gradient-text">marche</span>
             </h2>
           </motion.div>
 
@@ -243,23 +251,23 @@ export default function HomePage() {
             {[
               {
                 step: "01",
-                title: "Upload",
+                title: "Apprenez",
                 description:
-                  "Upload a video of your best salesperson in action",
+                  "Suivez nos cours quotidiens pour maîtriser les fondamentaux de la vente",
                 icon: Users,
               },
               {
                 step: "02",
-                title: "Analyze",
+                title: "Validez",
                 description:
-                  "Our AI extracts patterns, techniques, and voice",
+                  "Testez vos connaissances avec des quiz pour chaque compétence",
                 icon: Brain,
               },
               {
                 step: "03",
-                title: "Train",
+                title: "Pratiquez",
                 description:
-                  "Your team practices with an AI clone of your champion",
+                  "Entraînez-vous avec notre IA qui simule des prospects réalistes",
                 icon: Trophy,
               },
             ].map((item, index) => (
@@ -297,11 +305,11 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl lg:text-5xl font-bold mb-4">
-              Simple, transparent{" "}
-              <span className="gradient-text">pricing</span>
+              Tarifs{" "}
+              <span className="gradient-text">simples et transparents</span>
             </h2>
             <p className="text-xl text-muted-foreground">
-              Start free, upgrade when you need more
+              Commencez gratuitement, passez à Pro quand vous êtes prêt
             </p>
           </motion.div>
 
@@ -322,7 +330,7 @@ export default function HomePage() {
                   {plan.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                       <Badge className="bg-gradient-primary text-white border-0">
-                        Popular
+                        Populaire
                       </Badge>
                     </div>
                   )}
@@ -332,9 +340,13 @@ export default function HomePage() {
                       {plan.description}
                     </p>
                     <div className="mb-6">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      {plan.price !== "Custom" && (
-                        <span className="text-muted-foreground">/mois</span>
+                      {plan.price !== "Sur mesure" ? (
+                        <>
+                          <span className="text-4xl font-bold">{plan.price}€</span>
+                          <span className="text-muted-foreground">/mois</span>
+                        </>
+                      ) : (
+                        <span className="text-4xl font-bold">{plan.price}</span>
                       )}
                     </div>
                     <ul className="space-y-3 mb-8">
@@ -356,10 +368,12 @@ export default function HomePage() {
                           : "bg-white/10 hover:bg-white/20"
                       }`}
                     >
-                      <Link href="/upload">
-                        {plan.price === "Custom"
-                          ? "Contact Sales"
-                          : "Get Started"}
+                      <Link href={plan.price === "0" ? "/register" : "/register"}>
+                        {plan.price === "Sur mesure"
+                          ? "Nous contacter"
+                          : plan.price === "0"
+                          ? "Commencer gratuitement"
+                          : "Choisir ce plan"}
                       </Link>
                     </Button>
                   </CardContent>
@@ -382,19 +396,19 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-secondary-500/10" />
               <CardContent className="relative p-12">
                 <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-                  Ready to clone your champions?
+                  Prêt à devenir un champion ?
                 </h2>
                 <p className="text-xl text-muted-foreground mb-8">
-                  Start training your team with AI today. No credit card
-                  required.
+                  Commencez votre parcours dès aujourd&apos;hui. Aucune carte
+                  bancaire requise.
                 </p>
                 <Button
                   asChild
                   size="lg"
                   className="bg-gradient-primary hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl"
                 >
-                  <Link href="/upload" className="inline-flex items-center">
-                    <span>Start Free Trial</span>
+                  <Link href="/register" className="inline-flex items-center">
+                    <span>Démarrer l&apos;essai gratuit</span>
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>

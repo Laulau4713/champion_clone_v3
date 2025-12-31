@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, Crown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +13,7 @@ import { VideoDropzone } from "@/components/upload/VideoDropzone";
 import { ProcessingStatus } from "@/components/upload/ProcessingStatus";
 import { PatternsPreview } from "@/components/upload/PatternsPreview";
 import { useUploadChampion, useAnalyzeChampion } from "@/lib/queries";
+import { useAuthStore } from "@/store/auth-store";
 import type { SalesPatterns } from "@/types";
 
 type Step = "upload" | "processing" | "ready";
@@ -19,6 +21,9 @@ type ProcessingStep = "extracting" | "transcribing" | "analyzing" | "ready";
 
 export default function UploadPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
+  const isFreeUser = user?.subscription_plan === "free";
+
   const [step, setStep] = useState<Step>("upload");
   const [processingStep, setProcessingStep] =
     useState<ProcessingStep>("extracting");
@@ -34,6 +39,38 @@ export default function UploadPage() {
 
   const uploadMutation = useUploadChampion();
   const analyzeMutation = useAnalyzeChampion();
+
+  // Block access for free users
+  if (isFreeUser) {
+    return (
+      <div className="relative min-h-[calc(100vh-6rem)] flex items-center justify-center">
+        <div className="absolute inset-0 gradient-mesh opacity-20" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative"
+        >
+          <Card className="glass border-yellow-500/30 max-w-md mx-4">
+            <CardContent className="py-12 text-center">
+              <div className="inline-flex p-4 rounded-full bg-yellow-500/20 mb-6">
+                <Lock className="h-8 w-8 text-yellow-400" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Fonctionnalité Premium</h2>
+              <p className="text-muted-foreground mb-6">
+                La création de champions personnalisés est réservée aux abonnés Pro et Entreprise.
+              </p>
+              <Link href="/features">
+                <Button className="bg-gradient-primary hover:opacity-90 text-white">
+                  <Crown className="h-4 w-4 mr-2" />
+                  Découvrir les offres
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   const handleFileAccepted = (file: File) => {
     setSelectedFile(file);

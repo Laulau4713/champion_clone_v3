@@ -2,7 +2,7 @@
   "skills": [
     {
       "id": "ecoute_active",
-      "name": "Écoute Active",
+      "name": "Écoute active",
       "level": "easy",
       "description": "Capacité à écouter attentivement le prospect, à capter les informations clés et à démontrer une compréhension authentique de ses besoins.",
       "order": 1,
@@ -177,7 +177,7 @@
     
     {
       "id": "questions_ouvertes",
-      "name": "Questions Ouvertes",
+      "name": "Questions ouvertes",
       "level": "easy",
       "description": "Maîtrise de l'art de poser des questions qui ouvrent le dialogue et font parler le prospect sur ses vrais besoins.",
       "order": 2,
@@ -550,7 +550,7 @@
     
     {
       "id": "gestion_silence",
-      "name": "Gestion du Silence",
+      "name": "Gestion du silence",
       "level": "easy",
       "description": "Maîtrise de l'utilisation stratégique du silence comme outil de vente pour créer de l'espace et encourager le prospect à parler.",
       "order": 4,
@@ -723,7 +723,7 @@
     
     {
       "id": "objections_prix",
-      "name": "Objections Prix",
+      "name": "Objections prix",
       "level": "medium",
       "description": "Techniques pour traiter les objections liées au prix sans baisser ses tarifs, en démontrant la valeur et le ROI.",
       "order": 5,
@@ -908,7 +908,7 @@
     
     {
       "id": "objections_timing",
-      "name": "Objections Timing",
+      "name": "Objections timing",
       "level": "medium",
       "description": "Traitement des objections liées au timing: 'c'est pas le moment', 'rappellez-moi plus tard', 'on verra l'année prochaine'.",
       "order": 6,
@@ -1093,7 +1093,7 @@
     
     {
       "id": "objections_concurrence",
-      "name": "Objections Concurrence",
+      "name": "Objections concurrence",
       "level": "medium",
       "description": "Traitement des objections liées à la concurrence: 'on travaille déjà avec X', 'on consulte d'autres fournisseurs', 'pourquoi vous et pas eux?'",
       "order": 7,
@@ -1654,7 +1654,7 @@
     
     {
       "id": "prospect_difficile",
-      "name": "Prospect Difficile",
+      "name": "Prospect difficile",
       "level": "expert",
       "description": "Gestion des prospects agressifs, méfiants, ou particulièrement exigeants qui testent vos limites professionnelles.",
       "order": 10,
@@ -1839,7 +1839,7 @@
     
     {
       "id": "pression_temporelle",
-      "name": "Pression Temporelle",
+      "name": "Pression temporelle",
       "level": "expert",
       "description": "Gestion des situations où le temps est un facteur de pression: deadline serrée, prospect pressé, urgence réelle ou simulée.",
       "order": 11,
@@ -2024,7 +2024,7 @@
     
     {
       "id": "multi_objections",
-      "name": "Multi-Objections",
+      "name": "Multi-objections",
       "level": "expert",
       "description": "Gestion des situations où le prospect enchaîne plusieurs objections, réelles ou tactiques, pour tester la solidité du commercial.",
       "order": 12,
@@ -2209,7 +2209,7 @@
     
     {
       "id": "closing_pression",
-      "name": "Closing Sous Pression",
+      "name": "Closing sous pression",
       "level": "expert",
       "description": "Techniques de closing avancées pour des situations complexes: décideurs multiples, concurrence active, budget contesté, dernière minute.",
       "order": 13,

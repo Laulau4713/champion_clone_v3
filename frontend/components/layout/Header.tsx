@@ -31,10 +31,10 @@ import { authAPI } from "@/lib/api";
 
 // Navigation for authenticated users only
 const authNavLinks = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/learn", label: "Apprendre", icon: BookOpen },
-  { href: "/training", label: "Training", icon: Target },
-  { href: "/upload", label: "Upload", icon: Upload },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, premiumOnly: false },
+  { href: "/learn", label: "Apprendre", icon: BookOpen, premiumOnly: false },
+  { href: "/training", label: "Training", icon: Target, premiumOnly: false },
+  { href: "/upload", label: "Upload", icon: Upload, premiumOnly: true },
 ];
 
 export function Header() {
@@ -42,6 +42,10 @@ export function Header() {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuthStore();
+
+  // Filter nav links based on user subscription
+  const isFreeUser = user?.subscription_plan === "free";
+  const filteredNavLinks = authNavLinks.filter(link => !link.premiumOnly || !isFreeUser);
 
   const handleLogout = async () => {
     try {
@@ -78,7 +82,7 @@ export function Header() {
             {/* Desktop Navigation - Only for authenticated users */}
             {isAuthenticated && (
               <div className="hidden md:flex items-center gap-1">
-                {authNavLinks.map((link) => {
+                {filteredNavLinks.map((link) => {
                   const Icon = link.icon;
                   const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                   return (
@@ -150,13 +154,28 @@ export function Header() {
                   </DropdownMenu>
                 </>
               ) : (
-                /* Non-authenticated: Only Connexion button */
-                <Button
-                  asChild
-                  className="bg-gradient-primary hover:opacity-90 text-white border-0"
-                >
-                  <Link href="/login">Connexion</Link>
-                </Button>
+                /* Non-authenticated: Features + Connexion + Essai gratuit */
+                <>
+                  <Link
+                    href="/features"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    En savoir plus
+                  </Link>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="text-sm"
+                  >
+                    <Link href="/login">Connexion</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    className="bg-gradient-primary hover:opacity-90 text-white border-0"
+                  >
+                    <Link href="/register">Essai gratuit</Link>
+                  </Button>
+                </>
               )}
             </div>
 
@@ -185,7 +204,7 @@ export function Header() {
                 {isAuthenticated ? (
                   <>
                     {/* Navigation links for authenticated users */}
-                    {authNavLinks.map((link) => {
+                    {filteredNavLinks.map((link) => {
                       const Icon = link.icon;
                       const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                       return (
@@ -240,14 +259,31 @@ export function Header() {
                     </div>
                   </>
                 ) : (
-                  /* Non-authenticated mobile: Only Connexion button */
-                  <Button
-                    asChild
-                    className="w-full bg-gradient-primary hover:opacity-90 text-white border-0"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Link href="/login">Connexion</Link>
-                  </Button>
+                  /* Non-authenticated mobile */
+                  <div className="space-y-2">
+                    <Link
+                      href="/features"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5"
+                    >
+                      En savoir plus
+                    </Link>
+                    <Button
+                      asChild
+                      variant="ghost"
+                      className="w-full justify-start"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Link href="/login">Connexion</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      className="w-full bg-gradient-primary hover:opacity-90 text-white border-0"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Link href="/register">Essai gratuit</Link>
+                    </Button>
+                  </div>
                 )}
               </div>
             </motion.div>

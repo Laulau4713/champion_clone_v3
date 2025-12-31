@@ -581,19 +581,25 @@ async def submit_quiz(
         if not skill_progress:
             skill_progress = UserSkillProgress(
                 user_progress_id=progress.id,
-                skill_id=skill.id
+                skill_id=skill.id,
+                quiz_attempts=0,
+                quiz_score=0.0,
+                scenarios_completed=0,
+                scenarios_passed=0,
+                best_score=0.0,
+                average_score=0.0
             )
             db.add(skill_progress)
 
-        skill_progress.quiz_attempts += 1
-        if score > skill_progress.quiz_score:
+        skill_progress.quiz_attempts = (skill_progress.quiz_attempts or 0) + 1
+        if score > (skill_progress.quiz_score or 0):
             skill_progress.quiz_score = score
 
         if passed:
             skill_progress.quiz_passed = True
 
             # Vérifier si le skill est entièrement validé
-            if skill_progress.scenarios_passed >= skill.scenarios_required:
+            if (skill_progress.scenarios_passed or 0) >= skill.scenarios_required:
                 skill_progress.is_validated = True
                 skill_progress.validated_at = datetime.utcnow()
 

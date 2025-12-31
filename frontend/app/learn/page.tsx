@@ -20,8 +20,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { learningAPI, voiceAPI } from "@/lib/api";
-import type { Cours, Quiz, DifficultyLevel } from "@/types";
+import { learningAPI, authAPI } from "@/lib/api";
+import { TrialBadge } from "@/components/ui/trial-badge";
+import { PremiumModal } from "@/components/ui/premium-modal";
+import type { Cours, Skill, DifficultyLevel, User } from "@/types";
 
 const difficultyConfig: Record<DifficultyLevel, { label: string; color: string; description: string }> = {
   easy: {
@@ -41,13 +43,21 @@ const difficultyConfig: Record<DifficultyLevel, { label: string; color: string; 
   },
 };
 
+interface UserProgressData {
+  current_day: number;
+  skills_validated: number;
+  skills_total: number;
+}
+
 export default function LearnPage() {
   const router = useRouter();
   const [cours, setCours] = useState<Cours[]>([]);
-  const [quiz, setQuiz] = useState<Quiz[]>([]);
-  const [completedCourses, setCompletedCourses] = useState<string[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [progress, setProgress] = useState<UserProgressData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel>("easy");
+  const [user, setUser] = useState<User | null>(null);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -55,15 +65,21 @@ export default function LearnPage() {
 
   const loadContent = async () => {
     try {
-      const [coursRes, quizRes, progressRes] = await Promise.all([
-        learningAPI.getCours(),
-        learningAPI.getQuiz(),
-        learningAPI.getProgress().catch(() => ({ data: { completed_courses: [] } })),
+      const [coursRes, skillsRes, progressRes, userRes] = await Promise.all([
+        learningAPI.getCourses(),
+        learningAPI.getSkills(),
+        learningAPI.getProgress().catch(() => ({ data: null })),
+        authAPI.me().catch(() => ({ data: null })),
       ]);
 
-      setCours(coursRes.data.cours || []);
-      setQuiz(quizRes.data.quiz || []);
-      setCompletedCourses(progressRes.data.completed_courses || []);
+      setCours(coursRes.data || []);
+      setSkills(skillsRes.data || []);
+      if (progressRes.data) {
+        setProgress(progressRes.data as unknown as UserProgressData);
+      }
+      if (userRes.data) {
+        setUser(userRes.data);
+      }
     } catch (error) {
       console.error("Error loading content:", error);
     } finally {
@@ -72,12 +88,33 @@ export default function LearnPage() {
   };
 
   const startVoiceTraining = (level: DifficultyLevel) => {
-    router.push(`/training/session/new?level=${level}`);
+    router.push(`/training/setup?level=${level}`);
   };
 
-  const progressPercentage = cours.length > 0
-    ? (completedCourses.length / cours.length) * 100
+  const progressPercentage = progress && progress.skills_total > 0
+    ? (progress.skills_validated / progress.skills_total) * 100
     : 0;
+
+  const currentDay = progress?.current_day || 1;
+
+  // Trial users (free plan) have limited access
+  const isFreeUser = user?.subscription_plan === "free";
+  const TRIAL_MAX_COURSE_DAY = 1; // Only day 1 course accessible
+  const TRIAL_MAX_QUIZ_INDEX = 0; // Only first quiz accessible
+
+  const canAccessCourse = (day: number) => {
+    if (!isFreeUser) return true;
+    return day <= TRIAL_MAX_COURSE_DAY;
+  };
+
+  const canAccessQuiz = (index: number) => {
+    if (!isFreeUser) return true;
+    return index <= TRIAL_MAX_QUIZ_INDEX;
+  };
+
+  const handleLockedContent = () => {
+    setShowPremiumModal(true);
+  };
 
   if (loading) {
     return (
@@ -101,9 +138,18 @@ export default function LearnPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold gradient-text mb-2">
-            Parcours d&apos;Apprentissage
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-3xl font-bold gradient-text">
+              Parcours d&apos;Apprentissage
+            </h1>
+            {user && (
+              <TrialBadge
+                sessionsUsed={user.trial_sessions_used}
+                sessionsMax={user.trial_sessions_max}
+                isPremium={user.subscription_plan !== "free"}
+              />
+            )}
+          </div>
           <p className="text-muted-foreground">
             Maîtrisez les techniques de vente avec nos cours et entraînements vocaux
           </p>
@@ -124,7 +170,7 @@ export default function LearnPage() {
               <div>
                 <h2 className="text-lg font-semibold">Votre Progression</h2>
                 <p className="text-sm text-muted-foreground">
-                  {completedCourses.length} / {cours.length} cours complétés
+                  {progress?.skills_validated || 0} / {progress?.skills_total || skills.length} compétences validées
                 </p>
               </div>
             </div>
@@ -271,7 +317,9 @@ export default function LearnPage() {
               className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
             >
               {cours.map((course, index) => {
-                const isCompleted = completedCourses.includes(course.id);
+                const isCompleted = course.day < currentDay;
+                const levelConfig = difficultyConfig[course.level];
+                const isLocked = !canAccessCourse(course.day);
 
                 return (
                   <motion.div
@@ -280,42 +328,52 @@ export default function LearnPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="h-full hover:border-primary-500/30 transition-colors">
+                    <Card className={cn(
+                      "h-full transition-colors",
+                      isLocked ? "opacity-60" : "hover:border-primary-500/30"
+                    )}>
                       <CardHeader>
                         <div className="flex items-start justify-between">
-                          <Badge
-                            className={cn(
-                              difficultyConfig[course.difficulty as DifficultyLevel]?.color ||
-                              "bg-gray-500/20"
-                            )}
-                          >
-                            {difficultyConfig[course.difficulty as DifficultyLevel]?.label ||
-                              course.difficulty}
-                          </Badge>
-                          {isCompleted && (
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">Jour {course.day}</Badge>
+                            <Badge className={cn(levelConfig?.color || "bg-gray-500/20")}>
+                              {levelConfig?.label || course.level}
+                            </Badge>
+                          </div>
+                          {isLocked ? (
+                            <Lock className="h-5 w-5 text-yellow-500" />
+                          ) : isCompleted ? (
                             <CheckCircle2 className="h-5 w-5 text-green-400" />
-                          )}
+                          ) : null}
                         </div>
                         <CardTitle className="text-lg mt-2">
                           {course.title}
                         </CardTitle>
-                        <CardDescription>{course.description}</CardDescription>
+                        <CardDescription>{course.objective}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {course.duration_minutes} min
-                          </div>
-                          <Badge variant="outline">{course.category}</Badge>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {course.duration_minutes} min
                         </div>
-                        <Button
-                          className="w-full mt-4"
-                          variant={isCompleted ? "outline" : "default"}
-                          onClick={() => router.push(`/learn/cours/${course.id}`)}
-                        >
-                          {isCompleted ? "Revoir" : "Commencer"}
-                        </Button>
+                        {isLocked ? (
+                          <Button
+                            className="w-full mt-4"
+                            variant="outline"
+                            onClick={handleLockedContent}
+                          >
+                            <Lock className="h-4 w-4 mr-2" />
+                            Premium requis
+                          </Button>
+                        ) : (
+                          <Button
+                            className="w-full mt-4"
+                            variant={isCompleted ? "outline" : "default"}
+                            onClick={() => router.push(`/learn/cours/${course.day}`)}
+                          >
+                            {isCompleted ? "Revoir" : "Commencer"}
+                          </Button>
+                        )}
                       </CardContent>
                     </Card>
                   </motion.div>
@@ -338,33 +396,63 @@ export default function LearnPage() {
               animate={{ opacity: 1 }}
               className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
             >
-              {quiz.map((q, index) => (
-                <motion.div
-                  key={q.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Card className="h-full hover:border-primary-500/30 transition-colors">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{q.title}</CardTitle>
-                      <CardDescription>
-                        {q.questions.length} questions
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button
-                        className="w-full"
-                        onClick={() => router.push(`/learn/quiz/${q.id}`)}
-                      >
-                        Passer le quiz
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+              {skills.map((skill, index) => {
+                const levelConfig = difficultyConfig[skill.level];
+                const isLocked = !canAccessQuiz(index);
 
-              {quiz.length === 0 && (
+                return (
+                  <motion.div
+                    key={skill.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Card className={cn(
+                      "h-full transition-colors",
+                      isLocked ? "opacity-60" : "hover:border-primary-500/30"
+                    )}>
+                      <CardHeader>
+                        <div className="flex items-center justify-between mb-2">
+                          <Badge className={cn(levelConfig?.color || "bg-gray-500/20")}>
+                            {levelConfig?.label || skill.level}
+                          </Badge>
+                          {isLocked && (
+                            <Lock className="h-5 w-5 text-yellow-500" />
+                          )}
+                        </div>
+                        <CardTitle className="text-lg">{skill.name}</CardTitle>
+                        <CardDescription className="line-clamp-2">
+                          {skill.description}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-sm text-muted-foreground mb-4">
+                          Seuil de validation : {skill.pass_threshold}%
+                        </div>
+                        {isLocked ? (
+                          <Button
+                            className="w-full"
+                            variant="outline"
+                            onClick={handleLockedContent}
+                          >
+                            <Lock className="h-4 w-4 mr-2" />
+                            Premium requis
+                          </Button>
+                        ) : (
+                          <Button
+                            className="w-full"
+                            onClick={() => router.push(`/learn/quiz/${skill.slug}`)}
+                          >
+                            Passer le quiz
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+
+              {skills.length === 0 && (
                 <div className="col-span-full text-center py-12 text-muted-foreground">
                   <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucun quiz disponible pour le moment</p>
@@ -374,6 +462,12 @@ export default function LearnPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Premium Modal */}
+      <PremiumModal
+        open={showPremiumModal}
+        onOpenChange={setShowPremiumModal}
+      />
     </div>
   );
 }

@@ -12,15 +12,18 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Upload, Loader2 } from "lucide-react";
+import { Upload, Sparkles, BookOpen, Target, Crown, ArrowRight, CheckCircle2, XCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { StatsGrid } from "@/components/dashboard/StatsGrid";
 import { ProgressChart } from "@/components/dashboard/ProgressChart";
 import { SessionsTable } from "@/components/dashboard/SessionsTable";
 import { ChampionCard } from "@/components/dashboard/ChampionCard";
-import { useTrainingSessions, useChampions } from "@/lib/queries";
+import { useTrainingSessions, useChampions, useSkillsProgress } from "@/lib/queries";
+import { Progress } from "@/components/ui/progress";
 import { useAuthStore } from "@/store/auth-store";
 import type { ProgressData, SessionHistory, Champion } from "@/types";
 
@@ -65,6 +68,12 @@ export default function DashboardPage() {
   const { user } = useAuthStore();
   const { data: sessionsResponse, isLoading: loadingSessions } = useTrainingSessions();
   const { data: championsResponse, isLoading: loadingChampions } = useChampions();
+  const { data: skillsProgress } = useSkillsProgress();
+
+  // Check if user is on free plan
+  const isFreeUser = user?.subscription_plan === "free";
+  const trialSessionsUsed = user?.trial_sessions_used || 0;
+  const trialSessionsMax = user?.trial_sessions_max || 3;
 
   // Extract data from API responses
   const sessions = useMemo(() => {
@@ -187,9 +196,16 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl lg:text-4xl font-bold mb-2">
-            Votre <span className="gradient-text">Dashboard</span>
-          </h1>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl lg:text-4xl font-bold">
+              Votre <span className="gradient-text">Dashboard</span>
+            </h1>
+            {isFreeUser && (
+              <Badge variant="outline" className="border-yellow-500/50 text-yellow-400">
+                Essai gratuit
+              </Badge>
+            )}
+          </div>
           <p className="text-muted-foreground">
             {user?.full_name
               ? `Bienvenue ${user.full_name}, suivez votre progression`
@@ -197,13 +213,182 @@ export default function DashboardPage() {
           </p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="mb-8">
-          <StatsGrid stats={stats} />
-        </div>
+        {/* Trial Banner for Free Users */}
+        {isFreeUser && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8"
+          >
+            <Alert className="border-yellow-500/30 bg-yellow-500/10">
+              <Sparkles className="h-4 w-4 text-yellow-400" />
+              <AlertDescription className="flex items-center justify-between">
+                <span className="text-yellow-200">
+                  <strong>Essai gratuit</strong> — Vous avez accès à 1 cours, 1 quiz et {trialSessionsMax} sessions d&apos;entraînement.
+                  {trialSessionsUsed > 0 && ` (${trialSessionsUsed}/${trialSessionsMax} sessions utilisées)`}
+                </span>
+                <Link href="/features">
+                  <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-black ml-4">
+                    <Crown className="h-4 w-4 mr-1" />
+                    Passer à Pro
+                  </Button>
+                </Link>
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
 
-        {/* Champions Section */}
-        {champions.length > 0 && (
+        {/* Onboarding for Free Users with no activity */}
+        {isFreeUser && sessions.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-8"
+          >
+            <Card className="glass border-primary-500/30 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-secondary-500/5" />
+              <CardContent className="relative py-8">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold mb-2">Bienvenue sur Champion Clone !</h2>
+                  <p className="text-muted-foreground">Commencez votre parcours vers l&apos;excellence commerciale</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                  <Link href="/learn" className="block">
+                    <Card className="glass border-white/10 hover:border-primary-500/50 transition-all h-full">
+                      <CardContent className="p-6 text-center">
+                        <div className="inline-flex p-3 rounded-xl bg-blue-500/20 mb-4">
+                          <BookOpen className="h-6 w-6 text-blue-400" />
+                        </div>
+                        <h3 className="font-semibold mb-1">1. Apprenez</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Suivez votre premier cours
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                  <Link href="/learn" className="block">
+                    <Card className="glass border-white/10 hover:border-primary-500/50 transition-all h-full">
+                      <CardContent className="p-6 text-center">
+                        <div className="inline-flex p-3 rounded-xl bg-green-500/20 mb-4">
+                          <Target className="h-6 w-6 text-green-400" />
+                        </div>
+                        <h3 className="font-semibold mb-1">2. Validez</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Passez votre premier quiz
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                  <Link href="/training" className="block">
+                    <Card className="glass border-white/10 hover:border-primary-500/50 transition-all h-full">
+                      <CardContent className="p-6 text-center">
+                        <div className="inline-flex p-3 rounded-xl bg-purple-500/20 mb-4">
+                          <Sparkles className="h-6 w-6 text-purple-400" />
+                        </div>
+                        <h3 className="font-semibold mb-1">3. Pratiquez</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Entraînez-vous avec l&apos;IA
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Stats Grid - Show only if has activity or is premium */}
+        {(!isFreeUser || sessions.length > 0) && (
+          <div className="mb-8">
+            <StatsGrid stats={stats} />
+          </div>
+        )}
+
+        {/* Skills Progress Section */}
+        {skillsProgress && skillsProgress.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Progression des compétences</h2>
+              <Link href="/learn">
+                <Button variant="outline" size="sm" className="border-white/20">
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Voir les cours
+                </Button>
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {skillsProgress.filter((sp: any) => sp.quiz_passed || sp.scenarios_completed > 0).map((skill: any, index: number) => (
+                <motion.div
+                  key={skill.skill_slug}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <Card className="glass border-white/10">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-medium">{skill.skill_name}</h3>
+                        {skill.is_validated ? (
+                          <Badge className="bg-green-500/20 text-green-400">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Validé
+                          </Badge>
+                        ) : skill.quiz_passed ? (
+                          <Badge className="bg-blue-500/20 text-blue-400">
+                            Quiz réussi
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-muted-foreground">
+                            En cours
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Quiz</span>
+                          <span className={skill.quiz_passed ? "text-green-400" : "text-muted-foreground"}>
+                            {skill.quiz_passed ? (
+                              <span className="flex items-center gap-1">
+                                <CheckCircle2 className="h-4 w-4" />
+                                Réussi
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1">
+                                <XCircle className="h-4 w-4" />
+                                Non passé
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Scénarios</span>
+                          <span>{skill.scenarios_passed}/{skill.scenarios_required}</span>
+                        </div>
+                        {skill.best_score > 0 && (
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Meilleur score</span>
+                            <span className="text-primary-400">{Math.round(skill.best_score)}%</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Champions Section - Only for premium users */}
+        {!isFreeUser && champions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -227,8 +412,8 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
-        {/* Empty state for champions */}
-        {champions.length === 0 && (
+        {/* Empty state for champions - Only for premium users */}
+        {!isFreeUser && champions.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -253,7 +438,8 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
-        {/* Charts Row */}
+        {/* Charts Row - Show only if has activity or is premium */}
+        {(!isFreeUser || sessions.length > 0) && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Progress Chart */}
           {progressData.length > 0 ? (
@@ -336,12 +522,15 @@ export default function DashboardPage() {
             </Card>
           </motion.div>
         </div>
+        )}
 
-        {/* Sessions Table */}
-        <SessionsTable
-          sessions={sessionHistory}
-          onViewSession={(id) => console.log("View session", id)}
-        />
+        {/* Sessions Table - Show only if has activity or is premium */}
+        {(!isFreeUser || sessions.length > 0) && (
+          <SessionsTable
+            sessions={sessionHistory}
+            onViewSession={(id) => console.log("View session", id)}
+          />
+        )}
       </div>
     </div>
   );
