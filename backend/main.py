@@ -120,7 +120,7 @@ from domain.exceptions import (
 )
 
 # Import routers
-from api.routers import auth, champions, training, admin, learning, payments
+from api.routers import auth, champions, training, admin, learning, payments, audit
 
 
 # ============================================
@@ -182,6 +182,7 @@ app.include_router(training.router)
 app.include_router(admin.router)
 app.include_router(learning.router)
 app.include_router(payments.router)
+app.include_router(audit.router)
 
 
 # ============================================
