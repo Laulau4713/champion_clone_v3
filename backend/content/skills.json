@@ -1,2401 +1,716 @@
 {
   "skills": [
     {
-      "id": "ecoute_active",
-      "name": "Écoute active",
+      "id": 1,
+      "slug": "preparation_ciblage",
+      "name": "Préparation et Ciblage",
       "level": "easy",
-      "description": "Capacité à écouter attentivement le prospect, à capter les informations clés et à démontrer une compréhension authentique de ses besoins.",
+      "description": "Maîtriser la recherche et la préparation avant un appel. Un appel préparé multiplie par 3 les chances de succès.",
       "order": 1,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 1,
+      "duration_minutes": 45,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
       "learning_objectives": [
-        "Identifier les besoins explicites et implicites du prospect",
-        "Démontrer une présence attentive par des signaux verbaux appropriés",
-        "Retenir et utiliser les informations clés partagées par le prospect",
-        "Créer un climat de confiance par une écoute authentique"
+        "Effectuer une recherche en 10 minutes maximum",
+        "Identifier les 3 niveaux de recherche (entreprise, personne, contexte)",
+        "Formuler une hypothèse de valeur pertinente",
+        "Compléter la checklist pré-appel"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Les 3 niveaux d'écoute",
-          "description": "Niveau 1: Écoute superficielle (on attend son tour). Niveau 2: Écoute factuelle (on capte les infos). Niveau 3: Écoute empathique (on capte les émotions et motivations profondes).",
-          "practical_tip": "Vise toujours le niveau 3. Quand le prospect parle, demande-toi: 'Qu'est-ce qu'il ressent vraiment?'"
-        },
-        {
-          "name": "Les signaux d'écoute active",
-          "description": "Petits mots qui montrent qu'on suit: 'Je vois', 'D'accord', 'Mmh', 'Intéressant'. Ils encouragent le prospect à continuer.",
-          "practical_tip": "Place un signal d'écoute toutes les 10-15 secondes quand le prospect parle. Pas plus, sinon ça devient artificiel."
-        },
-        {
-          "name": "La prise de notes mentale",
-          "description": "Retenir les mots-clés, les chiffres, les noms propres mentionnés pour les réutiliser plus tard.",
-          "practical_tip": "Note mentalement 3 éléments clés: le problème principal, le budget évoqué, le timing souhaité."
-        }
-      ],
-      
+      "key_method": "3 NIVEAUX DE RECHERCHE",
       "evaluation_criteria": [
         {
-          "name": "Signaux d'écoute verbaux",
-          "type": "delivery",
+          "name": "Recherche entreprise",
           "weight": 20,
-          "description": "Utilisation appropriée de signaux verbaux montrant l'attention",
-          "success_indicators": [
-            "Place des 'Je vois', 'D'accord', 'Mmh' aux bons moments",
-            "Ne coupe jamais la parole au prospect",
-            "Laisse des silences pour que le prospect développe",
-            "Rebondit sur ce que dit le prospect"
-          ],
-          "failure_indicators": [
-            "Interrompt le prospect",
-            "Aucun signal d'écoute pendant plus de 20 secondes",
-            "Répète mécaniquement 'D'accord, d'accord, d'accord'",
-            "Change de sujet sans lien avec ce que dit le prospect"
-          ]
+          "description": "Activité, taille, actualités identifiées"
         },
         {
-          "name": "Rétention des informations clés",
-          "type": "content",
+          "name": "Recherche personne",
+          "weight": 20,
+          "description": "Rôle, parcours, responsabilités connues"
+        },
+        {
+          "name": "Contexte identifié",
           "weight": 25,
-          "description": "Capacité à retenir et réutiliser les informations partagées par le prospect",
-          "success_indicators": [
-            "Réutilise le prénom ou nom de l'entreprise du prospect",
-            "Fait référence à un chiffre ou date mentionné",
-            "Rappelle un problème évoqué plus tôt",
-            "Mentionne un détail personnel partagé (équipe, projet, etc.)"
-          ],
-          "failure_indicators": [
-            "Redemande une information déjà donnée",
-            "Confond les chiffres ou dates",
-            "Oublie le contexte expliqué par le prospect",
-            "Propose quelque chose qui contredit ce que le prospect a dit"
-          ]
+          "description": "Déclencheur ou signal d'opportunité repéré"
         },
         {
-          "name": "Identification des besoins implicites",
-          "type": "content",
-          "weight": 25,
-          "description": "Capacité à percevoir les besoins non exprimés directement",
-          "success_indicators": [
-            "Détecte une frustration sous-jacente",
-            "Identifie une urgence non verbalisée",
-            "Comprend les enjeux politiques internes",
-            "Perçoit les craintes ou objections latentes"
-          ],
-          "failure_indicators": [
-            "Se contente des informations explicites",
-            "Rate les signaux émotionnels du prospect",
-            "Ne creuse pas quand le prospect hésite",
-            "Ignore les sous-entendus"
-          ]
-        },
-        {
-          "name": "Qualité de présence",
-          "type": "delivery",
-          "weight": 15,
-          "description": "Impression générale d'attention et d'engagement",
-          "success_indicators": [
-            "Voix engagée et intéressée",
-            "Rythme adapté au prospect",
-            "Réactions authentiques aux propos du prospect",
-            "Absence de précipitation"
-          ],
-          "failure_indicators": [
-            "Voix monotone ou désintéressée",
-            "Semble pressé ou distrait",
-            "Réponses génériques qui pourraient convenir à n'importe qui",
-            "Enchaîne trop vite sur son pitch"
-          ]
-        },
-        {
-          "name": "Synchronisation émotionnelle",
-          "type": "delivery",
-          "weight": 15,
-          "description": "Adaptation du ton et de l'énergie à l'état émotionnel du prospect",
-          "success_indicators": [
-            "Baisse le ton si le prospect parle d'un problème sérieux",
-            "Partage l'enthousiasme si le prospect est excité",
-            "Reste calme si le prospect est stressé",
-            "Adapte son énergie au profil du prospect"
-          ],
-          "failure_indicators": [
-            "Reste sur la même énergie peu importe le contexte",
-            "Trop enjoué face à un prospect préoccupé",
-            "Trop sérieux face à un prospect décontracté",
-            "Décalage émotionnel flagrant"
-          ]
+          "name": "Hypothèse de valeur",
+          "weight": 35,
+          "description": "Hypothèse formulée et pertinente"
         }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
-      "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect qui a un vrai problème à résoudre. Commence par expliquer ta situation de manière assez détaillée (30-45 secondes). Inclus: ton contexte, ton problème principal, quelques détails spécifiques (chiffres, dates, noms). Teste si l'élève écoute vraiment en: (1) mentionnant un détail important au milieu de ton explication, (2) exprimant une émotion subtile (frustration, espoir, doute), (3) faisant une pause pour voir s'il te laisse continuer. Si l'élève démontre une bonne écoute (rebondit sur tes propos, ne coupe pas, utilise des signaux d'écoute), sois plus ouvert et partage plus d'informations. S'il n'écoute pas bien (coupe la parole, change de sujet, oublie ce que tu as dit), deviens plus fermé et teste-le en lui redemandant s'il a bien compris.",
-      
-      "emotional_focus": ["attention", "patience", "empathy"],
-      
-      "common_mistakes": [
-        "Préparer sa réponse pendant que le prospect parle au lieu d'écouter vraiment",
-        "Couper la parole pour montrer qu'on a compris (même si c'est vrai)",
-        "Enchaîner immédiatement sur son pitch sans transition",
-        "Utiliser des signaux d'écoute de manière mécanique et répétitive",
-        "Oublier les détails importants partagés en début de conversation",
-        "Ne pas creuser quand le prospect exprime une émotion",
-        "Poser une question dont la réponse a déjà été donnée"
-      ],
-      
-      "pro_tips": [
-        "Après que le prospect ait fini de parler, compte mentalement jusqu'à 2 avant de répondre. Ça te force à ne pas couper et ça montre que tu réfléchis.",
-        "Note mentalement le premier mot et le dernier mot de ce que dit le prospect. Tu pourras les réutiliser.",
-        "Si tu n'as pas bien compris quelque chose, dis 'Je veux être sûr de bien comprendre...' plutôt que de faire semblant.",
-        "Les meilleurs commerciaux parlent 30% du temps et écoutent 70%. Vise ce ratio."
-      ],
-      
-      "phrases_templates": {
-        "signaux_ecoute": [
-          "Je vois...",
-          "D'accord...",
-          "Intéressant...",
-          "Je comprends...",
-          "Mmh hmm...",
-          "OK..."
-        ],
-        "relances": [
-          "Vous disiez que [X], pouvez-vous m'en dire plus?",
-          "Qu'est-ce qui vous a amené à cette conclusion?",
-          "Comment ça s'est passé concrètement?",
-          "Et ensuite, qu'est-ce qui s'est passé?"
-        ],
-        "validation": [
-          "Si je comprends bien, [résumé]...",
-          "Donc pour vous, l'enjeu principal c'est [X]...",
-          "Ce que j'entends, c'est que [X] vous pose problème..."
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "questions_ouvertes",
-      "name": "Questions ouvertes",
+      "id": 2,
+      "slug": "script_accroche",
+      "name": "Script et Accroche",
       "level": "easy",
-      "description": "Maîtrise de l'art de poser des questions qui ouvrent le dialogue et font parler le prospect sur ses vrais besoins.",
+      "description": "Capter l'attention en 30 secondes avec une accroche centrée sur le prospect, pas sur vous.",
       "order": 2,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 2,
+      "duration_minutes": 45,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
       "learning_objectives": [
-        "Distinguer questions ouvertes et fermées",
-        "Formuler des questions qui font réfléchir le prospect",
-        "Créer une séquence de questions logique",
-        "Utiliser les questions pour découvrir les motivations profondes"
+        "Structurer une accroche en 30 secondes (10-10-10)",
+        "Parler du prospect, pas de soi",
+        "Utiliser une hypothèse de problème",
+        "Engager avec une question ouverte"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "La règle QQOQCP",
-          "description": "Qui, Quoi, Où, Quand, Comment, Pourquoi. Ces 6 mots démarrent les meilleures questions ouvertes.",
-          "practical_tip": "Commence 80% de tes questions par l'un de ces mots. Évite les questions qui commencent par 'Est-ce que'."
-        },
-        {
-          "name": "L'entonnoir de découverte",
-          "description": "Commence par des questions larges (contexte) puis resserre vers des questions précises (besoins, budget, timing).",
-          "practical_tip": "Questions larges: 'Comment fonctionne votre process actuel?' → Questions ciblées: 'Quel budget avez-vous prévu pour résoudre ce problème?'"
-        },
-        {
-          "name": "La question du pourquoi profond",
-          "description": "Demander 'Pourquoi c'est important pour vous?' ou 'Qu'est-ce que ça changerait?' pour atteindre les motivations réelles.",
-          "practical_tip": "Après avoir identifié un besoin, demande toujours: 'Et si vous ne réglez pas ce problème, qu'est-ce qui se passe?'"
-        },
-        {
-          "name": "Les questions de projection",
-          "description": "Questions qui font visualiser le futur: 'Comment voyez-vous les choses dans 6 mois?' 'Qu'est-ce qui serait différent si...?'",
-          "practical_tip": "Ces questions créent le désir et l'urgence. Utilise-les une fois le problème identifié."
-        }
-      ],
-      
+      "key_method": "RÈGLE DES 30 SECONDES",
       "evaluation_criteria": [
         {
-          "name": "Ratio questions ouvertes/fermées",
-          "type": "content",
+          "name": "Structure 30s",
           "weight": 25,
-          "description": "Proportion de questions ouvertes par rapport aux questions fermées",
-          "success_indicators": [
-            "Au moins 70% de questions ouvertes",
-            "Questions fermées utilisées uniquement pour confirmer",
-            "Évite les questions en 'Est-ce que'",
-            "Utilise Qui/Quoi/Où/Quand/Comment/Pourquoi"
-          ],
-          "failure_indicators": [
-            "Majorité de questions fermées (oui/non)",
-            "Questions suggestives ('Vous êtes d'accord que...?')",
-            "Rafales de questions fermées",
-            "Questions qui contiennent leur réponse"
-          ]
+          "description": "Présentation + Raison + Question en 30 secondes"
         },
         {
-          "name": "Qualité de la découverte",
-          "type": "content",
+          "name": "Centré prospect",
           "weight": 30,
-          "description": "Capacité à découvrir les informations clés: problème, enjeu, budget, timing, décideur",
-          "success_indicators": [
-            "Identifie le problème principal",
-            "Comprend l'impact business du problème",
-            "Obtient une indication de budget ou d'investissement",
-            "Clarifie le processus de décision"
-          ],
-          "failure_indicators": [
-            "Reste en surface sur le problème",
-            "Ne quantifie pas l'impact",
-            "N'aborde pas le budget",
-            "Ignore le processus de décision"
-          ]
+          "description": "Parle de LUI, pas de vous"
         },
         {
-          "name": "Séquencement logique",
-          "type": "content",
+          "name": "Hypothèse pertinente",
+          "weight": 25,
+          "description": "Raison liée à son contexte"
+        },
+        {
+          "name": "Question ouverte",
           "weight": 20,
-          "description": "Enchaînement naturel et progressif des questions",
-          "success_indicators": [
-            "Progression du général au spécifique",
-            "Chaque question découle de la réponse précédente",
-            "Transitions fluides entre les thèmes",
-            "Pas de sauts abrupts de sujet"
-          ],
-          "failure_indicators": [
-            "Questions sans lien entre elles",
-            "Impression d'interrogatoire",
-            "Revient en arrière sans raison",
-            "Saute d'un sujet à l'autre"
-          ]
-        },
-        {
-          "name": "Profondeur d'exploration",
-          "type": "content",
-          "weight": 15,
-          "description": "Capacité à creuser au-delà des réponses superficielles",
-          "success_indicators": [
-            "Relance avec 'Pourquoi?' ou 'Comment?'",
-            "Demande des exemples concrets",
-            "Explore les conséquences et implications",
-            "Atteint les motivations émotionnelles"
-          ],
-          "failure_indicators": [
-            "Accepte les premières réponses sans creuser",
-            "Passe à autre chose trop vite",
-            "Rate les opportunités de relance",
-            "Reste sur des réponses vagues"
-          ]
-        },
-        {
-          "name": "Naturel et fluidité",
-          "type": "delivery",
-          "weight": 10,
-          "description": "Les questions sonnent naturelles, pas robotiques",
-          "success_indicators": [
-            "Ton conversationnel",
-            "Questions adaptées au contexte",
-            "Pauses naturelles entre les questions",
-            "Personnalisation des formulations"
-          ],
-          "failure_indicators": [
-            "Récite une liste de questions",
-            "Même formulation à chaque fois",
-            "Pas de pause entre questions",
-            "Ton d'interrogatoire"
-          ]
+          "description": "Engage une conversation"
         }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
-      "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect qui connaît son problème mais n'a pas forcément analysé toutes ses implications. Réponds aux questions de manière réaliste: donne des réponses courtes aux questions fermées, développe davantage aux questions ouvertes. Si l'élève pose de bonnes questions ouvertes, révèle progressivement plus d'informations (budget, timing, processus de décision). Si les questions sont fermées ou superficielles, donne des réponses minimales qui ne font pas avancer la découverte. Teste l'élève en donnant parfois des réponses vagues pour voir s'il creuse ('On verra pour le budget' → attend qu'il relance).",
-      
-      "emotional_focus": ["curiosity", "confidence"],
-      
-      "common_mistakes": [
-        "Poser des questions fermées par réflexe ('Vous avez un budget?')",
-        "Enchaîner les questions sans écouter les réponses",
-        "Poser des questions suggestives qui orientent la réponse",
-        "Ne pas creuser quand le prospect donne une réponse vague",
-        "Oublier de poser la question du 'Pourquoi c'est important'",
-        "Interroger plutôt que converser",
-        "Sauter directement aux questions de budget sans contexte"
-      ],
-      
-      "pro_tips": [
-        "La meilleure question après n'importe quelle réponse: 'Pouvez-vous m'en dire plus?'",
-        "Transforme chaque question fermée: 'Avez-vous un budget?' → 'Comment envisagez-vous l'investissement sur ce projet?'",
-        "Après 3-4 questions, fais une mini-synthèse: 'Si je résume...' Ça prouve que tu écoutes.",
-        "La question magique: 'Qu'est-ce qui ferait que dans 6 mois, vous diriez que c'était la bonne décision?'"
-      ],
-      
-      "phrases_templates": {
-        "questions_contexte": [
-          "Comment fonctionne votre [process/équipe/organisation] aujourd'hui?",
-          "Qu'est-ce qui vous a amené à vous intéresser à [sujet]?",
-          "Pouvez-vous me décrire une journée type pour votre équipe?",
-          "Depuis combien de temps êtes-vous confronté à cette situation?"
-        ],
-        "questions_probleme": [
-          "Qu'est-ce qui vous pose le plus de difficultés avec [X]?",
-          "Comment ce problème impacte-t-il votre [activité/équipe/résultats]?",
-          "Qu'avez-vous déjà essayé pour résoudre ça?",
-          "Qu'est-ce qui n'a pas fonctionné dans vos tentatives précédentes?"
-        ],
-        "questions_enjeux": [
-          "Qu'est-ce que ça changerait pour vous de résoudre ce problème?",
-          "Si rien ne change dans les 6 prochains mois, qu'est-ce qui se passe?",
-          "Quels objectifs êtes-vous en train de mettre en péril à cause de ça?",
-          "Comment votre direction perçoit-elle cette situation?"
-        ],
-        "questions_decision": [
-          "Comment se passe généralement une décision de ce type chez vous?",
-          "Qui d'autre serait impliqué dans ce projet?",
-          "Quel serait le timing idéal pour mettre en place une solution?",
-          "Qu'est-ce qui pourrait bloquer ou ralentir un projet comme celui-ci?"
-        ],
-        "questions_budget": [
-          "Comment envisagez-vous l'investissement pour ce type de projet?",
-          "Avez-vous déjà une enveloppe budgétaire identifiée?",
-          "Par rapport à d'autres investissements similaires, comment situez-vous celui-ci?",
-          "Qu'est-ce qui serait un investissement acceptable pour résoudre ce problème?"
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "reformulation",
-      "name": "Reformulation",
+      "id": 3,
+      "slug": "cold_calling",
+      "name": "Cold Calling - Exécution",
       "level": "easy",
-      "description": "Technique pour valider sa compréhension, créer du rapport et faire avancer la conversation en reformulant les propos du prospect.",
+      "description": "Maîtriser l'appel à froid : passer les barrages, gérer les objections, obtenir un rendez-vous.",
       "order": 3,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 3,
+      "duration_minutes": 60,
+      "pass_threshold": 70,
+      "scenarios_required": 5,
       "learning_objectives": [
-        "Maîtriser les 3 types de reformulation (écho, synthèse, clarification)",
-        "Utiliser la reformulation pour valider la compréhension",
-        "Créer du rapport et de la confiance par la reformulation",
-        "Faire avancer la conversation vers l'engagement"
+        "Passer les barrages secrétaire",
+        "Découvrir les 3 facteurs (Temps, Argent, Impact)",
+        "Gérer les objections spécifiques du cold call",
+        "Obtenir un rendez-vous qualifié"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Reformulation écho",
-          "description": "Répéter les derniers mots du prospect pour l'encourager à développer. Simple mais puissant.",
-          "practical_tip": "Prospect: 'Notre plus gros problème c'est la productivité'. Toi: 'La productivité...?' avec une intonation montante."
-        },
-        {
-          "name": "Reformulation synthèse",
-          "description": "Résumer ce que le prospect a dit en le structurant. Montre qu'on a compris l'ensemble.",
-          "practical_tip": "'Si je comprends bien, vous avez [problème 1], ce qui cause [conséquence], et vous cherchez [solution]. C'est bien ça?'"
-        },
-        {
-          "name": "Reformulation clarification",
-          "description": "Reformuler pour lever une ambiguïté ou confirmer un point clé.",
-          "practical_tip": "'Quand vous dites que c'est urgent, vous parlez de quelle échéance exactement?'"
-        },
-        {
-          "name": "Reformulation émotionnelle",
-          "description": "Reformuler l'émotion ressentie, pas juste les faits. Crée une connexion profonde.",
-          "practical_tip": "'J'ai l'impression que cette situation vous pèse vraiment...' ou 'Ça semble vraiment frustrant pour vous...'"
-        }
-      ],
-      
+      "key_method": "3 FACTEURS",
       "evaluation_criteria": [
         {
-          "name": "Fidélité au propos",
-          "type": "content",
-          "weight": 25,
-          "description": "La reformulation reflète fidèlement ce que le prospect a dit",
-          "success_indicators": [
-            "Reprend les mots-clés du prospect",
-            "Capture l'essence du message",
-            "Ne déforme pas le sens",
-            "Respecte les nuances exprimées"
-          ],
-          "failure_indicators": [
-            "Interprète au lieu de reformuler",
-            "Ajoute des éléments non dits",
-            "Simplifie excessivement",
-            "Contredit ce que le prospect a dit"
-          ]
-        },
-        {
-          "name": "Valeur ajoutée",
-          "type": "content",
-          "weight": 25,
-          "description": "La reformulation structure ou clarifie, elle n'est pas une simple répétition",
-          "success_indicators": [
-            "Organise les idées du prospect",
-            "Met en lumière les points clés",
-            "Fait progresser la conversation",
-            "Aide le prospect à clarifier sa pensée"
-          ],
-          "failure_indicators": [
-            "Répète mot pour mot",
-            "N'apporte aucune structure",
-            "Reformulation inutile et verbeuse",
-            "Ralentit la conversation"
-          ]
-        },
-        {
-          "name": "Timing approprié",
-          "type": "delivery",
+          "name": "Passage barrage",
           "weight": 20,
-          "description": "La reformulation arrive au bon moment",
-          "success_indicators": [
-            "Après un bloc d'information important",
-            "Avant de changer de sujet",
-            "Quand le prospect a fini de s'exprimer",
-            "Pour débloquer un moment de confusion"
-          ],
-          "failure_indicators": [
-            "Interrompt le prospect pour reformuler",
-            "Reformule des détails insignifiants",
-            "Reformule trop souvent (toutes les 30 sec)",
-            "Ne reformule jamais les points clés"
-          ]
+          "description": "Techniques efficaces pour joindre le décideur"
         },
         {
-          "name": "Demande de validation",
-          "type": "content",
-          "weight": 15,
-          "description": "Vérifie que la reformulation est correcte",
-          "success_indicators": [
-            "Termine par 'C'est bien ça?'",
-            "Utilise 'Est-ce que je comprends bien?'",
-            "Laisse le prospect corriger si besoin",
-            "Ajuste après le feedback"
-          ],
-          "failure_indicators": [
-            "Affirme sans vérifier",
-            "Ne laisse pas le prospect réagir",
-            "Ignore les corrections du prospect",
-            "Enchaîne sans validation"
-          ]
+          "name": "Qualification TAI",
+          "weight": 30,
+          "description": "Temps, Argent, Impact découverts"
         },
         {
-          "name": "Naturel et fluidité",
-          "type": "delivery",
-          "weight": 15,
-          "description": "La reformulation s'intègre naturellement dans la conversation",
-          "success_indicators": [
-            "Ton conversationnel",
-            "Transition fluide vers la reformulation",
-            "Pas de formule robotique",
-            "S'adapte au style du prospect"
-          ],
-          "failure_indicators": [
-            "Formulations mécaniques",
-            "Toujours la même structure",
-            "Ton artificiel",
-            "Rupture de rythme"
-          ]
+          "name": "Gestion objections",
+          "weight": 25,
+          "description": "Objections traitées sans argumenter"
+        },
+        {
+          "name": "Obtention RDV",
+          "weight": 25,
+          "description": "Rendez-vous fixé avec alternative"
         }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
-      "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect qui a une situation un peu complexe à expliquer. Donne des explications en 2-3 phrases minimum, avec plusieurs éléments (contexte, problème, impact, contraintes). Teste si l'élève reformule correctement en: (1) donnant des informations dans le désordre pour voir s'il structure, (2) utilisant des termes ambigus ('bientôt', 'important', 'pas mal') pour voir s'il clarifie, (3) exprimant des émotions subtiles pour voir s'il les capte. Quand il reformule bien: confirme avec enthousiasme ('Exactement!', 'C'est tout à fait ça!'). Quand il reformule mal: corrige poliment ('Pas tout à fait, en fait...').",
-      
-      "emotional_focus": ["attention", "empathy", "clarity"],
-      
-      "common_mistakes": [
-        "Répéter mot pour mot sans apporter de structure",
-        "Interpréter au lieu de reformuler fidèlement",
-        "Reformuler uniquement les faits, pas les émotions",
-        "Ne jamais demander validation ('C'est bien ça?')",
-        "Reformuler trop souvent (effet perroquet)",
-        "Ne pas reformuler du tout et enchaîner",
-        "Utiliser toujours la même formule d'introduction"
-      ],
-      
-      "pro_tips": [
-        "Varie tes formules d'introduction: 'Si je comprends bien...', 'En d'autres termes...', 'Donc pour vous...', 'Ce que j'entends c'est...'",
-        "Reformule toujours avant de présenter ta solution. Ça crée le pont parfait.",
-        "Utilise la reformulation émotionnelle quand le prospect parle d'un problème douloureux. Ça crée une connexion instantanée.",
-        "Une bonne reformulation synthèse après 5 minutes de découverte peut faire dire au prospect 'Vous avez parfaitement compris!'"
-      ],
-      
-      "phrases_templates": {
-        "reformulation_echo": [
-          "[Dernier mot du prospect]...?",
-          "[Terme clé utilisé]...?",
-          "Vous dites [X]..."
-        ],
-        "reformulation_synthese": [
-          "Si je résume, vous êtes confronté à [problème], ce qui impacte [conséquence], et vous cherchez [objectif]. C'est bien ça?",
-          "Donc si je comprends bien: [point 1], [point 2], et [point 3]. J'ai tout compris?",
-          "En d'autres termes, l'enjeu principal pour vous c'est [X], parce que [Y]. Correct?"
-        ],
-        "reformulation_clarification": [
-          "Quand vous dites [terme vague], concrètement ça veut dire quoi pour vous?",
-          "Pour être sûr de bien comprendre, [X] c'est bien [interprétation]?",
-          "Vous avez mentionné [X], est-ce que ça signifie que [Y]?"
-        ],
-        "reformulation_emotionnelle": [
-          "J'ai l'impression que cette situation vous pèse vraiment...",
-          "On sent que c'est un sujet qui vous tient à cœur...",
-          "Ça semble être une source de stress importante pour vous...",
-          "Je perçois une vraie frustration quand vous en parlez..."
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "gestion_silence",
-      "name": "Gestion du silence",
+      "id": 4,
+      "slug": "ecoute_active",
+      "name": "Écoute Active",
       "level": "easy",
-      "description": "Maîtrise de l'utilisation stratégique du silence comme outil de vente pour créer de l'espace et encourager le prospect à parler.",
+      "description": "Développer une écoute qui crée la confiance et fait émerger les vraies informations.",
       "order": 4,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 4,
+      "duration_minutes": 30,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
       "learning_objectives": [
-        "Comprendre le pouvoir du silence en négociation",
-        "Supporter l'inconfort du silence sans le combler",
-        "Utiliser le silence pour faire réfléchir le prospect",
-        "Distinguer les différents types de silence"
+        "Atteindre le niveau 3 d'écoute (empathique)",
+        "Utiliser les signaux d'écoute toutes les 10-15 secondes",
+        "Maîtriser la règle des 2 secondes",
+        "Prendre des notes efficaces"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Le silence de réflexion",
-          "description": "Après une question importante, laisser 3-5 secondes de silence pour que le prospect réfléchisse vraiment.",
-          "practical_tip": "Après avoir posé ta question, compte mentalement jusqu'à 5 avant de parler. Le prospect va souvent développer sa réponse."
-        },
-        {
-          "name": "Le silence de pression",
-          "description": "Après avoir annoncé un prix ou demandé un engagement, ne pas parler en premier. Celui qui parle en premier perd.",
-          "practical_tip": "Annonce ton prix, puis tais-toi. Même si ça dure 10 secondes. Le prospect doit réagir en premier."
-        },
-        {
-          "name": "Le silence d'écoute",
-          "description": "Quand le prospect parle, ne pas l'interrompre même s'il fait des pauses. Il peut continuer.",
-          "practical_tip": "Quand le prospect fait une pause, attends 2 secondes. Souvent il va ajouter quelque chose d'important."
-        },
-        {
-          "name": "Le silence stratégique",
-          "description": "Utiliser le silence pour mettre en valeur un point clé ou créer de l'anticipation.",
-          "practical_tip": "Avant d'annoncer quelque chose d'important, fais une pause de 2 secondes. Ça crée de l'attention."
-        }
-      ],
-      
+      "key_method": "3 NIVEAUX D'ÉCOUTE",
       "evaluation_criteria": [
         {
-          "name": "Tolérance au silence",
-          "type": "delivery",
+          "name": "Niveau d'écoute",
           "weight": 30,
-          "description": "Capacité à supporter le silence sans le combler nerveusement",
-          "success_indicators": [
-            "Supporte des silences de 3-5 secondes",
-            "Reste calme pendant les pauses",
-            "Ne montre pas de signes de nervosité",
-            "Laisse le prospect rompre le silence"
-          ],
-          "failure_indicators": [
-            "Comble immédiatement tout silence",
-            "Parle pour meubler",
-            "Montre de l'inconfort (euh, alors...)",
-            "Pose une nouvelle question sans attendre"
-          ]
+          "description": "Capte émotions et non-dits"
         },
         {
-          "name": "Utilisation stratégique",
-          "type": "content",
+          "name": "Signaux d'écoute",
           "weight": 25,
-          "description": "Le silence est utilisé au bon moment pour un effet précis",
-          "success_indicators": [
-            "Silence après une question importante",
-            "Silence après l'annonce d'un prix",
-            "Silence pour laisser un point important résonner",
-            "Silence pour encourager le prospect à développer"
-          ],
-          "failure_indicators": [
-            "Silences aléatoires sans but",
-            "Pas de silence du tout",
-            "Silence au mauvais moment (coupe l'élan)",
-            "Silence trop long (crée du malaise)"
-          ]
+          "description": "Signaux réguliers et naturels"
         },
         {
-          "name": "Qualité de présence pendant le silence",
-          "type": "delivery",
+          "name": "Silence maîtrisé",
+          "weight": 25,
+          "description": "Pause de 2 secondes après questions"
+        },
+        {
+          "name": "Pas d'interruption",
           "weight": 20,
-          "description": "Maintenir une présence confiante pendant le silence",
-          "success_indicators": [
-            "Respiration calme",
-            "Pas de tics verbaux",
-            "Attention maintenue sur le prospect",
-            "Posture mentale détendue"
-          ],
-          "failure_indicators": [
-            "Respiration saccadée",
-            "Petits mots nerveux",
-            "Semble mal à l'aise",
-            "Perd le fil"
-          ]
-        },
-        {
-          "name": "Relance appropriée après silence",
-          "type": "content",
-          "weight": 15,
-          "description": "Quand il faut rompre le silence, le faire de manière pertinente",
-          "success_indicators": [
-            "Relance qui fait avancer la conversation",
-            "Question de suivi pertinente",
-            "Reformulation ou synthèse",
-            "Timing approprié pour rompre"
-          ],
-          "failure_indicators": [
-            "Répète la question identique",
-            "Change de sujet abruptement",
-            "Relance non pertinente",
-            "Rompt trop tôt ou trop tard"
-          ]
-        },
-        {
-          "name": "Impact du silence",
-          "type": "content",
-          "weight": 10,
-          "description": "Le silence produit l'effet désiré sur le prospect",
-          "success_indicators": [
-            "Le prospect développe sa pensée",
-            "Le prospect révèle une information importante",
-            "Le prospect réagit à une proposition",
-            "Le silence crée de la réflexion"
-          ],
-          "failure_indicators": [
-            "Le silence crée du malaise improductif",
-            "Le prospect se ferme",
-            "Perte de connexion",
-            "Conversation qui stagne"
-          ]
+          "description": "Laisse finir le prospect"
         }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
-      "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect qui prend son temps pour réfléchir. Quand l'élève pose une question, prends 2-3 secondes avant de commencer à répondre - c'est naturel. Si l'élève supporte le silence et te laisse réfléchir, développe ta réponse. S'il te coupe ou remplit le silence nerveusement, donne une réponse courte et montre de l'agacement subtil ('J'allais justement y venir...'). Teste l'élève en: (1) faisant des pauses au milieu de tes phrases pour voir s'il te coupe, (2) posant une question rhétorique et attendant pour voir s'il répond ou te laisse continuer, (3) restant silencieux après qu'il ait parlé pour voir s'il supporte ou s'il meuble.",
-      
-      "emotional_focus": ["patience", "confidence", "composure"],
-      
-      "common_mistakes": [
-        "Combler chaque silence par réflexe",
-        "Répéter sa question si le prospect ne répond pas immédiatement",
-        "Parler en premier après avoir annoncé un prix",
-        "Utiliser des tics verbaux ('euh', 'donc', 'voilà')",
-        "Couper le prospect qui réfléchit",
-        "Montrer de l'inconfort physique pendant le silence",
-        "Ne jamais utiliser le silence stratégiquement"
-      ],
-      
-      "pro_tips": [
-        "Le silence est ton meilleur ami en négociation. Celui qui parle en premier après un prix perd.",
-        "Après une question puissante, fais 'la règle des 5 secondes': ne parle pas avant 5 secondes.",
-        "Pendant un silence, respire lentement. Ça te calme et ça se ressent.",
-        "Un prospect qui réfléchit en silence est en train de se convaincre lui-même. Ne le dérange pas!"
-      ],
-      
-      "phrases_templates": {
-        "relances_apres_silence": [
-          "Qu'est-ce qui vous fait hésiter?",
-          "À quoi pensez-vous?",
-          "Prenez votre temps...",
-          "Y a-t-il quelque chose que je peux clarifier?"
-        ],
-        "transition_vers_silence": [
-          "Je vous laisse réfléchir à ça...",
-          "Qu'en pensez-vous?",
-          "Comment vous sentez-vous par rapport à ça?",
-          "[Annonce le prix et se tait]"
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "objections_prix",
-      "name": "Objections prix",
+      "id": 5,
+      "slug": "decouverte_compir",
+      "name": "Questions et Découverte - COMPIR",
       "level": "medium",
-      "description": "Techniques pour traiter les objections liées au prix sans baisser ses tarifs, en démontrant la valeur et le ROI.",
+      "description": "Faire exprimer les besoins par le client lui-même avec la méthode COMPIR.",
       "order": 5,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 5,
+      "duration_minutes": 45,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
       "learning_objectives": [
-        "Identifier le vrai problème derrière l'objection prix",
-        "Recadrer la discussion sur la valeur plutôt que le coût",
-        "Calculer et présenter le ROI de manière convaincante",
-        "Traiter les comparaisons avec la concurrence moins chère"
+        "Appliquer la méthode COMPIR complète",
+        "Faire dire au client qu'il a un problème",
+        "Quantifier l'impact du problème",
+        "Poser des questions ouvertes"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Le prix n'est jamais le vrai problème",
-          "description": "Quand un prospect dit 'c'est trop cher', il dit en réalité: 'Je ne vois pas assez de valeur pour ce prix'. Le travail du commercial: augmenter la valeur perçue.",
-          "practical_tip": "Première réponse: 'Je comprends. Trop cher par rapport à quoi?' Ça force à préciser: le budget? La concurrence? Les attentes?"
-        },
-        {
-          "name": "La technique du coût total",
-          "description": "Comparer le coût de la solution au coût du problème. 'Ce problème vous coûte 50k€/an. Ma solution en coûte 10k€. Vous économisez 40k€.'",
-          "practical_tip": "Toujours quantifier le problème AVANT de parler du prix. 'Combien vous coûte ce problème aujourd'hui?'"
-        },
-        {
-          "name": "L'isolation de l'objection",
-          "description": "Vérifier que le prix est le seul obstacle. 'Si on trouve une solution sur le prix, on avance ensemble?'",
-          "practical_tip": "Ça évite de négocier le prix pour découvrir ensuite qu'il y avait d'autres objections."
-        },
-        {
-          "name": "Le reframe valeur",
-          "description": "Transformer 'combien ça coûte' en 'combien ça rapporte'. Changer la perspective du prospect.",
-          "practical_tip": "'Ce n'est pas un coût de 10k€, c'est un investissement avec un retour de 50k€ sur 12 mois.'"
-        }
-      ],
-      
+      "key_method": "COMPIR (Constat-Manque-Problème-Impact-Résolution)",
       "evaluation_criteria": [
         {
-          "name": "Exploration de l'objection",
-          "type": "content",
-          "weight": 25,
-          "description": "Creuser pour comprendre la vraie nature de l'objection prix",
-          "success_indicators": [
-            "Demande 'Par rapport à quoi c'est cher?'",
-            "Identifie si c'est budget, valeur perçue ou comparaison",
-            "Comprend les contraintes budgétaires réelles",
-            "Découvre les vrais critères de décision"
-          ],
-          "failure_indicators": [
-            "Accepte l'objection au premier degré",
-            "Propose immédiatement une remise",
-            "Ne creuse pas la raison",
-            "Suppose connaître le problème"
-          ]
-        },
-        {
-          "name": "Démonstration de valeur",
-          "type": "content",
-          "weight": 30,
-          "description": "Capacité à recentrer la discussion sur la valeur et le ROI",
-          "success_indicators": [
-            "Quantifie le coût du problème",
-            "Calcule un ROI concret",
-            "Utilise des exemples clients similaires",
-            "Rapporte le prix à un bénéfice tangible"
-          ],
-          "failure_indicators": [
-            "Reste sur le prix sans parler valeur",
-            "ROI vague ou non chiffré",
-            "Pas d'exemple concret",
-            "Justifie le prix par les coûts"
-          ]
-        },
-        {
-          "name": "Techniques de traitement",
-          "type": "content",
-          "weight": 20,
-          "description": "Utilisation appropriée des techniques de traitement d'objection",
-          "success_indicators": [
-            "Isole l'objection",
-            "Utilise le reframe valeur",
-            "Propose des alternatives (pas juste remise)",
-            "Maintient sa position avec assurance"
-          ],
-          "failure_indicators": [
-            "Cède immédiatement sur le prix",
-            "Aucune technique de traitement",
-            "Se justifie défensivement",
-            "Dévalorise sa propre offre"
-          ]
-        },
-        {
-          "name": "Gestion émotionnelle",
-          "type": "delivery",
+          "name": "Constat",
           "weight": 15,
-          "description": "Rester calme et confiant face à l'objection prix",
-          "success_indicators": [
-            "Voix assurée et calme",
-            "Pas de nervosité",
-            "Accueille l'objection positivement",
-            "Garde le contrôle de la conversation"
-          ],
-          "failure_indicators": [
-            "Voix défensive ou tendue",
-            "Semble déstabilisé",
-            "S'excuse pour le prix",
-            "Perd confiance"
-          ]
+          "description": "Situation actuelle comprise"
         },
         {
-          "name": "Conclusion vers l'action",
-          "type": "content",
-          "weight": 10,
-          "description": "Après traitement, avancer vers une décision",
-          "success_indicators": [
-            "Vérifie que l'objection est traitée",
-            "Propose une prochaine étape",
-            "Demande un engagement",
-            "Clôt sur une note positive"
-          ],
-          "failure_indicators": [
-            "Laisse l'objection en suspens",
-            "N'avance pas après traitement",
-            "Pas de demande d'engagement",
-            "Fin de conversation floue"
-          ]
+          "name": "Manque identifié",
+          "weight": 15,
+          "description": "Insatisfaction découverte"
+        },
+        {
+          "name": "Problème formulé",
+          "weight": 20,
+          "description": "Impact business identifié"
+        },
+        {
+          "name": "Impact quantifié",
+          "weight": 30,
+          "description": "Chiffres obtenus (temps, argent)"
+        },
+        {
+          "name": "Résolution",
+          "weight": 20,
+          "description": "Solution idéale décrite par le client"
         }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
-      "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect intéressé mais qui trouve le prix élevé. Tes objections: 'C'est au-dessus de notre budget', 'J'ai vu moins cher ailleurs', 'Ça me semble cher pour ce que c'est'. Si l'élève creuse bien et démontre la valeur, deviens plus ouvert et pose des questions sur les modalités. S'il baisse son prix immédiatement ou se justifie, reste sceptique et continue à pousser ('C'est toujours trop cher', 'Vous pouvez faire mieux'). Teste-le en: (1) comparant à un concurrent moins cher, (2) invoquant un budget limité, (3) demandant une remise directement.",
-      
-      "emotional_focus": ["confidence", "composure", "assertiveness"],
-      
-      "common_mistakes": [
-        "Proposer une remise dès la première objection",
-        "Se justifier défensivement ('Oui mais on est les meilleurs...')",
-        "Accepter l'objection sans creuser",
-        "Comparer son prix à la concurrence négativement",
-        "Oublier de quantifier la valeur et le ROI",
-        "Ne pas isoler l'objection avant de négocier",
-        "Perdre confiance et baisser le ton"
-      ],
-      
-      "pro_tips": [
-        "'C'est cher par rapport à quoi?' est LA question magique. Elle force le prospect à préciser.",
-        "Ne jamais baisser son prix sans contrepartie. 'Je peux ajuster le prix si on enlève X ou si vous vous engagez sur Y.'",
-        "Le prospect qui négocie le prix est un prospect intéressé. C'est bon signe!",
-        "Toujours ramener au ROI: 'Pour 10k€, vous en gagnez 50k€. C'est 5x de retour.'"
-      ],
-      
-      "phrases_templates": {
-        "exploration": [
-          "C'est cher par rapport à quoi exactement?",
-          "Qu'est-ce qui vous fait dire que c'est trop cher?",
-          "Quel était le budget que vous aviez en tête?",
-          "Vous comparez à quoi?"
-        ],
-        "reframe_valeur": [
-          "Je comprends. Regardons ce que ça vous coûte de ne rien faire...",
-          "Quel est le coût de ce problème pour vous aujourd'hui?",
-          "Si on calcule le ROI sur 12 mois...",
-          "Ce n'est pas un coût, c'est un investissement qui rapporte [X]"
-        ],
-        "isolation": [
-          "Si on trouve une solution sur le prix, on avance ensemble?",
-          "Le prix est la seule chose qui vous retient?",
-          "À part le prix, est-ce que tout vous convient?",
-          "Si le prix était bon, vous signeriez aujourd'hui?"
-        ],
-        "alternatives": [
-          "Je peux ajuster le prix si on adapte le périmètre...",
-          "On peut étaler le paiement sur [X] mois...",
-          "Si vous vous engagez sur [durée], je peux faire un effort...",
-          "Je peux vous proposer [option réduite] pour [prix réduit]"
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "objections_timing",
-      "name": "Objections timing",
+      "id": 6,
+      "slug": "checklist_bebedc",
+      "name": "Checklist BEBEDC",
       "level": "medium",
-      "description": "Traitement des objections liées au timing: 'c'est pas le moment', 'rappellez-moi plus tard', 'on verra l'année prochaine'.",
+      "description": "Ne jamais sortir d'un rendez-vous sans les 6 informations essentielles.",
       "order": 6,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 6,
+      "duration_minutes": 30,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
       "learning_objectives": [
-        "Distinguer les vraies contraintes de timing des faux-fuyants",
-        "Créer de l'urgence sans manipulation",
-        "Transformer 'pas maintenant' en action concrète",
-        "Gérer le suivi des prospects qui repoussent"
+        "Obtenir les 6 informations BEBEDC",
+        "Poser les questions délicates (budget, décideur)",
+        "Identifier les red flags",
+        "Valider la qualité de l'opportunité"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Le vrai vs le faux timing",
-          "description": "'C'est pas le moment' peut signifier: vrai (contrainte réelle) ou faux (manque d'intérêt déguisé). Il faut distinguer les deux.",
-          "practical_tip": "Question test: 'Si on était dans 3 mois et que les conditions étaient réunies, qu'est-ce qui serait différent?' Une vraie contrainte a une réponse précise."
-        },
-        {
-          "name": "Le coût de l'inaction",
-          "description": "Chaque jour qui passe avec le problème non résolu a un coût. Le commercial doit le rendre visible.",
-          "practical_tip": "'Si vous attendez 6 mois, ce problème va vous coûter [X] de plus. Ça vaut le coup d'attendre?'"
-        },
-        {
-          "name": "L'ancrage temporel",
-          "description": "Plutôt que 'rappellez-moi plus tard', obtenir une date précise et une raison concrète.",
-          "practical_tip": "'Je comprends. Quand exactement est-ce que ce sera le bon moment? Et qu'est-ce qui aura changé à ce moment-là?'"
-        },
-        {
-          "name": "L'urgence légitime",
-          "description": "Créer de l'urgence basée sur des faits réels: disponibilité limitée, changement de prix, deadline externe.",
-          "practical_tip": "Urgence légitime: 'Notre promotion se termine le 30'. Manipulation: 'Si vous ne signez pas aujourd'hui, c'est fini.'"
-        }
-      ],
-      
+      "key_method": "BEBEDC (Besoin-Enjeu-Budget-Échéance-Décideur-Compétition)",
       "evaluation_criteria": [
         {
-          "name": "Diagnostic du timing",
-          "type": "content",
+          "name": "Besoin & Enjeu",
+          "weight": 20,
+          "description": "Besoin clair et conséquences identifiées"
+        },
+        {
+          "name": "Budget obtenu",
           "weight": 25,
-          "description": "Capacité à identifier si c'est une vraie contrainte ou un prétexte",
-          "success_indicators": [
-            "Pose des questions pour comprendre la raison",
-            "Identifie les contraintes réelles (budget, projet, équipe)",
-            "Détecte les faux-fuyants",
-            "Comprend le calendrier du prospect"
-          ],
-          "failure_indicators": [
-            "Accepte l'objection sans creuser",
-            "Confond faux-fuyant et vraie contrainte",
-            "Ne cherche pas à comprendre le contexte",
-            "Suppose que c'est toujours un prétexte"
-          ]
+          "description": "Fourchette budgétaire connue"
         },
         {
-          "name": "Création d'urgence appropriée",
-          "type": "content",
+          "name": "Décideur identifié",
           "weight": 25,
-          "description": "Utilisation d'éléments légitimes pour créer de l'urgence",
-          "success_indicators": [
-            "Quantifie le coût de l'attente",
-            "Utilise des urgences factuelles",
-            "Fait visualiser l'impact du délai",
-            "Évite la manipulation"
-          ],
-          "failure_indicators": [
-            "Menace artificielle ('dernière chance')",
-            "Aucun sens de l'urgence créé",
-            "Urgence non crédible",
-            "Manipulation évidente"
-          ]
+          "description": "Process de décision compris"
         },
         {
-          "name": "Obtention d'engagement",
-          "type": "content",
-          "weight": 25,
-          "description": "Transformer le 'plus tard' en action concrète",
-          "success_indicators": [
-            "Obtient une date précise de rappel",
-            "Définit ce qui va changer d'ici là",
-            "Fixe un prochain point concret",
-            "Fait avancer même si c'est petit"
-          ],
-          "failure_indicators": [
-            "Accepte un 'rappellez-moi' vague",
-            "Pas de date ni d'engagement",
-            "Laisse le prospect en contrôle total",
-            "Aucune prochaine étape définie"
-          ]
+          "name": "Échéance & Compétition",
+          "weight": 20,
+          "description": "Timing et concurrence connus"
         },
         {
-          "name": "Gestion de la relation",
-          "type": "delivery",
-          "weight": 15,
-          "description": "Maintenir une relation positive malgré le report",
-          "success_indicators": [
-            "Reste positif et professionnel",
-            "Ne montre pas de frustration",
-            "Laisse la porte ouverte",
-            "Propose de la valeur en attendant"
-          ],
-          "failure_indicators": [
-            "Montre de l'agacement",
-            "Devient insistant",
-            "Abandonne trop vite",
-            "Brûle la relation"
-          ]
-        },
-        {
-          "name": "Adaptabilité",
-          "type": "content",
+          "name": "Red flags détectés",
           "weight": 10,
-          "description": "S'adapter au contexte réel du prospect",
-          "success_indicators": [
-            "Propose des alternatives adaptées",
-            "Suggère des étapes intermédiaires",
-            "Offre de la flexibilité",
-            "Trouve des compromis créatifs"
-          ],
-          "failure_indicators": [
-            "Rigide sur le timing",
-            "Pas de proposition alternative",
-            "Ignore les contraintes réelles",
-            "One-size-fits-all"
-          ]
+          "description": "Signaux d'alerte identifiés"
         }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
-      "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect qui repousse la décision. Utilise des objections comme: 'Ce n'est pas le bon moment', 'Rappellez-moi en janvier', 'On a d'autres priorités', 'Je suis débordé là'. Teste si l'élève distingue les vrais des faux obstacles. Si c'est une vraie contrainte (à toi de décider): donne des détails précis (budget voté en mars, nouveau directeur arrive, projet en cours jusqu'en décembre). Si c'est un faux-fuyant: reste vague et change de raison si l'élève creuse. Récompense les bonnes questions en révélant progressivement ton vrai calendrier.",
-      
-      "emotional_focus": ["patience", "persistence", "positivity"],
-      
-      "common_mistakes": [
-        "Accepter 'rappellez-moi plus tard' sans date précise",
-        "Ne pas créer d'urgence du tout",
-        "Créer une fausse urgence qui détruit la confiance",
-        "Abandonner dès la première objection timing",
-        "Ne pas comprendre les vraies contraintes du prospect",
-        "Être trop insistant et agressif",
-        "Oublier de proposer de la valeur pendant l'attente"
-      ],
-      
-      "pro_tips": [
-        "'Rappellez-moi plus tard' n'existe pas. Obtiens toujours une date précise: 'Le 15 à 10h, ça vous va?'",
-        "Calcule le coût de l'attente: 'Chaque mois de retard vous coûte [X]. Sur 6 mois, ça fait [Y].'",
-        "Propose un 'pied dans la porte': 'En attendant, on pourrait au moins faire [petite étape]?'",
-        "Les meilleurs commerciaux créent de l'urgence en montrant l'opportunité qui passe, pas la menace."
-      ],
-      
-      "phrases_templates": {
-        "diagnostic": [
-          "Je comprends. Qu'est-ce qui fait que ce n'est pas le bon moment?",
-          "Qu'est-ce qui va être différent dans 3 mois?",
-          "Concrètement, qu'est-ce qui vous empêche d'avancer maintenant?",
-          "C'est une question de budget, de priorités, ou autre chose?"
-        ],
-        "cout_inaction": [
-          "Ce problème vous coûte [X] par mois. En attendant 6 mois, ça fait [Y].",
-          "Combien d'opportunités allez-vous rater en attendant?",
-          "Le marché évolue. Qu'est-ce que ça coûte d'être en retard?",
-          "Si le problème persiste 6 mois de plus, quel impact sur vos résultats?"
-        ],
-        "engagement": [
-          "Je comprends. Quel serait le meilleur moment pour qu'on se rappelle?",
-          "On se cale un point le [date] pour faire le point?",
-          "En attendant, est-ce qu'on pourrait au moins [petite action]?",
-          "D'ici là, que puis-je vous envoyer pour vous aider à avancer?"
-        ],
-        "urgence_legitime": [
-          "Notre offre de lancement se termine le [date]",
-          "Nos équipes ont des disponibilités limitées ce trimestre",
-          "Le tarif change au 1er janvier",
-          "Vos concurrents avancent sur ce sujet"
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "objections_concurrence",
-      "name": "Objections concurrence",
+      "id": 7,
+      "slug": "qualification_columbo",
+      "name": "Qualification - COLUMBO",
       "level": "medium",
-      "description": "Traitement des objections liées à la concurrence: 'on travaille déjà avec X', 'on consulte d'autres fournisseurs', 'pourquoi vous et pas eux?'",
+      "description": "Identifier rapidement si une affaire mérite votre temps avec la méthode COLUMBO.",
       "order": 7,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 7,
+      "duration_minutes": 30,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
       "learning_objectives": [
-        "Répondre aux comparaisons avec la concurrence sans dénigrer",
-        "Identifier les failles du concurrent actuel",
-        "Positionner sa différenciation de manière crédible",
-        "Gérer les prospects déjà engagés ailleurs"
+        "Appliquer la méthode COLUMBO",
+        "Identifier les 3 critères éliminatoires (LUM)",
+        "Savoir qualifier OUT proprement",
+        "Ne pas perdre de temps sur les mauvaises affaires"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Ne jamais dénigrer",
-          "description": "Critiquer la concurrence dégrade ta crédibilité. Mets en avant tes forces, pas leurs faiblesses.",
-          "practical_tip": "'Je connais [concurrent], ils font du bon travail. Notre approche est différente sur [X], ce qui apporte [bénéfice].' Jamais: 'Ils sont nuls.'"
-        },
-        {
-          "name": "La question de satisfaction",
-          "description": "Quand un prospect travaille déjà avec un concurrent, explorer sa satisfaction actuelle.",
-          "practical_tip": "'Vous travaillez avec eux depuis combien de temps? Qu'est-ce qui fonctionne bien? Et qu'est-ce qui pourrait être amélioré?'"
-        },
-        {
-          "name": "Le positionnement différenciateur",
-          "description": "Identifier 2-3 points de différenciation clairs et les relier aux besoins du prospect.",
-          "practical_tip": "Pas juste 'On est différents sur X'. Mais: 'On est différents sur X, et pour votre contexte, ça signifie [bénéfice concret].'"
-        },
-        {
-          "name": "La stratégie du second fournisseur",
-          "description": "Proposer de commencer en parallèle plutôt que de remplacer immédiatement.",
-          "practical_tip": "'Et si on commençait sur un périmètre limité en parallèle? Vous pourriez comparer en conditions réelles.'"
-        }
-      ],
-      
+      "key_method": "COLUMBO (Contexte-Objectif-Levier-Urgence-Moyens-Bénéficiaires-Obstacles)",
       "evaluation_criteria": [
         {
-          "name": "Attitude face à la concurrence",
-          "type": "delivery",
-          "weight": 20,
-          "description": "Réaction professionnelle et respectueuse envers les concurrents",
-          "success_indicators": [
-            "Reconnaît les qualités du concurrent",
-            "Ne dénigre jamais",
-            "Reste confiant sans arrogance",
-            "Professionnalisme constant"
-          ],
-          "failure_indicators": [
-            "Critique directe du concurrent",
-            "Dénigrement ou ironie",
-            "Attitude défensive",
-            "Comparaison agressive"
-          ]
-        },
-        {
-          "name": "Exploration de la situation",
-          "type": "content",
-          "weight": 25,
-          "description": "Comprendre la relation actuelle avec le concurrent",
-          "success_indicators": [
-            "Questionne sur la satisfaction actuelle",
-            "Identifie les points de friction",
-            "Comprend l'historique de la relation",
-            "Découvre ce qui manque"
-          ],
-          "failure_indicators": [
-            "Ne questionne pas la satisfaction",
-            "Suppose connaître les problèmes",
-            "Ignore la relation existante",
-            "Attaque directement le concurrent"
-          ]
-        },
-        {
-          "name": "Différenciation pertinente",
-          "type": "content",
+          "name": "Levier identifié",
           "weight": 30,
-          "description": "Mise en avant de points de différenciation liés aux besoins du prospect",
-          "success_indicators": [
-            "Différenciateurs clairs et précis",
-            "Liés aux besoins exprimés",
-            "Bénéfices concrets, pas juste features",
-            "Crédible et vérifiable"
-          ],
-          "failure_indicators": [
-            "Différenciateurs génériques",
-            "Non liés aux besoins du prospect",
-            "Claims non prouvables",
-            "Trop de différenciateurs (confusion)"
-          ]
+          "description": "Raison d'agir maintenant découverte"
         },
         {
-          "name": "Proposition alternative",
-          "type": "content",
-          "weight": 15,
-          "description": "Offrir une voie d'entrée adaptée au contexte",
-          "success_indicators": [
-            "Propose un test ou pilote",
-            "Suggère une cohabitation",
-            "Offre une entrée en matière progressive",
-            "S'adapte à la situation contractuelle"
-          ],
-          "failure_indicators": [
-            "Exige un remplacement total immédiat",
-            "Pas de solution intermédiaire",
-            "Ignore les contraintes contractuelles",
-            "Approche tout-ou-rien"
-          ]
+          "name": "Urgence validée",
+          "weight": 25,
+          "description": "Échéance concrète obtenue"
         },
         {
-          "name": "Création de doute constructif",
-          "type": "content",
-          "weight": 10,
-          "description": "Faire réfléchir le prospect sur sa situation actuelle",
-          "success_indicators": [
-            "Questions qui font réfléchir",
-            "Mise en lumière de besoins non couverts",
-            "Aide à visualiser ce qui pourrait être mieux",
-            "Doute constructif, pas manipulation"
-          ],
-          "failure_indicators": [
-            "Aucun questionnement",
-            "Manipulation ou peur",
-            "Trop agressif",
-            "Prospect se braque"
-          ]
+          "name": "Moyens confirmés",
+          "weight": 25,
+          "description": "Budget disponible validé"
+        },
+        {
+          "name": "Décision IN/OUT",
+          "weight": 20,
+          "description": "Qualification correcte de l'opportunité"
         }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
-      "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect qui travaille déjà avec un concurrent ou qui consulte plusieurs fournisseurs. Utilise des objections comme: 'On travaille déjà avec [concurrent] depuis 3 ans', 'On est en train de comparer plusieurs solutions', 'Pourquoi je changerais?'. Révèle progressivement des insatisfactions avec ton fournisseur actuel SI l'élève pose les bonnes questions (service client lent, fonctionnalité manquante, relation qui s'est dégradée). Si l'élève dénigre le concurrent, défends-le: 'Quand même, ils font du bon boulot'. Si l'élève reste professionnel et creuse, deviens plus ouvert.",
-      
-      "emotional_focus": ["confidence", "professionalism", "respect"],
-      
-      "common_mistakes": [
-        "Dénigrer la concurrence ('Ah, [concurrent], ils sont nuls!')",
-        "Se comparer sur tout et perdre le prospect",
-        "Ne pas explorer la satisfaction actuelle",
-        "Avoir des différenciateurs génériques et non liés au prospect",
-        "Exiger un remplacement total immédiat",
-        "Devenir défensif quand le concurrent est mentionné",
-        "Oublier de proposer une entrée en matière progressive"
-      ],
-      
-      "pro_tips": [
-        "La question magique: 'Si vous pouviez changer une chose chez votre fournisseur actuel, ce serait quoi?'",
-        "Dis toujours du bien du concurrent: 'Ils font du bon travail.' Puis: 'Notre approche est différente sur...'",
-        "Propose le 'second fournisseur': moins menaçant que le remplacement, permet de faire ses preuves.",
-        "Les contrats ont des fins. Positionne-toi pour le renouvellement même si tu ne gagnes pas aujourd'hui."
-      ],
-      
-      "phrases_templates": {
-        "reconnaissance": [
-          "Je connais [concurrent], c'est une bonne entreprise.",
-          "Vous travaillez avec eux depuis longtemps, c'est qu'ils font des choses bien.",
-          "Je comprends, [concurrent] a une bonne réputation.",
-          "Ils sont sérieux, je comprends votre fidélité."
-        ],
-        "exploration_satisfaction": [
-          "Qu'est-ce qui fonctionne bien avec eux aujourd'hui?",
-          "Si vous pouviez améliorer quelque chose dans cette relation, ce serait quoi?",
-          "Sur une échelle de 1 à 10, vous êtes à combien avec eux?",
-          "Qu'est-ce qui vous manque parfois?"
-        ],
-        "differenciation": [
-          "Notre approche est différente sur [X], ce qui vous permettrait de [bénéfice].",
-          "Là où on se distingue, c'est [X]. Concrètement, pour vous, ça veut dire [Y].",
-          "Ce qui nous rend uniques: [X]. Pour votre situation, ça signifie [Y].",
-          "Ce que nos clients apprécient particulièrement, c'est [X], parce que [bénéfice]."
-        ],
-        "proposition_alternative": [
-          "Et si on commençait sur un périmètre limité pour que vous puissiez comparer?",
-          "Je peux vous proposer un pilote sans engagement.",
-          "On pourrait cohabiter le temps de vous faire votre propre idée.",
-          "Quand votre contrat arrive-t-il à échéance? Je peux me positionner pour le renouvellement."
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "negociation",
-      "name": "Négociation",
+      "id": 8,
+      "slug": "cartographie_decideurs",
+      "name": "Cartographie des Décideurs",
       "level": "medium",
-      "description": "Techniques de négociation commerciale pour défendre ses prix et conditions tout en créant de la valeur pour les deux parties.",
+      "description": "Identifier tous les acteurs du processus de décision et trouver votre champion.",
       "order": 8,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 8,
+      "duration_minutes": 30,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
       "learning_objectives": [
-        "Maîtriser les principes fondamentaux de la négociation",
-        "Créer de la valeur plutôt que la partager",
-        "Obtenir des contreparties pour chaque concession",
-        "Clôturer une négociation sur un accord mutuellement bénéfique"
+        "Identifier les 4 rôles (Décideur, Influenceur, Utilisateur, Bloqueur)",
+        "Trouver et nourrir un champion interne",
+        "Adapter son discours à chaque rôle",
+        "Anticiper les objections des bloqueurs"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Toute concession a une contrepartie",
-          "description": "Ne jamais donner sans recevoir. Chaque geste commercial doit être échangé contre quelque chose.",
-          "practical_tip": "'Je peux faire un geste sur le prix SI vous vous engagez sur [durée/volume/paiement anticipé].' Jamais: 'OK, je baisse.'"
-        },
-        {
-          "name": "La BATNA (meilleure alternative)",
-          "description": "Connaître ta meilleure alternative si la négociation échoue. Et essayer de découvrir celle du prospect.",
-          "practical_tip": "Ta force en négociation = ta capacité à dire non. Si tu DOIS signer, tu es faible."
-        },
-        {
-          "name": "Créer le gâteau avant de le partager",
-          "description": "Chercher des options qui augmentent la valeur totale plutôt que de se battre sur le partage.",
-          "practical_tip": "Plutôt que négocier le prix, explore: paiement étalé, services additionnels, engagement long terme, recommandations..."
-        },
-        {
-          "name": "L'ancrage",
-          "description": "Le premier chiffre posé influence toute la négociation. Commence haut (ou toi en premier si tu es vendeur).",
-          "practical_tip": "Annonce ton prix complet d'abord. Si le prospect ancre bas, recadre sur la valeur avant de discuter chiffres."
-        }
-      ],
-      
+      "key_method": "4 RÔLES + CHAMPION",
       "evaluation_criteria": [
         {
-          "name": "Contreparties obtenues",
-          "type": "content",
+          "name": "Décideur identifié",
           "weight": 30,
-          "description": "Capacité à obtenir quelque chose en échange de chaque concession",
-          "success_indicators": [
-            "Demande systématiquement une contrepartie",
-            "Obtient engagement, durée, ou volume",
-            "Échange équilibré",
-            "Ne donne jamais sans recevoir"
-          ],
-          "failure_indicators": [
-            "Donne sans recevoir",
-            "Concessions successives sans retour",
-            "Ne demande pas de contrepartie",
-            "Se fait 'grignoter'"
-          ]
+          "description": "Celui qui signe trouvé"
         },
         {
-          "name": "Création de valeur",
-          "type": "content",
-          "weight": 25,
-          "description": "Explorer des options qui augmentent la valeur totale",
-          "success_indicators": [
-            "Propose des alternatives créatives",
-            "Trouve des options win-win",
-            "Élargit le périmètre de discussion",
-            "Identifie les vrais intérêts"
-          ],
-          "failure_indicators": [
-            "Négocie uniquement sur le prix",
-            "Vision zero-sum",
-            "Pas de créativité",
-            "Ignore les autres leviers"
-          ]
-        },
-        {
-          "name": "Maintien de position",
-          "type": "delivery",
+          "name": "Influenceurs mappés",
           "weight": 20,
-          "description": "Rester ferme tout en restant ouvert",
-          "success_indicators": [
-            "Défend son prix avec confiance",
-            "Dit non quand nécessaire",
-            "Reste calme sous pression",
-            "Ferme mais pas rigide"
-          ],
-          "failure_indicators": [
-            "Cède trop facilement",
-            "Incapable de dire non",
-            "Devient agressif ou rigide",
-            "Perd confiance"
-          ]
+          "description": "Conseillers du décideur identifiés"
         },
         {
-          "name": "Gestion du processus",
-          "type": "content",
-          "weight": 15,
-          "description": "Structurer et faire avancer la négociation",
-          "success_indicators": [
-            "Clarifie les points de discussion",
-            "Fait des récapitulatifs",
-            "Guide vers un accord",
-            "Garde le contrôle du tempo"
-          ],
-          "failure_indicators": [
-            "Négociation chaotique",
-            "Perd le fil",
-            "Subit le rythme du prospect",
-            "Pas de structure"
-          ]
+          "name": "Bloqueurs anticipés",
+          "weight": 25,
+          "description": "IT, juridique, achats pris en compte"
         },
         {
-          "name": "Clôture de négociation",
-          "type": "content",
-          "weight": 10,
-          "description": "Finaliser l'accord de manière claire",
-          "success_indicators": [
-            "Récapitule les termes",
-            "Confirme l'accord",
-            "Définit les prochaines étapes",
-            "Formalise l'engagement"
-          ],
-          "failure_indicators": [
-            "Accord flou",
-            "Pas de confirmation",
-            "Points en suspens",
-            "Pas de prochaines étapes"
-          ]
+          "name": "Champion cultivé",
+          "weight": 25,
+          "description": "Allié interne identifié et nourri"
         }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
-      "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect qui veut négocier dur. Tes tactiques: (1) Demander une remise sans rien offrir, (2) Comparer au concurrent moins cher, (3) Jouer la montre ('On verra après'), (4) Le 'juste un petit geste'. Teste si l'élève demande des contreparties. Si oui, négocie de bonne foi et trouve un accord. Si non, continue à pousser ('Encore un effort', 'C'est pas assez'). Tu peux céder sur: engagement plus long, paiement anticipé, recommandations, volume supplémentaire. Ne cède jamais sans que l'élève demande quelque chose en échange.",
-      
-      "emotional_focus": ["assertiveness", "composure", "flexibility"],
-      
-      "common_mistakes": [
-        "Céder sans obtenir de contrepartie",
-        "Négocier uniquement sur le prix",
-        "Annoncer son prix minimum trop tôt",
-        "Ne pas savoir dire non",
-        "Se laisser intimider par un prospect difficile",
-        "Oublier de récapituler l'accord",
-        "Faire des concessions en cascade"
-      ],
-      
-      "pro_tips": [
-        "La phrase magique: 'Je peux faire ça SI vous...' Jamais 'je peux faire ça.'",
-        "Ton prix n'est jamais trop haut. C'est la valeur perçue qui est trop basse. Travaille là-dessus d'abord.",
-        "Négocie sur plus que le prix: durée, volume, paiement, services, exclusivité, recommandations...",
-        "Le silence est ton ami. Après ta proposition, tais-toi. Celui qui parle en premier perd."
-      ],
-      
-      "phrases_templates": {
-        "contreparties": [
-          "Je peux faire un effort sur le prix si vous vous engagez sur 24 mois au lieu de 12.",
-          "On peut ajuster si vous réglez en une fois plutôt qu'en mensualités.",
-          "Si vous nous recommandez à 3 entreprises, je peux vous offrir [X].",
-          "Je baisse de 10% si on signe avant la fin du mois."
-        ],
-        "refus_poli": [
-          "Je comprends votre demande, mais ce n'est pas possible à ce niveau de prix.",
-          "Mon prix est déjà ajusté au maximum pour ce périmètre.",
-          "Je préfère vous dire non maintenant plutôt que mal vous servir ensuite.",
-          "Ce n'est pas négociable, mais je peux ajuster sur [autre chose]."
-        ],
-        "creation_valeur": [
-          "Plutôt que baisser le prix, et si on ajoutait [service] pour le même tarif?",
-          "Je peux inclure [bonus] si on finalise cette semaine.",
-          "Et si on étalait le paiement pour faciliter votre trésorerie?",
-          "On pourrait envisager un engagement plus long avec un tarif dégressif."
-        ],
-        "cloture": [
-          "Donc on est d'accord sur: [récapitulatif]. C'est bon pour vous?",
-          "Pour résumer: [termes]. Je vous envoie le contrat?",
-          "On part sur [accord]. Qu'est-ce qu'il vous faut pour finaliser?",
-          "On se serre la main là-dessus?"
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "closing",
-      "name": "Closing",
+      "id": 9,
+      "slug": "profils_psychologiques",
+      "name": "Psychologie et Profils",
       "level": "medium",
-      "description": "Techniques pour amener naturellement le prospect vers la décision et obtenir l'engagement final.",
+      "description": "Adapter son discours aux 6 profils psychologiques et aux 4 situations d'achat.",
       "order": 9,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
-      "learning_objectives": [
-        "Reconnaître les signaux d'achat",
-        "Utiliser les techniques de closing appropriées au contexte",
-        "Surmonter les hésitations de dernière minute",
-        "Clôturer naturellement sans pression excessive"
-      ],
-      
-      "key_concepts": [
-        {
-          "name": "Les signaux d'achat",
-          "description": "Indicateurs verbaux et non-verbaux que le prospect est prêt à décider. Questions sur la mise en œuvre, les délais, les conditions...",
-          "practical_tip": "Quand le prospect demande 'Et pour le démarrage, ça se passe comment?', c'est un signal d'achat. Réponds, puis close!"
-        },
-        {
-          "name": "Le closing assumptif",
-          "description": "Parler comme si la décision était prise. 'Quand on démarre...' au lieu de 'Si vous décidez...'",
-          "practical_tip": "'Pour la mise en place, vous préférez début mars ou mi-mars?' Pas: 'Alors, vous êtes intéressé?'"
-        },
-        {
-          "name": "Le récapitulatif valeur",
-          "description": "Résumer les bénéfices avant de demander l'engagement. Rappeler pourquoi c'est une bonne décision.",
-          "practical_tip": "'Donc, on résout [problème], vous gagnez [bénéfice], et on démarre [date]. On avance?'"
-        },
-        {
-          "name": "Le closing par alternative",
-          "description": "Proposer deux options, les deux impliquant un oui. 'Vous préférez A ou B?'",
-          "practical_tip": "'Vous préférez la formule mensuelle ou annuelle?' Pas: 'Vous voulez souscrire?'"
-        }
-      ],
-      
-      "evaluation_criteria": [
-        {
-          "name": "Détection des signaux",
-          "type": "content",
-          "weight": 20,
-          "description": "Capacité à identifier quand le prospect est prêt",
-          "success_indicators": [
-            "Repère les questions d'implémentation",
-            "Détecte le changement de ton",
-            "Identifie les signaux positifs",
-            "Agit sur les signaux reçus"
-          ],
-          "failure_indicators": [
-            "Rate les signaux d'achat",
-            "Continue à vendre après le signal",
-            "Ne tente pas de closer",
-            "Attend que le prospect demande"
-          ]
-        },
-        {
-          "name": "Technique de closing",
-          "type": "content",
-          "weight": 25,
-          "description": "Utilisation appropriée des techniques de closing",
-          "success_indicators": [
-            "Closing adapté au contexte",
-            "Transition naturelle vers la demande",
-            "Technique assumptive bien utilisée",
-            "Alternative proposée si pertinent"
-          ],
-          "failure_indicators": [
-            "Closing brusque ou maladroit",
-            "Technique inadaptée",
-            "Trop de techniques différentes",
-            "Pas de tentative de closing"
-          ]
-        },
-        {
-          "name": "Gestion des hésitations",
-          "type": "content",
-          "weight": 25,
-          "description": "Surmonter les doutes de dernière minute",
-          "success_indicators": [
-            "Identifie la cause de l'hésitation",
-            "Rassure sans minimiser",
-            "Propose une solution au doute",
-            "Relance positivement"
-          ],
-          "failure_indicators": [
-            "Ignore l'hésitation",
-            "S'impatiente ou presse",
-            "Abandonne au premier doute",
-            "Devient agressif"
-          ]
-        },
-        {
-          "name": "Naturel et timing",
-          "type": "delivery",
-          "weight": 20,
-          "description": "Le closing arrive naturellement au bon moment",
-          "success_indicators": [
-            "Transition fluide",
-            "Timing approprié",
-            "Ton confiant mais pas pressant",
-            "Respecte le rythme du prospect"
-          ],
-          "failure_indicators": [
-            "Closing prématuré",
-            "Closing trop tardif",
-            "Ton anxieux ou pressant",
-            "Rupture de naturel"
-          ]
-        },
-        {
-          "name": "Confirmation de l'engagement",
-          "type": "content",
-          "weight": 10,
-          "description": "Sécuriser et formaliser l'accord",
-          "success_indicators": [
-            "Confirme l'accord clairement",
-            "Définit les prochaines étapes",
-            "Remercie et félicite",
-            "Enchaîne sur l'action"
-          ],
-          "failure_indicators": [
-            "Accord pas confirmé",
-            "Prochaines étapes floues",
-            "Laisse le doute s'installer",
-            "Fin abrupte"
-          ]
-        }
-      ],
-      
-      "pass_threshold": 65,
-      "excellence_threshold": 85,
+      "day": 9,
+      "duration_minutes": 30,
+      "pass_threshold": 70,
       "scenarios_required": 3,
-      
-      "prospect_instructions": "Tu es un prospect convaincu mais qui hésite au moment de s'engager. Donne des signaux d'achat ('C'est intéressant', 'Comment ça se passe pour démarrer?', 'Vous avez des références?'). Quand l'élève tente de closer: (1) Si mal fait (trop brusque, pas de récapitulatif): hésite et pose des questions supplémentaires, (2) Si bien fait (naturel, récapitulatif valeur, assumptif): cède progressivement. Exprime des doutes de dernière minute ('Je ne suis pas sûr', 'C'est une grosse décision') pour voir comment il gère. Un bon closing te fait dire oui.",
-      
-      "emotional_focus": ["confidence", "patience", "positivity"],
-      
-      "common_mistakes": [
-        "Ne jamais demander l'engagement",
-        "Continuer à vendre après un signal d'achat",
-        "Closing trop brusque sans transition",
-        "Devenir pushy quand le prospect hésite",
-        "Utiliser des techniques de manipulation",
-        "Ne pas confirmer l'accord clairement",
-        "Oublier de définir les prochaines étapes"
-      ],
-      
-      "pro_tips": [
-        "Le meilleur moment pour closer: juste après que le prospect a dit quelque chose de positif.",
-        "Ne demande jamais 'Alors, on fait affaire?' Utilise l'assumptif: 'Pour démarrer, vous préférez [A ou B]?'",
-        "Après avoir posé ta question de closing, tais-toi. Le silence travaille pour toi.",
-        "Un prospect qui hésite n'est pas un non. C'est une opportunité de rassurer et clarifier."
-      ],
-      
-      "phrases_templates": {
-        "signaux_achat": [
-          "Question sur délai/implémentation → Signal positif",
-          "Question sur références/garanties → Besoin de réassurance",
-          "Demande de documentation/contrat → Très positif",
-          "Discussion avec un tiers ('Je vais en parler à...') → Décision proche"
-        ],
-        "closing_assumptif": [
-          "Pour le démarrage, vous préférez début mars ou mi-mars?",
-          "Je vous prépare le contrat pour validation?",
-          "On cale une date d'implémentation?",
-          "Je vous inscris sur notre prochain créneau d'onboarding?"
-        ],
-        "closing_alternative": [
-          "Vous préférez la formule Standard ou Premium?",
-          "Mensuel ou annuel, qu'est-ce qui vous arrange?",
-          "On démarre avec le module A ou le pack complet?",
-          "Paiement en une fois ou en trois?"
-        ],
-        "closing_recapitulatif": [
-          "On a vu que [problème]. Avec [solution], vous obtenez [bénéfice 1, 2, 3]. On démarre?",
-          "Pour résumer: [récapitulatif]. Ça répond à vos attentes?",
-          "Donc: [valeur 1], [valeur 2], [valeur 3], et on commence [date]. C'est parti?",
-          "Vous m'avez dit que [besoin]. On règle ça avec [solution]. On avance ensemble?"
-        ],
-        "gestion_hesitation": [
-          "Qu'est-ce qui vous fait hésiter?",
-          "Qu'est-ce qu'il vous faudrait pour être 100% confiant?",
-          "Y a-t-il quelque chose que je peux clarifier?",
-          "C'est normal d'hésiter. Qu'est-ce qui vous rassurerait?"
-        ]
-      }
-    },
-    
-    {
-      "id": "prospect_difficile",
-      "name": "Prospect difficile",
-      "level": "expert",
-      "description": "Gestion des prospects agressifs, méfiants, ou particulièrement exigeants qui testent vos limites professionnelles.",
-      "order": 10,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
       "learning_objectives": [
-        "Garder son calme face à l'agressivité ou l'hostilité",
-        "Désamorcer les situations tendues",
-        "Transformer un prospect difficile en client satisfait",
-        "Savoir quand persister et quand abandonner"
+        "Identifier les 6 profils (SÉDAIÉ)",
+        "Adapter son vocabulaire à chaque profil",
+        "Reconnaître les 4 situations d'achat",
+        "Ajuster l'approche selon la réceptivité"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Le prospect teste, pas attaque",
-          "description": "Un prospect difficile teste souvent votre professionnalisme. Ce n'est pas personnel. Restez détaché émotionnellement.",
-          "practical_tip": "Respirez. Comptez jusqu'à 3 avant de répondre. Ne montrez jamais d'agacement."
-        },
-        {
-          "name": "L'éponge émotionnelle",
-          "description": "Absorber l'énergie négative sans la renvoyer. Répondre au contenu, pas à l'émotion.",
-          "practical_tip": "'Je comprends votre frustration' + réponse factuelle. Jamais: 'Calmez-vous' ou 'C'est pas de ma faute'."
-        },
-        {
-          "name": "Le recadrage assertif",
-          "description": "Poser des limites tout en restant professionnel. Refuser l'inacceptable sans perdre le prospect.",
-          "practical_tip": "'Je suis là pour vous aider, mais j'ai besoin qu'on puisse échanger de manière constructive.'"
-        },
-        {
-          "name": "La question désarmante",
-          "description": "Face à l'agressivité, poser une question sincère qui force le prospect à réfléchir.",
-          "practical_tip": "'Qu'est-ce qui vous permettrait de vous sentir en confiance avec nous?' Ça change la dynamique."
-        }
-      ],
-      
+      "key_method": "6 PROFILS SÉDAIÉ",
       "evaluation_criteria": [
         {
-          "name": "Maîtrise émotionnelle",
-          "type": "delivery",
+          "name": "Profil identifié",
           "weight": 30,
-          "description": "Rester calme et professionnel sous la pression",
-          "success_indicators": [
-            "Voix stable et posée",
-            "Pas de réaction émotionnelle",
-            "Respiration contrôlée",
-            "Détachement des attaques"
-          ],
-          "failure_indicators": [
-            "Voix qui monte ou tremble",
-            "Réponse émotionnelle visible",
-            "Se justifie excessivement",
-            "Perd patience"
-          ]
+          "description": "Type de personnalité reconnu"
         },
         {
-          "name": "Techniques de désamorçage",
-          "type": "content",
-          "weight": 25,
-          "description": "Utilisation d'outils pour calmer la situation",
-          "success_indicators": [
-            "Valide l'émotion du prospect",
-            "Recentre sur les faits",
-            "Pose des questions ouvertes",
-            "Propose des solutions"
-          ],
-          "failure_indicators": [
-            "Escalade le conflit",
-            "Ignore l'émotion",
-            "Devient défensif",
-            "Se braque"
-          ]
+          "name": "Vocabulaire adapté",
+          "weight": 30,
+          "description": "Mots clés utilisés correctement"
         },
         {
-          "name": "Maintien du cap",
-          "type": "content",
+          "name": "Situation d'achat",
           "weight": 20,
-          "description": "Continuer à avancer vers l'objectif malgré les difficultés",
-          "success_indicators": [
-            "Garde le fil de la conversation",
-            "Revient sur les besoins",
-            "Ne se laisse pas distraire",
-            "Progresse vers la solution"
-          ],
-          "failure_indicators": [
-            "Se laisse détourner",
-            "Perd l'objectif de vue",
-            "Abandonne trop vite",
-            "Se focalise sur le conflit"
-          ]
+          "description": "Contexte de réceptivité compris"
         },
         {
-          "name": "Assertivité",
-          "type": "delivery",
-          "weight": 15,
-          "description": "Poser ses limites avec respect",
-          "success_indicators": [
-            "Dit non quand nécessaire",
-            "Pose des limites claires",
-            "Reste ferme avec respect",
-            "Ne se fait pas marcher dessus"
-          ],
-          "failure_indicators": [
-            "Se soumet à tout",
-            "Aucune limite posée",
-            "Devient agressif en retour",
-            "Perd sa crédibilité"
-          ]
-        },
-        {
-          "name": "Conversion positive",
-          "type": "content",
-          "weight": 10,
-          "description": "Transformer une situation négative en opportunité",
-          "success_indicators": [
-            "Trouve un terrain d'entente",
-            "Crée un moment de connexion",
-            "Le prospect se détend",
-            "Avance vers une issue positive"
-          ],
-          "failure_indicators": [
-            "Situation reste tendue",
-            "Aucune amélioration",
-            "Relation détériorée",
-            "Prospect perdu"
-          ]
+          "name": "Approche ajustée",
+          "weight": 20,
+          "description": "Stratégie adaptée au profil"
         }
-      ],
-      
-      "pass_threshold": 70,
-      "excellence_threshold": 90,
-      "scenarios_required": 4,
-      
-      "prospect_instructions": "Tu es un prospect difficile et exigeant. Types de comportements à adopter (varie selon le scénario): (1) Agressif: couper la parole, ton sec, critiques directes ('Vous êtes tous les mêmes', 'Ça ne m'intéresse pas'), (2) Méfiant: sceptique sur tout, demande des preuves, doute de chaque affirmation, (3) Pressé: impatient, interrompt, veut aller vite, (4) Dominateur: veut avoir le dernier mot, teste l'autorité. SI l'élève reste calme, professionnel, et utilise de bonnes techniques → adoucis-toi progressivement. SI l'élève se braque, devient défensif, ou perd son calme → intensifie la difficulté.",
-      
-      "emotional_focus": ["composure", "patience", "assertiveness", "resilience"],
-      
-      "common_mistakes": [
-        "Se laisser déstabiliser émotionnellement",
-        "Répondre à l'agressivité par l'agressivité",
-        "Se justifier excessivement",
-        "Abandonner trop vite face à la difficulté",
-        "Ne pas poser de limites claires",
-        "Prendre les attaques personnellement",
-        "Perdre de vue l'objectif de la conversation"
-      ],
-      
-      "pro_tips": [
-        "La phrase magique: 'Je comprends, c'est normal de vouloir [besoin légitime].' Ça valide sans céder.",
-        "Face à l'agressivité, baissez votre voix plutôt que de la monter. Ça force l'autre à s'adapter.",
-        "La question 'Qu'est-ce qui vous ferait confiance?' transforme un adversaire en partenaire.",
-        "Un prospect difficile qui devient client est souvent le plus fidèle. Il teste avant de s'engager."
-      ],
-      
-      "phrases_templates": {
-        "validation_emotion": [
-          "Je comprends votre frustration...",
-          "C'est normal d'être méfiant, surtout avec [contexte]...",
-          "Je vois que c'est un sujet important pour vous...",
-          "Je comprends, vous avez probablement eu de mauvaises expériences..."
-        ],
-        "recentrage": [
-          "Je vous propose qu'on revienne sur [sujet]...",
-          "Ce qui compte pour vous, c'est [besoin]. Parlons-en.",
-          "Au-delà de ça, qu'est-ce qui vous aiderait à avancer?",
-          "Qu'est-ce qui serait le plus utile pour vous maintenant?"
-        ],
-        "limites": [
-          "Je suis là pour vous aider, et j'ai besoin qu'on puisse échanger calmement.",
-          "Je comprends votre point, mais cette façon de communiquer ne nous aide pas.",
-          "Je préfère qu'on reprenne cette conversation quand les conditions seront meilleures.",
-          "Je reste à votre disposition, mais dans un cadre d'échange constructif."
-        ],
-        "questions_desarmantes": [
-          "Qu'est-ce qui vous permettrait de vous sentir en confiance?",
-          "Qu'est-ce que je peux faire pour que cette conversation soit utile pour vous?",
-          "Qu'est-ce qui vous a déçu dans vos expériences passées?",
-          "Comment puis-je vous prouver que c'est différent cette fois?"
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "pression_temporelle",
-      "name": "Pression temporelle",
-      "level": "expert",
-      "description": "Gestion des situations où le temps est un facteur de pression: deadline serrée, prospect pressé, urgence réelle ou simulée.",
+      "id": 10,
+      "slug": "argumentation_bac",
+      "name": "Argumentation - BAC",
+      "level": "medium",
+      "description": "Argumenter en partant des bénéfices client, pas des caractéristiques produit.",
+      "order": 10,
+      "day": 10,
+      "duration_minutes": 45,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
+      "learning_objectives": [
+        "Appliquer la méthode BAC (Bénéfice-Avantage-Caractéristique)",
+        "Quantifier les bénéfices",
+        "Utiliser des business cases",
+        "Relier les arguments aux besoins exprimés"
+      ],
+      "key_method": "BAC (Bénéfice → Avantage → Caractéristique)",
+      "evaluation_criteria": [
+        {
+          "name": "Ordre B-A-C",
+          "weight": 30,
+          "description": "Commence par le bénéfice client"
+        },
+        {
+          "name": "Bénéfice quantifié",
+          "weight": 25,
+          "description": "Chiffres de gain présentés"
+        },
+        {
+          "name": "Business case",
+          "weight": 25,
+          "description": "Exemple client similaire utilisé"
+        },
+        {
+          "name": "Lien au besoin",
+          "weight": 20,
+          "description": "Argument relié au besoin exprimé"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "slug": "demonstration_produit",
+      "name": "Démonstration Produit",
+      "level": "medium",
+      "description": "Faire une démo ciblée qui convainc, pas une visite guidée qui noie.",
       "order": 11,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 11,
+      "duration_minutes": 45,
+      "pass_threshold": 70,
+      "scenarios_required": 3,
       "learning_objectives": [
-        "Garder son efficacité sous pression temporelle",
-        "Distinguer l'urgence réelle de la pression tactique",
-        "Accélérer sans bâcler le processus de vente",
-        "Gérer son propre stress lié au temps"
+        "Structurer une démo en 5 étapes",
+        "Limiter à 3-5 fonctionnalités",
+        "Engager toutes les 3-4 minutes",
+        "Relier chaque fonctionnalité au problème"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "Urgence réelle vs tactique",
-          "description": "Le prospect peut créer une fausse urgence pour négocier. Ou avoir une vraie deadline. Distinguer les deux.",
-          "practical_tip": "Questions: 'Quelle est la date butoir exacte?' 'Qu'est-ce qui se passe si on la dépasse?' Les vraies urgences ont des conséquences concrètes."
-        },
-        {
-          "name": "L'accélération structurée",
-          "description": "Aller vite ne veut pas dire sauter des étapes. Ça veut dire les faire plus rapidement mais complètement.",
-          "practical_tip": "Compresse les temps morts, pas le contenu. Propose des créneaux rapprochés, pas des discussions bâclées."
-        },
-        {
-          "name": "La gestion du stress personnel",
-          "description": "Ton stress se transmet au prospect. Reste calme pour garder le contrôle.",
-          "practical_tip": "Respire. Parle légèrement plus lentement que tu ne le ferais naturellement. Ça te calme et calme le prospect."
-        },
-        {
-          "name": "Le focus sur l'essentiel",
-          "description": "Sous pression, identifier les 2-3 points vraiment critiques pour la décision.",
-          "practical_tip": "'Vu le temps qu'on a, concentrons-nous sur ce qui compte vraiment: [point 1] et [point 2]. Le reste peut attendre.'"
-        }
-      ],
-      
+      "key_method": "STRUCTURE DÉMO 5 ÉTAPES",
       "evaluation_criteria": [
         {
-          "name": "Gestion du temps",
-          "type": "content",
+          "name": "Structure respectée",
           "weight": 25,
-          "description": "Capacité à optimiser l'utilisation du temps disponible",
-          "success_indicators": [
-            "Priorise les points clés",
-            "Élimine le superflu",
-            "Propose des raccourcis pertinents",
-            "Respecte le timing"
-          ],
-          "failure_indicators": [
-            "Perd du temps sur des détails",
-            "Ne priorise pas",
-            "Dépasse le temps alloué",
-            "Saute des étapes critiques"
-          ]
+          "description": "Rappel → Promesse → Démo → Validation → Questions"
         },
         {
-          "name": "Maintien de la qualité",
-          "type": "content",
+          "name": "Ciblage",
           "weight": 25,
-          "description": "Garder un niveau de qualité acceptable malgré la pression",
-          "success_indicators": [
-            "Couvre les points essentiels",
-            "Répond aux questions clés",
-            "Ne bâcle pas la découverte",
-            "Closing approprié"
-          ],
-          "failure_indicators": [
-            "Bâcle la conversation",
-            "Rate des informations importantes",
-            "Closing précipité",
-            "Qualité dégradée"
-          ]
+          "description": "3-5 fonctionnalités max, reliées au problème"
         },
         {
-          "name": "Calme sous pression",
-          "type": "delivery",
+          "name": "Engagement",
           "weight": 25,
-          "description": "Rester serein et efficace malgré l'urgence",
-          "success_indicators": [
-            "Voix calme et posée",
-            "Pas de signes de stress",
-            "Rythme maîtrisé",
-            "Clarté maintenue"
-          ],
-          "failure_indicators": [
-            "Voix précipitée ou tendue",
-            "Signes de panique",
-            "Perd le fil",
-            "Erreurs dues au stress"
-          ]
+          "description": "Questions régulières, implication prospect"
         },
         {
-          "name": "Diagnostic de l'urgence",
-          "type": "content",
-          "weight": 15,
-          "description": "Évaluer si l'urgence est réelle ou tactique",
-          "success_indicators": [
-            "Questionne la deadline",
-            "Identifie les conséquences",
-            "Adapte sa réponse",
-            "Ne se fait pas manipuler"
-          ],
-          "failure_indicators": [
-            "Accepte l'urgence aveuglément",
-            "Ne questionne pas",
-            "Se fait presser inutilement",
-            "Cède à la pression"
-          ]
-        },
-        {
-          "name": "Solutions créatives",
-          "type": "content",
-          "weight": 10,
-          "description": "Trouver des moyens de répondre à l'urgence",
-          "success_indicators": [
-            "Propose des alternatives",
-            "Trouve des raccourcis intelligents",
-            "S'adapte aux contraintes",
-            "Innove dans l'approche"
-          ],
-          "failure_indicators": [
-            "Aucune flexibilité",
-            "Rigide dans l'approche",
-            "Pas de solution proposée",
-            "Abandonne face à l'obstacle"
-          ]
+          "name": "Validation",
+          "weight": 25,
+          "description": "Vérifie que ça répond au besoin"
         }
-      ],
-      
-      "pass_threshold": 70,
-      "excellence_threshold": 90,
-      "scenarios_required": 4,
-      
-      "prospect_instructions": "Tu es un prospect très pressé avec une contrainte de temps. Scénarios possibles: (1) Deadline réelle: 'J'ai une réunion dans 10 minutes', 'Je dois décider avant vendredi', (2) Pression tactique: 'Je n'ai pas le temps pour tout ça', 'Dites-moi juste le prix', (3) Impatience: couper la parole, demander d'aller plus vite. Teste si l'élève: questionne l'urgence, reste calme, priorise bien, ne bâcle pas. Si vraie urgence → récompense la concision et l'efficacité. Si fausse urgence → vérifie s'il se laisse manipuler ou s'il recadre.",
-      
-      "emotional_focus": ["composure", "efficiency", "focus", "stress_management"],
-      
-      "common_mistakes": [
-        "Se laisser contaminer par le stress du prospect",
-        "Bâcler la découverte pour aller vite",
-        "Accepter une fausse urgence sans questionner",
-        "Sauter directement au prix sans qualifier",
-        "Parler trop vite et perdre en clarté",
-        "Ne pas poser de limites sur le temps",
-        "Oublier des étapes essentielles"
-      ],
-      
-      "pro_tips": [
-        "Plus le prospect est pressé, plus tu dois parler lentement. Ça ralentit le tempo et te donne du contrôle.",
-        "Face à 'Je n'ai que 5 minutes': 'Parfait, en 5 minutes, je vais vous poser 3 questions clés pour voir si ça vaut la peine de continuer.'",
-        "Toujours questionner l'urgence: 'Qu'est-ce qui se passe si la deadline est dépassée?' Souvent, c'est moins urgent que prétendu.",
-        "Garde en réserve une version 'pitch éclair' de ton offre. 30 secondes, 3 points clés."
-      ],
-      
-      "phrases_templates": {
-        "diagnostic_urgence": [
-          "Quelle est votre deadline exacte?",
-          "Qu'est-ce qui se passe si on dépasse ce délai?",
-          "Qu'est-ce qui rend cette date si importante?",
-          "Y a-t-il une flexibilité sur le timing?"
-        ],
-        "recadrage_temps": [
-          "Je comprends l'urgence. En [X] minutes, voilà ce qu'on peut faire...",
-          "Concentrons-nous sur les 2-3 points essentiels pour vous.",
-          "Pour être efficace, dites-moi: qu'est-ce qui est le plus important pour vous?",
-          "Je vais être direct pour respecter votre temps."
-        ],
-        "acceleration": [
-          "Voici l'essentiel en 30 secondes: [pitch éclair]",
-          "Les 3 points clés: [1], [2], [3]. Questions?",
-          "Pour aller vite: [solution]. Ça répond à votre besoin?",
-          "En résumé: [problème] → [solution] → [résultat]. On avance?"
-        ],
-        "maintien_qualite": [
-          "Même pressés, je veux m'assurer de bien comprendre votre besoin.",
-          "30 secondes pour une question importante...",
-          "Avant de conclure, confirmez-moi que [point clé]...",
-          "C'est rapide, mais je veux être sûr qu'on est alignés."
-        ]
-      }
+      ]
     },
-    
     {
-      "id": "multi_objections",
-      "name": "Multi-objections",
+      "id": 12,
+      "slug": "objections_cnz",
+      "name": "Traitement des Objections - CNZ",
       "level": "expert",
-      "description": "Gestion des situations où le prospect enchaîne plusieurs objections, réelles ou tactiques, pour tester la solidité du commercial.",
+      "description": "Traiter les objections sans se braquer ni céder, en creusant pour comprendre le vrai frein.",
       "order": 12,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
+      "day": 12,
+      "duration_minutes": 60,
+      "pass_threshold": 75,
+      "scenarios_required": 5,
       "learning_objectives": [
-        "Garder le fil face à des objections multiples",
-        "Identifier l'objection principale parmi plusieurs",
-        "Traiter les objections sans se disperser",
-        "Reconnaître les stratégies d'obstruction"
+        "Appliquer la méthode CNZ",
+        "Creuser avant de répondre",
+        "Identifier les objections cachées",
+        "Neutraliser l'émotion puis zapper"
       ],
-      
-      "key_concepts": [
-        {
-          "name": "L'objection racine",
-          "description": "Parmi plusieurs objections, une seule est souvent la vraie. Les autres sont des écrans de fumée.",
-          "practical_tip": "'Vous avez mentionné le prix, le timing, et les références. Si on règle les trois, lequel est le plus important pour vous?'"
-        },
-        {
-          "name": "Le traitement séquentiel",
-          "description": "Ne pas essayer de répondre à tout en même temps. Isoler, traiter, valider, passer à la suivante.",
-          "practical_tip": "'Commençons par [objection 1]. [Réponse]. Est-ce que ça vous rassure sur ce point? OK, maintenant [objection 2]...'"
-        },
-        {
-          "name": "L'isolation avant traitement",
-          "description": "Avant de traiter, lister toutes les objections pour éviter qu'il en sorte de nouvelles après.",
-          "practical_tip": "'Y a-t-il autre chose qui vous fait hésiter?' Liste tout. 'OK, si on traite ces 3 points, on peut avancer?'"
-        },
-        {
-          "name": "Le signal de capitulation",
-          "description": "Un prospect qui multiplie les objections sans raison peut être en train de chercher une sortie polie.",
-          "practical_tip": "Après 4-5 objections: 'J'ai l'impression que quelque chose de fondamental ne vous convient pas. C'est quoi le vrai problème?'"
-        }
-      ],
-      
+      "key_method": "CNZ (Creuser → Neutraliser → Zapper)",
       "evaluation_criteria": [
         {
-          "name": "Organisation et méthode",
-          "type": "content",
+          "name": "Creuser d'abord",
+          "weight": 35,
+          "description": "Question ouverte avant de répondre"
+        },
+        {
+          "name": "Neutraliser",
           "weight": 25,
-          "description": "Capacité à structurer le traitement des objections",
-          "success_indicators": [
-            "Liste les objections",
-            "Priorise intelligemment",
-            "Traite une à une",
-            "Valide avant de passer à la suite"
-          ],
-          "failure_indicators": [
-            "Répond en vrac",
-            "Saute d'une objection à l'autre",
-            "Perd le fil",
-            "Ne confirme pas le traitement"
-          ]
+          "description": "Empathie sans valider le fond"
         },
         {
-          "name": "Identification de la vraie objection",
-          "type": "content",
-          "weight": 25,
-          "description": "Trouver l'objection racine parmi les écrans de fumée",
-          "success_indicators": [
-            "Pose la question du prioritaire",
-            "Détecte les patterns",
-            "Identifie les fausses objections",
-            "Se concentre sur l'essentiel"
-          ],
-          "failure_indicators": [
-            "Traite tout au même niveau",
-            "Rate l'objection principale",
-            "Se fait balader",
-            "Répond à tout sans discriminer"
-          ]
-        },
-        {
-          "name": "Qualité de traitement",
-          "type": "content",
-          "weight": 25,
-          "description": "Chaque objection est traitée de manière satisfaisante",
-          "success_indicators": [
-            "Réponses pertinentes",
-            "Adaptation à chaque objection",
-            "Validation obtenue",
-            "Progression vers l'accord"
-          ],
-          "failure_indicators": [
-            "Réponses superficielles",
-            "Même traitement pour tout",
-            "Pas de validation",
-            "Objections non résolues"
-          ]
-        },
-        {
-          "name": "Résilience",
-          "type": "delivery",
-          "weight": 15,
-          "description": "Rester positif et constructif malgré l'accumulation",
-          "success_indicators": [
-            "Ton positif maintenu",
-            "Pas de frustration visible",
-            "Persévérance",
-            "Énergie constante"
-          ],
-          "failure_indicators": [
-            "Soupirs ou agacement",
-            "Abandon prématuré",
-            "Énergie qui chute",
-            "Ton défaitiste"
-          ]
-        },
-        {
-          "name": "Détection d'obstruction",
-          "type": "content",
-          "weight": 10,
-          "description": "Reconnaître quand les objections sont une stratégie d'évitement",
-          "success_indicators": [
-            "Questionne les vraies intentions",
-            "Confronte poliment",
-            "Propose une sortie honorable",
-            "Sait quand arrêter"
-          ],
-          "failure_indicators": [
-            "Continue indéfiniment",
-            "Ne détecte pas l'obstruction",
-            "Perd son temps",
-            "Ignore les signaux"
-          ]
-        }
-      ],
-      
-      "pass_threshold": 70,
-      "excellence_threshold": 90,
-      "scenarios_required": 4,
-      
-      "prospect_instructions": "Tu es un prospect qui lance plusieurs objections. Stratégies: (1) Objections en cascade: prix → timing → références → décideur → budget → ... (2) Vraie objection cachée: multiplie les objections pour éviter de dire la vraie (pas décideur, pas convaincu...), (3) Test de résistance: voir si le commercial tient la route. Règles: si l'élève structure bien et isole ('Quelle est la plus importante?'), révèle ta vraie préoccupation. S'il répond en vrac, continue à ajouter des objections. Capitule si le traitement est excellent et méthodique.",
-      
-      "emotional_focus": ["resilience", "patience", "methodical", "persistence"],
-      
-      "common_mistakes": [
-        "Répondre à toutes les objections en même temps",
-        "Perdre le fil face à la multiplication",
-        "Ne pas isoler l'objection principale",
-        "Se décourager face au volume",
-        "Ne pas faire la liste complète avant de traiter",
-        "Traiter superficiellement pour aller vite",
-        "Ne pas détecter les stratégies d'obstruction"
-      ],
-      
-      "pro_tips": [
-        "Toujours demander: 'Y a-t-il autre chose?' avant de traiter. Ça évite les objections surprises après.",
-        "Face à 3+ objections: 'Parmi tout ça, qu'est-ce qui est le plus important pour vous?' La réponse est souvent la vraie objection.",
-        "Après 4-5 objections sans progrès, confronte: 'J'ai l'impression qu'on ne trouve pas notre fit. Qu'en pensez-vous?'",
-        "Note mentalement chaque objection. Puis valide: 'On a parlé de [1], [2], [3]. C'est tout? OK, commençons par...'"
-      ],
-      
-      "phrases_templates": {
-        "inventaire": [
-          "Avant qu'on avance, y a-t-il d'autres points qui vous préoccupent?",
-          "Je veux être sûr de tout couvrir. Quoi d'autre?",
-          "Le prix, le timing, les références... c'est tout ou il y a autre chose?",
-          "Listez-moi tout ce qui vous fait hésiter."
-        ],
-        "priorisation": [
-          "Parmi tout ça, lequel est le plus important pour vous?",
-          "Si on ne traitait qu'un seul point, ce serait lequel?",
-          "Qu'est-ce qui pèse le plus dans votre décision?",
-          "OK, commençons par [X], d'accord?"
-        ],
-        "traitement_sequence": [
-          "Prenons le point [X] d'abord. [Réponse]. Ça vous convient?",
-          "OK pour [X]. Maintenant [Y]...",
-          "Un point de réglé. Passons à [Z].",
-          "On a traité [X] et [Y]. Reste [Z]..."
-        ],
-        "detection_obstruction": [
-          "J'ai l'impression qu'il y a quelque chose de plus fondamental. De quoi s'agit-il vraiment?",
-          "On a traité plusieurs points, mais je sens une hésitation plus profonde. C'est quoi?",
-          "Soyons directs: est-ce que ce projet vous intéresse vraiment?",
-          "Si le fond du problème c'est [X], dites-le-moi, on gagnera du temps."
-        ]
-      }
-    },
-    
-    {
-      "id": "closing_pression",
-      "name": "Closing sous pression",
-      "level": "expert",
-      "description": "Techniques de closing avancées pour des situations complexes: décideurs multiples, concurrence active, budget contesté, dernière minute.",
-      "order": 13,
-      "theory_duration_minutes": 5,
-      "practice_duration_minutes": 15,
-      
-      "learning_objectives": [
-        "Closer dans des conditions adverses",
-        "Gérer les décideurs multiples et les influenceurs",
-        "Contrer les tentatives de remise en question de dernière minute",
-        "Créer un sentiment d'urgence légitime"
-      ],
-      
-      "key_concepts": [
-        {
-          "name": "Le closing multi-parties",
-          "description": "Quand plusieurs personnes décident, identifier le champion interne et l'équiper pour vendre en interne.",
-          "practical_tip": "'Qu'est-ce que votre directeur aurait besoin de voir pour valider? Je vous prépare les arguments.'"
-        },
-        {
-          "name": "Le pivot concurrentiel",
-          "description": "Quand la concurrence est proche de gagner, créer un moment de pause et de réflexion.",
-          "practical_tip": "'Avant de finaliser avec [concurrent], accordez-moi 15 minutes pour vous montrer [différenciateur clé].'"
-        },
-        {
-          "name": "L'engagement incrémental",
-          "description": "Quand le grand OUI est difficile à obtenir, avancer par petits engagements.",
-          "practical_tip": "'On n'est pas obligés de tout décider aujourd'hui. Et si on commençait par [première étape]?'"
-        },
-        {
-          "name": "Le moment de vérité",
-          "description": "Créer un instant décisif où la décision doit être prise. Avec des raisons légitimes.",
-          "practical_tip": "'Notre capacité d'implémentation ce trimestre est limitée. Pour garantir votre créneau, j'ai besoin de votre GO aujourd'hui.'"
-        }
-      ],
-      
-      "evaluation_criteria": [
-        {
-          "name": "Adaptation au contexte",
-          "type": "content",
-          "weight": 25,
-          "description": "Ajuster sa technique de closing à la situation spécifique",
-          "success_indicators": [
-            "Identifie les obstacles spécifiques",
-            "Adapte son approche",
-            "Trouve les leviers pertinents",
-            "Créatif dans les solutions"
-          ],
-          "failure_indicators": [
-            "Closing générique",
-            "Ignore le contexte",
-            "Une seule approche",
-            "Rigidité"
-          ]
-        },
-        {
-          "name": "Gestion des parties prenantes",
-          "type": "content",
-          "weight": 25,
-          "description": "Naviguer entre décideurs, influenceurs, et bloqueurs",
-          "success_indicators": [
-            "Identifie les rôles",
-            "Équipe le champion",
-            "Neutralise les opposants",
-            "Crée des alliés"
-          ],
-          "failure_indicators": [
-            "Ignore la dynamique",
-            "Parle au mauvais interlocuteur",
-            "Ne crée pas d'allié",
-            "Se fait bloquer"
-          ]
-        },
-        {
-          "name": "Création d'urgence légitime",
-          "type": "content",
+          "name": "Zapper",
           "weight": 20,
-          "description": "Établir des raisons valables d'agir maintenant",
-          "success_indicators": [
-            "Urgence basée sur des faits",
-            "Conséquences claires du retard",
-            "Pas de manipulation",
-            "Crédible et vérifiable"
-          ],
-          "failure_indicators": [
-            "Fausse urgence",
-            "Manipulation évidente",
-            "Pas d'urgence du tout",
-            "Pression excessive"
-          ]
+          "description": "Réponse et retour à l'avancement"
         },
         {
-          "name": "Résilience face aux obstacles",
-          "type": "delivery",
-          "weight": 15,
-          "description": "Persister intelligemment malgré les difficultés",
-          "success_indicators": [
-            "Ne se décourage pas",
-            "Trouve des alternatives",
-            "Rebondit sur les refus",
-            "Garde son calme"
-          ],
-          "failure_indicators": [
-            "Abandonne vite",
-            "Se braque",
-            "Perd son énergie",
-            "Devient agressif"
-          ]
-        },
-        {
-          "name": "Obtention d'engagement concret",
-          "type": "content",
-          "weight": 15,
-          "description": "Aboutir à une décision claire et un engagement réel",
-          "success_indicators": [
-            "Engagement spécifique obtenu",
-            "Prochaines étapes définies",
-            "Accord formalisé",
-            "Action immédiate"
-          ],
-          "failure_indicators": [
-            "Engagement vague",
-            "Pas de prochaine étape",
-            "Décision reportée",
-            "Pas d'action"
-          ]
+          "name": "Objection cachée",
+          "weight": 20,
+          "description": "Vrai frein identifié"
         }
+      ]
+    },
+    {
+      "id": 13,
+      "slug": "negociation",
+      "name": "Négociation",
+      "level": "expert",
+      "description": "Négocier sans brader, en créant de la valeur pour les deux parties.",
+      "order": 13,
+      "day": 13,
+      "duration_minutes": 30,
+      "pass_threshold": 75,
+      "scenarios_required": 3,
+      "learning_objectives": [
+        "Appliquer la règle 'jamais de concession gratuite'",
+        "Utiliser la technique Si-Alors",
+        "Négocier sur autre chose que le prix",
+        "Maîtriser le silence après le prix"
       ],
-      
+      "key_method": "SI-ALORS",
+      "evaluation_criteria": [
+        {
+          "name": "Pas de concession gratuite",
+          "weight": 35,
+          "description": "Toute concession a une contrepartie"
+        },
+        {
+          "name": "Si-Alors appliqué",
+          "weight": 25,
+          "description": "Conditions clairement posées"
+        },
+        {
+          "name": "Alternatives au prix",
+          "weight": 20,
+          "description": "Négocie sur délais, services, durée"
+        },
+        {
+          "name": "Silence maîtrisé",
+          "weight": 20,
+          "description": "Ne parle pas après annonce du prix"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "slug": "closing_ponts_brules",
+      "name": "Closing - Ponts Brûlés",
+      "level": "expert",
+      "description": "Verrouiller chaque étape du closing avec la méthode des 5 Ponts Brûlés.",
+      "order": 14,
+      "day": 14,
+      "duration_minutes": 45,
+      "pass_threshold": 75,
+      "scenarios_required": 5,
+      "learning_objectives": [
+        "Appliquer les 5 Ponts Brûlés",
+        "Détecter les signaux d'achat",
+        "Closer dans les 30 secondes après un signal",
+        "Utiliser les techniques de closing adaptées"
+      ],
+      "key_method": "5 PONTS BRÛLÉS",
+      "evaluation_criteria": [
+        {
+          "name": "Pont Besoin",
+          "weight": 20,
+          "description": "Problème et coût validés"
+        },
+        {
+          "name": "Pont Solution",
+          "weight": 20,
+          "description": "Adéquation confirmée"
+        },
+        {
+          "name": "Pont Budget/Timing",
+          "weight": 20,
+          "description": "Investissement et calendrier OK"
+        },
+        {
+          "name": "Signaux détectés",
+          "weight": 20,
+          "description": "Signaux d'achat repérés"
+        },
+        {
+          "name": "Closing effectué",
+          "weight": 20,
+          "description": "Engagement obtenu"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "slug": "relance_suivi",
+      "name": "Relance et Suivi",
+      "level": "expert",
+      "description": "Relancer efficacement sans harceler, en apportant de la valeur à chaque contact.",
+      "order": 15,
+      "day": 15,
+      "duration_minutes": 30,
       "pass_threshold": 70,
-      "excellence_threshold": 90,
-      "scenarios_required": 4,
-      
-      "prospect_instructions": "Tu es un prospect dans une situation de closing complexe. Scénarios: (1) Décideurs multiples: 'Je dois voir avec mon directeur/partenaire/board', tu n'es pas le décideur final, (2) Concurrence: 'On a une offre de [concurrent] qui est meilleure sur [point]', (3) Budget contesté: 'Le budget a été réduit', 'On n'avait pas prévu autant', (4) Dernière minute: 'En fait, j'ai un doute sur [point]', 'Je me demande si c'est le bon moment'. Teste si l'élève s'adapte, trouve des solutions créatives, et maintient la pression appropriée. Récompense les bonnes techniques par des signaux positifs.",
-      
-      "emotional_focus": ["determination", "creativity", "patience", "strategic_thinking"],
-      
-      "common_mistakes": [
-        "Utiliser la même technique de closing peu importe le contexte",
-        "Ignorer les décideurs cachés",
-        "Créer une fausse urgence qui détruit la confiance",
-        "Abandonner face au premier obstacle",
-        "Ne pas équiper son champion interne",
-        "Laisser le concurrent gagner sans combattre",
-        "Accepter un 'je vous recontacte' sans engagement concret"
+      "scenarios_required": 3,
+      "learning_objectives": [
+        "Appliquer la séquence J+2/J+5/J+10/J+20/J+30",
+        "Apporter de la valeur à chaque relance",
+        "Varier les canaux",
+        "Utiliser l'email de rupture"
       ],
-      
-      "pro_tips": [
-        "Face à 'Je dois en parler à mon chef': 'Parfait, qu'est-ce qu'il va vous demander? Je vous prépare les réponses.'",
-        "Face à la concurrence: 'Avant de décider, accepteriez-vous de comparer [notre point fort] vs [leur offre]?'",
-        "Le petit engagement est plus puissant que le grand: 'Commençons par [étape 1], on verra pour la suite.'",
-        "L'urgence légitime gagne toujours sur la fausse: calendrier chargé, fin de promotion, places limitées..."
+      "key_method": "SÉQUENCE 5 TOUCHES",
+      "evaluation_criteria": [
+        {
+          "name": "Valeur apportée",
+          "weight": 35,
+          "description": "Chaque relance apporte quelque chose"
+        },
+        {
+          "name": "Canaux variés",
+          "weight": 20,
+          "description": "Email, téléphone, LinkedIn alternés"
+        },
+        {
+          "name": "Espacement correct",
+          "weight": 20,
+          "description": "Ni trop ni trop peu"
+        },
+        {
+          "name": "Email rupture",
+          "weight": 25,
+          "description": "Dernière relance efficace"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "slug": "recommandation",
+      "name": "Demande de Recommandation",
+      "level": "expert",
+      "description": "Obtenir des recommandations pour générer des leads qui convertissent 4x mieux.",
+      "order": 16,
+      "day": 16,
+      "duration_minutes": 30,
+      "pass_threshold": 70,
+      "scenarios_required": 2,
+      "learning_objectives": [
+        "Identifier le bon moment pour demander",
+        "Formuler la demande naturellement",
+        "Faciliter l'introduction",
+        "Suivre le process de contact"
       ],
-      
-      "phrases_templates": {
-        "multi_decideurs": [
-          "Qui d'autre doit donner son accord?",
-          "Quels arguments votre directeur aurait besoin d'entendre?",
-          "Je vous prépare un dossier pour présenter en interne?",
-          "Et si je participais à votre réunion pour répondre aux questions?"
-        ],
-        "contre_concurrence": [
-          "Qu'est-ce qui fait que leur offre vous semble meilleure?",
-          "Avant de décider, puis-je vous montrer [différenciateur]?",
-          "Notre approche est différente sur [X]. Voici pourquoi c'est important pour vous...",
-          "Accepteriez-vous une démo comparative?"
-        ],
-        "urgence_legitime": [
-          "Notre agenda d'implémentation se remplit vite ce trimestre.",
-          "Le tarif actuel est garanti jusqu'au [date].",
-          "Nos équipes ont des disponibilités limitées.",
-          "Chaque semaine de retard, c'est [coût d'opportunité]."
-        ],
-        "engagement_incremental": [
-          "Et si on démarrait par [phase 1] pour valider?",
-          "On peut commencer petit et élargir ensuite.",
-          "Première étape: [action simple]. D'accord?",
-          "Un pilote de 30 jours vous permettrait de tester."
-        ],
-        "gestion_derniere_minute": [
-          "Qu'est-ce qui a changé depuis notre dernière discussion?",
-          "Quel point spécifique vous fait douter?",
-          "C'est normal d'avoir des questions avant de s'engager. Parlons-en.",
-          "Qu'est-ce qu'il vous faudrait pour être 100% confiant?"
-        ]
-      }
+      "key_method": "MOMENT + FACILITATION",
+      "evaluation_criteria": [
+        {
+          "name": "Timing",
+          "weight": 30,
+          "description": "Demande au bon moment"
+        },
+        {
+          "name": "Formulation",
+          "weight": 25,
+          "description": "Question naturelle et non gênante"
+        },
+        {
+          "name": "Facilitation",
+          "weight": 25,
+          "description": "Propose texte ou intro"
+        },
+        {
+          "name": "Suivi",
+          "weight": 20,
+          "description": "Contact dans les 48h"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "slug": "situations_difficiles",
+      "name": "Situations Difficiles",
+      "level": "expert",
+      "description": "Gérer les crises et situations tendues tout en préservant la relation.",
+      "order": 17,
+      "day": 17,
+      "duration_minutes": 30,
+      "pass_threshold": 75,
+      "scenarios_required": 3,
+      "learning_objectives": [
+        "Gérer un prospect agressif",
+        "Reconnaître et corriger une erreur",
+        "Retenir un client qui veut partir",
+        "Appliquer les 5 principes universels"
+      ],
+      "key_method": "5 PRINCIPES UNIVERSELS",
+      "evaluation_criteria": [
+        {
+          "name": "Calme maintenu",
+          "weight": 25,
+          "description": "Reste professionnel sous pression"
+        },
+        {
+          "name": "Écoute d'abord",
+          "weight": 25,
+          "description": "Écoute avant de répondre"
+        },
+        {
+          "name": "Solution focus",
+          "weight": 25,
+          "description": "Cherche la solution, pas le coupable"
+        },
+        {
+          "name": "Relation préservée",
+          "weight": 25,
+          "description": "Relation renforcée malgré la crise"
+        }
+      ]
     }
   ]
 }
