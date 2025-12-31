@@ -3,23 +3,38 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Menu, X, Sparkles, LogOut, User, Shield } from "lucide-react";
+import {
+  Menu,
+  X,
+  Sparkles,
+  LogOut,
+  User,
+  Shield,
+  LayoutDashboard,
+  BookOpen,
+  Target,
+  Upload,
+  ChevronDown,
+} from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/auth-store";
 import { authAPI } from "@/lib/api";
 
-// Navigation links - some require auth
-const publicNavLinks = [
-  { href: "/", label: "Accueil" },
-];
-
+// Navigation for authenticated users only
 const authNavLinks = [
-  { href: "/learn", label: "Apprendre" },
-  { href: "/upload", label: "Upload" },
-  { href: "/training", label: "Training" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/learn", label: "Apprendre", icon: BookOpen },
+  { href: "/training", label: "Training", icon: Target },
+  { href: "/upload", label: "Upload", icon: Upload },
 ];
 
 export function Header() {
@@ -48,7 +63,7 @@ export function Header() {
         >
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
+            <Link href={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2 group">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-primary rounded-lg blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
                 <div className="relative bg-gradient-primary p-2 rounded-lg">
@@ -60,42 +75,36 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1">
-              {publicNavLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    pathname === link.href
-                      ? "bg-primary-500/20 text-primary-400"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              {isAuthenticated && authNavLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    pathname === link.href || pathname.startsWith(link.href + "/")
-                      ? "bg-primary-500/20 text-primary-400"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+            {/* Desktop Navigation - Only for authenticated users */}
+            {isAuthenticated && (
+              <div className="hidden md:flex items-center gap-1">
+                {authNavLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                        isActive
+                          ? "bg-primary-500/20 text-primary-400"
+                          : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
 
-            {/* Auth Buttons */}
+            {/* Auth Section */}
             <div className="hidden md:flex items-center gap-3">
               {isAuthenticated ? (
                 <>
+                  {/* Admin link */}
                   {user?.role === "admin" && (
                     <Link
                       href="/admin"
@@ -110,38 +119,44 @@ export function Header() {
                       Admin
                     </Link>
                   )}
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 text-sm">
-                    <User className="h-4 w-4 text-primary-400" />
-                    <span className="text-muted-foreground">
-                      {user?.full_name || user?.email}
-                    </span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Déconnexion
-                  </Button>
+
+                  {/* User dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10"
+                      >
+                        <div className="h-8 w-8 rounded-full bg-primary-500/20 flex items-center justify-center">
+                          <User className="h-4 w-4 text-primary-400" />
+                        </div>
+                        <span className="text-sm text-muted-foreground max-w-[120px] truncate">
+                          {user?.full_name || user?.email?.split('@')[0]}
+                        </span>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <div className="px-2 py-1.5">
+                        <p className="text-sm font-medium">{user?.full_name || "Utilisateur"}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                      </div>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogout} className="text-red-400 focus:text-red-400">
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Déconnexion
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               ) : (
-                <>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <Link href="/login">Connexion</Link>
-                  </Button>
-                  <Button
-                    asChild
-                    className="bg-gradient-primary hover:opacity-90 text-white border-0"
-                  >
-                    <Link href="/register">S&apos;inscrire</Link>
-                  </Button>
-                </>
+                /* Non-authenticated: Only Connexion button */
+                <Button
+                  asChild
+                  className="bg-gradient-primary hover:opacity-90 text-white border-0"
+                >
+                  <Link href="/login">Connexion</Link>
+                </Button>
               )}
             </div>
 
@@ -167,39 +182,31 @@ export function Header() {
               className="md:hidden mt-4 pt-4 border-t border-white/10"
             >
               <div className="flex flex-col gap-2">
-                {publicNavLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      "px-4 py-3 rounded-lg text-sm font-medium transition-all",
-                      pathname === link.href
-                        ? "bg-primary-500/20 text-primary-400"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                {isAuthenticated && authNavLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      "px-4 py-3 rounded-lg text-sm font-medium transition-all",
-                      pathname === link.href || pathname.startsWith(link.href + "/")
-                        ? "bg-primary-500/20 text-primary-400"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                <div className="border-t border-white/10 pt-4 mt-2">
-                  {isAuthenticated ? (
-                    <>
+                {isAuthenticated ? (
+                  <>
+                    {/* Navigation links for authenticated users */}
+                    {authNavLinks.map((link) => {
+                      const Icon = link.icon;
+                      const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all",
+                            isActive
+                              ? "bg-primary-500/20 text-primary-400"
+                              : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
+                          {link.label}
+                        </Link>
+                      );
+                    })}
+
+                    <div className="border-t border-white/10 pt-4 mt-2">
                       <div className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
                         <User className="h-4 w-4" />
                         {user?.full_name || user?.email}
@@ -221,7 +228,7 @@ export function Header() {
                       )}
                       <Button
                         variant="ghost"
-                        className="w-full justify-start text-muted-foreground"
+                        className="w-full justify-start text-red-400 hover:text-red-400 hover:bg-red-500/10"
                         onClick={() => {
                           handleLogout();
                           setMobileMenuOpen(false);
@@ -230,27 +237,18 @@ export function Header() {
                         <LogOut className="h-4 w-4 mr-2" />
                         Déconnexion
                       </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        asChild
-                        variant="ghost"
-                        className="w-full justify-start text-muted-foreground"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Link href="/login">Connexion</Link>
-                      </Button>
-                      <Button
-                        asChild
-                        className="w-full mt-2 bg-gradient-primary hover:opacity-90 text-white border-0"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Link href="/register">S&apos;inscrire</Link>
-                      </Button>
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </>
+                ) : (
+                  /* Non-authenticated mobile: Only Connexion button */
+                  <Button
+                    asChild
+                    className="w-full bg-gradient-primary hover:opacity-90 text-white border-0"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Link href="/login">Connexion</Link>
+                  </Button>
+                )}
               </div>
             </motion.div>
           )}

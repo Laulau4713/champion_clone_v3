@@ -5,13 +5,18 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import { authAPI } from '@/lib/api';
 
-const PUBLIC_ROUTES = ['/', '/login', '/register'];
+// Routes that require authentication
+const PROTECTED_ROUTES = ['/dashboard', '/learn', '/training', '/upload', '/admin'];
+
+// Routes only accessible when NOT authenticated
+const AUTH_ROUTES = ['/login', '/register'];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, setUser, setLoading, logout } = useAuthStore();
+  const { isAuthenticated, isHydrated, setUser, setLoading, logout } = useAuthStore();
 
+  // Check auth status on mount
   useEffect(() => {
     const checkAuth = async () => {
       if (typeof window === 'undefined') return;
@@ -20,9 +25,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!token) {
         setLoading(false);
-        if (!PUBLIC_ROUTES.includes(pathname)) {
-          router.push('/login');
-        }
         return;
       }
 
@@ -31,17 +33,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(user);
       } catch {
         logout();
-        if (!PUBLIC_ROUTES.includes(pathname)) {
-          router.push('/login');
-        }
       } finally {
         setLoading(false);
       }
     };
 
     checkAuth();
-  }, [pathname, router, setUser, setLoading, logout]);
+  }, [setUser, setLoading, logout]);
 
-  // Don't block rendering, just check auth in background
+  // Handle route redirections after hydration
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    const isProtectedRoute = PROTECTED_ROUTES.some(
+      (route) => pathname === route || pathname.startsWith(route + '/')
+    );
+    const isAuthRoute = AUTH_ROUTES.includes(pathname);
+    const isHomePage = pathname === '/';
+
+    if (isAuthenticated) {
+      // Redirect authenticated users from home and auth pages to dashboard
+      if (isHomePage || isAuthRoute) {
+        router.replace('/dashboard');
+      }
+    } else {
+      // Redirect non-authenticated users from protected routes to login
+      if (isProtectedRoute) {
+        router.replace('/login');
+      }
+    }
+  }, [isAuthenticated, isHydrated, pathname, router]);
+
   return <>{children}</>;
 }
