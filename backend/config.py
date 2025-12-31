@@ -34,9 +34,9 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # ===========================================
-    # Security
+    # Security (OWASP compliant)
     # ===========================================
-    PASSWORD_MIN_LENGTH: int = 8
+    PASSWORD_MIN_LENGTH: int = 12  # OWASP recommends 12-14 for high security
 
     # ===========================================
     # File Upload

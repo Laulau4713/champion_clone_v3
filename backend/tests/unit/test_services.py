@@ -77,36 +77,36 @@ class TestPasswordValidation:
         assert error == ""
 
     def test_validate_password_too_short(self):
-        """Password shorter than 8 chars should fail."""
-        is_valid, error = validate_password("Ab1$")
+        """Password shorter than 12 chars should fail."""
+        is_valid, error = validate_password("Ab1$Short")
 
         assert is_valid is False
-        assert "8 characters" in error
+        assert "12 characters" in error
 
     def test_validate_password_no_uppercase(self):
         """Password without uppercase should fail."""
-        is_valid, error = validate_password("validpass123$")
+        is_valid, error = validate_password("validpassword123$")
 
         assert is_valid is False
         assert "uppercase" in error
 
     def test_validate_password_no_lowercase(self):
         """Password without lowercase should fail."""
-        is_valid, error = validate_password("VALIDPASS123$")
+        is_valid, error = validate_password("VALIDPASSWORD123$")
 
         assert is_valid is False
         assert "lowercase" in error
 
     def test_validate_password_no_digit(self):
         """Password without digit should fail."""
-        is_valid, error = validate_password("ValidPass$$")
+        is_valid, error = validate_password("ValidPassword$$")
 
         assert is_valid is False
         assert "digit" in error
 
     def test_validate_password_no_special(self):
         """Password without special char should fail."""
-        is_valid, error = validate_password("ValidPass123")
+        is_valid, error = validate_password("ValidPassword123")
 
         assert is_valid is False
         assert "special" in error
