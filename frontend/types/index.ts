@@ -170,6 +170,18 @@ export interface User {
   is_active: boolean;
   role: 'user' | 'admin';
   created_at: string;
+  // Subscription & trial info
+  subscription_plan: 'free' | 'starter' | 'pro' | 'enterprise';
+  trial_sessions_used: number;
+  trial_sessions_max: number;
+}
+
+export interface TrialStatus {
+  is_premium: boolean;
+  trial_sessions_used: number;
+  trial_sessions_max: number;
+  trial_remaining: number;
+  trial_expired: boolean;
 }
 
 // ============ ADMIN TYPES ============
@@ -357,50 +369,76 @@ export interface ChampionPatterns {
 export type DifficultyLevel = 'easy' | 'medium' | 'expert';
 export type MoodState = 'hostile' | 'aggressive' | 'skeptical' | 'neutral' | 'interested' | 'enthusiastic';
 
-// Learning content
-export interface Cours {
-  id: string;
-  title: string;
+// Skill (compétence)
+export interface Skill {
+  id: number;
+  slug: string;
+  name: string;
+  level: DifficultyLevel;
   description: string;
-  duration_minutes: number;
-  difficulty: DifficultyLevel;
-  category: string;
-  content: CoursContent[];
-  prerequisites?: string[];
+  order: number;
+  pass_threshold: number;
+  scenarios_required: number;
 }
 
-export interface CoursContent {
-  type: 'text' | 'video' | 'example' | 'exercise';
-  title?: string;
-  content: string;
-}
-
-export interface Quiz {
-  id: string;
+// Key point in a course
+export interface KeyPoint {
   title: string;
-  course_id: string;
+  summary: string;
+  example_dialogue?: {
+    context: string;
+    bad: string;
+    good: string;
+  };
+}
+
+// Course (cours quotidien)
+export interface Cours {
+  id: number;
+  day: number;
+  level: DifficultyLevel;
+  title: string;
+  objective: string;
+  duration_minutes: number;
+  skill_id: number | null;
+  // Full course detail fields (returned by getCourseByDay)
+  key_points?: KeyPoint[];
+  common_mistakes?: string[];
+  emotional_tips?: string[];
+  takeaways?: string[];
+}
+
+// Quiz response from API
+export interface Quiz {
+  skill_slug: string;
+  skill_name: string;
   questions: QuizQuestion[];
+  total_questions: number;
+  pass_threshold: number;
 }
 
 export interface QuizQuestion {
-  id: string;
+  id: number;
   question: string;
   options: string[];
-  correct_answer: number;
+  correct_index: number;
+  explanation: string;
+}
+
+export interface QuizResultDetail {
+  question_index: number;
+  your_answer: string;
+  correct_answer: string;
+  is_correct: boolean;
   explanation: string;
 }
 
 export interface QuizResult {
-  quiz_id: string;
   score: number;
-  total: number;
-  percentage: number;
   passed: boolean;
-  answers: {
-    question_id: string;
-    selected: number;
-    correct: boolean;
-  }[];
+  correct_count: number;
+  total_questions: number;
+  details: QuizResultDetail[];
 }
 
 // V2 Voice Training

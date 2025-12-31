@@ -34,6 +34,10 @@ class UserResponse(BaseModel):
     is_active: bool
     role: str = "user"
     created_at: datetime
+    # Subscription & trial info
+    subscription_plan: str = "free"
+    trial_sessions_used: int = 0
+    trial_sessions_max: int = 3  # Constant for frontend display
 
 
 class Token(BaseModel):
@@ -246,3 +250,9 @@ class ValidationErrorResponse(BaseModel):
     loc: List[str]
     msg: str
     type: str
+
+
+class SuccessResponse(BaseModel):
+    """Standard success response."""
+    success: bool
+    message: str

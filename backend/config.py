@@ -106,6 +106,41 @@ class Settings(BaseSettings):
     SMTP_FROM: str = ""
 
     # ===========================================
+    # LemonSqueezy (Payments - disabled by default)
+    # ===========================================
+    LEMONSQUEEZY_API_KEY: str = ""
+    LEMONSQUEEZY_WEBHOOK_SECRET: str = ""
+    LEMONSQUEEZY_STORE_ID: str = ""
+    LEMONSQUEEZY_VARIANT_STARTER: str = ""
+    LEMONSQUEEZY_VARIANT_PRO: str = ""
+    LEMONSQUEEZY_VARIANT_ENTERPRISE: str = ""
+
+    # Properties for payment service
+    @property
+    def lemonsqueezy_api_key(self) -> str:
+        return self.LEMONSQUEEZY_API_KEY
+
+    @property
+    def lemonsqueezy_webhook_secret(self) -> str:
+        return self.LEMONSQUEEZY_WEBHOOK_SECRET
+
+    @property
+    def lemonsqueezy_store_id(self) -> str:
+        return self.LEMONSQUEEZY_STORE_ID
+
+    @property
+    def lemonsqueezy_variant_starter(self) -> str:
+        return self.LEMONSQUEEZY_VARIANT_STARTER
+
+    @property
+    def lemonsqueezy_variant_pro(self) -> str:
+        return self.LEMONSQUEEZY_VARIANT_PRO
+
+    @property
+    def lemonsqueezy_variant_enterprise(self) -> str:
+        return self.LEMONSQUEEZY_VARIANT_ENTERPRISE
+
+    # ===========================================
     # Helpers
     # ===========================================
 
