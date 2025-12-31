@@ -328,7 +328,7 @@ export default function UploadPage() {
                 }
                 className="w-full bg-gradient-primary hover:opacity-90 text-white py-6 text-lg"
               >
-                Démarrer l'entraînement
+                Démarrer l&apos;entraînement
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             </motion.div>

@@ -10,8 +10,13 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth-store";
 import { authAPI } from "@/lib/api";
 
-const navLinks = [
+// Navigation links - some require auth
+const publicNavLinks = [
   { href: "/", label: "Accueil" },
+];
+
+const authNavLinks = [
+  { href: "/learn", label: "Apprendre" },
   { href: "/upload", label: "Upload" },
   { href: "/training", label: "Training" },
   { href: "/dashboard", label: "Dashboard" },
@@ -57,13 +62,27 @@ export function Header() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => (
+              {publicNavLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                     pathname === link.href
+                      ? "bg-primary-500/20 text-primary-400"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              {isAuthenticated && authNavLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                    pathname === link.href || pathname.startsWith(link.href + "/")
                       ? "bg-primary-500/20 text-primary-400"
                       : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                   )}
@@ -148,7 +167,7 @@ export function Header() {
               className="md:hidden mt-4 pt-4 border-t border-white/10"
             >
               <div className="flex flex-col gap-2">
-                {navLinks.map((link) => (
+                {publicNavLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -156,6 +175,21 @@ export function Header() {
                     className={cn(
                       "px-4 py-3 rounded-lg text-sm font-medium transition-all",
                       pathname === link.href
+                        ? "bg-primary-500/20 text-primary-400"
+                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                {isAuthenticated && authNavLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "px-4 py-3 rounded-lg text-sm font-medium transition-all",
+                      pathname === link.href || pathname.startsWith(link.href + "/")
                         ? "bg-primary-500/20 text-primary-400"
                         : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                     )}

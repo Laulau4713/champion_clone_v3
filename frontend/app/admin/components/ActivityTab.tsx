@@ -255,7 +255,7 @@ export default function ActivityTab() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Activity className="h-5 w-5 text-primary" />
-            Journal d'activité
+            Journal d&apos;activité
           </CardTitle>
         </CardHeader>
         <CardContent>

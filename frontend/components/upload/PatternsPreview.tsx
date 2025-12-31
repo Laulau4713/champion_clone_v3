@@ -44,7 +44,7 @@ function PatternCard({ pattern, index }: { pattern: Pattern; index: number }) {
     >
       <Card className="glass border-white/10 hover:border-primary-500/30 transition-all">
         <CardContent className="p-4">
-          <p className="text-sm mb-3 leading-relaxed">"{pattern.text}"</p>
+          <p className="text-sm mb-3 leading-relaxed">&quot;{pattern.text}&quot;</p>
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
               {pattern.context}
@@ -92,7 +92,7 @@ export function PatternsPreview({ patterns }: PatternsPreviewProps) {
         <div>
           <h3 className="font-semibold">Patterns détectés</h3>
           <p className="text-sm text-muted-foreground">
-            Score d'efficacité: {patterns.effectiveness_score}/10
+            Score d&apos;efficacité: {patterns.effectiveness_score}/10
           </p>
         </div>
       </div>

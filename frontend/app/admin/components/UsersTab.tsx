@@ -138,7 +138,7 @@ export default function UsersTab() {
                         <div>
                           <p className="text-sm text-white">{u.email}</p>
                           <p className="text-xs text-slate-400">
-                            {u.days_inactive} jours d'inactivité • {u.subscription_plan}
+                            {u.days_inactive} jours d&apos;inactivité • {u.subscription_plan}
                           </p>
                         </div>
                         <Link href={`/admin/users/${u.id}`}>

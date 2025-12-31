@@ -207,7 +207,7 @@ export default function EmailsTab() {
           onClick={() => setActiveView('logs')}
         >
           <Send className="h-4 w-4 mr-2" />
-          Logs d'envoi
+          Logs d&apos;envoi
         </Button>
       </div>
 
@@ -293,7 +293,7 @@ export default function EmailsTab() {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Send className="h-5 w-5 text-primary" />
-              Logs d'envoi
+              Logs d&apos;envoi
             </CardTitle>
           </CardHeader>
           <CardContent>

@@ -330,7 +330,7 @@ export default function OverviewTab() {
                   <p className="text-xl font-bold text-green-400">{emailStats?.sent || 0}</p>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-800/50">
-                  <p className="text-sm text-slate-400">Taux d'ouverture</p>
+                  <p className="text-sm text-slate-400">Taux d&apos;ouverture</p>
                   <p className="text-xl font-bold text-blue-400">
                     {((emailStats?.open_rate || 0) * 100).toFixed(1)}%
                   </p>

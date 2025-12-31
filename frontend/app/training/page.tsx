@@ -130,6 +130,22 @@ function TrainingPageContent() {
     }
   };
 
+  const handleEndSession = useCallback(async () => {
+    if (!sessionId) {
+      setPhase("summary");
+      return;
+    }
+
+    try {
+      const summary = await endTraining(sessionId);
+      setSessionSummary(summary);
+    } catch (err) {
+      console.error("Error ending session:", err);
+    }
+
+    setPhase("summary");
+  }, [sessionId]);
+
   const handleSendMessage = useCallback(async (content: string) => {
     if (!sessionId) return;
 
@@ -169,23 +185,7 @@ function TrainingPageContent() {
       setIsTyping(false);
       setTyping(false);
     }
-  }, [sessionId, addUserMessage, addChampionMessage, setTyping, currentScore]);
-
-  const handleEndSession = async () => {
-    if (!sessionId) {
-      setPhase("summary");
-      return;
-    }
-
-    try {
-      const summary = await endTraining(sessionId);
-      setSessionSummary(summary);
-    } catch (err) {
-      console.error("Error ending session:", err);
-    }
-
-    setPhase("summary");
-  };
+  }, [sessionId, addUserMessage, addChampionMessage, setTyping, currentScore, handleEndSession]);
 
   const handleNewSession = () => {
     reset();
@@ -214,7 +214,7 @@ function TrainingPageContent() {
             <AlertCircle className="h-12 w-12 text-warning-400 mx-auto mb-4" />
             <h2 className="text-xl font-bold mb-2">Aucun champion sélectionné</h2>
             <p className="text-muted-foreground mb-6">
-              Vous devez d'abord créer et analyser un champion pour commencer l'entraînement.
+              Vous devez d&apos;abord créer et analyser un champion pour commencer l&apos;entraînement.
             </p>
             <Button
               onClick={() => router.push("/upload")}
@@ -248,7 +248,7 @@ function TrainingPageContent() {
                 Choisissez votre <span className="gradient-text">scénario</span>
               </h1>
               <p className="text-muted-foreground max-w-xl mx-auto">
-                Sélectionnez un scénario d'entraînement adapté à votre niveau
+                Sélectionnez un scénario d&apos;entraînement adapté à votre niveau
               </p>
             </div>
 
@@ -313,7 +313,7 @@ function TrainingPageContent() {
                       ) : (
                         <>
                           <Target className="h-5 w-5 mr-2" />
-                          Démarrer l'entraînement
+                          Démarrer l&apos;entraînement
                         </>
                       )}
                     </Button>

@@ -351,3 +351,162 @@ export interface ChampionPatterns {
   tone_style?: string;
   success_patterns: string[];
 }
+
+// ============ V2 PEDAGOGICAL SYSTEM TYPES ============
+
+export type DifficultyLevel = 'easy' | 'medium' | 'expert';
+export type MoodState = 'hostile' | 'aggressive' | 'skeptical' | 'neutral' | 'interested' | 'enthusiastic';
+
+// Learning content
+export interface Cours {
+  id: string;
+  title: string;
+  description: string;
+  duration_minutes: number;
+  difficulty: DifficultyLevel;
+  category: string;
+  content: CoursContent[];
+  prerequisites?: string[];
+}
+
+export interface CoursContent {
+  type: 'text' | 'video' | 'example' | 'exercise';
+  title?: string;
+  content: string;
+}
+
+export interface Quiz {
+  id: string;
+  title: string;
+  course_id: string;
+  questions: QuizQuestion[];
+}
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correct_answer: number;
+  explanation: string;
+}
+
+export interface QuizResult {
+  quiz_id: string;
+  score: number;
+  total: number;
+  percentage: number;
+  passed: boolean;
+  answers: {
+    question_id: string;
+    selected: number;
+    correct: boolean;
+  }[];
+}
+
+// V2 Voice Training
+export interface VoiceSessionStartResponse {
+  session_id: number;
+  level: DifficultyLevel;
+  scenario: TrainingScenario;
+  prospect_message: string;
+  prospect_audio_base64?: string;
+  mood: MoodState;
+  jauge: number;
+  jauge_visible: boolean;
+  config: LevelConfig;
+}
+
+export interface VoiceSessionMessageResponse {
+  text: string;
+  audio_base64?: string;
+  mood: MoodState;
+  jauge: number;
+  jauge_delta: number;
+  behavioral_cue?: string;
+  hint?: string;
+  session_complete: boolean;
+  detected_patterns?: DetectedPattern[];
+  event?: SituationalEvent;
+  reversal?: Reversal;
+}
+
+export interface LevelConfig {
+  starting_jauge: number;
+  conversion_threshold: number;
+  jauge_volatility: 'low' | 'medium' | 'high';
+  show_jauge: boolean;
+  hidden_objections: boolean;
+  hidden_objection_probability: number;
+  situational_events: boolean;
+  reversals: boolean;
+  reversal_probability: number;
+  hints_enabled: boolean;
+}
+
+export interface DetectedPattern {
+  type: 'positive' | 'negative';
+  action: string;
+  points: number;
+  description?: string;
+}
+
+export interface SituationalEvent {
+  type: string;
+  description: string;
+  impact: number;
+}
+
+export interface Reversal {
+  type: 'last_minute_bomb' | 'price_attack' | 'ghost_decision_maker';
+  description: string;
+  jauge_drop: number;
+}
+
+export interface HiddenObjection {
+  expressed: string;
+  hidden: string;
+  discovery_question?: string;
+  discovered: boolean;
+}
+
+export interface VoiceSessionSummary {
+  session_id: number;
+  level: DifficultyLevel;
+  duration_seconds: number;
+  final_jauge: number;
+  starting_jauge: number;
+  jauge_progression: number;
+  conversion_achieved: boolean;
+  detected_patterns: DetectedPattern[];
+  hidden_objections_discovered: number;
+  hidden_objections_total: number;
+  events_handled: number;
+  reversals_recovered: number;
+  strengths: string[];
+  improvements: string[];
+  overall_feedback: string;
+}
+
+export interface VoiceConfig {
+  status: string;
+  services: {
+    elevenlabs: boolean;
+    whisper: boolean;
+    voice_friendly: boolean;
+    voice_neutral: boolean;
+    voice_aggressive: boolean;
+    jauge_service: boolean;
+    event_service: boolean;
+    behavioral_detector: boolean;
+  };
+}
+
+export interface UserProgress {
+  user_id: number;
+  completed_courses: string[];
+  quiz_scores: Record<string, number>;
+  training_sessions: number;
+  average_score: number;
+  current_level: DifficultyLevel;
+  unlocked_levels: DifficultyLevel[];
+}
