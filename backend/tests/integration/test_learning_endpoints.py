@@ -63,35 +63,47 @@ async def learning_content(db_session: AsyncSession):
             )
             db_session.add(sector)
 
-    # Import difficulty levels
+    # Import difficulty levels (handles both V1 'level' and V2 'level_id' format)
     levels_path = content_dir / "difficulty_levels.json"
     if levels_path.exists():
         with open(levels_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
         for level_data in data.get("difficulty_levels", []):
-            days_range = level_data.get("days_range", [1, 30])
+            # Handle both V1 (level) and V2 (level_id) format
+            level_key = level_data.get("level_id", level_data.get("level"))
+            # Handle both V1 (days_range) and V2 (days) format
+            days_range = level_data.get("days", level_data.get("days_range", [1, 30]))
             level = DifficultyLevel(
-                level=level_data["level"],
+                level=level_key,
                 name=level_data["name"],
                 description=level_data.get("description", ""),
                 days_range_start=days_range[0] if isinstance(days_range, list) else 1,
                 days_range_end=days_range[1] if isinstance(days_range, list) else 30,
                 ai_behavior=level_data.get("ai_behavior", {}),
-                prospect_personality=level_data.get("prospect_personality", {}),
+                prospect_personality=level_data.get("prospect_baseline", level_data.get("prospect_personality", {})),
                 conversation_dynamics=level_data.get("conversation_dynamics", {}),
                 feedback_settings=level_data.get("feedback_settings", {}),
-                interruption_phrases=level_data.get("interruption_phrases", [])
+                interruption_phrases=level_data.get("interruption_phrases", []),
+                # V2 fields
+                emotional_state_system=level_data.get("emotional_state_system", {}),
+                hidden_objections=level_data.get("hidden_objections", {}),
+                situational_events=level_data.get("situational_events", {}),
+                reversals=level_data.get("reversals", {}),
+                conversion_triggers=level_data.get("conversion_triggers", {}),
+                memory_coherence=level_data.get("memory_coherence", {}),
+                hints_system=level_data.get("hints_system", {}),
+                scoring=level_data.get("scoring", {})
             )
             db_session.add(level)
 
-    # Import courses
-    courses_path = content_dir / "courses.json"
-    if courses_path.exists():
-        with open(courses_path, "r", encoding="utf-8") as f:
+    # Import cours
+    cours_path = content_dir / "cours.json"
+    if cours_path.exists():
+        with open(cours_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        for course_data in data.get("courses", [])[:5]:  # Only first 5 for tests
+        for course_data in data.get("cours", [])[:5]:  # Only first 5 for tests
             course = Course(
                 day=course_data["day"],
                 level=course_data["level"],
@@ -108,13 +120,13 @@ async def learning_content(db_session: AsyncSession):
 
     await db_session.commit()
 
-    # Now add quizzes (after skills are committed)
-    quizzes_path = content_dir / "quizzes.json"
-    if quizzes_path.exists():
-        with open(quizzes_path, "r", encoding="utf-8") as f:
+    # Now add quiz (after skills are committed)
+    quiz_path = content_dir / "quiz.json"
+    if quiz_path.exists():
+        with open(quiz_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        for quiz_data in data.get("quizzes", [])[:3]:  # Only first 3 for tests
+        for quiz_data in data.get("quiz", [])[:3]:  # Only first 3 for tests
             from sqlalchemy import select
             skill = await db_session.scalar(
                 select(Skill).where(Skill.slug == quiz_data["skill_id"])

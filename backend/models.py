@@ -808,11 +808,12 @@ class DifficultyLevel(Base):
     """
     Defines difficulty progression settings for AI behavior.
     Controls how the AI prospect behaves at different difficulty levels.
+    V2: Includes emotional state system, hidden objections, events, and reversals.
     """
     __tablename__ = "difficulty_levels"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    level: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)  # beginner, intermediate, advanced
+    level: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)  # easy, medium, expert
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
@@ -828,6 +829,55 @@ class DifficultyLevel(Base):
 
     # Interruption phrases for this difficulty
     interruption_phrases: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: EMOTIONAL STATE SYSTEM
+    # ═══════════════════════════════════════════════════════════════
+    # Contains: starting_gauge, conversion_threshold, gauge_volatility,
+    # gauge_modifiers (positive_actions, negative_actions), mood_stages
+    emotional_state_system: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: HIDDEN OBJECTIONS
+    # ═══════════════════════════════════════════════════════════════
+    # Contains: enabled, probability, types[]
+    hidden_objections: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: SITUATIONAL EVENTS
+    # ═══════════════════════════════════════════════════════════════
+    # Contains: enabled, probability_per_scenario, events[]
+    situational_events: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: REVERSALS
+    # ═══════════════════════════════════════════════════════════════
+    # Contains: enabled, probability, types[]
+    reversals: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: CONVERSION TRIGGERS
+    # ═══════════════════════════════════════════════════════════════
+    # Contains: required_gauge, required_conditions, accelerators, blockers
+    conversion_triggers: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: MEMORY COHERENCE
+    # ═══════════════════════════════════════════════════════════════
+    # Contains: enabled, strictness, behaviors[]
+    memory_coherence: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: HINTS SYSTEM
+    # ═══════════════════════════════════════════════════════════════
+    # Contains: enabled, trigger_after_silence_seconds, max_hints, hint_style
+    hints_system: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: SCORING
+    # ═══════════════════════════════════════════════════════════════
+    # Contains: bonus_multiplier, penalty_reduction, passing_threshold, etc.
+    scoring: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
@@ -1178,6 +1228,7 @@ class VoiceTrainingSession(Base):
     Voice training session with TTS/STT support.
 
     Uses pedagogical skills and sectors for scenario generation.
+    V2: Includes emotional gauge system, hidden objections, events, and reversals.
     """
     __tablename__ = "voice_training_sessions"
 
@@ -1204,8 +1255,58 @@ class VoiceTrainingSession(Base):
     # Scenario generated for this session
     scenario_json: Mapped[dict] = mapped_column(JSON, nullable=False)
 
-    # Session status
-    status: Mapped[str] = mapped_column(String(20), default="active", nullable=False)  # active, completed, abandoned
+    # Session status: active, completed, abandoned, converted
+    status: Mapped[str] = mapped_column(String(20), default="active", nullable=False)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: EMOTIONAL GAUGE SYSTEM
+    # ═══════════════════════════════════════════════════════════════
+    current_gauge: Mapped[int] = mapped_column(Integer, default=50, nullable=False)
+    starting_gauge: Mapped[int] = mapped_column(Integer, default=50, nullable=False)
+    # [{timestamp, value, action, delta}]
+    gauge_history: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    current_mood: Mapped[str] = mapped_column(String(30), default="neutral", nullable=False)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: HIDDEN OBJECTIONS
+    # ═══════════════════════════════════════════════════════════════
+    # [{expressed, hidden, discovered}]
+    hidden_objections: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    discovered_objections: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: SITUATIONAL EVENTS & REVERSALS
+    # ═══════════════════════════════════════════════════════════════
+    # [{type, timestamp, handled}]
+    triggered_events: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    pending_event: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    reversal_triggered: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    reversal_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: CONVERSATION MEMORY
+    # ═══════════════════════════════════════════════════════════════
+    # Key statements the salesperson made
+    key_statements: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    # What the prospect can reference/recall
+    prospect_memory: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: BEHAVIORAL TRACKING
+    # ═══════════════════════════════════════════════════════════════
+    positive_actions: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    negative_actions: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    interruption_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    # {type: open/closed, text}
+    questions_asked: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: CONVERSION CONDITIONS
+    # ═══════════════════════════════════════════════════════════════
+    conversion_possible: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    conversion_blockers: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    closing_attempted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    converted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Results
     score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
@@ -1228,7 +1329,7 @@ class VoiceTrainingSession(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<VoiceTrainingSession(id={self.id}, skill_id={self.skill_id}, status='{self.status}')>"
+        return f"<VoiceTrainingSession(id={self.id}, skill_id={self.skill_id}, status='{self.status}', gauge={self.current_gauge})>"
 
 
 class VoiceTrainingMessage(Base):
@@ -1236,6 +1337,7 @@ class VoiceTrainingMessage(Base):
     Message in a voice training session.
 
     Stores both user messages (transcribed from audio) and prospect responses.
+    V2: Includes behavioral analysis for each message.
     """
     __tablename__ = "voice_training_messages"
 
@@ -1255,6 +1357,24 @@ class VoiceTrainingMessage(Base):
     # For user messages: detected emotion/hesitations
     emotion_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 
+    # ═══════════════════════════════════════════════════════════════
+    # V2: BEHAVIORAL ANALYSIS (for user messages)
+    # ═══════════════════════════════════════════════════════════════
+    # {positive: [], negative: []}
+    detected_patterns: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    gauge_impact: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    # [(soupir), (prend des notes)]
+    behavioral_cues: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # V2: PROSPECT META (for prospect messages)
+    # ═══════════════════════════════════════════════════════════════
+    prospect_mood: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    # test, genuine, reversal
+    prospect_intent: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    is_event: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    event_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -1268,4 +1388,4 @@ class VoiceTrainingMessage(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<VoiceTrainingMessage(session_id={self.session_id}, role='{self.role}')>"
+        return f"<VoiceTrainingMessage(session_id={self.session_id}, role='{self.role}', gauge_impact={self.gauge_impact})>"

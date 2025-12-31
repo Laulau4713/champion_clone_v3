@@ -412,11 +412,11 @@ async def get_session(
 
 
 # ============================================
-# VOICE TRAINING ENDPOINTS
+# VOICE TRAINING ENDPOINTS V2
 # ============================================
 
 from pydantic import BaseModel
-from services.training_service import TrainingService
+from services.training_service_v2 import TrainingServiceV2
 from services.voice_service import voice_service
 
 
@@ -432,8 +432,23 @@ class VoiceMessageRequest(BaseModel):
     text: Optional[str] = None
 
 
+class ProspectResponseSchemaV2(BaseModel):
+    """Response from the prospect in voice training V2."""
+    text: str
+    audio_base64: Optional[str] = None
+    mood: str  # hostile, aggressive, skeptical, neutral, interested, ready_to_buy
+    jauge: int  # -1 if hidden (medium/expert levels)
+    jauge_delta: int  # 0 if hidden
+    behavioral_cue: Optional[str] = None  # (soupir), (prend des notes), etc.
+    is_event: bool = False  # True if this is a situational event
+    event_type: Optional[str] = None
+    feedback: Optional[dict] = None
+    conversion_possible: bool = False
+
+
+# Keep old schema for backwards compatibility
 class ProspectResponseSchema(BaseModel):
-    """Response from the prospect in voice training."""
+    """Response from the prospect in voice training (legacy)."""
     text: str
     audio_base64: Optional[str] = None
     emotion: str
@@ -449,12 +464,17 @@ async def start_voice_training_session(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Start a new voice training session.
+    Start a new voice training session (V2 with emotional jauge).
 
-    Uses the pedagogical skills/sectors system.
-    Returns scenario and opening message with audio (if ElevenLabs is configured).
+    Uses the pedagogical skills/sectors system with V2 mechanics:
+    - Emotional jauge (0-100)
+    - Hidden objections (medium/expert)
+    - Situational events (medium/expert)
+    - Reversals (expert)
+
+    Returns scenario, opening message with audio, and initial jauge/mood.
     """
-    service = TrainingService(db)
+    service = TrainingServiceV2(db)
 
     try:
         session = await service.create_session(
@@ -470,7 +490,7 @@ async def start_voice_training_session(
         raise HTTPException(status_code=500, detail=f"Failed to start session: {str(e)}")
 
 
-@router.post("/voice/session/{session_id}/message", response_model=ProspectResponseSchema)
+@router.post("/voice/session/{session_id}/message", response_model=ProspectResponseSchemaV2)
 async def send_voice_message(
     session_id: int,
     request: VoiceMessageRequest,
@@ -478,15 +498,23 @@ async def send_voice_message(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Send a message (audio or text) and receive prospect response.
+    Send a message (audio or text) and receive prospect response (V2).
 
     If audio_base64 is provided, it will be transcribed via Whisper.
-    The prospect response includes audio (if ElevenLabs is configured).
+
+    V2 Response includes:
+    - mood: Current emotional state of the prospect
+    - jauge: Emotional jauge value (0-100, or -1 if hidden)
+    - jauge_delta: Change since last message
+    - behavioral_cue: Visual cue like "(soupir)" or "(prend des notes)"
+    - is_event: True if this is a situational event
+    - conversion_possible: Whether closing could succeed now
+    - feedback: Tips and pattern analysis (in easy mode)
     """
     if not request.audio_base64 and not request.text:
         raise HTTPException(status_code=400, detail="audio_base64 or text required")
 
-    service = TrainingService(db)
+    service = TrainingServiceV2(db)
 
     try:
         response = await service.process_user_message(
@@ -495,7 +523,7 @@ async def send_voice_message(
             audio_base64=request.audio_base64,
             text=request.text
         )
-        return response
+        return response.to_dict()
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -510,11 +538,18 @@ async def end_voice_training_session(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    End the voice training session and get final evaluation.
+    End the voice training session and get final evaluation (V2).
 
-    Returns detailed scores and feedback based on skill criteria.
+    Returns detailed V2 evaluation including:
+    - overall_score: Final score (0-100)
+    - final_jauge: Where the emotional jauge ended
+    - jauge_progression: Change from start to end
+    - positive_actions_count / negative_actions_count
+    - converted: Whether the prospect was won over
+    - points_forts / axes_amelioration
+    - conseil_principal: Main advice for improvement
     """
-    service = TrainingService(db)
+    service = TrainingServiceV2(db)
 
     try:
         result = await service.end_session(
@@ -535,8 +570,16 @@ async def get_voice_session(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get details of a voice training session."""
-    service = TrainingService(db)
+    """
+    Get details of a voice training session (V2).
+
+    Returns full session data including:
+    - current_jauge / starting_jauge
+    - jauge_history: Timeline of jauge changes
+    - positive_actions / negative_actions: Detected patterns
+    - messages: Full conversation with behavioral analysis
+    """
+    service = TrainingServiceV2(db)
     session = await service.get_session(session_id, current_user)
 
     if not session:

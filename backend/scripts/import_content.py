@@ -9,8 +9,8 @@ The content directory must contain:
   - skills.json
   - difficulty_levels.json
   - sectors.json
-  - courses.json
-  - quizzes.json
+  - cours.json
+  - quiz.json
 """
 
 import sys
@@ -74,7 +74,7 @@ async def import_skills(content_dir: Path):
 
 
 async def import_difficulty_levels(content_dir: Path):
-    """Import difficulty levels from JSON file."""
+    """Import difficulty levels from JSON file (V2 format with upsert)."""
     file_path = content_dir / "difficulty_levels.json"
     if not file_path.exists():
         print(f"  ⚠️  File not found: {file_path}")
@@ -84,36 +84,78 @@ async def import_difficulty_levels(content_dir: Path):
         data = json.load(f)
 
     count = 0
+    updated = 0
     async with async_session_maker() as db:
         for level_data in data.get("difficulty_levels", []):
+            # Handle both V1 (level) and V2 (level_id) format
+            level_key = level_data.get("level_id", level_data.get("level"))
+
             existing = await db.scalar(
-                select(DifficultyLevel).where(DifficultyLevel.level == level_data["level"])
+                select(DifficultyLevel).where(DifficultyLevel.level == level_key)
             )
+
+            # Handle both V1 (days_range) and V2 (days) format
+            days_range = level_data.get("days", level_data.get("days_range", [1, 30]))
+
+            # Extract interruption phrases from interruption_triggers if present
+            interruption_phrases = level_data.get("interruption_phrases", [])
+            if not interruption_phrases and level_data.get("interruption_triggers"):
+                interruption_phrases = level_data["interruption_triggers"].get("interruption_phrases", [])
 
             if existing:
-                print(f"  ⏭️  Level exists: {level_data['level']}")
-                continue
+                # UPDATE existing level with V2 fields
+                existing.name = level_data["name"]
+                existing.description = level_data.get("description", "")
+                existing.days_range_start = days_range[0] if isinstance(days_range, list) else 1
+                existing.days_range_end = days_range[1] if isinstance(days_range, list) else 30
+                existing.ai_behavior = level_data.get("ai_behavior", {})
+                existing.prospect_personality = level_data.get("prospect_baseline", level_data.get("prospect_personality", {}))
+                existing.conversation_dynamics = level_data.get("conversation_dynamics", {})
+                existing.feedback_settings = level_data.get("feedback_settings", {})
+                existing.interruption_phrases = interruption_phrases
 
-            days_range = level_data.get("days_range", [1, 30])
+                # V2 fields
+                existing.emotional_state_system = level_data.get("emotional_state_system", {})
+                existing.hidden_objections = level_data.get("hidden_objections", {})
+                existing.situational_events = level_data.get("situational_events", {})
+                existing.reversals = level_data.get("reversals", {})
+                existing.conversion_triggers = level_data.get("conversion_triggers", {})
+                existing.memory_coherence = level_data.get("memory_coherence", {})
+                existing.hints_system = level_data.get("hints_system", {})
+                existing.scoring = level_data.get("scoring", {})
 
-            level = DifficultyLevel(
-                level=level_data["level"],
-                name=level_data["name"],
-                description=level_data.get("description", ""),
-                days_range_start=days_range[0] if isinstance(days_range, list) else 1,
-                days_range_end=days_range[1] if isinstance(days_range, list) else 30,
-                ai_behavior=level_data.get("ai_behavior", {}),
-                prospect_personality=level_data.get("prospect_personality", {}),
-                conversation_dynamics=level_data.get("conversation_dynamics", {}),
-                feedback_settings=level_data.get("feedback_settings", {}),
-                interruption_phrases=level_data.get("interruption_phrases", [])
-            )
-            db.add(level)
-            count += 1
-            print(f"  ✅ Level added: {level_data['level']}")
+                updated += 1
+                print(f"  🔄 Level updated: {level_key}")
+            else:
+                level = DifficultyLevel(
+                    level=level_key,
+                    name=level_data["name"],
+                    description=level_data.get("description", ""),
+                    days_range_start=days_range[0] if isinstance(days_range, list) else 1,
+                    days_range_end=days_range[1] if isinstance(days_range, list) else 30,
+                    ai_behavior=level_data.get("ai_behavior", {}),
+                    prospect_personality=level_data.get("prospect_baseline", level_data.get("prospect_personality", {})),
+                    conversation_dynamics=level_data.get("conversation_dynamics", {}),
+                    feedback_settings=level_data.get("feedback_settings", {}),
+                    interruption_phrases=interruption_phrases,
+                    # V2 fields
+                    emotional_state_system=level_data.get("emotional_state_system", {}),
+                    hidden_objections=level_data.get("hidden_objections", {}),
+                    situational_events=level_data.get("situational_events", {}),
+                    reversals=level_data.get("reversals", {}),
+                    conversion_triggers=level_data.get("conversion_triggers", {}),
+                    memory_coherence=level_data.get("memory_coherence", {}),
+                    hints_system=level_data.get("hints_system", {}),
+                    scoring=level_data.get("scoring", {})
+                )
+                db.add(level)
+                count += 1
+                print(f"  ✅ Level added: {level_key}")
 
         await db.commit()
 
+    if updated > 0:
+        print(f"   → {updated} levels updated with V2 fields")
     return count
 
 
@@ -157,9 +199,9 @@ async def import_sectors(content_dir: Path):
     return count
 
 
-async def import_courses(content_dir: Path):
-    """Import courses from JSON file."""
-    file_path = content_dir / "courses.json"
+async def import_cours(content_dir: Path):
+    """Import cours from JSON file."""
+    file_path = content_dir / "cours.json"
     if not file_path.exists():
         print(f"  ⚠️  File not found: {file_path}")
         return 0
@@ -169,7 +211,7 @@ async def import_courses(content_dir: Path):
 
     count = 0
     async with async_session_maker() as db:
-        for course_data in data.get("courses", []):
+        for course_data in data.get("cours", []):
             existing = await db.scalar(
                 select(Course).where(Course.day == course_data["day"])
             )
@@ -207,9 +249,9 @@ async def import_courses(content_dir: Path):
     return count
 
 
-async def import_quizzes(content_dir: Path):
-    """Import quizzes from JSON file."""
-    file_path = content_dir / "quizzes.json"
+async def import_quiz(content_dir: Path):
+    """Import quiz from JSON file."""
+    file_path = content_dir / "quiz.json"
     if not file_path.exists():
         print(f"  ⚠️  File not found: {file_path}")
         return 0
@@ -219,7 +261,7 @@ async def import_quizzes(content_dir: Path):
 
     count = 0
     async with async_session_maker() as db:
-        for quiz_data in data.get("quizzes", []):
+        for quiz_data in data.get("quiz", []):
             # Get skill
             skill = await db.scalar(
                 select(Skill).where(Skill.slug == quiz_data["skill_id"])
@@ -257,15 +299,15 @@ async def verify_import():
     async with async_session_maker() as db:
         skills = await db.scalar(select(func.count(Skill.id)))
         sectors = await db.scalar(select(func.count(Sector.id)))
-        courses = await db.scalar(select(func.count(Course.id)))
-        quizzes = await db.scalar(select(func.count(Quiz.id)))
+        cours = await db.scalar(select(func.count(Course.id)))
+        quiz = await db.scalar(select(func.count(Quiz.id)))
         levels = await db.scalar(select(func.count(DifficultyLevel.id)))
 
         print(f"\n📊 VERIFICATION:")
         print(f"   Skills: {skills}")
         print(f"   Sectors: {sectors}")
-        print(f"   Courses: {courses}")
-        print(f"   Quizzes: {quizzes}")
+        print(f"   Cours: {cours}")
+        print(f"   Quiz: {quiz}")
         print(f"   Levels: {levels}")
 
 
@@ -276,8 +318,8 @@ async def main():
         print("  - skills.json")
         print("  - difficulty_levels.json")
         print("  - sectors.json")
-        print("  - courses.json")
-        print("  - quizzes.json")
+        print("  - cours.json")
+        print("  - quiz.json")
         sys.exit(1)
 
     content_dir = Path(sys.argv[1])
@@ -304,13 +346,13 @@ async def main():
     sectors_count = await import_sectors(content_dir)
     print(f"   → {sectors_count} sectors imported\n")
 
-    print("📖 Importing courses...")
-    courses_count = await import_courses(content_dir)
-    print(f"   → {courses_count} courses imported\n")
+    print("📖 Importing cours...")
+    cours_count = await import_cours(content_dir)
+    print(f"   → {cours_count} cours imported\n")
 
-    print("❓ Importing quizzes...")
-    quizzes_count = await import_quizzes(content_dir)
-    print(f"   → {quizzes_count} quizzes imported")
+    print("❓ Importing quiz...")
+    quiz_count = await import_quiz(content_dir)
+    print(f"   → {quiz_count} quiz imported")
 
     await verify_import()
 
