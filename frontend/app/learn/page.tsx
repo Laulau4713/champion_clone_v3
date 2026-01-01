@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -49,7 +49,7 @@ interface UserProgressData {
   skills_total: number;
 }
 
-export default function LearnPage() {
+function LearnPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "training";
@@ -472,5 +472,25 @@ export default function LearnPage() {
         onOpenChange={setShowPremiumModal}
       />
     </div>
+  );
+}
+
+// Wrapper with Suspense for useSearchParams
+export default function LearnPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-dark flex items-center justify-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          >
+            <Sparkles className="h-8 w-8 text-primary-400" />
+          </motion.div>
+        </div>
+      }
+    >
+      <LearnPageContent />
+    </Suspense>
   );
 }

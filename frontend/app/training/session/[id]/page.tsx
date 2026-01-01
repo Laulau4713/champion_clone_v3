@@ -14,6 +14,9 @@ import {
   Zap,
   MessageSquare,
   Mic,
+  Wifi,
+  WifiOff,
+  AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,11 +35,12 @@ import { AudioRecorder } from "@/components/training/AudioRecorder";
 import { AudioPlayer } from "@/components/training/AudioPlayer";
 import { PremiumModal } from "@/components/ui/premium-modal";
 import { voiceAPI } from "@/lib/api";
+import { useVoiceSession, VoiceMessage } from "@/hooks/useVoiceSession";
+import type { SessionEnded } from "@/lib/websocket";
 import type {
   DifficultyLevel,
   MoodState,
   VoiceSessionStartResponse,
-  VoiceSessionMessageResponse,
   VoiceSessionSummary,
   DetectedPattern,
 } from "@/types";
@@ -50,6 +54,8 @@ interface Message {
   jauge?: number;
   jaugeDelta?: number;
   behavioralCue?: string;
+  isEvent?: boolean;
+  eventType?: string;
   patterns?: DetectedPattern[];
   timestamp: Date;
 }
@@ -63,36 +69,105 @@ export default function TrainingSessionPage() {
   const level = (searchParams.get("level") as DifficultyLevel) || "easy";
 
   const [session, setSession] = useState<VoiceSessionStartResponse | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isStarting, setIsStarting] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentJauge, setCurrentJauge] = useState(50);
-  const [currentMood, setCurrentMood] = useState<MoodState>("neutral");
+  const [localError, setLocalError] = useState<string | null>(null);
   const [jaugeDelta, setJaugeDelta] = useState(0);
   const [hint, setHint] = useState<string | null>(null);
   const [sessionComplete, setSessionComplete] = useState(false);
   const [summary, setSummary] = useState<VoiceSessionSummary | null>(null);
   const [inputMode, setInputMode] = useState<"text" | "voice">("text");
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [eventNotification, setEventNotification] = useState<{type: string; message: string} | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // Handle session ended from WebSocket
+  const handleSessionEnded = useCallback((evaluation: SessionEnded["evaluation"]) => {
+    setSessionComplete(true);
+    setSummary({
+      session_id: session?.session_id || 0,
+      level: level,
+      duration_seconds: 0,
+      final_jauge: evaluation.final_gauge,
+      starting_jauge: 50,
+      jauge_progression: evaluation.gauge_progression,
+      conversion_achieved: evaluation.converted,
+      detected_patterns: [],
+      hidden_objections_discovered: 0,
+      hidden_objections_total: 0,
+      events_handled: 0,
+      reversals_recovered: 0,
+      strengths: evaluation.points_forts,
+      improvements: evaluation.axes_amelioration,
+      overall_feedback: evaluation.conseil_principal,
+    });
+  }, [session?.session_id, level]);
+
+  // WebSocket hook - only active when we have a session
+  const {
+    isConnected,
+    isConnecting,
+    isProspectThinking,
+    messages: wsMessages,
+    currentGauge,
+    currentMood,
+    conversionPossible,
+    feedback,
+    error: wsError,
+    connect,
+    disconnect,
+    sendMessage: wsSendMessage,
+    endSession: wsEndSession,
+  } = useVoiceSession({
+    sessionId: session?.session_id || 0,
+    onSessionEnded: handleSessionEnded,
+  });
+
+  // Convert WebSocket messages to local message format
+  useEffect(() => {
+    if (wsMessages.length > 0) {
+      const convertedMessages: Message[] = wsMessages.map((msg: VoiceMessage) => ({
+        id: msg.id,
+        role: msg.role,
+        text: msg.text,
+        audioBase64: msg.audioBase64,
+        mood: msg.mood as MoodState | undefined,
+        jauge: undefined,
+        jaugeDelta: msg.gaugeDelta,
+        behavioralCue: msg.behavioralCue,
+        isEvent: msg.isEvent,
+        eventType: msg.eventType,
+        patterns: [],
+        timestamp: msg.timestamp,
+      }));
+      setLocalMessages(convertedMessages);
+
+      // Update jaugeDelta from last prospect message
+      const lastProspect = wsMessages.filter(m => m.role === "prospect").pop();
+      if (lastProspect?.gaugeDelta !== undefined) {
+        setJaugeDelta(lastProspect.gaugeDelta);
+      }
+    }
+  }, [wsMessages]);
+
+  // Combine errors
+  const error = localError || wsError;
+
+  // Start HTTP session, then connect WebSocket
   const startNewSession = useCallback(async () => {
     setIsStarting(true);
-    setError(null);
+    setLocalError(null);
 
     try {
       const response = await voiceAPI.startSession({ level });
       const data = response.data;
 
       setSession(data);
-      setCurrentJauge(data.jauge);
-      setCurrentMood(data.mood);
 
-      // Add initial prospect message
+      // Add initial prospect message to local state
       const initialMessage: Message = {
         id: crypto.randomUUID(),
         role: "prospect",
@@ -102,8 +177,7 @@ export default function TrainingSessionPage() {
         jauge: data.jauge,
         timestamp: new Date(),
       };
-
-      setMessages([initialMessage]);
+      setLocalMessages([initialMessage]);
 
       // Update URL with session ID
       window.history.replaceState(
@@ -118,14 +192,28 @@ export default function TrainingSessionPage() {
       const axiosError = err as { response?: { status: number; data?: { code?: string } } };
       if (axiosError.response?.status === 402 && axiosError.response?.data?.code === "TRIAL_EXPIRED") {
         setShowPremiumModal(true);
-        setError("Votre essai gratuit est termin\u00e9. Passez \u00e0 Premium pour continuer.");
+        setLocalError("Votre essai gratuit est terminé. Passez à Premium pour continuer.");
       } else {
-        setError("Impossible de d\u00e9marrer la session. Veuillez r\u00e9essayer.");
+        setLocalError("Impossible de démarrer la session. Veuillez réessayer.");
       }
     } finally {
       setIsStarting(false);
     }
   }, [level]);
+
+  // Connect WebSocket when session is ready
+  useEffect(() => {
+    if (session?.session_id && !isConnected && !isConnecting) {
+      connect();
+    }
+  }, [session?.session_id, isConnected, isConnecting, connect]);
+
+  // Disconnect WebSocket on unmount
+  useEffect(() => {
+    return () => {
+      disconnect();
+    };
+  }, [disconnect]);
 
   // Start session on mount
   useEffect(() => {
@@ -139,84 +227,25 @@ export default function TrainingSessionPage() {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [localMessages]);
 
-  const sendMessage = async (text: string, audioBase64?: string) => {
-    if ((!text.trim() && !audioBase64) || isLoading || !session) return;
+  // Send message via WebSocket
+  const sendMessage = useCallback((text: string, audioBase64?: string) => {
+    if ((!text.trim() && !audioBase64) || isProspectThinking || !isConnected) return;
 
-    setIsLoading(true);
-    setError(null);
+    setLocalError(null);
     setHint(null);
-
-    // Add user message
-    const userMessage: Message = {
-      id: crypto.randomUUID(),
-      role: "user",
-      text: text || "[Message vocal]",
-      audioBase64,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
     setInputText("");
 
-    try {
-      const response = await voiceAPI.sendMessage(session.session_id, {
-        text: text || undefined,
-        audio_base64: audioBase64 || undefined,
-      });
+    // Send via WebSocket (hook will add user message automatically)
+    wsSendMessage(text || "", audioBase64);
+  }, [isProspectThinking, isConnected, wsSendMessage]);
 
-      const data = response.data;
-
-      // Update jauge
-      setCurrentJauge(data.jauge >= 0 ? data.jauge : currentJauge);
-      setCurrentMood(data.mood);
-      setJaugeDelta(data.jauge_delta);
-
-      // Show hint if available
-      if (data.hint) {
-        setHint(data.hint);
-      }
-
-      // Add prospect response
-      const prospectMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "prospect",
-        text: data.text,
-        audioBase64: data.audio_base64,
-        mood: data.mood,
-        jauge: data.jauge,
-        jaugeDelta: data.jauge_delta,
-        behavioralCue: data.behavioral_cue,
-        patterns: data.detected_patterns,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, prospectMessage]);
-
-      // Check if session is complete
-      if (data.session_complete) {
-        setSessionComplete(true);
-        await endSession();
-      }
-    } catch (err) {
-      console.error("Error sending message:", err);
-      setError("Erreur lors de l'envoi du message. Veuillez réessayer.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const endSession = async () => {
-    if (!session) return;
-
-    try {
-      const response = await voiceAPI.endSession(session.session_id);
-      setSummary(response.data);
-    } catch (err) {
-      console.error("Error ending session:", err);
-    }
-  };
+  // End session via WebSocket
+  const endSession = useCallback(() => {
+    if (!isConnected) return;
+    wsEndSession();
+  }, [isConnected, wsEndSession]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -229,8 +258,8 @@ export default function TrainingSessionPage() {
     sendMessage("", audioBase64);
   };
 
-  // Loading state
-  if (isStarting) {
+  // Loading state (starting session or connecting WebSocket)
+  if (isStarting || (session && isConnecting)) {
     return (
       <div className="min-h-screen bg-gradient-dark flex items-center justify-center">
         <motion.div
@@ -239,7 +268,9 @@ export default function TrainingSessionPage() {
           className="text-center"
         >
           <Loader2 className="h-12 w-12 animate-spin text-primary-400 mx-auto mb-4" />
-          <p className="text-muted-foreground">Préparation de votre session...</p>
+          <p className="text-muted-foreground">
+            {isConnecting ? "Connexion en temps réel..." : "Préparation de votre session..."}
+          </p>
         </motion.div>
       </div>
     );
@@ -403,6 +434,31 @@ export default function TrainingSessionPage() {
             </Button>
 
             <div className="flex items-center gap-3">
+              {/* Connection status */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className={cn(
+                    "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs",
+                    isConnected
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-red-500/20 text-red-400"
+                  )}>
+                    {isConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+                    {isConnected ? "Connecté" : "Déconnecté"}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {isConnected ? "Connexion temps réel active" : "Reconnexion en cours..."}
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Conversion possible indicator */}
+              {conversionPossible && (
+                <Badge className="bg-green-500/20 text-green-400 animate-pulse">
+                  Conversion possible !
+                </Badge>
+              )}
+
               <Badge
                 className={cn(
                   level === "easy" && "bg-green-500/20 text-green-400",
@@ -428,12 +484,41 @@ export default function TrainingSessionPage() {
             {/* Jauge sidebar for desktop */}
             <div className="hidden lg:block fixed right-8 top-24 w-64">
               <JaugeEmotionnelle
-                value={currentJauge}
+                value={currentGauge}
                 delta={jaugeDelta}
-                mood={currentMood}
+                mood={currentMood as MoodState}
                 visible={session?.config.show_jauge ?? true}
                 threshold={session?.config.conversion_threshold ?? 80}
               />
+
+              {/* Real-time feedback */}
+              <AnimatePresence>
+                {feedback && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mt-4 p-3 rounded-xl bg-white/5 border border-white/10"
+                  >
+                    {feedback.positive_actions.length > 0 && (
+                      <div className="mb-2">
+                        <p className="text-xs text-green-400 font-medium mb-1">Bien joué :</p>
+                        {feedback.positive_actions.map((action, i) => (
+                          <p key={i} className="text-xs text-muted-foreground">• {action}</p>
+                        ))}
+                      </div>
+                    )}
+                    {feedback.tips.length > 0 && (
+                      <div>
+                        <p className="text-xs text-yellow-400 font-medium mb-1">Conseil :</p>
+                        {feedback.tips.map((tip, i) => (
+                          <p key={i} className="text-xs text-muted-foreground">• {tip}</p>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Hint */}
               <AnimatePresence>
@@ -456,9 +541,9 @@ export default function TrainingSessionPage() {
             {/* Mobile jauge */}
             <div className="lg:hidden mb-4">
               <JaugeEmotionnelle
-                value={currentJauge}
+                value={currentGauge}
                 delta={jaugeDelta}
-                mood={currentMood}
+                mood={currentMood as MoodState}
                 visible={session?.config.show_jauge ?? true}
                 threshold={session?.config.conversion_threshold ?? 80}
               />
@@ -467,7 +552,7 @@ export default function TrainingSessionPage() {
             {/* Messages */}
             <ScrollArea ref={scrollRef} className="flex-1 pr-4">
               <div className="space-y-4 pb-4">
-                {messages.map((message) => (
+                {localMessages.map((message) => (
                   <motion.div
                     key={message.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -539,7 +624,7 @@ export default function TrainingSessionPage() {
                   </motion.div>
                 ))}
 
-                {isLoading && (
+                {isProspectThinking && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -598,13 +683,13 @@ export default function TrainingSessionPage() {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Votre réponse au prospect..."
-                    disabled={isLoading || sessionComplete}
+                    placeholder={isConnected ? "Votre réponse au prospect..." : "Connexion en cours..."}
+                    disabled={isProspectThinking || sessionComplete || !isConnected}
                     className="flex-1 min-h-[48px] max-h-32 resize-none"
                   />
                   <Button
                     onClick={() => sendMessage(inputText)}
-                    disabled={!inputText.trim() || isLoading || sessionComplete}
+                    disabled={!inputText.trim() || isProspectThinking || sessionComplete || !isConnected}
                     className="h-12 w-12 rounded-full bg-gradient-primary"
                   >
                     <Send className="h-5 w-5" />
@@ -614,7 +699,7 @@ export default function TrainingSessionPage() {
                 <div className="flex-1 flex justify-center">
                   <AudioRecorder
                     onRecordingComplete={handleRecordingComplete}
-                    disabled={isLoading || sessionComplete}
+                    disabled={isProspectThinking || sessionComplete || !isConnected}
                   />
                 </div>
               )}
