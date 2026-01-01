@@ -87,6 +87,9 @@ class CourseDetailResponse(CourseResponse):
     common_mistakes: Optional[list] = None
     emotional_tips: Optional[list] = None
     takeaways: Optional[list] = None
+    stat_cle: Optional[str] = None
+    intro: Optional[str] = None
+    full_content: Optional[str] = None
 
 
 class QuizQuestionResponse(BaseModel):

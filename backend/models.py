@@ -960,6 +960,9 @@ class Course(Base):
     common_mistakes: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     emotional_tips: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     takeaways: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    stat_cle: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    intro: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    full_content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   BookOpen,
   Play,
@@ -51,6 +51,9 @@ interface UserProgressData {
 
 export default function LearnPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") || "training";
+
   const [cours, setCours] = useState<Cours[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [progress, setProgress] = useState<UserProgressData | null>(null);
@@ -182,7 +185,7 @@ export default function LearnPage() {
         </motion.div>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="training" className="space-y-6">
+        <Tabs defaultValue={initialTab} className="space-y-6">
           <TabsList className="glass">
             <TabsTrigger value="training" className="gap-2">
               <Mic className="h-4 w-4" />
@@ -329,10 +332,10 @@ export default function LearnPage() {
                     transition={{ delay: index * 0.05 }}
                   >
                     <Card className={cn(
-                      "h-full transition-colors",
+                      "h-full flex flex-col transition-colors",
                       isLocked ? "opacity-60" : "hover:border-primary-500/30"
                     )}>
-                      <CardHeader>
+                      <CardHeader className="flex-1">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">Jour {course.day}</Badge>
@@ -349,16 +352,16 @@ export default function LearnPage() {
                         <CardTitle className="text-lg mt-2">
                           {course.title}
                         </CardTitle>
-                        <CardDescription>{course.objective}</CardDescription>
+                        <CardDescription className="line-clamp-2">{course.objective}</CardDescription>
                       </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center text-sm text-muted-foreground">
+                      <CardContent className="pt-0">
+                        <div className="flex items-center text-sm text-muted-foreground mb-4">
                           <Clock className="h-4 w-4 mr-1" />
                           {course.duration_minutes} min
                         </div>
                         {isLocked ? (
                           <Button
-                            className="w-full mt-4"
+                            className="w-full"
                             variant="outline"
                             onClick={handleLockedContent}
                           >
@@ -367,7 +370,7 @@ export default function LearnPage() {
                           </Button>
                         ) : (
                           <Button
-                            className="w-full mt-4"
+                            className="w-full"
                             variant={isCompleted ? "outline" : "default"}
                             onClick={() => router.push(`/learn/cours/${course.day}`)}
                           >
@@ -408,10 +411,10 @@ export default function LearnPage() {
                     transition={{ delay: index * 0.05 }}
                   >
                     <Card className={cn(
-                      "h-full transition-colors",
+                      "h-full flex flex-col transition-colors",
                       isLocked ? "opacity-60" : "hover:border-primary-500/30"
                     )}>
-                      <CardHeader>
+                      <CardHeader className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <Badge className={cn(levelConfig?.color || "bg-gray-500/20")}>
                             {levelConfig?.label || skill.level}
@@ -425,7 +428,7 @@ export default function LearnPage() {
                           {skill.description}
                         </CardDescription>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="pt-0">
                         <div className="text-sm text-muted-foreground mb-4">
                           Seuil de validation : {skill.pass_threshold}%
                         </div>

@@ -166,9 +166,9 @@ export default function QuizPage() {
                 Ce quiz est réservé aux abonnés Pro et Entreprise.
               </p>
               <div className="flex gap-4 justify-center">
-                <Button variant="outline" onClick={() => router.back()}>
+                <Button variant="outline" onClick={() => router.push("/learn?tab=quiz")}>
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Retour
+                  Retour aux quiz
                 </Button>
                 <Button
                   className="bg-gradient-primary hover:opacity-90 text-white"
@@ -190,9 +190,9 @@ export default function QuizPage() {
       <div className="min-h-screen bg-gradient-dark pt-28 pb-12">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h1 className="text-2xl font-bold text-red-400 mb-4">{error}</h1>
-          <Button variant="outline" onClick={() => router.back()}>
+          <Button variant="outline" onClick={() => router.push("/learn?tab=quiz")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
+            Retour aux quiz
           </Button>
         </div>
       </div>
@@ -294,9 +294,9 @@ export default function QuizPage() {
                   )}
                   <Button
                     className="bg-gradient-primary hover:opacity-90 text-white"
-                    onClick={() => router.push("/learn")}
+                    onClick={() => router.push("/learn?tab=quiz")}
                   >
-                    Retour aux cours
+                    Retour aux quiz
                   </Button>
                 </div>
               </CardContent>
@@ -324,10 +324,10 @@ export default function QuizPage() {
           <Button
             variant="ghost"
             className="mb-4"
-            onClick={() => router.push("/learn")}
+            onClick={() => router.push("/learn?tab=quiz")}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour aux cours
+            Retour aux quiz
           </Button>
 
           <h1 className="text-2xl font-bold mb-2">Quiz</h1>

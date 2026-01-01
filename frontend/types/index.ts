@@ -385,10 +385,16 @@ export interface Skill {
 export interface KeyPoint {
   title: string;
   summary: string;
+  template?: string;
+  content?: Record<string, unknown>;
+  checklist?: string[];
+  warning?: string;
   example_dialogue?: {
-    context: string;
-    bad: string;
-    good: string;
+    context?: string;
+    bad?: string;
+    good?: string;
+    why_bad?: string;
+    why_good?: string;
   };
 }
 
@@ -406,6 +412,9 @@ export interface Cours {
   common_mistakes?: string[];
   emotional_tips?: string[];
   takeaways?: string[];
+  stat_cle?: string;
+  intro?: string;
+  full_content?: string;
 }
 
 // Quiz response from API

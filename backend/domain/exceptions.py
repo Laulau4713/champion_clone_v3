@@ -48,3 +48,31 @@ class ExternalServiceError(ChampionCloneError):
     def __init__(self, service: str, message: str):
         self.service = service
         super().__init__(f"Service '{service}' error: {message}")
+
+
+class SessionError(ChampionCloneError):
+    """Training session error."""
+    pass
+
+
+class SessionNotFoundError(SessionError):
+    """Session not found."""
+    def __init__(self, session_id: int):
+        self.session_id = session_id
+        super().__init__(f"Session {session_id} not found")
+
+
+class SessionNotActiveError(SessionError):
+    """Session is not active."""
+    def __init__(self, session_id: int, status: str):
+        self.session_id = session_id
+        self.status = status
+        super().__init__(f"Session {session_id} is not active (status: {status})")
+
+
+class ConfigurationError(ChampionCloneError):
+    """Missing or invalid configuration."""
+    def __init__(self, key: str, message: str = None):
+        self.key = key
+        msg = message or f"Configuration '{key}' is missing or invalid"
+        super().__init__(msg)

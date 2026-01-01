@@ -34,6 +34,13 @@ from services.event_service import EventService
 from services.interruption_service import InterruptionService
 from agents.content_agent.agent import ContentAgent
 from config import get_settings
+from domain.exceptions import (
+    NotFoundError,
+    SessionNotFoundError,
+    SessionNotActiveError,
+    ValidationError,
+    ExternalServiceError,
+)
 
 try:
     import anthropic
@@ -106,7 +113,7 @@ class TrainingServiceV2:
             select(Skill).where(Skill.slug == skill_slug)
         )
         if not skill:
-            raise ValueError(f"Skill not found: {skill_slug}")
+            raise NotFoundError("Skill", skill_slug)
 
         # Récupérer le secteur
         sector = None
@@ -301,10 +308,10 @@ class TrainingServiceV2:
         # Récupérer la session
         session = await self.db.get(VoiceTrainingSession, session_id)
         if not session or session.user_id != user.id:
-            raise ValueError("Session not found")
+            raise SessionNotFoundError(session_id)
 
         if session.status != "active":
-            raise ValueError("Session is not active")
+            raise SessionNotActiveError(session_id, session.status)
 
         # Transcrire l'audio si fourni
         user_text = text
@@ -319,10 +326,10 @@ class TrainingServiceV2:
             except Exception as e:
                 logger.error("stt_error", error=str(e))
                 if not text:
-                    raise ValueError(f"Speech transcription failed: {str(e)}")
+                    raise ExternalServiceError("whisper", f"Speech transcription failed: {str(e)}")
 
         if not user_text:
-            raise ValueError("No text or audio provided")
+            raise ValidationError("No text or audio provided")
 
         # Récupérer la config du niveau
         level_db = await self.db.scalar(
@@ -691,7 +698,7 @@ Réponds naturellement en tant que prospect."""
         """
         session = await self.db.get(VoiceTrainingSession, session_id)
         if not session or session.user_id != user.id:
-            raise ValueError("Session not found")
+            raise SessionNotFoundError(session_id)
 
         # Récupérer tous les messages
         messages_result = await self.db.execute(
@@ -913,7 +920,7 @@ Analyse et complète cette évaluation en JSON (garde le score proche de {base_s
             result["passed"] = result.get("overall_score", base_score) >= skill.pass_threshold
             return result
 
-        raise ValueError("Claude did not return valid JSON")
+        raise ExternalServiceError("claude", "Claude did not return valid JSON")
 
     def _get_main_advice(self, session: VoiceTrainingSession, score: float) -> str:
         """Retourne un conseil principal basé sur la session."""

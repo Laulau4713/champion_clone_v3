@@ -117,6 +117,10 @@ from domain.exceptions import (
     AuthenticationError,
     AuthorizationError,
     ExternalServiceError,
+    SessionError,
+    SessionNotFoundError,
+    SessionNotActiveError,
+    ConfigurationError,
 )
 
 # Import routers
@@ -251,6 +255,43 @@ async def external_handler(request: Request, exc: ExternalServiceError):
     return JSONResponse(
         status_code=502,
         content={"error": "ServiceError", "detail": str(exc), "service": exc.service}
+    )
+
+
+@app.exception_handler(SessionNotFoundError)
+async def session_not_found_handler(request: Request, exc: SessionNotFoundError):
+    """Handle session not found errors."""
+    return JSONResponse(
+        status_code=404,
+        content={"error": "SessionNotFound", "detail": str(exc), "session_id": exc.session_id}
+    )
+
+
+@app.exception_handler(SessionNotActiveError)
+async def session_not_active_handler(request: Request, exc: SessionNotActiveError):
+    """Handle session not active errors."""
+    return JSONResponse(
+        status_code=409,
+        content={"error": "SessionNotActive", "detail": str(exc), "session_id": exc.session_id, "status": exc.status}
+    )
+
+
+@app.exception_handler(SessionError)
+async def session_error_handler(request: Request, exc: SessionError):
+    """Handle generic session errors."""
+    return JSONResponse(
+        status_code=400,
+        content={"error": "SessionError", "detail": str(exc)}
+    )
+
+
+@app.exception_handler(ConfigurationError)
+async def configuration_error_handler(request: Request, exc: ConfigurationError):
+    """Handle configuration errors."""
+    logger.error("configuration_error", key=exc.key, error=str(exc))
+    return JSONResponse(
+        status_code=503,
+        content={"error": "ConfigurationError", "detail": str(exc)}
     )
 
 
