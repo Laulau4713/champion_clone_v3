@@ -91,9 +91,9 @@ export default function TrainingSessionPage() {
       session_id: session?.session_id || 0,
       level: level,
       duration_seconds: 0,
-      final_jauge: evaluation.final_gauge,
+      final_jauge: evaluation.final_jauge,
       starting_jauge: 50,
-      jauge_progression: evaluation.gauge_progression,
+      jauge_progression: evaluation.jauge_progression,
       conversion_achieved: evaluation.converted,
       detected_patterns: [],
       hidden_objections_discovered: 0,
@@ -112,7 +112,7 @@ export default function TrainingSessionPage() {
     isConnecting,
     isProspectThinking,
     messages: wsMessages,
-    currentGauge,
+    currentJauge,
     currentMood,
     conversionPossible,
     feedback,
@@ -136,7 +136,7 @@ export default function TrainingSessionPage() {
         audioBase64: msg.audioBase64,
         mood: msg.mood as MoodState | undefined,
         jauge: undefined,
-        jaugeDelta: msg.gaugeDelta,
+        jaugeDelta: msg.jaugeDelta,
         behavioralCue: msg.behavioralCue,
         isEvent: msg.isEvent,
         eventType: msg.eventType,
@@ -147,8 +147,8 @@ export default function TrainingSessionPage() {
 
       // Update jaugeDelta from last prospect message
       const lastProspect = wsMessages.filter(m => m.role === "prospect").pop();
-      if (lastProspect?.gaugeDelta !== undefined) {
-        setJaugeDelta(lastProspect.gaugeDelta);
+      if (lastProspect?.jaugeDelta !== undefined) {
+        setJaugeDelta(lastProspect.jaugeDelta);
       }
     }
   }, [wsMessages]);
@@ -484,7 +484,7 @@ export default function TrainingSessionPage() {
             {/* Jauge sidebar for desktop */}
             <div className="hidden lg:block fixed right-8 top-24 w-64">
               <JaugeEmotionnelle
-                value={currentGauge}
+                value={currentJauge}
                 delta={jaugeDelta}
                 mood={currentMood as MoodState}
                 visible={session?.config.show_jauge ?? true}
@@ -541,7 +541,7 @@ export default function TrainingSessionPage() {
             {/* Mobile jauge */}
             <div className="lg:hidden mb-4">
               <JaugeEmotionnelle
-                value={currentGauge}
+                value={currentJauge}
                 delta={jaugeDelta}
                 mood={currentMood as MoodState}
                 visible={session?.config.show_jauge ?? true}

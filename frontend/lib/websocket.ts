@@ -45,7 +45,7 @@ export interface ProspectResponse {
   timestamp: string;
 }
 
-export interface GaugeUpdate {
+export interface JaugeUpdate {
   type: "gauge_update";
   jauge: number;
   delta: number;
@@ -59,8 +59,8 @@ export interface SessionEnded {
   status: string;
   evaluation: {
     overall_score: number;
-    final_gauge: number;
-    gauge_progression: number;
+    final_jauge: number;
+    jauge_progression: number;
     positive_actions_count: number;
     negative_actions_count: number;
     converted: boolean;
@@ -76,7 +76,7 @@ export interface VoiceWebSocketCallbacks {
   onConnected?: (data: { session_id: number; jauge: number; mood: string }) => void;
   onProspectThinking?: () => void;
   onProspectResponse?: (response: ProspectResponse) => void;
-  onGaugeUpdate?: (update: GaugeUpdate) => void;
+  onJaugeUpdate?: (update: JaugeUpdate) => void;
   onReversal?: (data: { type: string; message: string }) => void;
   onEvent?: (data: { event_type: string; message: string }) => void;
   onSessionEnded?: (data: SessionEnded) => void;
@@ -194,7 +194,7 @@ export class VoiceWebSocket {
         break;
 
       case "gauge_update":
-        this.callbacks.onGaugeUpdate?.(data as unknown as GaugeUpdate);
+        this.callbacks.onJaugeUpdate?.(data as unknown as JaugeUpdate);
         break;
 
       case "reversal":

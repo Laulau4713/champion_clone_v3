@@ -81,7 +81,7 @@ export function JaugeEmotionnelle({
           </Tooltip>
         </div>
 
-        {/* Gauge bar */}
+        {/* Jauge bar */}
         <div className="relative h-4 bg-white/10 rounded-full overflow-hidden">
           {/* Threshold marker */}
           <div

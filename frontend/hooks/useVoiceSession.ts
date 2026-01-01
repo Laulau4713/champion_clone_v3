@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import {
   VoiceWebSocket,
   ProspectResponse,
-  GaugeUpdate,
+  JaugeUpdate,
   SessionEnded,
 } from "@/lib/websocket";
 
@@ -14,7 +14,7 @@ export interface VoiceMessage {
   text: string;
   audioBase64?: string;
   mood?: string;
-  gaugeDelta?: number;
+  jaugeDelta?: number;
   behavioralCue?: string;
   isEvent?: boolean;
   eventType?: string;
@@ -32,7 +32,7 @@ export interface UseVoiceSessionReturn {
   isConnecting: boolean;
   isProspectThinking: boolean;
   messages: VoiceMessage[];
-  currentGauge: number;
+  currentJauge: number;
   currentMood: string;
   conversionPossible: boolean;
   feedback: ProspectResponse["feedback"] | null;
@@ -57,7 +57,7 @@ export function useVoiceSession({
 
   // Session state
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
-  const [currentGauge, setCurrentGauge] = useState(50);
+  const [currentJauge, setCurrentJauge] = useState(50);
   const [currentMood, setCurrentMood] = useState("neutral");
   const [conversionPossible, setConversionPossible] = useState(false);
   const [feedback, setFeedback] = useState<ProspectResponse["feedback"] | null>(null);
@@ -77,7 +77,7 @@ export function useVoiceSession({
       console.log("[useVoiceSession] Connected:", data);
       setIsConnected(true);
       setIsConnecting(false);
-      setCurrentGauge(data.jauge);
+      setCurrentJauge(data.jauge);
       setCurrentMood(data.mood);
       setError(null);
     },
@@ -101,7 +101,7 @@ export function useVoiceSession({
       text: response.text,
       audioBase64: response.audio_base64,
       mood: response.mood,
-      gaugeDelta: response.jauge_delta,
+      jaugeDelta: response.jauge_delta,
       behavioralCue: response.behavioral_cue,
       isEvent: response.is_event,
       eventType: response.event_type,
@@ -111,17 +111,17 @@ export function useVoiceSession({
 
     // Update state
     if (response.jauge >= 0) {
-      setCurrentGauge(response.jauge);
+      setCurrentJauge(response.jauge);
     }
     setCurrentMood(response.mood);
     setConversionPossible(response.conversion_possible);
     setFeedback(response.feedback || null);
   }, []);
 
-  // Handle gauge update
-  const handleGaugeUpdate = useCallback((update: GaugeUpdate) => {
-    console.log("[useVoiceSession] Gauge update:", update);
-    setCurrentGauge(update.jauge);
+  // Handle jauge update
+  const handleJaugeUpdate = useCallback((update: JaugeUpdate) => {
+    console.log("[useVoiceSession] Jauge update:", update);
+    setCurrentJauge(update.jauge);
     setCurrentMood(update.mood);
   }, []);
 
@@ -193,7 +193,7 @@ export function useVoiceSession({
       onConnected: handleConnected,
       onProspectThinking: handleProspectThinking,
       onProspectResponse: handleProspectResponse,
-      onGaugeUpdate: handleGaugeUpdate,
+      onJaugeUpdate: handleJaugeUpdate,
       onReversal: handleReversal,
       onEvent: handleEvent,
       onSessionEnded: handleSessionEnded,
@@ -209,7 +209,7 @@ export function useVoiceSession({
     handleConnected,
     handleProspectThinking,
     handleProspectResponse,
-    handleGaugeUpdate,
+    handleJaugeUpdate,
     handleReversal,
     handleEvent,
     handleSessionEnded,
@@ -264,7 +264,7 @@ export function useVoiceSession({
     isConnecting,
     isProspectThinking,
     messages,
-    currentGauge,
+    currentJauge,
     currentMood,
     conversionPossible,
     feedback,

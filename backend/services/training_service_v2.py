@@ -854,8 +854,8 @@ Réponds naturellement en tant que prospect."""
 
         return {
             "overall_score": round(overall_score),
-            "final_gauge": final_gauge,
-            "gauge_progression": gauge_progression,
+            "final_jauge": final_gauge,
+            "jauge_progression": gauge_progression,
             "positive_actions_count": positive_count,
             "negative_actions_count": negative_count,
             "converted": session.converted,
@@ -914,8 +914,8 @@ Analyse et complète cette évaluation en JSON (garde le score proche de {base_s
         content = response.content[0].text
         if content.strip().startswith("{"):
             result = json.loads(content)
-            result["final_gauge"] = session.current_gauge
-            result["gauge_progression"] = session.current_gauge - session.starting_gauge
+            result["final_jauge"] = session.current_gauge
+            result["jauge_progression"] = session.current_gauge - session.starting_gauge
             result["converted"] = session.converted
             result["passed"] = result.get("overall_score", base_score) >= skill.pass_threshold
             return result
