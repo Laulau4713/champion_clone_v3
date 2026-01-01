@@ -59,6 +59,39 @@
           ],
           "correct": "C",
           "explanation": "45 minutes est de la sur-préparation. 10 minutes suffisent. Ce temps perdu aurait pu servir à appeler 4 autres prospects."
+        },
+        {
+          "question": "Vous découvrez qu'une entreprise vient de lever 10M€. Quelle hypothèse de valeur formuler ?",
+          "options": [
+            "A) Vous devez avoir beaucoup d'argent maintenant",
+            "B) Les DG après une levée ont souvent des objectifs de croissance agressifs à tenir",
+            "C) Vous voulez probablement acheter notre produit",
+            "D) Votre concurrent a aussi levé des fonds"
+          ],
+          "correct": "B",
+          "explanation": "Cette hypothèse parle de SA situation (levée → pression croissance) et d'un problème probable, pas de votre produit."
+        },
+        {
+          "question": "Que cherchez-vous au Niveau 3 de la recherche (Contexte) ?",
+          "options": [
+            "A) Le chiffre d'affaires de l'entreprise",
+            "B) Le parcours LinkedIn du prospect",
+            "C) Un déclencheur qui crée un besoin maintenant",
+            "D) Les concurrents de l'entreprise"
+          ],
+          "correct": "C",
+          "explanation": "Le niveau 3 cherche un déclencheur : recrutement, levée de fonds, nouveau dirigeant, expansion. C'est ce qui rend l'appel pertinent MAINTENANT."
+        },
+        {
+          "question": "Pourquoi 10 appels préparés valent mieux que 50 appels improvisés ?",
+          "options": [
+            "A) Parce que c'est moins fatiguant",
+            "B) Parce que le prospect sent immédiatement si vous connaissez son contexte",
+            "C) Parce que c'est la règle officielle",
+            "D) Parce que les prospects préfèrent les appels courts"
+          ],
+          "correct": "B",
+          "explanation": "Un prospect détecte en quelques secondes si vous avez fait vos devoirs. Un appel préparé a 2,7x plus de chances de succès."
         }
       ]
     },
@@ -121,6 +154,39 @@
           ],
           "correct": "B",
           "explanation": "Structure 30 secondes : Qui vous êtes (10s) → Pourquoi vous appelez (10s) → Question d'engagement (10s)."
+        },
+        {
+          "question": "Pourquoi ne jamais commencer par 'Est-ce que je vous dérange ?' ?",
+          "options": [
+            "A) C'est impoli",
+            "B) Vous donnez au prospect une excuse pour vous éconduire",
+            "C) C'est trop long",
+            "D) Les prospects n'aiment pas cette formule"
+          ],
+          "correct": "B",
+          "explanation": "En posant cette question, vous invitez le prospect à dire 'Oui, vous me dérangez'. Vous lui donnez une porte de sortie gratuite."
+        },
+        {
+          "question": "Dans les 10 premières secondes de l'accroche, vous devez :",
+          "options": [
+            "A) Présenter toutes vos fonctionnalités",
+            "B) Donner votre nom, entreprise et une phrase de contexte",
+            "C) Demander si c'est le bon moment",
+            "D) Parler de votre expérience"
+          ],
+          "correct": "B",
+          "explanation": "Les 10 premières secondes = QUI : Prénom, entreprise, éventuellement un point de contexte ('Je travaille avec des entreprises comme la vôtre')."
+        },
+        {
+          "question": "Le prospect dit 'Je n'ai pas le temps'. La meilleure réponse ?",
+          "options": [
+            "A) D'accord, au revoir",
+            "B) C'est justement pour vous faire gagner du temps que j'appelle",
+            "C) Je comprends. 15 secondes pour voir si ça vaut un rappel ?",
+            "D) Vous avez tort de ne pas m'écouter"
+          ],
+          "correct": "C",
+          "explanation": "Cette réponse respecte son objection, propose une micro-action (15 secondes) et garde le contrôle pour qualifier l'intérêt."
         }
       ]
     },
@@ -183,6 +249,28 @@
           ],
           "correct": "A",
           "explanation": "'Jeudi 10h ou vendredi 14h ?' est plus efficace que 'On pourrait se voir ?' car ça donne un choix concret, pas un oui/non."
+        },
+        {
+          "question": "Combien d'appels minimum par jour pour un commercial efficace en cold calling ?",
+          "options": [
+            "A) 10-20",
+            "B) 30-50",
+            "C) 50-80",
+            "D) 100+"
+          ],
+          "correct": "C",
+          "explanation": "50-80 appels/jour est un bon rythme. Moins = pas assez de volume. Plus = risque de baisse de qualité."
+        },
+        {
+          "question": "Le meilleur moment pour appeler un décideur est :",
+          "options": [
+            "A) Lundi matin à 9h",
+            "B) Vendredi après-midi",
+            "C) Mardi-Jeudi, entre 8h-9h ou 17h-18h",
+            "D) Le week-end"
+          ],
+          "correct": "C",
+          "explanation": "Les décideurs sont plus disponibles tôt le matin ou en fin de journée, quand les réunions sont moins fréquentes. Évitez lundi (rattrapage) et vendredi (décompression)."
         }
       ]
     },
@@ -245,6 +333,28 @@
           ],
           "correct": "C",
           "explanation": "Ces 3 éléments vous permettront de reformuler plus tard et de montrer que vous avez vraiment écouté."
+        },
+        {
+          "question": "Le prospect dit 'C'est compliqué en ce moment avec les équipes'. Quelle reformulation empathique ?",
+          "options": [
+            "A) OK, parlons de notre produit",
+            "B) Ce n'est pas grave",
+            "C) Si je comprends bien, vous traversez une période de tension avec vos équipes. C'est ça ?",
+            "D) Vous avez des problèmes de management ?"
+          ],
+          "correct": "C",
+          "explanation": "Cette reformulation reprend ses mots ('compliqué', 'équipes'), montre de l'empathie ('période de tension') et invite à confirmer."
+        },
+        {
+          "question": "Le silence dans une conversation commerciale est :",
+          "options": [
+            "A) À éviter absolument, c'est gênant",
+            "B) Un outil puissant qui invite le prospect à en dire plus",
+            "C) Un signe que vous avez perdu le fil",
+            "D) Une marque d'impolitesse"
+          ],
+          "correct": "B",
+          "explanation": "Le silence est un outil. Après une question importante, laissez le silence travailler. Le prospect comblera souvent avec des informations précieuses."
         }
       ]
     },
@@ -307,6 +417,28 @@
           ],
           "correct": "B",
           "explanation": "C'est le client qui décrit comment ça devrait fonctionner idéalement. Vous saurez exactement quoi lui proposer."
+        },
+        {
+          "question": "L'ordre correct des étapes COMPIR est :",
+          "options": [
+            "A) Constat → Objectif → Manque → Problème → Impact → Résolution",
+            "B) Problème → Impact → Résolution → Constat → Objectif → Manque",
+            "C) Impact → Constat → Manque → Objectif → Problème → Résolution",
+            "D) Constat → Manque → Problème → Objectif → Impact → Résolution"
+          ],
+          "correct": "A",
+          "explanation": "COMPIR suit un ordre logique : situation actuelle (C) → objectif (O) → ce qui manque (M) → le problème créé (P) → l'impact chiffré (I) → la solution idéale (R)."
+        },
+        {
+          "question": "Pourquoi l'étape IMPACT est-elle la plus importante ?",
+          "options": [
+            "A) Parce qu'elle est au milieu",
+            "B) Parce qu'elle transforme un problème abstrait en coût concret qui justifie l'investissement",
+            "C) Parce qu'elle est la plus longue",
+            "D) Parce que les clients aiment les chiffres"
+          ],
+          "correct": "B",
+          "explanation": "Sans chiffrer l'impact, le problème reste théorique. Avec un coût de 100k€/an, investir 20k€ devient évident."
         }
       ]
     },
@@ -369,6 +501,28 @@
           ],
           "correct": "B",
           "explanation": "Le budget est CRITIQUE. Sans cette info, vous ne pouvez pas qualifier correctement l'opportunité."
+        },
+        {
+          "question": "Quelle question permet de découvrir la compétition ?",
+          "options": [
+            "A) Vous regardez d'autres solutions en ce moment ?",
+            "B) Vous aimez nos concurrents ?",
+            "C) On est les meilleurs, non ?",
+            "D) Vous savez que nos concurrents sont mauvais ?"
+          ],
+          "correct": "A",
+          "explanation": "Question neutre qui explore le contexte compétitif sans dénigrer personne. Elle vous permet d'adapter votre discours."
+        },
+        {
+          "question": "L'enjeu (le 'E' de BEBEDC) répond à la question :",
+          "options": [
+            "A) Combien ça coûte ?",
+            "B) Pourquoi est-ce important pour vous ?",
+            "C) Qui décide ?",
+            "D) Quand voulez-vous démarrer ?"
+          ],
+          "correct": "B",
+          "explanation": "L'enjeu va au-delà du besoin technique. C'est l'impact business : gains, économies, risques évités. C'est ce qui motive vraiment."
         }
       ]
     },
@@ -431,6 +585,28 @@
           ],
           "correct": "A",
           "explanation": "Comme l'inspecteur, vous posez des questions innocentes mais vous obtenez toutes les informations pour qualifier."
+        },
+        {
+          "question": "Le prospect a un budget, une urgence, mais pas de levier identifié. Que faites-vous ?",
+          "options": [
+            "A) Vous continuez quand même",
+            "B) Vous creusez pour trouver le déclencheur",
+            "C) Vous qualifiez out immédiatement",
+            "D) Vous proposez une remise"
+          ],
+          "correct": "B",
+          "explanation": "Avant de qualifier out, creusez. Peut-être que le levier existe mais n'a pas été exprimé. Posez des questions sur ce qui a changé récemment."
+        },
+        {
+          "question": "Que signifie le 'O' dans COLUMBO ?",
+          "options": [
+            "A) Objectifs",
+            "B) Obstacles",
+            "C) Opportunité",
+            "D) Organisation"
+          ],
+          "correct": "B",
+          "explanation": "O = Obstacles : les freins potentiels au projet (techniques, politiques, organisationnels). Les anticiper permet de mieux les traiter."
         }
       ]
     },
@@ -493,6 +669,346 @@
           ],
           "correct": "B",
           "explanation": "Donnez-lui des arguments, préparez-le aux objections des autres, faites-le briller auprès de sa hiérarchie."
+        },
+        {
+          "question": "Dans une réunion, comment identifier qui détient le vrai pouvoir ?",
+          "options": [
+            "A) C'est celui qui parle le premier",
+            "B) C'est celui vers qui les autres regardent avant de répondre",
+            "C) C'est le plus âgé",
+            "D) C'est celui qui est le mieux habillé"
+          ],
+          "correct": "B",
+          "explanation": "Le vrai pouvoir se révèle par les signaux non-verbaux : vers qui les regards se tournent quand une question importante est posée."
+        },
+        {
+          "question": "Le DSI dit 'Techniquement c'est faisable mais je ne décide pas du budget'. Quel est son rôle ?",
+          "options": [
+            "A) Décideur",
+            "B) Champion",
+            "C) Influenceur/Bloqueur potentiel",
+            "D) Utilisateur"
+          ],
+          "correct": "C",
+          "explanation": "Le DSI est un influenceur technique qui peut bloquer (veto technique) ou supporter. Mais la décision budget est ailleurs."
+        },
+        {
+          "question": "Vous avez accès à un manager, pas au DG décideur. Que faire ?",
+          "options": [
+            "A) Essayer de contourner le manager pour contacter le DG",
+            "B) Abandonner l'opportunité",
+            "C) Transformer ce manager en champion et l'aider à vendre en interne",
+            "D) Demander au manager de vous laisser rencontrer le DG seul"
+          ],
+          "correct": "C",
+          "explanation": "Plutôt que de contourner (risqué), faites du manager votre champion. Donnez-lui tous les arguments pour convaincre le DG."
+        }
+      ]
+    },
+    {
+      "skill_id": "profils_psychologiques",
+      "skill_name": "Profils Psychologiques - SÉDAIÉ",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Combien y a-t-il de profils dans la méthode SÉDAIÉ ?",
+          "options": [
+            "A) 4",
+            "B) 5",
+            "C) 6",
+            "D) 7"
+          ],
+          "correct": "C",
+          "explanation": "6 profils : Sécuritaire, Expansif, Dominant, Analytique, Intégré, Émotif."
+        },
+        {
+          "question": "Un prospect qui pose beaucoup de questions sur les garanties et les risques est probablement :",
+          "options": [
+            "A) Dominant",
+            "B) Expansif",
+            "C) Sécuritaire",
+            "D) Analytique"
+          ],
+          "correct": "C",
+          "explanation": "Le Sécuritaire a peur du changement et cherche à minimiser les risques. Rassurez-le avec des garanties, des références, des témoignages."
+        },
+        {
+          "question": "Le profil Dominant se caractérise par :",
+          "options": [
+            "A) Un besoin de détails techniques",
+            "B) Une prise de décision rapide orientée résultats",
+            "C) Un besoin de créer du lien émotionnel",
+            "D) Une préférence pour les décisions collectives"
+          ],
+          "correct": "B",
+          "explanation": "Le Dominant veut des résultats, pas des détails. Soyez concis, parlez ROI, laissez-le avoir le sentiment de décider."
+        },
+        {
+          "question": "Face à un profil Analytique, vous devez :",
+          "options": [
+            "A) Créer de l'urgence émotionnelle",
+            "B) Fournir des données chiffrées et des preuves détaillées",
+            "C) Parler vite pour le stimuler",
+            "D) Éviter les documents écrits"
+          ],
+          "correct": "B",
+          "explanation": "L'Analytique décide sur la base de données et de logique. Préparez vos chiffres, études de cas, et donnez-lui le temps d'analyser."
+        },
+        {
+          "question": "Le prospect dit 'J'adore cette idée ! On fait plein de choses avec ça !'. C'est probablement un :",
+          "options": [
+            "A) Sécuritaire",
+            "B) Analytique",
+            "C) Expansif",
+            "D) Dominant"
+          ],
+          "correct": "C",
+          "explanation": "L'Expansif est enthousiaste, créatif, parle beaucoup. Attention : son enthousiasme ne garantit pas la signature. Cadrez vers l'action."
+        },
+        {
+          "question": "Le profil Intégré prend ses décisions en fonction de :",
+          "options": [
+            "A) Son intérêt personnel uniquement",
+            "B) L'impact sur son équipe et les relations",
+            "C) Les données techniques uniquement",
+            "D) La vitesse d'implémentation"
+          ],
+          "correct": "B",
+          "explanation": "L'Intégré pense collectif. Comment l'équipe va réagir ? Est-ce que ça va créer des tensions ? Montrez les bénéfices pour le groupe."
+        },
+        {
+          "question": "Un prospect dit 'Je ne le sens pas' sans explication rationnelle. C'est probablement un :",
+          "options": [
+            "A) Analytique",
+            "B) Dominant",
+            "C) Émotif",
+            "D) Sécuritaire"
+          ],
+          "correct": "C",
+          "explanation": "L'Émotif décide sur ressenti et intuition. Créez une connexion personnelle, racontez des histoires, travaillez la relation."
+        },
+        {
+          "question": "Face à un profil Dominant qui vous interrompt, vous devez :",
+          "options": [
+            "A) Vous énerver et reprendre le contrôle",
+            "B) Accepter et aller droit à l'essentiel comme il le veut",
+            "C) Continuer votre présentation sans vous adapter",
+            "D) Quitter la réunion"
+          ],
+          "correct": "B",
+          "explanation": "Le Dominant n'aime pas perdre son temps. Adaptez-vous : soyez concis, donnez-lui le contrôle, allez aux conclusions rapidement."
+        },
+        {
+          "question": "Quelle combinaison de profils est la plus difficile à convaincre ?",
+          "options": [
+            "A) Expansif + Émotif",
+            "B) Dominant + Expansif",
+            "C) Sécuritaire + Analytique",
+            "D) Intégré + Expansif"
+          ],
+          "correct": "C",
+          "explanation": "Le Sécuritaire-Analytique combine la peur du changement et le besoin de preuves. Double dose de patience et de données requise."
+        },
+        {
+          "question": "Comment adapter votre rythme de parole selon le profil ?",
+          "options": [
+            "A) Toujours parler lentement",
+            "B) Toujours parler vite",
+            "C) Rapide pour Dominant/Expansif, lent pour Analytique/Sécuritaire",
+            "D) Le rythme n'a pas d'importance"
+          ],
+          "correct": "C",
+          "explanation": "Mirrorez le style du prospect. Les Dominants/Expansifs aiment la vitesse. Les Analytiques/Sécuritaires préfèrent la réflexion."
+        }
+      ]
+    },
+    {
+      "skill_id": "argumentation_bac",
+      "skill_name": "Argumentation BAC",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Dans la méthode BAC, quel élément doit venir EN PREMIER ?",
+          "options": [
+            "A) L'Avantage",
+            "B) La Caractéristique",
+            "C) Le Bénéfice",
+            "D) L'ordre n'a pas d'importance"
+          ],
+          "correct": "C",
+          "explanation": "BAC = Bénéfice → Avantage → Caractéristique. On commence par ce que le client GAGNE, pas par ce que le produit FAIT."
+        },
+        {
+          "question": "'Notre logiciel a une interface intuitive' est un exemple de :",
+          "options": [
+            "A) Bénéfice",
+            "B) Avantage",
+            "C) Caractéristique",
+            "D) Argument complet"
+          ],
+          "correct": "C",
+          "explanation": "C'est une caractéristique technique. Le client pense 'Et alors ?' Transformez : 'Vos équipes seront opérationnelles en 2 jours' (bénéfice)."
+        },
+        {
+          "question": "La différence entre Bénéfice et Avantage est :",
+          "options": [
+            "A) Il n'y a pas de différence",
+            "B) Le Bénéfice est ce que le client gagne, l'Avantage explique pourquoi c'est important",
+            "C) L'Avantage est technique, le Bénéfice est commercial",
+            "D) Le Bénéfice vient après l'Avantage"
+          ],
+          "correct": "B",
+          "explanation": "Bénéfice : 'Vous gagnez 3h/semaine'. Avantage : 'Ce qui signifie 15 rendez-vous de plus par mois'. L'Avantage amplifie le Bénéfice."
+        },
+        {
+          "question": "Quel argument est le mieux structuré ?",
+          "options": [
+            "A) Notre serveur a 99,9% de disponibilité",
+            "B) Notre serveur est très fiable, vous ne serez jamais en panne",
+            "C) Vous n'aurez plus de pertes de vente due aux pannes (5k€/mois), grâce à notre disponibilité de 99,9%",
+            "D) Nous sommes leaders du marché"
+          ],
+          "correct": "C",
+          "explanation": "Structure BAC complète : Bénéfice (plus de pertes), chiffré (5k€/mois), Caractéristique (99,9%). Le client voit la valeur."
+        },
+        {
+          "question": "Face à un prospect Dominant, votre argument BAC doit :",
+          "options": [
+            "A) Être très détaillé avec toutes les caractéristiques",
+            "B) Commencer par le ROI chiffré et être très concis",
+            "C) Raconter une longue histoire de succès client",
+            "D) Se concentrer sur les garanties et la sécurité"
+          ],
+          "correct": "B",
+          "explanation": "Le Dominant veut des résultats, pas des détails. ROI chiffré + concision. 'Vous économisez 100k€/an. Voici comment.'"
+        },
+        {
+          "question": "Quelle erreur est la plus fréquente dans l'argumentation commerciale ?",
+          "options": [
+            "A) Parler trop du client",
+            "B) Commencer par les caractéristiques techniques",
+            "C) Poser trop de questions",
+            "D) Être trop concis"
+          ],
+          "correct": "B",
+          "explanation": "90% des commerciaux commencent par les features. 'Notre produit fait X, Y, Z...' Le client décroche car ça ne parle pas de LUI."
+        },
+        {
+          "question": "Pour construire un bon argument BAC, la première question à se poser est :",
+          "options": [
+            "A) Quelles sont nos meilleures fonctionnalités ?",
+            "B) Qu'est-ce que le client va concrètement gagner ou éviter de perdre ?",
+            "C) Comment nous différencier des concurrents ?",
+            "D) Quel est notre prix ?"
+          ],
+          "correct": "B",
+          "explanation": "Partez toujours du client : Qu'est-ce qu'il gagne ? Qu'est-ce qu'il évite ? Ensuite seulement, quelle caractéristique rend ça possible."
+        },
+        {
+          "question": "'Nos clients gagnent en moyenne 20% de productivité' est un :",
+          "options": [
+            "A) Bénéfice quantifié",
+            "B) Avantage",
+            "C) Caractéristique",
+            "D) Slogan marketing"
+          ],
+          "correct": "A",
+          "explanation": "C'est un bénéfice quantifié (20%). Encore mieux : le convertir en euros pour le prospect spécifique."
+        }
+      ]
+    },
+    {
+      "skill_id": "demonstration_produit",
+      "skill_name": "Démonstration Produit",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Combien de fonctionnalités devez-vous montrer dans une démo ?",
+          "options": [
+            "A) Toutes, pour impressionner",
+            "B) Maximum 3-5, ciblées sur les besoins exprimés",
+            "C) Aucune, juste parler",
+            "D) Au moins 10 pour être complet"
+          ],
+          "correct": "B",
+          "explanation": "Une démo ciblée de 15 min convertit mieux qu'une démo complète de 45 min. Montrez SEULEMENT ce qui répond au problème identifié."
+        },
+        {
+          "question": "Quelle est la première erreur classique en démo ?",
+          "options": [
+            "A) Poser trop de questions",
+            "B) Montrer TOUT ce que le produit sait faire",
+            "C) Être trop court",
+            "D) Laisser le prospect interagir"
+          ],
+          "correct": "B",
+          "explanation": "Montrer tout = noyer le prospect. Il ne retiendra rien. Sélectionnez 3-5 features qui répondent à SES besoins spécifiques."
+        },
+        {
+          "question": "La structure idéale d'une démo est :",
+          "options": [
+            "A) Fonctionnalité → Prix → Signature",
+            "B) Rappel du besoin → Démo ciblée → Questions → Prochaines étapes",
+            "C) Histoire de l'entreprise → Tout le produit → Prix",
+            "D) Prix → Démo → Négociation"
+          ],
+          "correct": "B",
+          "explanation": "Commencez par rappeler le problème ('Vous m'aviez dit que...'), puis montrez comment vous le résolvez, puis validez et engagez."
+        },
+        {
+          "question": "Pendant la démo, le prospect pose une question sur une feature non prévue. Que faire ?",
+          "options": [
+            "A) Ignorer et continuer votre plan",
+            "B) Répondre brièvement et recentrer sur les besoins prioritaires",
+            "C) Abandonner votre plan et montrer tout ce qu'il demande",
+            "D) Dire que vous ne savez pas"
+          ],
+          "correct": "B",
+          "explanation": "Répondez à sa curiosité mais gardez le cap. 'Bonne question. Oui on peut faire X. Mais revenons à votre enjeu principal qui était...'"
+        },
+        {
+          "question": "Le principe 'Show, don't tell' signifie :",
+          "options": [
+            "A) Ne jamais parler pendant la démo",
+            "B) Montrer le produit en action plutôt que de décrire ses capacités",
+            "C) Utiliser beaucoup de slides",
+            "D) Laisser le prospect faire la démo lui-même"
+          ],
+          "correct": "B",
+          "explanation": "'Notre interface est intuitive' = paroles. Montrer en 2 clics comment créer une opportunité = preuve. Le visuel convainc plus que les mots."
+        },
+        {
+          "question": "Un bug survient pendant votre démo. La meilleure réaction ?",
+          "options": [
+            "A) Paniquer et s'excuser longuement",
+            "B) Faire comme si rien ne s'était passé",
+            "C) Rester calme, reconnaître le problème, rebondir positivement",
+            "D) Terminer la démo immédiatement"
+          ],
+          "correct": "C",
+          "explanation": "'Petit souci technique. C'est l'occasion de vous montrer notre support - ils répondent en 2h.' Transformez le problème en démonstration."
+        },
+        {
+          "question": "À la fin de la démo, vous devez absolument :",
+          "options": [
+            "A) Remercier et partir",
+            "B) Demander si ça a plu",
+            "C) Valider la compréhension et définir les prochaines étapes",
+            "D) Proposer une remise"
+          ],
+          "correct": "C",
+          "explanation": "'Est-ce que ça répond à votre besoin de X ? Parfait. Quelles sont les prochaines étapes pour vous ?' Ne laissez jamais une démo en suspens."
+        },
+        {
+          "question": "Pour une démo à plusieurs interlocuteurs, vous devez :",
+          "options": [
+            "A) Parler uniquement au plus gradé",
+            "B) Adapter les points de focus à chaque profil présent",
+            "C) Faire la même démo qu'à une seule personne",
+            "D) Demander aux autres de sortir"
+          ],
+          "correct": "B",
+          "explanation": "Le DG veut le ROI, le DSI la technique, l'utilisateur la facilité. Alternez les focus pour que chacun trouve sa réponse."
         }
       ]
     },
@@ -555,6 +1071,39 @@
           ],
           "correct": "C",
           "explanation": "Cette question creuse pour identifier le vrai blocage (pas convaincu ? doit en parler à quelqu'un ? politesse ?)."
+        },
+        {
+          "question": "Le prospect dit 'On a déjà un fournisseur'. C'est souvent une objection qui cache :",
+          "options": [
+            "A) Une totale satisfaction",
+            "B) Une peur du changement ou un contrat en cours",
+            "C) Un manque de budget",
+            "D) Une décision définitive"
+          ],
+          "correct": "B",
+          "explanation": "Souvent, le prospect a peur du changement ou est bloqué par un contrat. Creusez : 'Qu'est-ce qui fonctionne bien ? Et moins bien ?'"
+        },
+        {
+          "question": "Pourquoi ne jamais contre-argumenter immédiatement ?",
+          "options": [
+            "A) Par politesse",
+            "B) Pour gagner du temps",
+            "C) Car vous risquez de répondre à la mauvaise objection",
+            "D) Par principe"
+          ],
+          "correct": "C",
+          "explanation": "Si vous ne creusez pas, vous répondez à l'objection de surface. Le vrai problème reste non traité et resurface plus tard."
+        },
+        {
+          "question": "Le 'Zapper' dans CNZ signifie :",
+          "options": [
+            "A) Ignorer l'objection et passer à autre chose",
+            "B) Répondre à l'objection et enchaîner vers la suite",
+            "C) Changer de sujet",
+            "D) Terminer l'appel"
+          ],
+          "correct": "B",
+          "explanation": "Zapper = répondre (maintenant que vous connaissez le vrai problème) ET avancer. Ne pas rester bloqué sur l'objection une fois traitée."
         }
       ]
     },
@@ -617,6 +1166,39 @@
           ],
           "correct": "C",
           "explanation": "Technique Si-Alors : la remise est conditionnée à un engagement. Jamais de concession gratuite."
+        },
+        {
+          "question": "La technique de la concession décroissante consiste à :",
+          "options": [
+            "A) Donner de plus en plus à chaque demande",
+            "B) Faire des concessions de plus en plus petites pour signaler votre limite",
+            "C) Refuser toute concession",
+            "D) Toujours diviser par 2"
+          ],
+          "correct": "B",
+          "explanation": "1ère concession : 500€. 2ème : 200€. 3ème : 50€. Le prospect sent que vous arrivez à votre limite."
+        },
+        {
+          "question": "Avant de faire une concession, vous devez toujours :",
+          "options": [
+            "A) Demander au client ce qu'il est prêt à donner en échange",
+            "B) Consulter votre manager",
+            "C) Faire une pause café",
+            "D) Envoyer un email"
+          ],
+          "correct": "A",
+          "explanation": "'Si je peux faire un effort, qu'est-ce que vous seriez prêt à faire de votre côté ?' Inversez la dynamique."
+        },
+        {
+          "question": "Le BATNA en négociation, c'est :",
+          "options": [
+            "A) Une technique de relaxation",
+            "B) Votre meilleure alternative si la négociation échoue",
+            "C) Le nom du décideur",
+            "D) Un logiciel de CRM"
+          ],
+          "correct": "B",
+          "explanation": "BATNA = Best Alternative To Negotiated Agreement. Connaître votre alternative renforce votre position de négociation."
         }
       ]
     },
@@ -634,7 +1216,7 @@
             "D) 7"
           ],
           "correct": "C",
-          "explanation": "5 Ponts : Besoin → Solution → Budget → Timing → Closing. Chaque pont doit être validé avant de passer au suivant."
+          "explanation": "5 Ponts : Problème → Impact → Solution → Urgence → Engagement. Chaque pont doit être validé avant de passer au suivant."
         },
         {
           "question": "Un signal d'achat est :",
@@ -652,7 +1234,7 @@
           "options": [
             "A) Continuer à argumenter",
             "B) Attendre qu'il le répète",
-            "C) Closer dans les 30 secondes",
+            "C) Passer au closing immédiatement",
             "D) Changer de sujet"
           ],
           "correct": "C",
@@ -670,15 +1252,48 @@
           "explanation": "L'alternatif propose deux options qui mènent toutes deux à la vente. Pas un choix oui/non."
         },
         {
-          "question": "Le Pont 3 (Budget) consiste à valider :",
+          "question": "Le Pont 2 (Impact) consiste à faire reconnaître :",
           "options": [
-            "A) Que le prospect a bien un problème",
-            "B) Que votre solution répond au besoin",
-            "C) Que l'investissement est dans ses cordes",
+            "A) Que votre solution est la meilleure",
+            "B) Que le problème a un coût chiffré significatif",
+            "C) Que le prospect vous aime bien",
             "D) Que le timing est bon"
           ],
+          "correct": "B",
+          "explanation": "Le Pont Impact quantifie le problème. 'Donc ce problème vous coûte 100k€/an ?' Si oui, le prospect ne peut plus dire que ce n'est pas important."
+        },
+        {
+          "question": "63% des commerciaux ne font jamais cette action :",
+          "options": [
+            "A) Préparer leurs appels",
+            "B) Demander l'engagement",
+            "C) Envoyer des emails",
+            "D) Faire des démos"
+          ],
+          "correct": "B",
+          "explanation": "63% des commerciaux ne demandent jamais la vente. Ils terminent par 'On en reparle' au lieu de 'On signe ?'"
+        },
+        {
+          "question": "Le prospect a validé les 4 premiers ponts. Comment formuler le Pont 5 (Engagement) ?",
+          "options": [
+            "A) Alors, qu'est-ce que vous en pensez ?",
+            "B) On pourrait peut-être en reparler un jour",
+            "C) Qu'est-ce qui vous empêcherait de démarrer maintenant ?",
+            "D) Je vous envoie un email"
+          ],
           "correct": "C",
-          "explanation": "Pont 3 = Budget : 'L'investissement est dans vos cordes ?' Valide la capacité à payer."
+          "explanation": "Cette question est puissante car elle présuppose le démarrage et identifie les derniers obstacles à lever."
+        },
+        {
+          "question": "Le prospect vient de dire OUI. Que faites-vous ?",
+          "options": [
+            "A) Continuez à argumenter pour le conforter",
+            "B) Confirmez, remerciez et passez aux modalités pratiques",
+            "C) Proposez une remise supplémentaire",
+            "D) Recommencez la démo"
+          ],
+          "correct": "B",
+          "explanation": "Quand c'est OUI, fermez-la ! Chaque mot supplémentaire risque de créer un doute. 'Parfait, voici les prochaines étapes.'"
         }
       ]
     },
@@ -741,6 +1356,134 @@
           ],
           "correct": "A",
           "explanation": "Il faut varier les canaux (email, téléphone, LinkedIn) pour maximiser les chances de réponse."
+        },
+        {
+          "question": "Le prospect ne répond pas depuis 3 relances. Pourquoi probablement ?",
+          "options": [
+            "A) Il vous déteste",
+            "B) Il est occupé ou a d'autres priorités",
+            "C) Votre produit est mauvais",
+            "D) Il a changé de numéro"
+          ],
+          "correct": "B",
+          "explanation": "Le silence signifie rarement 'non'. Souvent c'est 'pas maintenant' ou 'j'ai oublié'. Continuez avec de la valeur."
+        },
+        {
+          "question": "Après combien de relances sans réponse devez-vous faire une pause ?",
+          "options": [
+            "A) 2",
+            "B) 3-4",
+            "C) 6-8",
+            "D) Jamais, insistez toujours"
+          ],
+          "correct": "C",
+          "explanation": "Après 6-8 tentatives, faites une pause de 3 mois. Envoyez un email de rupture puis laissez respirer."
+        },
+        {
+          "question": "Le meilleur moment pour relancer par téléphone est :",
+          "options": [
+            "A) Pendant la pause déjeuner",
+            "B) Tôt le matin ou en fin de journée",
+            "C) Le week-end",
+            "D) En pleine nuit"
+          ],
+          "correct": "B",
+          "explanation": "Tôt le matin (avant les réunions) ou fin de journée (après les réunions). Le prospect est plus disponible."
+        }
+      ]
+    },
+    {
+      "skill_id": "recommandation",
+      "skill_name": "Demande de Recommandation",
+      "passing_score": 60,
+      "questions": [
+        {
+          "question": "Les leads issus de recommandation convertissent combien de fois mieux ?",
+          "options": [
+            "A) 2 fois mieux",
+            "B) 4 fois mieux",
+            "C) 10 fois mieux",
+            "D) Pareil que les autres leads"
+          ],
+          "correct": "B",
+          "explanation": "Les recommandations convertissent 4x mieux. Cycle plus court, confiance pré-établie, valeur client supérieure."
+        },
+        {
+          "question": "Le meilleur moment pour demander une recommandation est :",
+          "options": [
+            "A) Lors de la première rencontre",
+            "B) Juste après un succès ou un remerciement du client",
+            "C) Quand le client se plaint",
+            "D) Jamais, c'est gênant"
+          ],
+          "correct": "B",
+          "explanation": "Le moment optimal : le client vient de vous remercier ou de constater un résultat positif. L'émotion positive facilite la demande."
+        },
+        {
+          "question": "Pourquoi les clients ne recommandent-ils pas spontanément ?",
+          "options": [
+            "A) Parce qu'ils sont méchants",
+            "B) Parce qu'on ne leur demande pas",
+            "C) Parce qu'ils n'aiment pas votre produit",
+            "D) Parce que c'est illégal"
+          ],
+          "correct": "B",
+          "explanation": "La raison n°1 : on ne leur demande pas ! Moins de 20% des commerciaux demandent systématiquement des recommandations."
+        },
+        {
+          "question": "Quelle formulation est la plus efficace pour demander une recommandation ?",
+          "options": [
+            "A) Vous connaissez quelqu'un qui pourrait m'acheter quelque chose ?",
+            "B) Parmi vos contacts, qui pourrait avoir les mêmes enjeux que vous ?",
+            "C) Donnez-moi des noms de prospects",
+            "D) Je peux mettre votre nom dans ma pub ?"
+          ],
+          "correct": "B",
+          "explanation": "Cette question aide le client à identifier des contacts pertinents en se basant sur un problème partagé, pas sur l'acte d'achat."
+        },
+        {
+          "question": "Le client accepte de recommander. Comment faciliter ?",
+          "options": [
+            "A) Lui demander de faire tout le travail",
+            "B) Proposer de rédiger l'email de mise en relation qu'il n'aura qu'à envoyer",
+            "C) Attendre qu'il vous rappelle",
+            "D) L'oublier"
+          ],
+          "correct": "B",
+          "explanation": "Facilitez au maximum : rédigez l'email, proposez un appel à 3, ou demandez juste la permission de mentionner son nom."
+        },
+        {
+          "question": "Le client dit qu'il n'a personne à recommander. Que faire ?",
+          "options": [
+            "A) Insister lourdement",
+            "B) Accepter et revenir plus tard avec une demande plus précise",
+            "C) Se fâcher",
+            "D) Ne plus jamais lui parler"
+          ],
+          "correct": "B",
+          "explanation": "Acceptez gracieusement. 'Pas de souci. Si un nom vous vient, n'hésitez pas.' Revenez dans 3-6 mois avec une demande plus ciblée."
+        },
+        {
+          "question": "Après avoir reçu une recommandation, vous devez TOUJOURS :",
+          "options": [
+            "A) Oublier de remercier",
+            "B) Tenir le parrain informé et le remercier, que ça aboutisse ou non",
+            "C) Ne plus contacter le parrain",
+            "D) Demander encore plus de recommandations immédiatement"
+          ],
+          "correct": "B",
+          "explanation": "Informez le parrain du résultat et remerciez-le. Même si ça n'aboutit pas. C'est ainsi qu'il recommandera encore."
+        },
+        {
+          "question": "La technique de recommandation inversée consiste à :",
+          "options": [
+            "A) Demander qui utilise déjà votre solution pour rassurer le prospect",
+            "B) Recommander votre client à quelqu'un d'autre",
+            "C) Refuser les recommandations",
+            "D) Payer pour des recommandations"
+          ],
+          "correct": "A",
+          "explanation": "'Connaissez-vous des entreprises qui utilisent notre solution ?' Le prospect peut alors les contacter pour avoir leur avis."
         }
       ]
     },
@@ -783,26 +1526,59 @@
           "explanation": "Cette question ouvre la négociation et vous donne une chance de résoudre le problème."
         },
         {
-          "question": "Les 5 principes universels pour les situations difficiles sont :",
+          "question": "La technique de respiration 4-7-8 sert à :",
           "options": [
-            "A) Fuir, Nier, Accuser, Mentir, Oublier",
-            "B) Calme, Écouter, Pas personnel, Solution > Coupable, Documenter",
-            "C) Vendre, Closer, Négocier, Relancer, Abandonner",
-            "D) Attaquer, Défendre, Riposter, Gagner, Partir"
+            "A) Impressionner le client",
+            "B) Calmer votre réponse au stress avant de répondre",
+            "C) Faire une pause café",
+            "D) Endormir le prospect"
           ],
           "correct": "B",
-          "explanation": "Ces 5 principes s'appliquent à toutes les situations difficiles : prospect agressif, erreur, client qui veut partir..."
+          "explanation": "Inspirez 4s, retenez 7s, expirez 8s. Cela active le système parasympathique et calme la réaction de stress."
         },
         {
           "question": "Une crise bien gérée :",
           "options": [
             "A) Détruit toujours la relation",
-            "B) Renforce la relation",
+            "B) Peut renforcer la relation et la confiance",
             "C) N'a aucun impact",
             "D) Fait perdre le client à 100%"
           ],
           "correct": "B",
-          "explanation": "70% des clients restent après une crise BIEN gérée. C'est une opportunité de renforcer la confiance."
+          "explanation": "70% des clients restent après une crise BIEN gérée. Le client a vu comment vous réagissez sous pression. C'est une opportunité."
+        },
+        {
+          "question": "Le prospect vous insulte personnellement. Que faire ?",
+          "options": [
+            "A) L'insulter en retour",
+            "B) Poser une limite calmement : 'Je suis prêt à discuter, mais pas dans ces conditions'",
+            "C) Pleurer",
+            "D) Accepter sans rien dire"
+          ],
+          "correct": "B",
+          "explanation": "Posez des limites avec calme et fermeté. Le respect fonctionne dans les deux sens. Vous n'êtes pas obligé de tout accepter."
+        },
+        {
+          "question": "Après une situation difficile, vous devez :",
+          "options": [
+            "A) Ruminer pendant des heures",
+            "B) Débriefer, apprendre et passer à autre chose",
+            "C) Démissionner",
+            "D) En parler à tous vos collègues en boucle"
+          ],
+          "correct": "B",
+          "explanation": "Débriefez : qu'est-ce qui s'est passé ? Qu'est-ce que j'ai bien fait ? Que ferais-je différemment ? Puis passez à autre chose."
+        },
+        {
+          "question": "Le client dit que votre concurrent lui a proposé -50%. Quelle réponse ?",
+          "options": [
+            "A) Nous aussi on peut faire -50%",
+            "B) Les concurrents sont nuls",
+            "C) Qu'est-ce qui est important pour vous au-delà du prix ?",
+            "D) Partez chez eux alors"
+          ],
+          "correct": "C",
+          "explanation": "Recadrez sur la valeur. Le moins cher n'est pas toujours le meilleur. Qu'est-ce qu'il veut vraiment ? Service ? Fiabilité ? Support ?"
         }
       ]
     }
