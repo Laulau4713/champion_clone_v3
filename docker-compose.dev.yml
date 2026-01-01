@@ -18,6 +18,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: development
+    # Run as root in dev to avoid permission issues with volume mounts
+    user: root
     ports:
       - "8000:8000"
     environment:
@@ -58,6 +60,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: development
+    # Run as root in dev to avoid permission issues with volume mounts
+    user: root
     ports:
       - "3000:3000"
     environment:
