@@ -1,0 +1,254 @@
+{
+  "achievements": [
+    {
+      "id": "first_course",
+      "category": "progression",
+      "name": "Premier pas",
+      "description": "Compléter votre premier cours",
+      "icon": "book-open",
+      "color": "blue",
+      "condition": {"type": "courses_completed", "value": 1},
+      "xp_reward": 50
+    },
+    {
+      "id": "courses_5",
+      "category": "progression",
+      "name": "Apprenant assidu",
+      "description": "Compléter 5 cours",
+      "icon": "graduation-cap",
+      "color": "green",
+      "condition": {"type": "courses_completed", "value": 5},
+      "xp_reward": 100
+    },
+    {
+      "id": "courses_10",
+      "category": "progression",
+      "name": "Expert en formation",
+      "description": "Compléter 10 cours",
+      "icon": "award",
+      "color": "purple",
+      "condition": {"type": "courses_completed", "value": 10},
+      "xp_reward": 200
+    },
+    {
+      "id": "all_courses",
+      "category": "progression",
+      "name": "Diplômé Champion",
+      "description": "Compléter tous les cours",
+      "icon": "trophy",
+      "color": "gold",
+      "condition": {"type": "courses_completed", "value": 17},
+      "xp_reward": 500
+    },
+    {
+      "id": "first_session",
+      "category": "progression",
+      "name": "Baptême du feu",
+      "description": "Terminer votre première session d'entraînement",
+      "icon": "flame",
+      "color": "orange",
+      "condition": {"type": "sessions_completed", "value": 1},
+      "xp_reward": 50
+    },
+    {
+      "id": "sessions_10",
+      "category": "progression",
+      "name": "Entraînement régulier",
+      "description": "Compléter 10 sessions d'entraînement",
+      "icon": "dumbbell",
+      "color": "red",
+      "condition": {"type": "sessions_completed", "value": 10},
+      "xp_reward": 150
+    },
+    {
+      "id": "sessions_50",
+      "category": "progression",
+      "name": "Machine de guerre",
+      "description": "Compléter 50 sessions d'entraînement",
+      "icon": "target",
+      "color": "purple",
+      "condition": {"type": "sessions_completed", "value": 50},
+      "xp_reward": 300
+    },
+    {
+      "id": "first_conversion",
+      "category": "progression",
+      "name": "Premier closing",
+      "description": "Réussir votre première conversion",
+      "icon": "check-circle",
+      "color": "green",
+      "condition": {"type": "conversions", "value": 1},
+      "xp_reward": 100
+    },
+    {
+      "id": "conversions_10",
+      "category": "progression",
+      "name": "Closer confirmé",
+      "description": "Réussir 10 conversions",
+      "icon": "star",
+      "color": "yellow",
+      "condition": {"type": "conversions", "value": 10},
+      "xp_reward": 250
+    },
+    {
+      "id": "training_1h",
+      "category": "progression",
+      "name": "1 heure d'entraînement",
+      "description": "Cumuler 1 heure d'entraînement",
+      "icon": "clock",
+      "color": "blue",
+      "condition": {"type": "training_minutes", "value": 60},
+      "xp_reward": 75
+    },
+    {
+      "id": "training_10h",
+      "category": "progression",
+      "name": "10 heures d'entraînement",
+      "description": "Cumuler 10 heures d'entraînement",
+      "icon": "hourglass",
+      "color": "purple",
+      "condition": {"type": "training_minutes", "value": 600},
+      "xp_reward": 400
+    },
+    {
+      "id": "skill_preparation",
+      "category": "skill",
+      "name": "Maître de la préparation",
+      "description": "Valider la compétence Préparation & Ciblage",
+      "icon": "search",
+      "color": "blue",
+      "condition": {"type": "skill_validated", "skill": "preparation_ciblage"},
+      "xp_reward": 100
+    },
+    {
+      "id": "skill_accroche",
+      "category": "skill",
+      "name": "Accrocheur",
+      "description": "Valider la compétence Script d'accroche",
+      "icon": "message-circle",
+      "color": "green",
+      "condition": {"type": "skill_validated", "skill": "script_accroche"},
+      "xp_reward": 100
+    },
+    {
+      "id": "skill_cold_calling",
+      "category": "skill",
+      "name": "Cold Caller Pro",
+      "description": "Valider la compétence Cold Calling",
+      "icon": "phone",
+      "color": "cyan",
+      "condition": {"type": "skill_validated", "skill": "cold_calling"},
+      "xp_reward": 100
+    },
+    {
+      "id": "skill_ecoute",
+      "category": "skill",
+      "name": "Oreille d'or",
+      "description": "Valider la compétence Écoute Active",
+      "icon": "ear",
+      "color": "purple",
+      "condition": {"type": "skill_validated", "skill": "ecoute_active"},
+      "xp_reward": 100
+    },
+    {
+      "id": "skill_compir",
+      "category": "skill",
+      "name": "Expert COMPIR",
+      "description": "Valider la compétence Découverte COMPIR",
+      "icon": "help-circle",
+      "color": "orange",
+      "condition": {"type": "skill_validated", "skill": "decouverte_compir"},
+      "xp_reward": 100
+    },
+    {
+      "id": "skill_bebedc",
+      "category": "skill",
+      "name": "Qualificateur BEBEDC",
+      "description": "Valider la compétence Checklist BEBEDC",
+      "icon": "clipboard-check",
+      "color": "teal",
+      "condition": {"type": "skill_validated", "skill": "checklist_bebedc"},
+      "xp_reward": 100
+    },
+    {
+      "id": "skill_objections",
+      "category": "skill",
+      "name": "Dompteur d'objections",
+      "description": "Valider la compétence Traitement CNZ",
+      "icon": "shield",
+      "color": "red",
+      "condition": {"type": "skill_validated", "skill": "objections_cnz"},
+      "xp_reward": 150
+    },
+    {
+      "id": "skill_closing",
+      "category": "skill",
+      "name": "Closer Elite",
+      "description": "Valider la compétence Closing",
+      "icon": "award",
+      "color": "gold",
+      "condition": {"type": "skill_validated", "skill": "closing_ponts_brules"},
+      "xp_reward": 200
+    },
+    {
+      "id": "skill_negociation",
+      "category": "skill",
+      "name": "Négociateur",
+      "description": "Valider la compétence Négociation",
+      "icon": "scale",
+      "color": "indigo",
+      "condition": {"type": "skill_validated", "skill": "negociation"},
+      "xp_reward": 150
+    },
+    {
+      "id": "all_skills",
+      "category": "skill",
+      "name": "Maître des compétences",
+      "description": "Valider toutes les compétences",
+      "icon": "crown",
+      "color": "gold",
+      "condition": {"type": "all_skills_validated"},
+      "xp_reward": 1000
+    },
+    {
+      "id": "perfect_session",
+      "category": "special",
+      "name": "Session parfaite",
+      "description": "Terminer une session avec 100% de jauge",
+      "icon": "zap",
+      "color": "yellow",
+      "condition": {"type": "perfect_jauge"},
+      "xp_reward": 150
+    },
+    {
+      "id": "reversal_master",
+      "category": "special",
+      "name": "Roi du retournement",
+      "description": "Récupérer 5 retournements de situation",
+      "icon": "refresh-cw",
+      "color": "purple",
+      "condition": {"type": "reversals_recovered", "value": 5},
+      "xp_reward": 200
+    },
+    {
+      "id": "objection_hunter",
+      "category": "special",
+      "name": "Chasseur d'objections",
+      "description": "Découvrir 10 objections cachées",
+      "icon": "eye",
+      "color": "green",
+      "condition": {"type": "hidden_objections_discovered", "value": 10},
+      "xp_reward": 200
+    },
+    {
+      "id": "expert_level",
+      "category": "special",
+      "name": "Mode Expert",
+      "description": "Réussir une conversion en mode Expert",
+      "icon": "medal",
+      "color": "red",
+      "condition": {"type": "expert_conversion"},
+      "xp_reward": 300
+    }
+  ]
+}

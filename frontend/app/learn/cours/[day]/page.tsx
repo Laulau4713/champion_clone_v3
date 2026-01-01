@@ -155,7 +155,8 @@ function KeyPointContent({ content }: { content: Record<string, unknown> }) {
 export default function CoursePage() {
   const params = useParams();
   const router = useRouter();
-  const day = Number(params.day);
+  // The route param is still "day" for URL compatibility, but we use it as module order
+  const moduleOrder = Number(params.day);
 
   const [course, setCourse] = useState<Cours | null>(null);
   const [loading, setLoading] = useState(true);
@@ -165,7 +166,7 @@ export default function CoursePage() {
   const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set([0]));
 
   const isFreeUser = user?.subscription_plan === "free";
-  const isLocked = isFreeUser && day > 1;
+  const isLocked = isFreeUser && moduleOrder > 1;
 
   const loadUser = useCallback(async () => {
     try {
@@ -181,14 +182,14 @@ export default function CoursePage() {
   const loadCourse = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await learningAPI.getCourseByDay(day);
+      const res = await learningAPI.getCourseByDay(moduleOrder);
       setCourse(res.data);
     } catch {
-      setError("Cours non trouvé");
+      setError("Module non trouvé");
     } finally {
       setLoading(false);
     }
-  }, [day]);
+  }, [moduleOrder]);
 
   useEffect(() => {
     loadCourse();
@@ -290,7 +291,9 @@ export default function CoursePage() {
           </Button>
 
           <div className="flex items-center gap-3 mb-4">
-            <Badge variant="outline">Jour {course.day}</Badge>
+            <Badge variant="outline" className="bg-slate-800/50">
+              Module {course.order ?? moduleOrder}
+            </Badge>
             <Badge className={config.color}>{config.label}</Badge>
             <span className="flex items-center text-sm text-muted-foreground">
               <Clock className="h-4 w-4 mr-1" />
@@ -563,17 +566,17 @@ export default function CoursePage() {
         <div className="flex justify-between mt-12 pt-8 border-t border-white/10">
           <Button
             variant="outline"
-            onClick={() => router.push(day > 1 ? `/learn/cours/${day - 1}` : "/learn?tab=courses")}
+            onClick={() => router.push(moduleOrder > 1 ? `/learn/cours/${moduleOrder - 1}` : "/learn?tab=courses")}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            {day > 1 ? `Jour ${day - 1}` : "Retour"}
+            {moduleOrder > 1 ? `Module ${moduleOrder - 1}` : "Retour"}
           </Button>
 
           <Button
             className="bg-gradient-primary hover:opacity-90 text-white"
-            onClick={() => router.push(day < 17 ? `/learn/cours/${day + 1}` : "/learn?tab=courses")}
+            onClick={() => router.push(moduleOrder < 17 ? `/learn/cours/${moduleOrder + 1}` : "/learn?tab=courses")}
           >
-            {day < 17 ? `Jour ${day + 1}` : "Terminer"}
+            {moduleOrder < 17 ? `Module ${moduleOrder + 1}` : "Terminer"}
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </div>

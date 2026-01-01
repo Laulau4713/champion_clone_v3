@@ -14,6 +14,7 @@ import {
   BookOpen,
   Target,
   Upload,
+  Trophy,
   ChevronDown,
 } from "lucide-react";
 import { useState } from "react";
@@ -34,6 +35,7 @@ const authNavLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, premiumOnly: false },
   { href: "/learn", label: "Apprendre", icon: BookOpen, premiumOnly: false },
   { href: "/training", label: "Training", icon: Target, premiumOnly: false },
+  { href: "/achievements", label: "Trophées", icon: Trophy, premiumOnly: false },
   { href: "/upload", label: "Upload", icon: Upload, premiumOnly: true },
 ];
 
@@ -146,6 +148,11 @@ export function Header() {
                         <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                       </div>
                       <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => router.push('/profile')}>
+                        <User className="h-4 w-4 mr-2" />
+                        Mon Profil
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleLogout} className="text-red-400 focus:text-red-400">
                         <LogOut className="h-4 w-4 mr-2" />
                         Déconnexion
@@ -230,6 +237,14 @@ export function Header() {
                         <User className="h-4 w-4" />
                         {user?.full_name || user?.email}
                       </div>
+                      <Link
+                        href="/profile"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      >
+                        <User className="h-4 w-4" />
+                        Mon Profil
+                      </Link>
                       {user?.role === "admin" && (
                         <Link
                           href="/admin"

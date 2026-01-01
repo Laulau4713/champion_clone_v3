@@ -26,6 +26,7 @@ import { useAuthStore } from "@/store/auth-store";
 import api from "@/lib/api";
 import type { AdminUserDetail } from "@/types";
 import { cn } from "@/lib/utils";
+import UserNotesSection from "./UserNotesSection";
 
 // Loading Skeleton
 function UserDetailSkeleton() {
@@ -132,7 +133,7 @@ export default function UserDetailPage() {
 
   if (!userDetail) return null;
 
-  const { user, champions, sessions, stats } = userDetail;
+  const { user, champions, sessions, stats, notes } = userDetail;
   const isSelf = currentUser?.id === user.id;
 
   return (
@@ -468,6 +469,15 @@ export default function UserDetailPage() {
               )}
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Admin Notes */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <UserNotesSection userId={user.id} initialNotes={notes || []} />
         </motion.div>
       </div>
     </div>

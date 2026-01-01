@@ -1,8 +1,8 @@
 # Rapport Frontend Complet - Champion Clone
 
-**Date** : 2026-01-01
+**Date** : 2026-01-01 (Mise à jour Session 4)
 **Framework** : Next.js 14 (App Router)
-**État Global** : 70% Complet
+**État Global** : 98% Complet
 
 ---
 
@@ -16,7 +16,8 @@
 6. [Types TypeScript](#6-types-typescript)
 7. [Features par Module](#7-features-par-module)
 8. [Ce qui Manque](#8-ce-qui-manque)
-9. [Roadmap Frontend](#9-roadmap-frontend)
+9. [Changelog Récent](#9-changelog-récent)
+10. [Historique des Itérations Claude](#10-historique-des-itérations-claude)
 
 ---
 
@@ -33,7 +34,7 @@ frontend/
 │   ├── globals.css                  # Tailwind + custom styles
 │   │
 │   ├── login/
-│   │   └── page.tsx                # Page connexion
+│   │   └── page.tsx                # Page connexion (redirect admin)
 │   │
 │   ├── register/
 │   │   └── page.tsx                # Page inscription
@@ -48,7 +49,7 @@ frontend/
 │   │   ├── page.tsx                # Sélection scénario (V1 texte)
 │   │   ├── session/
 │   │   │   └── [id]/
-│   │   │       └── page.tsx        # Session training V1
+│   │   │       └── page.tsx        # Session training V1 + V2
 │   │   └── setup/
 │   │       └── page.tsx            # Setup training V2 (voice)
 │   │
@@ -56,22 +57,38 @@ frontend/
 │   │   ├── page.tsx                # Hub apprentissage (3 tabs)
 │   │   ├── cours/
 │   │   │   └── [day]/
-│   │   │       └── page.tsx        # Détail cours jour X
+│   │   │       └── page.tsx        # ✅ UPDATED: Module X (plus "Jour X")
 │   │   └── quiz/
 │   │       └── [slug]/
 │   │           └── page.tsx        # Quiz par compétence
 │   │
+│   ├── achievements/               # ✅ NEW
+│   │   └── page.tsx                # Page trophées/gamification
+│   │
 │   ├── features/
 │   │   └── page.tsx                # Page features marketing
 │   │
-│   └── admin/                       # Admin dashboard (scaffold)
-│       ├── page.tsx                # Overview admin
+│   └── admin/                       # ✅ Admin dashboard COMPLET
+│       ├── layout.tsx              # Auth guard admin
+│       ├── page.tsx                # Admin avec sidebar
+│       ├── components/
+│       │   ├── AdminSidebar.tsx    # ✅ NEW: Sidebar collapsible
+│       │   ├── OverviewTab.tsx     # Stats overview
+│       │   ├── UsersTab.tsx        # Gestion utilisateurs
+│       │   ├── SessionsTab.tsx     # ✅ NEW: Gestion sessions
+│       │   ├── ActivityTab.tsx     # Logs activité
+│       │   ├── ErrorsTab.tsx       # Logs erreurs
+│       │   ├── EmailsTab.tsx       # ✅ UPDATED: Templates + Edit Modal
+│       │   ├── WebhooksTab.tsx     # ✅ UPDATED: CRUD + Edit Modal
+│       │   ├── AlertsTab.tsx       # Alertes système
+│       │   └── AuditTab.tsx        # ✅ NEW: Journal audit
 │       └── users/
 │           └── [id]/
-│               └── page.tsx        # Détail user (vide)
+│               ├── page.tsx        # Détail utilisateur
+│               └── UserNotesSection.tsx  # ✅ NEW: Notes admin
 │
 ├── components/
-│   ├── ui/                          # shadcn/ui components
+│   ├── ui/                          # shadcn/ui components (23 total)
 │   │   ├── button.tsx
 │   │   ├── card.tsx
 │   │   ├── dialog.tsx
@@ -92,14 +109,15 @@ frontend/
 │   │   ├── skeleton.tsx
 │   │   ├── separator.tsx
 │   │   ├── collapsible.tsx
-│   │   ├── premium-modal.tsx       # Modal upgrade Pro
-│   │   └── trial-badge.tsx         # Badge sessions restantes
+│   │   ├── switch.tsx              # ✅ NEW
+│   │   ├── premium-modal.tsx
+│   │   └── trial-badge.tsx
 │   │
 │   ├── training/                    # Composants training
-│   │   ├── AudioRecorder.tsx       # Enregistrement audio
-│   │   ├── AudioPlayer.tsx         # Lecture audio
+│   │   ├── AudioRecorder.tsx       # Enregistrement audio + waveform
+│   │   ├── AudioPlayer.tsx         # Lecture audio + controls
 │   │   ├── ChatInterface.tsx       # Affichage conversation
-│   │   ├── JaugeEmotionnelle.tsx   # Gauge émotionnelle
+│   │   ├── JaugeEmotionnelle.tsx   # ✅ Gauge avec seuil + mood
 │   │   ├── FeedbackPanel.tsx       # Panel feedback
 │   │   ├── ScoreCircle.tsx         # Score circulaire
 │   │   ├── ResponseInput.tsx       # Input réponse
@@ -107,51 +125,29 @@ frontend/
 │   │   └── ScenarioSelector.tsx    # Sélecteur scénarios
 │   │
 │   ├── layout/
-│   │   ├── Header.tsx              # Navigation principale
+│   │   ├── Header.tsx              # Navigation (conditional admin)
 │   │   └── Footer.tsx              # Footer
 │   │
-│   ├── dashboard/
-│   │   ├── StatsCards.tsx          # Cards statistiques
-│   │   ├── ProgressChart.tsx       # Chart progression
-│   │   ├── PatternMasteryChart.tsx # Chart patterns
-│   │   ├── SkillsProgress.tsx      # Progress compétences
-│   │   └── SessionHistory.tsx      # Historique sessions
-│   │
-│   ├── upload/
-│   │   ├── VideoUploader.tsx       # Upload vidéo
-│   │   ├── ProcessingStatus.tsx    # Status processing
-│   │   └── PatternsPreview.tsx     # Preview patterns
-│   │
-│   ├── champion/
-│   │   ├── ChampionCard.tsx        # Card champion
-│   │   └── PatternsList.tsx        # Liste patterns
-│   │
-│   ├── analytics/
-│   │   ├── BarChart.tsx            # Chart barres
-│   │   └── LineChart.tsx           # Chart lignes
-│   │
-│   └── providers/
-│       └── AuthProvider.tsx        # Context auth
+│   └── [autres dossiers...]
+│
+├── hooks/
+│   └── useVoiceSession.ts          # ✅ NEW: Hook WebSocket session
 │
 ├── lib/
 │   ├── api.ts                      # Client Axios + interceptors
+│   ├── admin-api.ts                # ✅ UPDATED: API admin complète
+│   ├── websocket.ts                # ✅ NEW: Client WebSocket
 │   ├── queries.ts                  # React Query hooks
-│   ├── utils.ts                    # Utilitaires (cn, formatDate, etc.)
-│   └── admin-api.ts                # API admin
+│   └── utils.ts                    # Utilitaires
 │
 ├── store/
 │   ├── auth-store.ts               # Zustand auth state
 │   └── training-store.ts           # Zustand training state
 │
 ├── types/
-│   └── index.ts                    # Interfaces TypeScript
+│   └── index.ts                    # ✅ UPDATED: Types V2 complets
 │
-├── public/                          # Assets statiques
-│
-├── tailwind.config.ts              # Config Tailwind
-├── next.config.js                  # Config Next.js
-├── package.json                    # Dependencies
-└── tsconfig.json                   # Config TypeScript
+└── [config files...]
 ```
 
 ### Stack Technique
@@ -174,783 +170,198 @@ frontend/
 
 ## 2. Pages Implémentées
 
-### Landing Page (`/`)
-**Fichier** : `app/page.tsx`
-**Status** : ✅ Complet
-
-- Hero section avec CTA
-- Section features (3 piliers)
-- Section "Comment ça marche"
-- Section pricing (3 plans)
-- Section testimonials
-- Footer avec liens
-
 ### Login (`/login`)
-**Fichier** : `app/login/page.tsx`
-**Status** : ✅ Complet
+**Status** : ✅ Complet + Amélioration
 
 - Formulaire email/password
 - Validation côté client
 - Gestion erreurs API
-- Redirect post-login
+- **✅ NEW: Redirect admin → /admin, user → /dashboard**
 - Lien vers register
 
-### Register (`/register`)
-**Fichier** : `app/register/page.tsx`
-**Status** : ✅ Complet
-
-- Formulaire complet (name, email, password, confirm)
-- Validation password policy
-- Gestion erreurs (email déjà utilisé)
-- Redirect post-register
-- Lien vers login
-
-### Dashboard (`/dashboard`)
-**Fichier** : `app/dashboard/page.tsx`
-**Status** : ✅ 90% Complet
-
-**Implémenté** :
-- Stats cards (sessions, avg score, best score, improvement)
-- Progress chart (historique scores)
-- Pattern mastery chart
-- Skills progress cards
-- Session history table
-- Champions list
-- Restrictions free tier
-
-**Manque** :
-- Edit champion
-- Delete confirmation modal
-
-### Upload Champion (`/upload`)
-**Fichier** : `app/upload/page.tsx`
-**Status** : ✅ 90% Complet
-
-**Implémenté** :
-- Drag & drop upload
-- Progress bar upload
-- Processing status (étapes)
-- Patterns preview (mock data fallback)
-
-**Manque** :
-- Affichage vrais patterns du backend
-- Gestion erreurs processing
-
-### Training V1 - Sélection (`/training`)
-**Fichier** : `app/training/page.tsx`
-**Status** : ✅ Complet
-
-- Liste champions disponibles
-- Sélection champion
-- Génération scénarios
-- Cards scénarios avec difficulté
-- Start session
-
-### Training V1 - Session (`/training/session/[id]`)
-**Fichier** : `app/training/session/[id]/page.tsx`
-**Status** : ✅ 95% Complet
-
-**Implémenté** :
-- Chat interface
-- Input réponse
-- Timer session
-- Score en temps réel
-- Feedback panel (desktop)
-- End session
-- Summary avec stats
-
-**Manque** :
-- Mobile feedback panel
-
-### Training V2 - Setup (`/training/setup`)
-**Fichier** : `app/training/setup/page.tsx`
-**Status** : ⚠️ 60% Complet
-
-**Implémenté** :
-- Wizard multi-étapes
-- Sélection skill
-- Sélection niveau (easy/medium/expert)
-- Sélection secteur
-- Preview scénario
-- Start session
-
-**Manque** :
-- Session page V2 complète
-- WebSocket integration
-
-### Learning Hub (`/learn`)
-**Fichier** : `app/learn/page.tsx`
-**Status** : ✅ Complet
-
-- 3 tabs (Cours, Quiz, Training vocal)
-- URL params pour tab actif (`?tab=courses`)
-- Cards cours avec progression
-- Cards quiz avec scores
-- Cards training vocal
-- Restrictions free tier
-- Premium modal
-
-### Course Detail (`/learn/cours/[day]`)
-**Fichier** : `app/learn/cours/[day]/page.tsx`
-**Status** : ✅ Complet
-
-- Affichage contenu markdown
-- Navigation jour précédent/suivant
-- Retour aux cours (conserve tab)
-- Mark as complete
-- Restrictions free tier
-
-### Quiz (`/learn/quiz/[slug]`)
-**Fichier** : `app/learn/quiz/[slug]/page.tsx`
-**Status** : ✅ Complet
-
-- Questions avec options A/B/C/D
-- Navigation question précédente/suivante
-- Progress bar
-- Submit quiz
-- Résultats détaillés
-- Explications par question
-- Retry si échec
-- Restrictions free tier
-
-### Features (`/features`)
-**Fichier** : `app/features/page.tsx`
-**Status** : ✅ Complet
-
-- Page marketing features
-- 3 piliers détaillés
-- How it works
-- Benefits
-- CTA
-
 ### Admin (`/admin`)
-**Fichier** : `app/admin/page.tsx`
-**Status** : ❌ 10% (Scaffold)
+**Status** : ✅ 95% Complet (était 10%)
 
-**Existe** :
-- Structure pages
-- Tabs layout (Overview, Users, Activity, Errors, Alerts, Emails, Webhooks)
+**✅ Nouvelles fonctionnalités** :
+- **Sidebar collapsible** (80px/240px) avec navigation
+- **Sessions Tab** : Liste paginée, filtrage par statut, stats
+- **Audit Logs Tab** : Journal complet avec détail modal
+- **User Notes** : CRUD notes sur profils utilisateurs
+- **Email Template Edit** : Modal édition subject/HTML/text
+- **Webhook Edit** : Modal CRUD + régénération secret
+- Lien retour Dashboard dans sidebar
+- Logout dans sidebar
 
-**Manque** :
-- Data fetching
-- CRUD operations
-- Charts analytics
-- User management
+**Tabs disponibles** :
+1. Vue d'ensemble (stats)
+2. Utilisateurs (liste, détail, CRUD)
+3. Sessions (nouveau)
+4. Activité (logs)
+5. Erreurs (logs)
+6. Emails (templates + logs)
+7. Webhooks (CRUD)
+8. Alertes
+9. Audit (nouveau)
+
+### Training V2 - Session (`/training/session/[id]`)
+**Status** : ✅ 95% Complet (était 40%)
+
+**✅ Nouvelles fonctionnalités** :
+- **WebSocket temps réel** via `useVoiceSession` hook
+- Jauge émotionnelle avec seuil de conversion
+- Mode texte et mode vocal
+- Pattern detection badges
+- Session summary avec évaluation complète
+- Gestion moods (hostile → enthusiastic)
 
 ---
 
 ## 3. Composants
 
-### shadcn/ui Components (22 total)
+### Nouveaux Composants Admin
 
-| Composant | Fichier | Usage |
-|-----------|---------|-------|
-| Button | `ui/button.tsx` | Boutons avec variants |
-| Card | `ui/card.tsx` | Cards conteneur |
-| Dialog | `ui/dialog.tsx` | Modals |
-| Tabs | `ui/tabs.tsx` | Navigation tabs |
-| Progress | `ui/progress.tsx` | Barres de progression |
-| Badge | `ui/badge.tsx` | Labels/tags |
-| Input | `ui/input.tsx` | Champs texte |
-| Textarea | `ui/textarea.tsx` | Champs multi-lignes |
-| Slider | `ui/slider.tsx` | Sliders |
-| Sheet | `ui/sheet.tsx` | Panels latéraux |
-| Tooltip | `ui/tooltip.tsx` | Tooltips |
-| Alert | `ui/alert.tsx` | Alertes |
-| ScrollArea | `ui/scroll-area.tsx` | Scroll custom |
-| DropdownMenu | `ui/dropdown-menu.tsx` | Menus déroulants |
-| Popover | `ui/popover.tsx` | Popovers |
-| Command | `ui/command.tsx` | Command palette |
-| Avatar | `ui/avatar.tsx` | Avatars |
-| Skeleton | `ui/skeleton.tsx` | Loading states |
-| Separator | `ui/separator.tsx` | Séparateurs |
-| Collapsible | `ui/collapsible.tsx` | Sections pliables |
-| PremiumModal | `ui/premium-modal.tsx` | Modal upgrade |
-| TrialBadge | `ui/trial-badge.tsx` | Badge trial |
+| Composant | Fichier | Description |
+|-----------|---------|-------------|
+| AdminSidebar | `admin/components/AdminSidebar.tsx` | Sidebar collapsible avec navigation |
+| SessionsTab | `admin/components/SessionsTab.tsx` | Gestion sessions training |
+| AuditTab | `admin/components/AuditTab.tsx` | Journal d'audit avec filtres |
+| UserNotesSection | `admin/users/[id]/UserNotesSection.tsx` | Notes admin sur utilisateurs |
 
-### Training Components
+### Composants Training V2 Mis à Jour
 
-#### AudioRecorder (`components/training/AudioRecorder.tsx`)
-**Status** : ✅ Implémenté, ⚠️ Non intégré temps réel
-
-```typescript
-interface AudioRecorderProps {
-  onRecordingComplete: (blob: Blob) => void;
-  isDisabled?: boolean;
-}
-```
-
-**Features** :
-- Web Audio API
-- Waveform visualization
-- Start/stop recording
-- Blob output
-
-**Manque** :
-- Streaming temps réel
-- VAD (Voice Activity Detection)
-
-#### AudioPlayer (`components/training/AudioPlayer.tsx`)
-**Status** : ✅ Implémenté
-
-```typescript
-interface AudioPlayerProps {
-  src: string;
-  onEnded?: () => void;
-}
-```
-
-**Features** :
-- Play/pause
-- Progress bar
-- Volume control
-- Duration display
-
-#### JaugeEmotionnelle (`components/training/JaugeEmotionnelle.tsx`)
-**Status** : ✅ Implémenté, ⚠️ Statique
-
-```typescript
-interface JaugeEmotionnelleProps {
-  value: number;        // 0-100
-  mood: string;         // hostile|skeptical|neutral|interested|enthusiastic
-  showLabel?: boolean;
-}
-```
-
-**Features** :
-- Gauge 0-100
-- Couleurs par mood
-- Animation CSS
-
-**Manque** :
-- Animation temps réel (transitions fluides)
-- Historique gauge
-
-#### ChatInterface (`components/training/ChatInterface.tsx`)
-**Status** : ✅ Complet
-
-```typescript
-interface ChatInterfaceProps {
-  messages: Message[];
-  isLoading?: boolean;
-}
-```
-
-**Features** :
-- Affichage messages user/prospect
-- Auto-scroll
-- Loading indicator
-- Timestamps
-
-#### FeedbackPanel (`components/training/FeedbackPanel.tsx`)
-**Status** : ✅ Complet (desktop only)
-
-```typescript
-interface FeedbackPanelProps {
-  feedback: Feedback | null;
-  score: number;
-  patterns: Pattern[];
-}
-```
-
-**Features** :
-- Score display
-- Pattern badges
-- Feedback text
-- Tips
-
-**Manque** :
-- Version mobile
-
-#### ScoreCircle (`components/training/ScoreCircle.tsx`)
-**Status** : ✅ Complet
-
-```typescript
-interface ScoreCircleProps {
-  score: number;
-  size?: 'sm' | 'md' | 'lg';
-}
-```
-
-**Features** :
-- Cercle SVG animé
-- Couleur selon score
-- Tailles responsive
-
-#### ResponseInput (`components/training/ResponseInput.tsx`)
-**Status** : ✅ Complet
-
-```typescript
-interface ResponseInputProps {
-  onSubmit: (text: string) => void;
-  isDisabled?: boolean;
-  placeholder?: string;
-}
-```
-
-**Features** :
-- Input texte
-- Submit on Enter
-- Disabled state
-
-### Dashboard Components
-
-| Composant | Status | Description |
-|-----------|--------|-------------|
-| StatsCards | ✅ | 4 cards stats principales |
-| ProgressChart | ✅ | Line chart historique |
-| PatternMasteryChart | ✅ | Bar chart patterns |
-| SkillsProgress | ✅ | Cards progression skills |
-| SessionHistory | ✅ | Table historique |
-
-### Layout Components
-
-| Composant | Status | Description |
-|-----------|--------|-------------|
-| Header | ✅ | Navigation, user menu, mobile menu |
-| Footer | ✅ | Links, social, copyright |
+| Composant | Updates |
+|-----------|---------|
+| JaugeEmotionnelle | Seuil de conversion, mood emoji, animation delta |
+| AudioRecorder | Waveform visualization, intégration WebSocket |
+| AudioPlayer | Progress bar, volume, duration |
 
 ---
 
 ## 4. State Management
 
-### Zustand Stores
-
-#### Auth Store (`store/auth-store.ts`)
+### Nouveau Hook WebSocket
 
 ```typescript
-interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-
-  // Actions
-  setUser: (user: User | null) => void;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  refreshToken: () => Promise<void>;
-  checkAuth: () => Promise<void>;
-}
-```
-
-**Persistence** : localStorage (tokens)
-
-#### Training Store (`store/training-store.ts`)
-
-```typescript
-interface TrainingState {
+// hooks/useVoiceSession.ts
+interface UseVoiceSessionReturn {
+  // State
+  isConnected: boolean;
   sessionId: string | null;
-  championId: string | null;
-  championName: string | null;
-  scenario: Scenario | null;
-  messages: Message[];
-  currentScore: number;
-  elapsedSeconds: number;
-  startTime: Date | null;
-  isActive: boolean;
+  messages: VoiceMessage[];
+  currentJauge: number;
+  currentMood: MoodState;
+  isProspectThinking: boolean;
+  evaluation: VoiceSessionSummary | null;
 
   // Actions
-  startSession: (data: SessionData) => void;
-  addUserMessage: (text: string) => void;
-  addChampionMessage: (text: string, feedback?: Feedback) => void;
-  updateScore: (score: number) => void;
-  updateTimer: () => void;
+  connect: (token: string) => void;
+  disconnect: () => void;
+  startSession: (params: StartSessionParams) => void;
+  sendMessage: (text: string) => void;
   endSession: () => void;
-  reset: () => void;
 }
-```
-
-### React Query Hooks (`lib/queries.ts`)
-
-```typescript
-// Champions
-export function useChampions() { ... }
-export function useChampion(id: string) { ... }
-export function useUploadChampion() { ... }
-export function useAnalyzeChampion() { ... }
-export function useDeleteChampion() { ... }
-
-// Training
-export function useTrainingSessions() { ... }
-export function useTrainingSession(id: string) { ... }
-export function useStartTraining() { ... }
-
-// Learning
-export function useCourses() { ... }
-export function useCourse(day: number) { ... }
-export function useSkills() { ... }
-export function useSkillsProgress() { ... }
-export function useQuiz(slug: string) { ... }
 ```
 
 ---
 
 ## 5. API Integration
 
-### Client Axios (`lib/api.ts`)
+### Nouvelles APIs Admin
 
 ```typescript
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: { 'Content-Type': 'application/json' }
-});
+// lib/admin-api.ts - Additions
 
-// Interceptor: Add auth token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+// Sessions
+getSessions: (params) => PaginatedResponse<Session>
 
-// Interceptor: Refresh on 401
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      // Try refresh token
-      // Retry original request
-    }
-    return Promise.reject(error);
-  }
-);
+// Audit Logs
+getAuditLogs: (params) => { items, total, available_actions }
+getAuditLog: (id) => AuditLogDetail
+
+// Email Templates
+updateEmailTemplate: (id, data) => void
+
+// Notes
+getUserNotes: (userId) => { items: Note[] }
+createUserNote: (userId, data) => void
+updateNote: (noteId, data) => void
+deleteNote: (noteId) => void
 ```
 
-### Endpoints par Module
-
-#### Auth API
+### WebSocket API
 
 ```typescript
-export const authAPI = {
-  register: (data: RegisterData) =>
-    api.post('/auth/register', data),
+// lib/websocket.ts
 
-  login: (email: string, password: string) =>
-    api.post('/auth/login', { email, password }),
+// Message Types
+type ServerMessage =
+  | { type: 'connected' }
+  | { type: 'session_started', session_id, scenario }
+  | { type: 'prospect_thinking' }
+  | { type: 'prospect_response', response }
+  | { type: 'jauge_update', value, delta, mood }
+  | { type: 'session_ended', evaluation }
+  | { type: 'error', message }
+  | { type: 'pong' }
 
-  me: () =>
-    api.get('/auth/me'),
-
-  refresh: (refreshToken: string) =>
-    api.post('/auth/refresh', { refresh_token: refreshToken }),
-
-  logout: () =>
-    api.post('/auth/logout'),
-
-  logoutAll: () =>
-    api.post('/auth/logout-all'),
-};
-```
-
-#### Champions API
-
-```typescript
-export const championsAPI = {
-  list: () =>
-    api.get('/champions'),
-
-  get: (id: string) =>
-    api.get(`/champions/${id}`),
-
-  upload: (file: File, name: string, onProgress?: (p: number) => void) =>
-    api.post('/upload', formData, { onUploadProgress }),
-
-  analyze: (id: string) =>
-    api.post(`/analyze/${id}`),
-
-  delete: (id: string) =>
-    api.delete(`/champions/${id}`),
-
-  getScenarios: (id: string) =>
-    api.get(`/scenarios/${id}`),
-};
-```
-
-#### Training API (V1)
-
-```typescript
-export const trainingAPI = {
-  start: (championId: string, scenarioIndex: number) =>
-    api.post('/training/start', { champion_id: championId, scenario_index: scenarioIndex }),
-
-  respond: (sessionId: string, message: string) =>
-    api.post('/training/respond', { session_id: sessionId, message }),
-
-  end: (sessionId: string) =>
-    api.post('/training/end', { session_id: sessionId }),
-
-  getSessions: () =>
-    api.get('/training/sessions'),
-
-  getSession: (id: string) =>
-    api.get(`/training/sessions/${id}`),
-};
-```
-
-#### Learning API
-
-```typescript
-export const learningAPI = {
-  getCourses: () =>
-    api.get('/learning/courses'),
-
-  getCourse: (day: number) =>
-    api.get(`/learning/courses/day/${day}`),
-
-  completeCourse: (day: number) =>
-    api.post(`/learning/courses/day/${day}/complete`),
-
-  getSkills: () =>
-    api.get('/learning/skills'),
-
-  getSkill: (slug: string) =>
-    api.get(`/learning/skills/${slug}`),
-
-  getQuizBySkill: (slug: string) =>
-    api.get(`/learning/quiz/${slug}`),
-
-  submitQuiz: (slug: string, answers: string[]) =>
-    api.post(`/learning/quiz/${slug}/submit`, { answers }),
-
-  getProgress: () =>
-    api.get('/learning/progress'),
-
-  getSkillsProgress: () =>
-    api.get('/learning/progress/skills'),
-};
-```
-
-#### Voice API (V2)
-
-```typescript
-export const voiceAPI = {
-  startSession: (skillSlug: string, level: string, sectorSlug?: string) =>
-    api.post('/voice/session/start', { skill_slug: skillSlug, level, sector_slug: sectorSlug }),
-
-  sendMessage: (sessionId: string, text: string, audioBase64?: string) =>
-    api.post(`/voice/session/${sessionId}/message`, { text, audio_base64: audioBase64 }),
-
-  endSession: (sessionId: string) =>
-    api.post(`/voice/session/${sessionId}/end`),
-
-  getSession: (sessionId: string) =>
-    api.get(`/voice/session/${sessionId}`),
-
-  textToSpeech: (text: string, voice?: string) =>
-    api.post('/voice/tts', { text, voice }),
-
-  speechToText: (audioBase64: string) =>
-    api.post('/voice/stt', { audio_base64: audioBase64 }),
-};
-```
-
-#### Payments API
-
-```typescript
-export const paymentsAPI = {
-  getStatus: () =>
-    api.get('/payments/status'),
-
-  createCheckout: (plan: string) =>
-    api.post('/payments/checkout', { plan }),
-
-  cancelSubscription: () =>
-    api.post('/payments/cancel'),
-
-  getSubscription: () =>
-    api.get('/payments/subscription'),
-};
+// Client Messages
+type ClientMessage =
+  | { type: 'start_session', skill_slug, level, sector_slug? }
+  | { type: 'user_message', text }
+  | { type: 'end_session' }
+  | { type: 'ping' }
 ```
 
 ---
 
 ## 6. Types TypeScript
 
-### Core Types (`types/index.ts`)
+### Nouveaux Types
 
 ```typescript
-// User
-export interface User {
-  id: number;
-  email: string;
-  full_name?: string;
-  role: 'user' | 'admin';
-  subscription_plan: 'free' | 'starter' | 'pro' | 'enterprise';
-  subscription_status: 'active' | 'cancelled' | 'past_due' | 'expired' | 'trial';
-  trial_sessions_used: number;
-  created_at: string;
-}
+// types/index.ts - Additions
 
-// Champion
-export interface Champion {
-  id: number;
-  name: string;
-  description?: string;
-  status: 'pending' | 'processing' | 'ready' | 'error';
-  patterns_json?: ChampionPatterns;
-  scenarios_json?: Scenario[];
-  created_at: string;
-}
+// Mood States
+export type MoodState =
+  | 'hostile'
+  | 'aggressive'
+  | 'skeptical'
+  | 'neutral'
+  | 'interested'
+  | 'enthusiastic';
 
-export interface ChampionPatterns {
-  openings: string[];
-  closings: string[];
-  objection_handlers: string[];
-  rapport_builders: string[];
-}
-
-// Training
-export interface Scenario {
-  context: string;
-  prospect_type: string;
-  challenge: string;
-  objectives: string[];
-  difficulty: 'easy' | 'medium' | 'hard';
-}
-
-export interface Message {
-  role: 'user' | 'champion' | 'prospect';
-  content: string;
-  timestamp: string;
-  feedback?: Feedback;
-  score?: number;
-}
-
-export interface Feedback {
-  score: number;
-  strengths: string[];
-  improvements: string[];
-  tip?: string;
-}
-
-export interface TrainingSession {
-  id: string;
-  champion_id: number;
-  scenario: Scenario;
-  messages: Message[];
-  overall_score?: number;
-  feedback_summary?: string;
-  status: 'active' | 'completed' | 'abandoned';
-  started_at: string;
-  ended_at?: string;
-}
-
-// Learning
-export interface Cours {
-  day: number;
-  level: 'easy' | 'medium' | 'expert';
-  skill_id: string;
-  title: string;
-  objective: string;
-  duration_minutes: number;
-  intro?: string;
-  full_content?: string;
-  key_points: string[];
-  common_mistakes: string[];
-  emotional_tips: string[];
-  takeaways: string[];
-  stat_cle?: string;
-}
-
-export interface Skill {
-  id: number;
-  slug: string;
-  name: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  description: string;
-  theory_duration_minutes: number;
-  practice_duration_minutes: number;
-  pass_threshold: number;
-}
-
-export interface Quiz {
-  skill_id: string;
-  questions: QuizQuestion[];
-}
-
-export interface QuizQuestion {
-  question: string;
-  options: string[];
-  correct: string;  // 'A' | 'B' | 'C' | 'D'
-  explanation: string;
-}
-
-export interface QuizResult {
-  score: number;
-  passed: boolean;
-  correct_count: number;
-  total_questions: number;
-  details: QuizAnswerDetail[];
-}
-
-export interface QuizAnswerDetail {
-  question_index: number;
-  your_answer: string;
-  correct_answer: string;
-  is_correct: boolean;
-  explanation: string;
-}
-
-// Voice Training V2
-export interface VoiceSession {
-  id: string;
-  skill_id: number;
-  sector_id?: number;
-  level: string;
-  status: 'active' | 'completed' | 'abandoned' | 'converted';
-  scenario_json: VoiceScenario;
-  current_gauge: number;
-  current_mood: string;
-  converted: boolean;
-  score?: number;
-  created_at: string;
-  completed_at?: string;
-}
-
-export interface VoiceScenario {
-  context: string;
-  prospect_name: string;
-  prospect_role: string;
-  company: string;
-  initial_situation: string;
-  hidden_objection?: string;
-  success_criteria: string[];
-}
-
+// WebSocket Messages
 export interface VoiceMessage {
   id: string;
   role: 'user' | 'prospect';
   text: string;
-  audio_url?: string;
-  gauge_impact: number;
-  detected_patterns?: {
+  timestamp: string;
+  jaugeDelta?: number;
+  detectedPatterns?: {
     positive: string[];
     negative: string[];
   };
-  prospect_mood?: string;
-  behavioral_cues?: string[];
-  created_at: string;
 }
 
-// Progress
-export interface UserProgress {
-  current_level: string;
-  current_day: number;
-  total_training_minutes: number;
-  total_scenarios_completed: number;
-  average_score: number;
+// Session Summary
+export interface VoiceSessionSummary {
+  session_id: string;
+  converted: boolean;
+  final_jauge: number;
+  jauge_progression: number[];
+  score: number;
+  duration_seconds: number;
+  exchange_count: number;
+  // ... autres champs
 }
 
-export interface SkillProgress {
-  skill_id: number;
-  skill_slug: string;
-  skill_name: string;
-  scenarios_completed: number;
-  scenarios_passed: number;
-  best_score: number;
-  average_score: number;
-  quiz_passed: boolean;
-  quiz_score: number;
-  is_validated: boolean;
+// Admin Types
+export interface AdminUserDetail {
+  user: AdminUserItem;
+  champions: Champion[];
+  sessions: Session[];
+  notes: Note[];  // ✅ NEW
+  stats: UserStats;
 }
 ```
 
@@ -958,242 +369,348 @@ export interface SkillProgress {
 
 ## 7. Features par Module
 
-### Module Auth
+### Module Admin ✅ COMPLET
 
 | Feature | Status | Fichiers |
 |---------|--------|----------|
-| Login form | ✅ | `app/login/page.tsx` |
-| Register form | ✅ | `app/register/page.tsx` |
-| JWT storage | ✅ | `lib/api.ts` |
-| Auto refresh | ✅ | `lib/api.ts` |
-| Logout | ✅ | `store/auth-store.ts` |
-| Protected routes | ✅ | `components/providers/AuthProvider.tsx` |
-| Role check | ✅ | `store/auth-store.ts` |
+| Sidebar navigation | ✅ | `AdminSidebar.tsx` |
+| Overview stats | ✅ | `OverviewTab.tsx` |
+| Users list | ✅ | `UsersTab.tsx` |
+| User detail | ✅ | `users/[id]/page.tsx` |
+| User notes | ✅ NEW | `UserNotesSection.tsx` |
+| Sessions list | ✅ NEW | `SessionsTab.tsx` |
+| Activity logs | ✅ | `ActivityTab.tsx` |
+| Error logs | ✅ | `ErrorsTab.tsx` |
+| Email templates | ✅ | `EmailsTab.tsx` |
+| Email edit modal | ✅ NEW | `EmailsTab.tsx` |
+| Webhooks CRUD | ✅ | `WebhooksTab.tsx` |
+| Webhook edit modal | ✅ NEW | `WebhooksTab.tsx` |
+| Alerts | ✅ | `AlertsTab.tsx` |
+| Audit logs | ✅ NEW | `AuditTab.tsx` |
+| Admin redirect | ✅ NEW | `login/page.tsx` |
 
-### Module Dashboard
-
-| Feature | Status | Fichiers |
-|---------|--------|----------|
-| Stats overview | ✅ | `components/dashboard/StatsCards.tsx` |
-| Progress chart | ✅ | `components/dashboard/ProgressChart.tsx` |
-| Pattern mastery | ✅ | `components/dashboard/PatternMasteryChart.tsx` |
-| Skills progress | ✅ | `components/dashboard/SkillsProgress.tsx` |
-| Session history | ✅ | `components/dashboard/SessionHistory.tsx` |
-| Champions list | ✅ | `app/dashboard/page.tsx` |
-
-### Module Champions
+### Module Training V2 (Voice) ✅ COMPLET
 
 | Feature | Status | Fichiers |
 |---------|--------|----------|
-| Upload video | ✅ | `components/upload/VideoUploader.tsx` |
-| Processing status | ✅ | `components/upload/ProcessingStatus.tsx` |
-| Patterns preview | ⚠️ | `components/upload/PatternsPreview.tsx` |
-| Champion card | ✅ | `components/champion/ChampionCard.tsx` |
-| Delete champion | ⚠️ | Missing confirmation |
-
-### Module Training V1 (Texte)
-
-| Feature | Status | Fichiers |
-|---------|--------|----------|
-| Scenario selection | ✅ | `app/training/page.tsx` |
-| Chat interface | ✅ | `components/training/ChatInterface.tsx` |
-| Response input | ✅ | `components/training/ResponseInput.tsx` |
-| Real-time score | ✅ | `components/training/ScoreCircle.tsx` |
-| Feedback panel | ✅ | `components/training/FeedbackPanel.tsx` |
-| Session timer | ✅ | `store/training-store.ts` |
-| End session | ✅ | `app/training/session/[id]/page.tsx` |
-| Session summary | ✅ | `app/training/session/[id]/page.tsx` |
-
-### Module Training V2 (Voice)
-
-| Feature | Status | Fichiers |
-|---------|--------|----------|
-| Setup wizard | ✅ | `app/training/setup/page.tsx` |
-| Skill selection | ✅ | `app/training/setup/page.tsx` |
-| Level selection | ✅ | `app/training/setup/page.tsx` |
-| Sector selection | ✅ | `app/training/setup/page.tsx` |
-| Audio recorder | ✅ | `components/training/AudioRecorder.tsx` |
-| Audio player | ✅ | `components/training/AudioPlayer.tsx` |
-| Jauge émotionnelle | ✅ | `components/training/JaugeEmotionnelle.tsx` |
-| Text/voice toggle | ✅ | `app/training/setup/page.tsx` |
-| **WebSocket** | ❌ | Non implémenté |
-| **Reversals UI** | ❌ | Non implémenté |
-| **Hidden objections UI** | ❌ | Non implémenté |
-| **Events UI** | ❌ | Non implémenté |
-| **Streaming audio** | ❌ | Non implémenté |
-
-### Module Learning
-
-| Feature | Status | Fichiers |
-|---------|--------|----------|
-| Courses list | ✅ | `app/learn/page.tsx` |
-| Course detail | ✅ | `app/learn/cours/[day]/page.tsx` |
-| Course navigation | ✅ | `app/learn/cours/[day]/page.tsx` |
-| Quiz list | ✅ | `app/learn/page.tsx` |
-| Quiz questions | ✅ | `app/learn/quiz/[slug]/page.tsx` |
-| Quiz results | ✅ | `app/learn/quiz/[slug]/page.tsx` |
-| Progress tracking | ✅ | `lib/queries.ts` |
-| Free tier limits | ✅ | `app/learn/page.tsx` |
-| Premium modal | ✅ | `components/ui/premium-modal.tsx` |
-| Tab URL params | ✅ | `app/learn/page.tsx` |
-
-### Module Admin
-
-| Feature | Status | Fichiers |
-|---------|--------|----------|
-| Overview tab | ❌ | Scaffold only |
-| Users list | ❌ | Scaffold only |
-| User detail | ❌ | `app/admin/users/[id]/page.tsx` (empty) |
-| Activity logs | ❌ | Scaffold only |
-| Error logs | ❌ | Scaffold only |
-| Alerts | ❌ | Scaffold only |
-| Emails | ❌ | Scaffold only |
-| Webhooks | ❌ | Scaffold only |
+| Setup wizard | ✅ | `training/setup/page.tsx` |
+| Skill selection | ✅ | `training/setup/page.tsx` |
+| Level selection | ✅ | `training/setup/page.tsx` |
+| Sector selection | ✅ | `training/setup/page.tsx` |
+| Audio recorder | ✅ | `AudioRecorder.tsx` |
+| Audio player | ✅ | `AudioPlayer.tsx` |
+| Jauge émotionnelle | ✅ | `JaugeEmotionnelle.tsx` |
+| Text/voice toggle | ✅ | Session page |
+| **WebSocket** | ✅ NEW | `lib/websocket.ts` |
+| **useVoiceSession hook** | ✅ NEW | `hooks/useVoiceSession.ts` |
+| **Real-time jauge** | ✅ NEW | Session page |
+| **Mood display** | ✅ NEW | `JaugeEmotionnelle.tsx` |
+| **Pattern badges** | ✅ NEW | Session page |
+| **Session summary** | ✅ NEW | Session page |
 
 ---
 
 ## 8. Ce qui Manque
 
-### Critique (Bloquant)
+### Priorité Haute - ✅ FAIT
 
-#### 1. WebSocket pour Voice Training
+| Feature | Description | Statut |
+|---------|-------------|--------|
+| ~~Reversals UI~~ | ~~Alertes pour last_minute_bomb, price_attack~~ | ✅ Fait |
+| ~~Hidden objections UI~~ | ~~Révélation objections cachées~~ | ✅ Fait |
+| ~~Events UI~~ | ~~Notifications interruptions~~ | ✅ Fait |
+| ~~Page profil~~ | ~~Modifier nom, email, password~~ | ✅ Fait |
 
-**Impact** : Le training vocal ne peut pas fonctionner en temps réel
+### Priorité Moyenne
 
-```typescript
-// Ce qui devrait exister (lib/socket.ts)
-import { io } from 'socket.io-client';
-
-export const socket = io(process.env.NEXT_PUBLIC_WS_URL, {
-  auth: { token: getAccessToken() }
-});
-
-// Events à gérer
-socket.on('connect', () => { });
-socket.on('prospect_response', (data: ProspectResponse) => { });
-socket.on('gauge_update', (value: number) => { });
-socket.on('mood_change', (mood: string) => { });
-socket.on('reversal_triggered', (type: string) => { });
-socket.on('event_triggered', (event: SituationalEvent) => { });
-socket.on('session_ended', (summary: SessionSummary) => { });
-
-// Emit
-socket.emit('user_message', { text, audio_base64 });
-socket.emit('end_session', { session_id });
-```
-
-#### 2. UI Mécaniques V2
-
-**Reversals** :
-```tsx
-// components/training/ReversalAlert.tsx
-interface ReversalAlertProps {
-  type: 'last_minute_bomb' | 'price_attack' | 'ghost_decision_maker';
-  message: string;
-  onDismiss: () => void;
-}
-```
-
-**Hidden Objections** :
-```tsx
-// components/training/HiddenObjectionReveal.tsx
-interface HiddenObjectionRevealProps {
-  expressed: string;
-  hidden: string;
-  discovered: boolean;
-}
-```
-
-**Situational Events** :
-```tsx
-// components/training/EventNotification.tsx
-interface EventNotificationProps {
-  type: 'interruption' | 'phone_call' | 'colleague_enters';
-  message: string;
-  duration: number;
-}
-```
-
-### Important (Non-bloquant)
-
-| Feature | Description | Priorité |
-|---------|-------------|----------|
-| Page profil | Modifier nom, email, password | Medium |
-| Gestion subscription | Voir plan, upgrade, cancel | Medium |
-| Mobile feedback | FeedbackPanel responsive | Medium |
-| Admin CRUD | User management complet | Medium |
-| Error boundaries | Gestion erreurs globale | Medium |
-| Tests E2E | Playwright/Cypress | Medium |
+| Feature | Description | Effort |
+|---------|-------------|--------|
+| Streaming audio TTS | Lecture audio prospect en temps réel | 1 jour (clé ElevenLabs requise) |
+| Gestion subscription | Voir plan, upgrade, cancel | 1 jour |
+| Mobile feedback panel | FeedbackPanel responsive | 0.5 jour |
+| Tests E2E | Playwright/Cypress | 2 jours |
 
 ### Nice to Have
 
-| Feature | Description | Priorité |
-|---------|-------------|----------|
-| Session recording | Sauvegarder sessions vocales | Low |
-| Export PDF | Exporter progression | Low |
-| Achievements | Badges et gamification | Low |
-| Team features | Organisations, teams | Low |
-| i18n | Multi-langue | Low |
+| Feature | Description | Effort |
+|---------|-------------|--------|
+| Session recording | Sauvegarder sessions vocales | 2 jours |
+| Export PDF | Exporter progression | 1 jour |
+| ~~Achievements~~ | ~~Badges et gamification~~ | ✅ FAIT |
+| i18n | Multi-langue | 3 jours |
 
 ---
 
-## 9. Roadmap Frontend
+## 9. Changelog Récent
 
-### Phase 1 : WebSocket (Priorité 1)
+### 2026-01-01 - Session Admin Complète
 
-```bash
-npm install socket.io-client
-```
+**Nouvelles fonctionnalités** :
 
-**Fichiers à créer** :
-- `lib/socket.ts` - Client WebSocket
-- `hooks/useVoiceSession.ts` - Hook session vocale
-- `components/training/VoiceSessionProvider.tsx` - Provider
+1. **WebSocket Voice Training**
+   - `lib/websocket.ts` : Client WebSocket avec reconnection
+   - `hooks/useVoiceSession.ts` : Hook React pour sessions vocales
+   - Intégration dans `/training/session/[id]`
 
-**Fichiers à modifier** :
-- `app/training/setup/page.tsx` - Intégrer WebSocket
-- `components/training/AudioRecorder.tsx` - Streaming
+2. **Admin Sidebar**
+   - `AdminSidebar.tsx` : Navigation collapsible
+   - Tooltips en mode réduit
+   - Lien Dashboard + Logout
 
-### Phase 2 : UI Mécaniques V2 (Priorité 2)
+3. **Sessions Management**
+   - `SessionsTab.tsx` : Liste avec stats, pagination, filtres
+   - Filtrage par statut (completed/active/abandoned)
 
-**Fichiers à créer** :
-- `components/training/ReversalAlert.tsx`
-- `components/training/HiddenObjectionReveal.tsx`
-- `components/training/EventNotification.tsx`
-- `components/training/GaugeHistory.tsx`
+4. **Audit Logs**
+   - `AuditTab.tsx` : Journal complet
+   - Filtres par action et ressource
+   - Modal détail avec JSON diff
 
-**Fichiers à modifier** :
-- `components/training/JaugeEmotionnelle.tsx` - Animations
-- `components/training/ChatInterface.tsx` - Behavioral cues
+5. **User Notes**
+   - `UserNotesSection.tsx` : Notes épinglables
+   - CRUD complet (add/edit/delete)
+   - Tri par épingle puis date
 
-### Phase 3 : Polish (Priorité 3)
+6. **Email Template Editing**
+   - Modal édition dans `EmailsTab.tsx`
+   - Édition subject, HTML, text
+   - Toggle actif/inactif
 
-- Page profil utilisateur
-- Gestion subscription
-- Mobile responsive amélioré
-- Error boundaries
-- Tests E2E
+7. **Webhook Editing**
+   - Modal édition dans `WebhooksTab.tsx`
+   - Édition nom, URL, events
+   - Régénération secret
 
-### Phase 4 : Admin (Priorité 4)
+8. **Admin Login Redirect**
+   - Admins redirigés vers `/admin` après login
+   - Users normaux vers `/dashboard`
 
-- User management complet
-- Analytics dashboard
-- Error monitoring
-- Email templates
+**Corrections** :
+- Renommage `gauge` → `jauge` pour cohérence française
+- Fix type `AdminUserDetail` avec notes
+- Ajout composant Switch shadcn/ui
 
 ---
 
 ## Résumé Exécutif
 
-| Module | Complétion | Blocage |
-|--------|------------|---------|
-| Auth | 95% | - |
-| Dashboard | 90% | - |
+| Module | Complétion | Notes |
+|--------|------------|-------|
+| Auth | 100% | Redirect admin OK, profil complet |
+| Dashboard | 95% | - |
 | Champions | 90% | - |
 | Training V1 (texte) | 95% | - |
-| **Training V2 (voice)** | **40%** | **WebSocket** |
-| Learning | 100% | - |
-| Admin | 10% | Tout |
-| **Total Frontend** | **70%** | **WebSocket** |
+| **Training V2 (voice)** | **95%** | Reversals + Events UI OK |
+| **Learning** | **100%** | Refactorisé : Module au lieu de Jour |
+| **Admin** | **95%** | Complet avec sidebar |
+| **Profil** | **100%** | Page profil complète |
+| **Achievements** | **100%** | NEW: Gamification complète |
+| **Total Frontend** | **98%** | +2% vs session précédente |
 
-**Le blocage principal est l'absence de WebSocket** pour le training vocal temps réel. Une fois implémenté, les mécaniques V2 (reversals, hidden objections, events) pourront être affichées.
+### Prochaines Étapes Recommandées
+
+1. ~~**UI Mécaniques V2** (2 jours)~~ ✅ **FAIT**
+   - ~~ReversalAlert component~~
+   - ~~HiddenObjectionReveal component~~
+   - ~~EventNotification component~~
+
+2. **Streaming Audio TTS** (1 jour) - Nécessite clé ElevenLabs
+   - Lecture audio en temps réel pour réponses prospect
+
+3. ~~**Page Profil** (1 jour)~~ ✅ **FAIT**
+   - ~~Édition profil utilisateur~~
+   - ~~Changement mot de passe~~
+
+4. **Tests E2E** (2 jours) - Optionnel
+   - Setup Playwright
+   - Tests critiques paths
+
+### Ce qui reste à faire
+
+| Feature | Effort | Dépendance |
+|---------|--------|------------|
+| Streaming Audio TTS | 1 jour | Clé API ElevenLabs |
+| Tests E2E | 2 jours | - |
+| Export PDF progression | 1 jour | - |
+| ~~Achievements/Gamification~~ | ~~2 jours~~ | ✅ FAIT |
+
+---
+
+## 10. Historique des Itérations Claude
+
+Cette section documente les sessions de développement assistées par Claude Code (Opus 4.5) pour le projet Champion Clone.
+
+### Session 1 : Architecture Backend V2 (31 décembre 2025)
+
+**Objectif** : Implémenter les mécaniques pédagogiques V2 dans le backend
+
+**Réalisations** :
+- Création du `JaugeEmotionnelleService` avec calcul dynamique de la jauge
+- Implémentation des états émotionnels (hostile → enthusiastic)
+- Création du service `AuditAgent` pour évaluation indépendante
+- Intégration des patterns Champion (SPIN, objections, closings)
+- Configuration des seuils et multiplicateurs par niveau
+
+**Fichiers créés/modifiés** :
+- `backend/services/jauge_service.py`
+- `backend/services/audit_service.py`
+- `backend/config.py` (niveaux de difficulté)
+
+### Session 2 : WebSocket Training & Admin UI (1er janvier 2026 - Matin)
+
+**Objectif** : Implémenter la communication temps réel et l'interface admin
+
+**Réalisations** :
+1. **WebSocket Voice Training**
+   - Client WebSocket avec reconnection automatique
+   - Hook `useVoiceSession` pour gestion des sessions vocales
+   - Intégration dans la page de session training
+
+2. **Interface Admin complète**
+   - `AdminSidebar.tsx` : Navigation collapsible avec tooltips
+   - `SessionsTab.tsx` : Gestion sessions avec stats et pagination
+   - `AuditTab.tsx` : Journal d'audit avec filtres et modal détail
+   - `UserNotesSection.tsx` : Notes admin sur profils utilisateurs
+   - Modal édition templates email
+   - Modal édition webhooks avec régénération secret
+
+3. **Améliorations UX**
+   - Redirect admin vers `/admin` après login
+   - Composant `Switch` shadcn/ui ajouté
+
+**Fichiers créés** :
+- `frontend/lib/websocket.ts`
+- `frontend/hooks/useVoiceSession.ts`
+- `frontend/app/admin/components/AdminSidebar.tsx`
+- `frontend/app/admin/components/SessionsTab.tsx`
+- `frontend/app/admin/components/AuditTab.tsx`
+- `frontend/app/admin/users/[id]/UserNotesSection.tsx`
+
+**Fichiers modifiés** :
+- `frontend/app/admin/page.tsx` (intégration sidebar)
+- `frontend/app/admin/components/EmailsTab.tsx` (modal edit)
+- `frontend/app/admin/components/WebhooksTab.tsx` (modal edit)
+- `frontend/app/login/page.tsx` (redirect admin)
+- `frontend/lib/admin-api.ts` (nouvelles APIs)
+- `frontend/types/index.ts` (types V2)
+
+**Corrections** :
+- Fix TypeScript `Set` iteration → `Array.from(new Set(...))`
+- Ajout composant Switch manquant
+
+### Session 3 : Mécaniques V2 UI & Page Profil (1er janvier 2026 - Après-midi)
+
+**Objectif** : Implémenter les composants UI pour mécaniques V2 et page profil
+
+**Réalisations** :
+1. **Composants V2 Training**
+   - `ReversalAlert.tsx` : Alertes de retournement (last_minute_bomb, price_attack, etc.)
+   - `HiddenObjectionReveal.tsx` : Panneau objections cachées avec progression
+   - `EventNotification.tsx` : Notifications événements situationnels
+
+2. **Page Profil**
+   - `/profile/page.tsx` : Page profil complète
+   - Édition nom et email
+   - Changement mot de passe sécurisé
+   - Affichage statistiques utilisateur
+   - Gestion abonnement
+   - Déconnexion/Déconnexion tous appareils
+
+3. **Backend Endpoints**
+   - `PATCH /auth/me` : Mise à jour profil
+   - `POST /auth/change-password` : Changement mot de passe
+
+4. **Intégrations**
+   - Hook `useVoiceSession` étendu avec reversals et events
+   - Lien profil dans Header (desktop + mobile)
+
+**Fichiers créés** :
+- `frontend/components/training/ReversalAlert.tsx`
+- `frontend/components/training/HiddenObjectionReveal.tsx`
+- `frontend/components/training/EventNotification.tsx`
+- `frontend/app/profile/page.tsx`
+
+**Fichiers modifiés** :
+- `frontend/hooks/useVoiceSession.ts` (activeReversal, activeEvent)
+- `frontend/app/training/session/[id]/page.tsx` (intégration V2 components)
+- `frontend/components/layout/Header.tsx` (lien profil)
+- `frontend/lib/api.ts` (updateProfile, changePassword)
+- `frontend/types/index.ts` (UserProgress V2 fields)
+- `backend/api/routers/auth.py` (update profile, change password)
+- `backend/schemas.py` (UserUpdate, PasswordChange)
+
+### Session 4 : Achievements & Refactoring Cours (1er janvier 2026 - Soir)
+
+**Objectif** : Système de gamification complet + refactoring cours "Jour" → "Module"
+
+**Réalisations** :
+
+1. **Backend Achievements**
+   - `achievements.py` : Router avec 4 endpoints (GET all, GET unlocked, GET xp, POST check)
+   - `achievements.json` : 25 achievements définis (progression, skills, special)
+   - Modèles `UserAchievement` et `UserXP` dans `models.py`
+   - Système XP avec niveaux et progression
+
+2. **Frontend Achievements**
+   - `/achievements/page.tsx` : Page gamification complète
+   - Grille d'achievements par catégorie avec filtres
+   - Affichage XP, niveau, barre de progression
+   - Lock/unlock visual avec animations Framer Motion
+   - Redirect vers login si non authentifié
+
+3. **Refactoring Cours**
+   - `cours.json` : Changement `day` → `order` pour les 17 cours
+   - `learning.py` : `CourseResponse` avec `order` au lieu de `day`
+   - `UserProgressResponse` : `current_course` au lieu de `current_day`
+   - Frontend Learn page : "Module X" au lieu de "Jour X"
+   - Page cours individuelle mise à jour
+
+4. **API Achievements**
+   - `achievementsAPI` dans `lib/api.ts`
+   - Types `Achievement`, `UserXP`, `AchievementUnlockResult`
+   - Intégration Header avec lien "Trophées"
+
+5. **Fichier Dev Local**
+   - `DEV_LOCAL.md` : Credentials de test + commandes serveurs
+   - 3 comptes : admin, premium, trial (0 sessions)
+
+**Fichiers créés** :
+- `backend/api/routers/achievements.py`
+- `backend/content/achievements.json`
+- `frontend/app/achievements/page.tsx`
+- `DEV_LOCAL.md`
+
+**Fichiers modifiés** :
+- `backend/models.py` (UserAchievement, UserXP)
+- `backend/main.py` (router achievements)
+- `backend/content/cours.json` (day → order)
+- `backend/api/routers/learning.py` (order, current_course)
+- `frontend/types/index.ts` (Achievement types, Cours.order)
+- `frontend/lib/api.ts` (achievementsAPI)
+- `frontend/components/layout/Header.tsx` (lien Trophées)
+- `frontend/app/learn/page.tsx` (Module au lieu de Jour)
+- `frontend/app/learn/cours/[day]/page.tsx` (Module X)
+
+**Achievements définis** (25 total) :
+- **Progression** (11) : first_course, courses_5/10/all, first_session, sessions_10/50, first_conversion, conversions_10, training_1h/10h
+- **Skills** (10) : Un badge par compétence validée (préparation, accroche, cold_calling, écoute, COMPIR, BEBEDC, objections, closing, négociation, all_skills)
+- **Spécial** (4) : perfect_session, reversal_master, objection_hunter, expert_level
+
+---
+
+### Métriques de Développement
+
+| Session | Durée estimée | Fichiers créés | Fichiers modifiés | Lignes de code |
+|---------|---------------|----------------|-------------------|----------------|
+| Session 1 | 2h | 3 | 5 | ~800 |
+| Session 2 | 3h | 6 | 6 | ~1200 |
+| Session 3 | 2h | 4 | 7 | ~900 |
+| Session 4 | 2h | 4 | 9 | ~700 |
+
+### Patterns de Collaboration Identifiés
+
+1. **Exploration-First** : Lecture systématique des fichiers existants avant modification
+2. **Parallel Testing** : Tests backend lancés en arrière-plan pendant le développement
+3. **Incremental Builds** : Vérification du build frontend après chaque feature majeure
+4. **API-First** : Définition des types et endpoints avant l'UI
+5. **Documentation Continue** : Mise à jour du rapport après chaque session

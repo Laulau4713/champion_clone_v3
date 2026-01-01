@@ -44,7 +44,7 @@ const difficultyConfig: Record<DifficultyLevel, { label: string; color: string; 
 };
 
 interface UserProgressData {
-  current_day: number;
+  current_course: number;
   skills_validated: number;
   skills_total: number;
 }
@@ -98,16 +98,16 @@ function LearnPageContent() {
     ? (progress.skills_validated / progress.skills_total) * 100
     : 0;
 
-  const currentDay = progress?.current_day || 1;
+  const currentCourse = progress?.current_course || 1;
 
   // Trial users (free plan) have limited access
   const isFreeUser = user?.subscription_plan === "free";
-  const TRIAL_MAX_COURSE_DAY = 1; // Only day 1 course accessible
+  const TRIAL_MAX_COURSE_ORDER = 1; // Only first course accessible
   const TRIAL_MAX_QUIZ_INDEX = 0; // Only first quiz accessible
 
-  const canAccessCourse = (day: number) => {
+  const canAccessCourse = (order: number) => {
     if (!isFreeUser) return true;
-    return day <= TRIAL_MAX_COURSE_DAY;
+    return order <= TRIAL_MAX_COURSE_ORDER;
   };
 
   const canAccessQuiz = (index: number) => {
@@ -320,9 +320,11 @@ function LearnPageContent() {
               className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
             >
               {cours.map((course, index) => {
-                const isCompleted = course.day < currentDay;
+                // Use order property (or fallback to day for backward compatibility)
+                const courseOrder = course.order ?? course.day ?? index + 1;
+                const isCompleted = courseOrder < currentCourse;
                 const levelConfig = difficultyConfig[course.level];
-                const isLocked = !canAccessCourse(course.day);
+                const isLocked = !canAccessCourse(courseOrder);
 
                 return (
                   <motion.div
@@ -338,7 +340,9 @@ function LearnPageContent() {
                       <CardHeader className="flex-1">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline">Jour {course.day}</Badge>
+                            <Badge variant="outline" className="bg-slate-800/50">
+                              Module {courseOrder}
+                            </Badge>
                             <Badge className={cn(levelConfig?.color || "bg-gray-500/20")}>
                               {levelConfig?.label || course.level}
                             </Badge>
@@ -372,7 +376,7 @@ function LearnPageContent() {
                           <Button
                             className="w-full"
                             variant={isCompleted ? "outline" : "default"}
-                            onClick={() => router.push(`/learn/cours/${course.day}`)}
+                            onClick={() => router.push(`/learn/cours/${courseOrder}`)}
                           >
                             {isCompleted ? "Revoir" : "Commencer"}
                           </Button>

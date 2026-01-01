@@ -53,6 +53,18 @@ class RefreshTokenRequest(BaseModel):
     refresh_token: str = Field(..., description="Valid refresh token")
 
 
+class UserUpdate(BaseModel):
+    """Schema for updating user profile."""
+    full_name: Optional[str] = Field(None, description="User's full name")
+    email: Optional[EmailStr] = Field(None, description="New email address")
+
+
+class PasswordChange(BaseModel):
+    """Schema for changing password."""
+    current_password: str = Field(..., description="Current password")
+    new_password: str = Field(..., min_length=8, description="New password (min 8 characters)")
+
+
 # ============================================
 # Champion Schemas
 # ============================================

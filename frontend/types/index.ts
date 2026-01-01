@@ -290,6 +290,7 @@ export interface AdminUserDetail {
   user: AdminUserItem;
   champions: { id: number; name: string; status: string; created_at: string }[];
   sessions: { id: number; champion_id: number; score: number | null; status: string; started_at: string }[];
+  notes: { id: number; content: string; is_pinned: boolean; admin_id: number; created_at: string }[];
   stats: { total_champions: number; total_sessions: number; avg_score: number };
 }
 
@@ -398,16 +399,18 @@ export interface KeyPoint {
   };
 }
 
-// Course (cours quotidien)
+// Course (module de formation)
 export interface Cours {
   id: number;
-  day: number;
+  order: number;  // Module order in the curriculum
+  day?: number;   // Deprecated: kept for backward compatibility
   level: DifficultyLevel;
   title: string;
   objective: string;
   duration_minutes: number;
   skill_id: number | null;
-  // Full course detail fields (returned by getCourseByDay)
+  skill_slug?: string;  // Skill slug for linking
+  // Full course detail fields (returned by getCourseByOrder)
   key_points?: KeyPoint[];
   common_mistakes?: string[];
   emotional_tips?: string[];
@@ -556,4 +559,38 @@ export interface UserProgress {
   average_score: number;
   current_level: DifficultyLevel;
   unlocked_levels: DifficultyLevel[];
+  // V2 fields from backend
+  total_training_minutes?: number;
+  total_scenarios_completed?: number;
+  skills_validated?: number;
+}
+
+// ============ ACHIEVEMENTS & GAMIFICATION ============
+
+export type AchievementCategory = 'progression' | 'skill' | 'special';
+
+export interface Achievement {
+  id: string;
+  category: AchievementCategory;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  xp_reward: number;
+  unlocked: boolean;
+  unlocked_at?: string;
+}
+
+export interface UserXP {
+  total_xp: number;
+  level: number;
+  xp_for_next_level: number;
+  xp_progress: number;
+}
+
+export interface AchievementUnlockResult {
+  newly_unlocked: Achievement[];
+  total_xp_gained: number;
+  level_up: boolean;
+  new_level?: number;
 }

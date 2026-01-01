@@ -13,11 +13,21 @@ import {
   ChevronRight,
   PlayCircle,
   Loader2,
+  Edit3,
+  Save,
+  X,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { adminAPI } from '@/lib/admin-api';
 import type { EmailStats } from '@/types';
@@ -44,6 +54,18 @@ interface EmailLog {
   created_at: string;
 }
 
+interface EmailTemplateDetail {
+  id: number;
+  trigger: string;
+  subject: string;
+  body_html: string;
+  body_text: string;
+  is_active: boolean;
+  variables: string[];
+  created_at: string;
+  updated_at: string;
+}
+
 export default function EmailsTab() {
   const [stats, setStats] = useState<EmailStats | null>(null);
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -53,6 +75,17 @@ export default function EmailsTab() {
   const [loading, setLoading] = useState(true);
   const [sendingTest, setSendingTest] = useState<number | null>(null);
   const [activeView, setActiveView] = useState<'templates' | 'logs'>('templates');
+
+  // Edit modal state
+  const [editingTemplate, setEditingTemplate] = useState<EmailTemplateDetail | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [editForm, setEditForm] = useState({
+    subject: '',
+    body_html: '',
+    body_text: '',
+    is_active: true,
+  });
 
   const perPage = 20;
 
@@ -90,6 +123,40 @@ export default function EmailsTab() {
       alert('Erreur lors de l\'envoi');
     } finally {
       setSendingTest(null);
+    }
+  };
+
+  const openEditModal = async (templateId: number) => {
+    setEditLoading(true);
+    try {
+      const res = await adminAPI.getEmailTemplate(templateId);
+      setEditingTemplate(res.data);
+      setEditForm({
+        subject: res.data.subject,
+        body_html: res.data.body_html,
+        body_text: res.data.body_text,
+        is_active: res.data.is_active,
+      });
+    } catch (error) {
+      console.error('Error fetching template:', error);
+      alert('Erreur lors du chargement du template');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const saveTemplate = async () => {
+    if (!editingTemplate) return;
+    setSaveLoading(true);
+    try {
+      await adminAPI.updateEmailTemplate(editingTemplate.id, editForm);
+      setEditingTemplate(null);
+      fetchData(page);
+    } catch (error) {
+      console.error('Error saving template:', error);
+      alert('Erreur lors de la sauvegarde');
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -264,20 +331,32 @@ export default function EmailsTab() {
                           Mis à jour: {new Date(template.updated_at).toLocaleDateString('fr-FR')}
                         </p>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-primary/30 text-primary hover:bg-primary/10"
-                        onClick={() => sendTestEmail(template.id)}
-                        disabled={sendingTest === template.id || !template.is_active}
-                      >
-                        {sendingTest === template.id ? (
-                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                        ) : (
-                          <PlayCircle className="h-3 w-3 mr-1" />
-                        )}
-                        Tester
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-white/20"
+                          onClick={() => openEditModal(template.id)}
+                          disabled={editLoading}
+                        >
+                          <Edit3 className="h-3 w-3 mr-1" />
+                          Modifier
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-primary/30 text-primary hover:bg-primary/10"
+                          onClick={() => sendTestEmail(template.id)}
+                          disabled={sendingTest === template.id || !template.is_active}
+                        >
+                          {sendingTest === template.id ? (
+                            <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                          ) : (
+                            <PlayCircle className="h-3 w-3 mr-1" />
+                          )}
+                          Tester
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -384,6 +463,112 @@ export default function EmailsTab() {
           </CardContent>
         </Card>
       )}
+
+      {/* Edit Template Modal */}
+      <Dialog open={!!editingTemplate} onOpenChange={() => setEditingTemplate(null)}>
+        <DialogContent className="glass border-white/10 max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              Modifier le template: {editingTemplate?.trigger}
+            </DialogTitle>
+          </DialogHeader>
+
+          {editLoading ? (
+            <div className="space-y-4 py-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-40 w-full" />
+            </div>
+          ) : editingTemplate && (
+            <div className="space-y-6 py-4">
+              {/* Active Toggle */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-white">Template actif</p>
+                  <p className="text-sm text-slate-400">
+                    Les emails seront envoyés si actif
+                  </p>
+                </div>
+                <Switch
+                  checked={editForm.is_active}
+                  onCheckedChange={(checked) => setEditForm({ ...editForm, is_active: checked })}
+                />
+              </div>
+
+              {/* Subject */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Sujet</label>
+                <input
+                  type="text"
+                  value={editForm.subject}
+                  onChange={(e) => setEditForm({ ...editForm, subject: e.target.value })}
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              {/* Variables Info */}
+              {editingTemplate.variables?.length > 0 && (
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/30">
+                  <p className="text-sm text-blue-400 font-medium mb-1">Variables disponibles:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {editingTemplate.variables.map(v => (
+                      <code key={v} className="px-2 py-0.5 bg-blue-500/20 rounded text-xs text-blue-300">
+                        {`{{${v}}}`}
+                      </code>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* HTML Body */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Contenu HTML</label>
+                <textarea
+                  value={editForm.body_html}
+                  onChange={(e) => setEditForm({ ...editForm, body_html: e.target.value })}
+                  rows={10}
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                />
+              </div>
+
+              {/* Text Body */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Contenu texte (fallback)</label>
+                <textarea
+                  value={editForm.body_text}
+                  onChange={(e) => setEditForm({ ...editForm, body_text: e.target.value })}
+                  rows={6}
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 justify-end pt-4 border-t border-white/10">
+                <Button
+                  variant="ghost"
+                  onClick={() => setEditingTemplate(null)}
+                  disabled={saveLoading}
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Annuler
+                </Button>
+                <Button
+                  onClick={saveTemplate}
+                  disabled={saveLoading}
+                >
+                  {saveLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-1" />
+                  )}
+                  Sauvegarder
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -124,7 +124,7 @@ from domain.exceptions import (
 )
 
 # Import routers
-from api.routers import auth, champions, training, admin, learning, payments, audit
+from api.routers import auth, champions, training, admin, learning, payments, audit, achievements
 from api.routers import websocket as ws_router
 
 
@@ -188,6 +188,7 @@ app.include_router(admin.router)
 app.include_router(learning.router)
 app.include_router(payments.router)
 app.include_router(audit.router)
+app.include_router(achievements.router)
 app.include_router(ws_router.router)
 
 

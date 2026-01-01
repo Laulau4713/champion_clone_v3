@@ -150,6 +150,14 @@ export const adminAPI = {
     `/admin/email-templates/${id}/send-test`
   ),
 
+  updateEmailTemplate: (id: number, data: {
+    subject?: string;
+    body_html?: string;
+    body_text?: string;
+    variables?: string[];
+    is_active?: boolean;
+  }) => api.patch(`/admin/email-templates/${id}`, data),
+
   getEmailLogs: (params?: {
     page?: number;
     per_page?: number;
@@ -260,6 +268,45 @@ export const adminAPI = {
     api.patch(`/admin/notes/${noteId}`, data),
 
   deleteNote: (noteId: number) => api.delete(`/admin/notes/${noteId}`),
+
+  // Audit Logs
+  getAuditLogs: (params?: {
+    page?: number;
+    per_page?: number;
+    admin_id?: number;
+    action?: string;
+    resource_type?: string;
+  }) => api.get<{
+    items: {
+      id: number;
+      admin_id: number;
+      action: string;
+      resource_type: string;
+      resource_id: string;
+      old_value: Record<string, unknown> | null;
+      new_value: Record<string, unknown> | null;
+      ip_address: string;
+      created_at: string;
+    }[];
+    total: number;
+    page: number;
+    per_page: number;
+    total_pages: number;
+    available_actions: string[];
+  }>('/admin/audit-logs', { params }),
+
+  getAuditLog: (id: number) => api.get<{
+    id: number;
+    admin_id: number;
+    action: string;
+    resource_type: string;
+    resource_id: string;
+    old_value: Record<string, unknown> | null;
+    new_value: Record<string, unknown> | null;
+    ip_address: string;
+    user_agent: string;
+    created_at: string;
+  }>(`/admin/audit-logs/${id}`),
 };
 
 export default adminAPI;

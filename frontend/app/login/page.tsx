@@ -33,7 +33,13 @@ export default function LoginPage() {
       const { data: user } = await authAPI.me();
 
       login(user, authData.access_token, authData.refresh_token);
-      router.push('/dashboard');
+
+      // Redirect admins to admin panel, others to dashboard
+      if (user.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { detail?: string } } };
       setError(error.response?.data?.detail || 'Erreur de connexion');

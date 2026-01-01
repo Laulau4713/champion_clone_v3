@@ -16,11 +16,22 @@ import {
   Copy,
   Eye,
   EyeOff,
+  Edit3,
+  Save,
+  X,
+  Key,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { adminAPI } from '@/lib/admin-api';
 import type { WebhookStats } from '@/types';
@@ -62,6 +73,19 @@ export default function WebhooksTab() {
   const [showForm, setShowForm] = useState(false);
   const [newEndpoint, setNewEndpoint] = useState({ name: '', url: '', events: [] as string[] });
   const [creating, setCreating] = useState(false);
+
+  // Edit modal state
+  const [editingEndpoint, setEditingEndpoint] = useState<{
+    id: number;
+    name: string;
+    url: string;
+    events: string[];
+    is_active: boolean;
+    secret: string;
+  } | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
   const perPage = 20;
 
@@ -141,6 +165,62 @@ export default function WebhooksTab() {
       alert('Secret copié!');
     } catch (error) {
       console.error('Error copying secret:', error);
+    }
+  };
+
+  const openEditModal = async (endpointId: number) => {
+    setEditLoading(true);
+    try {
+      const res = await adminAPI.getWebhook(endpointId);
+      setEditingEndpoint({
+        id: res.data.id,
+        name: res.data.name,
+        url: res.data.url,
+        events: res.data.events,
+        is_active: res.data.is_active,
+        secret: res.data.secret,
+      });
+    } catch (error) {
+      console.error('Error fetching webhook:', error);
+      alert('Erreur lors du chargement');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const saveWebhook = async () => {
+    if (!editingEndpoint) return;
+    setSaveLoading(true);
+    try {
+      await adminAPI.updateWebhook(editingEndpoint.id, {
+        name: editingEndpoint.name,
+        url: editingEndpoint.url,
+        events: editingEndpoint.events,
+        is_active: editingEndpoint.is_active,
+      });
+      setEditingEndpoint(null);
+      fetchData(page);
+    } catch (error) {
+      console.error('Error saving webhook:', error);
+      alert('Erreur lors de la sauvegarde');
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const regenerateSecret = async () => {
+    if (!editingEndpoint) return;
+    if (!confirm('Régénérer le secret ? L\'ancien ne fonctionnera plus.')) return;
+    setRegenerating(true);
+    try {
+      const res = await adminAPI.regenerateWebhookSecret(editingEndpoint.id);
+      setEditingEndpoint({ ...editingEndpoint, secret: res.data.secret });
+      alert('Nouveau secret généré!');
+    } catch (error) {
+      console.error('Error regenerating secret:', error);
+      alert('Erreur lors de la régénération');
+    } finally {
+      setRegenerating(false);
     }
   };
 
@@ -380,7 +460,17 @@ export default function WebhooksTab() {
                           size="sm"
                           variant="outline"
                           className="border-white/20"
+                          onClick={() => openEditModal(endpoint.id)}
+                          disabled={editLoading}
+                        >
+                          <Edit3 className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-white/20"
                           onClick={() => copySecret(endpoint.id)}
+                          title="Copier le secret"
                         >
                           <Copy className="h-3 w-3" />
                         </Button>
@@ -390,6 +480,7 @@ export default function WebhooksTab() {
                           className="border-primary/30 text-primary hover:bg-primary/10"
                           onClick={() => testWebhook(endpoint.id)}
                           disabled={testing === endpoint.id || !endpoint.is_active}
+                          title="Tester"
                         >
                           {testing === endpoint.id ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -402,6 +493,7 @@ export default function WebhooksTab() {
                           variant="outline"
                           className="border-red-500/30 text-red-400 hover:bg-red-500/10"
                           onClick={() => deleteWebhook(endpoint.id)}
+                          title="Supprimer"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -509,6 +601,155 @@ export default function WebhooksTab() {
           </CardContent>
         </Card>
       )}
+
+      {/* Edit Webhook Modal */}
+      <Dialog open={!!editingEndpoint} onOpenChange={() => setEditingEndpoint(null)}>
+        <DialogContent className="glass border-white/10 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Webhook className="h-5 w-5 text-primary" />
+              Modifier le webhook
+            </DialogTitle>
+          </DialogHeader>
+
+          {editLoading ? (
+            <div className="space-y-4 py-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          ) : editingEndpoint && (
+            <div className="space-y-6 py-4">
+              {/* Active Toggle */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-white">Webhook actif</p>
+                  <p className="text-sm text-slate-400">
+                    Les événements seront envoyés si actif
+                  </p>
+                </div>
+                <Switch
+                  checked={editingEndpoint.is_active}
+                  onCheckedChange={(checked) =>
+                    setEditingEndpoint({ ...editingEndpoint, is_active: checked })
+                  }
+                />
+              </div>
+
+              {/* Name */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Nom</label>
+                <input
+                  type="text"
+                  value={editingEndpoint.name}
+                  onChange={(e) =>
+                    setEditingEndpoint({ ...editingEndpoint, name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              {/* URL */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">URL</label>
+                <input
+                  type="url"
+                  value={editingEndpoint.url}
+                  onChange={(e) =>
+                    setEditingEndpoint({ ...editingEndpoint, url: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              {/* Events */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Événements</label>
+                <div className="flex flex-wrap gap-2">
+                  {availableEvents.map((event) => (
+                    <Badge
+                      key={event}
+                      variant="outline"
+                      className={cn(
+                        "cursor-pointer transition-colors",
+                        editingEndpoint.events.includes(event)
+                          ? "bg-primary/20 text-primary border-primary/30"
+                          : "bg-slate-500/20 text-slate-400 border-slate-500/30 hover:border-primary/30"
+                      )}
+                      onClick={() => {
+                        const events = editingEndpoint.events.includes(event)
+                          ? editingEndpoint.events.filter(e => e !== event)
+                          : [...editingEndpoint.events, event];
+                        setEditingEndpoint({ ...editingEndpoint, events });
+                      }}
+                    >
+                      {event}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Secret */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Secret</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={editingEndpoint.secret}
+                    readOnly
+                    className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white font-mono text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    className="border-white/20"
+                    onClick={() => navigator.clipboard.writeText(editingEndpoint.secret)}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                    onClick={regenerateSecret}
+                    disabled={regenerating}
+                  >
+                    {regenerating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Key className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Utilisez ce secret pour vérifier les signatures des requêtes
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 justify-end pt-4 border-t border-white/10">
+                <Button
+                  variant="ghost"
+                  onClick={() => setEditingEndpoint(null)}
+                  disabled={saveLoading}
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Annuler
+                </Button>
+                <Button
+                  onClick={saveWebhook}
+                  disabled={saveLoading || !editingEndpoint.name || !editingEndpoint.url || editingEndpoint.events.length === 0}
+                >
+                  {saveLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-1" />
+                  )}
+                  Sauvegarder
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -33,6 +33,8 @@ import {
 import { JaugeEmotionnelle } from "@/components/training/JaugeEmotionnelle";
 import { AudioRecorder } from "@/components/training/AudioRecorder";
 import { AudioPlayer } from "@/components/training/AudioPlayer";
+import { ReversalAlert, ReversalType } from "@/components/training/ReversalAlert";
+import { EventNotification, EventType } from "@/components/training/EventNotification";
 import { PremiumModal } from "@/components/ui/premium-modal";
 import { voiceAPI } from "@/lib/api";
 import { useVoiceSession, VoiceMessage } from "@/hooks/useVoiceSession";
@@ -117,6 +119,10 @@ export default function TrainingSessionPage() {
     conversionPossible,
     feedback,
     error: wsError,
+    activeReversal,
+    activeEvent,
+    dismissReversal,
+    dismissEvent,
     connect,
     disconnect,
     sendMessage: wsSendMessage,
@@ -420,6 +426,23 @@ export default function TrainingSessionPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gradient-dark flex flex-col">
+        {/* V2 Mechanics Alerts */}
+        <ReversalAlert
+          type={(activeReversal?.type as ReversalType) || "last_minute_doubt"}
+          message={activeReversal?.message || ""}
+          jaugeDrop={activeReversal?.jaugeDrop}
+          isVisible={!!activeReversal}
+          onDismiss={dismissReversal}
+        />
+
+        <EventNotification
+          type={(activeEvent?.type as EventType) || "phone_interruption"}
+          message={activeEvent?.message || ""}
+          testDescription={activeEvent?.testDescription}
+          isVisible={!!activeEvent}
+          onDismiss={dismissEvent}
+        />
+
         {/* Header */}
         <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">

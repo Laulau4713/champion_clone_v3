@@ -96,6 +96,13 @@ export const authAPI = {
   logout: () => api.post('/auth/logout'),
 
   logoutAll: () => api.post('/auth/logout-all'),
+
+  // Profile management
+  updateProfile: (data: { full_name?: string; email?: string }) =>
+    api.patch<User>('/auth/me', data),
+
+  changePassword: (data: { current_password: string; new_password: string }) =>
+    api.post<{ message: string }>('/auth/change-password', data),
 };
 
 // Health check
@@ -269,6 +276,24 @@ export const paymentsAPI = {
 
   // Cancel subscription
   cancelSubscription: () => api.post<{ success: boolean; message: string }>('/payments/cancel'),
+};
+
+// ============ ACHIEVEMENTS & GAMIFICATION ============
+import type { Achievement, UserXP, AchievementUnlockResult, AchievementCategory } from '@/types';
+
+export const achievementsAPI = {
+  // Get all achievements with unlock status
+  getAll: (category?: AchievementCategory) =>
+    api.get<Achievement[]>('/achievements', { params: category ? { category } : {} }),
+
+  // Get only unlocked achievements
+  getUnlocked: () => api.get<Achievement[]>('/achievements/unlocked'),
+
+  // Get user XP and level
+  getXP: () => api.get<UserXP>('/achievements/xp'),
+
+  // Check and unlock eligible achievements
+  check: () => api.post<AchievementUnlockResult>('/achievements/check'),
 };
 
 export default api;

@@ -71,12 +71,13 @@ class SectorDetailResponse(SectorResponse):
 
 class CourseResponse(BaseModel):
     id: int
-    day: int
+    order: int  # Changed from 'day' - progression order
     level: str
     title: str
     objective: Optional[str] = None
     duration_minutes: int
     skill_id: Optional[int] = None
+    skill_slug: Optional[str] = None  # Added for frontend convenience
 
     class Config:
         from_attributes = True
@@ -116,7 +117,7 @@ class QuizResultResponse(BaseModel):
 
 class UserProgressResponse(BaseModel):
     current_level: str
-    current_day: int
+    current_course: int  # Changed from current_day
     sector_slug: Optional[str] = None
     started_at: datetime
     total_training_minutes: int
@@ -224,24 +225,72 @@ async def get_courses(
     db: AsyncSession = Depends(get_db)
 ):
     """Liste tous les cours."""
-    query = select(Course).order_by(Course.day)
+    query = select(Course, Skill.slug.label("skill_slug")).outerjoin(
+        Skill, Course.skill_id == Skill.id
+    ).order_by(Course.day)
     if level:
         query = query.where(Course.level == level)
 
     result = await db.execute(query)
-    return result.scalars().all()
+    courses = []
+    for row in result:
+        course = row[0]
+        courses.append({
+            "id": course.id,
+            "order": course.day,  # Map day to order
+            "level": course.level,
+            "title": course.title,
+            "objective": course.objective,
+            "duration_minutes": course.duration_minutes,
+            "skill_id": course.skill_id,
+            "skill_slug": row[1]  # skill_slug from join
+        })
+    return courses
 
 
-@router.get("/courses/day/{day}", response_model=CourseDetailResponse)
-async def get_course_by_day(
+@router.get("/courses/{order}", response_model=CourseDetailResponse)
+async def get_course_by_order(
+    order: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """Récupère un cours par son ordre dans la progression."""
+    result = await db.execute(
+        select(Course, Skill.slug.label("skill_slug")).outerjoin(
+            Skill, Course.skill_id == Skill.id
+        ).where(Course.day == order)
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Course not found")
+
+    course = row[0]
+    return {
+        "id": course.id,
+        "order": course.day,
+        "level": course.level,
+        "title": course.title,
+        "objective": course.objective,
+        "duration_minutes": course.duration_minutes,
+        "skill_id": course.skill_id,
+        "skill_slug": row[1],
+        "key_points": course.key_points,
+        "common_mistakes": course.common_mistakes,
+        "emotional_tips": course.emotional_tips,
+        "takeaways": course.takeaways,
+        "stat_cle": course.stat_cle,
+        "intro": course.intro,
+        "full_content": course.full_content
+    }
+
+
+# Keep old endpoint for backward compatibility
+@router.get("/courses/day/{day}", response_model=CourseDetailResponse, include_in_schema=False)
+async def get_course_by_day_legacy(
     day: int,
     db: AsyncSession = Depends(get_db)
 ):
-    """Récupère le cours d'un jour spécifique."""
-    course = await db.scalar(select(Course).where(Course.day == day))
-    if not course:
-        raise HTTPException(status_code=404, detail="Course not found")
-    return course
+    """Legacy endpoint - use /courses/{order} instead."""
+    return await get_course_by_order(day, db)
 
 
 @router.get("/difficulty-levels")
@@ -299,7 +348,7 @@ async def get_user_progress(
 
     return {
         "current_level": progress.current_level,
-        "current_day": progress.current_day,
+        "current_course": progress.current_day,  # Renamed from current_day
         "sector_slug": sector_slug,
         "started_at": progress.started_at,
         "total_training_minutes": progress.total_training_minutes,

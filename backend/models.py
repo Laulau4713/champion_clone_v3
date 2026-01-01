@@ -1395,3 +1395,91 @@ class VoiceTrainingMessage(Base):
 
     def __repr__(self) -> str:
         return f"<VoiceTrainingMessage(session_id={self.session_id}, role='{self.role}', gauge_impact={self.gauge_impact})>"
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# GAMIFICATION - ACHIEVEMENTS
+# ═══════════════════════════════════════════════════════════════════════════
+
+class UserAchievement(Base):
+    """
+    Tracks achievements unlocked by users.
+    Achievement definitions are stored in content/achievements.json
+    """
+    __tablename__ = "user_achievements"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    achievement_id: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+
+    # When the achievement was unlocked
+    unlocked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+
+    # XP rewarded (stored for history, in case achievement values change)
+    xp_rewarded: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+    # Unique constraint: user can only unlock each achievement once
+    __table_args__ = (
+        {"sqlite_autoincrement": True},
+    )
+
+    # Relationships
+    user: Mapped["User"] = relationship("User", backref="achievements")
+
+    def __repr__(self) -> str:
+        return f"<UserAchievement(user_id={self.user_id}, achievement='{self.achievement_id}')>"
+
+
+class UserXP(Base):
+    """
+    Tracks user's total XP and level for gamification.
+    """
+    __tablename__ = "user_xp"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+        index=True
+    )
+
+    total_xp: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    level: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+
+    # Timestamps
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
+
+    # Relationships
+    user: Mapped["User"] = relationship("User", backref="xp_data")
+
+    @property
+    def xp_for_next_level(self) -> int:
+        """XP needed for next level (level^2 * 100)."""
+        return (self.level ** 2) * 100
+
+    @property
+    def xp_progress(self) -> float:
+        """Progress percentage to next level."""
+        prev_level_xp = ((self.level - 1) ** 2) * 100 if self.level > 1 else 0
+        current_xp = self.total_xp - prev_level_xp
+        needed_xp = self.xp_for_next_level - prev_level_xp
+        return min(100, (current_xp / needed_xp) * 100) if needed_xp > 0 else 100
+
+    def __repr__(self) -> str:
+        return f"<UserXP(user_id={self.user_id}, xp={self.total_xp}, level={self.level})>"

@@ -21,6 +21,20 @@ export interface VoiceMessage {
   timestamp: Date;
 }
 
+export interface ActiveReversal {
+  type: string;
+  message: string;
+  jaugeDrop?: number;
+  timestamp: Date;
+}
+
+export interface ActiveEvent {
+  type: string;
+  message: string;
+  testDescription?: string;
+  timestamp: Date;
+}
+
 export interface UseVoiceSessionOptions {
   sessionId: number;
   onSessionEnded?: (evaluation: SessionEnded["evaluation"]) => void;
@@ -37,6 +51,12 @@ export interface UseVoiceSessionReturn {
   conversionPossible: boolean;
   feedback: ProspectResponse["feedback"] | null;
   error: string | null;
+
+  // V2 Mechanics
+  activeReversal: ActiveReversal | null;
+  activeEvent: ActiveEvent | null;
+  dismissReversal: () => void;
+  dismissEvent: () => void;
 
   // Actions
   connect: () => void;
@@ -61,6 +81,10 @@ export function useVoiceSession({
   const [currentMood, setCurrentMood] = useState("neutral");
   const [conversionPossible, setConversionPossible] = useState(false);
   const [feedback, setFeedback] = useState<ProspectResponse["feedback"] | null>(null);
+
+  // V2 Mechanics state
+  const [activeReversal, setActiveReversal] = useState<ActiveReversal | null>(null);
+  const [activeEvent, setActiveEvent] = useState<ActiveEvent | null>(null);
 
   // WebSocket ref
   const wsRef = useRef<VoiceWebSocket | null>(null);
@@ -127,21 +151,41 @@ export function useVoiceSession({
 
   // Handle reversal
   const handleReversal = useCallback(
-    (data: { type: string; message: string }) => {
+    (data: { type: string; message: string; jauge_drop?: number }) => {
       console.log("[useVoiceSession] Reversal:", data);
-      // Could show a toast/alert here
+      setActiveReversal({
+        type: data.type,
+        message: data.message,
+        jaugeDrop: data.jauge_drop,
+        timestamp: new Date(),
+      });
     },
     []
   );
 
   // Handle event
   const handleEvent = useCallback(
-    (data: { event_type: string; message: string }) => {
+    (data: { event_type: string; message: string; test?: string }) => {
       console.log("[useVoiceSession] Event:", data);
-      // Could show a notification here
+      setActiveEvent({
+        type: data.event_type,
+        message: data.message,
+        testDescription: data.test,
+        timestamp: new Date(),
+      });
     },
     []
   );
+
+  // Dismiss reversal
+  const dismissReversal = useCallback(() => {
+    setActiveReversal(null);
+  }, []);
+
+  // Dismiss event
+  const dismissEvent = useCallback(() => {
+    setActiveEvent(null);
+  }, []);
 
   // Handle session ended
   const handleSessionEnded = useCallback(
@@ -269,6 +313,14 @@ export function useVoiceSession({
     conversionPossible,
     feedback,
     error,
+
+    // V2 Mechanics
+    activeReversal,
+    activeEvent,
+    dismissReversal,
+    dismissEvent,
+
+    // Actions
     connect,
     disconnect,
     sendMessage,

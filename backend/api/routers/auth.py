@@ -22,7 +22,7 @@ from database import get_db
 from models import User, RefreshToken
 from schemas import (
     UserRegister, UserLogin, UserResponse,
-    Token, RefreshTokenRequest
+    Token, RefreshTokenRequest, UserUpdate, PasswordChange
 )
 from services.auth import (
     validate_password, hash_password, verify_password,
@@ -263,3 +263,55 @@ async def logout_all_devices(
     logger.info("user_logged_out_all_devices", user_id=current_user.id)
 
     return {"message": "Successfully logged out from all devices"}
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_profile(
+    body: UserUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Update current user's profile (name, email)."""
+    user_repo = UserRepository(db)
+
+    # Check if new email is already taken
+    if body.email and body.email != current_user.email:
+        if await user_repo.email_exists(body.email):
+            raise AlreadyExistsError("User", "email", body.email)
+        current_user.email = body.email
+
+    if body.full_name is not None:
+        current_user.full_name = body.full_name
+
+    await user_repo.save(current_user)
+
+    logger.info("user_profile_updated", user_id=current_user.id)
+
+    return UserResponse.model_validate(current_user)
+
+
+@router.post("/change-password")
+async def change_password(
+    body: PasswordChange,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Change current user's password."""
+    user_repo = UserRepository(db)
+
+    # Verify current password
+    if not verify_password(body.current_password, current_user.hashed_password):
+        raise AuthenticationError("Current password is incorrect")
+
+    # Validate new password strength
+    is_valid, error_message = validate_password(body.new_password)
+    if not is_valid:
+        raise ValidationError(error_message)
+
+    # Update password
+    current_user.hashed_password = hash_password(body.new_password)
+    await user_repo.save(current_user)
+
+    logger.info("user_password_changed", user_id=current_user.id)
+
+    return {"message": "Password changed successfully"}
