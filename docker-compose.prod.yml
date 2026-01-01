@@ -1,54 +1,395 @@
+# =============================================================================
+# PRODUCTION DOCKER COMPOSE - Champion Clone
+# =============================================================================
+# Usage: docker-compose -f docker-compose.prod.yml up -d
+#
+# Architecture:
+#   CloudFlare/CDN → Nginx (LB) → Backend (Gunicorn x4) → PostgreSQL + Redis
+#                                      ↓
+#                               Celery Workers → Claude API / ElevenLabs
+#
+# Requirements:
+#   - .env.prod file with all secrets
+#   - SSL certificates in ./nginx/ssl/ (or use certbot)
+#   - Minimum 4GB RAM, 2 CPU cores
+#
+# Scaling: docker-compose -f docker-compose.prod.yml up -d --scale backend=3 --scale celery_worker=4
+# =============================================================================
+
 version: '3.8'
 
-# Production override - use with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
 services:
-  backend:
-    environment:
-      - DEBUG=false
-      - CORS_ORIGINS=${CORS_ORIGINS:-https://champion-clone.com}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  frontend:
-    build:
-      args:
-        - NEXT_PUBLIC_API_URL=${API_URL:-https://api.champion-clone.com}
-    environment:
-      - NEXT_PUBLIC_API_URL=${API_URL:-https://api.champion-clone.com}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
+  # ===========================================================================
+  # NGINX - Load Balancer & Reverse Proxy
+  # ===========================================================================
   nginx:
     image: nginx:alpine
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./certbot/conf:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot:ro
+      - nginx_logs:/var/log/nginx
     depends_on:
-      - frontend
       - backend
-    restart: unless-stopped
+      - frontend
+    restart: always
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - frontend-network
+      - backend-network
+
+  # ===========================================================================
+  # FRONTEND - Next.js (Production Build)
+  # ===========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+      args:
+        - NEXT_PUBLIC_API_URL=${API_URL:-https://api.champion-clone.com}
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${API_URL:-https://api.champion-clone.com}
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+    networks:
+      - frontend-network
+
+  # ===========================================================================
+  # BACKEND - FastAPI with Gunicorn (Multi-worker)
+  # ===========================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      # Database
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER:-champion}:${DB_PASSWORD}@db:5432/${DB_NAME:-champion_clone}
+      # Redis
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/2
+      # Security
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET:?REFRESH_TOKEN_SECRET is required}
+      # AI Services
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      # App Config
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://champion-clone.com,https://www.champion-clone.com}
+      - DEBUG=false
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      # Gunicorn
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-4}
+      - GUNICORN_THREADS=${GUNICORN_THREADS:-2}
+      # S3 Storage (optional)
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-}
+      - AWS_REGION=${AWS_REGION:-eu-west-3}
+      # LemonSqueezy
+      - LEMONSQUEEZY_API_KEY=${LEMONSQUEEZY_API_KEY:-}
+      - LEMONSQUEEZY_WEBHOOK_SECRET=${LEMONSQUEEZY_WEBHOOK_SECRET:-}
+      - LEMONSQUEEZY_STORE_ID=${LEMONSQUEEZY_STORE_ID:-}
+    volumes:
+      - backend_uploads:/app/uploads
+      - backend_audio:/app/audio
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - backend-network
+
+  # ===========================================================================
+  # CELERY WORKER - Async Tasks (Claude API, ElevenLabs, Heavy Processing)
+  # ===========================================================================
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    command: celery -A celery_app worker --loglevel=info --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER:-champion}:${DB_PASSWORD}@db:5432/${DB_NAME:-champion_clone}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/2
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+    volumes:
+      - backend_uploads:/app/uploads
+      - backend_audio:/app/audio
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - backend-network
+
+  # ===========================================================================
+  # CELERY BEAT - Scheduled Tasks
+  # ===========================================================================
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    command: celery -A celery_app beat --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@redis:6379/2
+      - ENVIRONMENT=production
+    depends_on:
+      - redis
+      - celery_worker
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    networks:
+      - backend-network
 
-  # Optional: Certbot for SSL renewal
+  # ===========================================================================
+  # POSTGRESQL - Primary Database
+  # ===========================================================================
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=${DB_NAME:-champion_clone}
+      - POSTGRES_USER=${DB_USER:-champion}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-champion} -d ${DB_NAME:-champion_clone}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+    networks:
+      - backend-network
+
+  # ===========================================================================
+  # REDIS - Cache, Sessions, Celery Broker
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+    volumes:
+      - redis_data:/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - backend-network
+
+  # ===========================================================================
+  # PROMETHEUS - Metrics Collection
+  # ===========================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - monitoring-network
+      - backend-network
+
+  # ===========================================================================
+  # GRAFANA - Dashboards & Visualization
+  # ===========================================================================
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - monitoring-network
+
+  # ===========================================================================
+  # CERTBOT - SSL Certificate Renewal
+  # ===========================================================================
   certbot:
     image: certbot/certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    restart: always
+    networks:
+      - frontend-network
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  backend_uploads:
+    driver: local
+  backend_audio:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  nginx_logs:
+    driver: local
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  frontend-network:
+    driver: bridge
+  backend-network:
+    driver: bridge
+    internal: true  # Backend services not directly accessible from outside
+  monitoring-network:
+    driver: bridge
+    internal: true

@@ -1,0 +1,111 @@
+# Docker Compose for LOCAL DEVELOPMENT
+# Usage: docker-compose -f docker-compose.dev.yml up
+#
+# Features:
+# - Hot reload for backend (volume mount)
+# - SQLite database (simple, no setup)
+# - Redis for sessions/cache
+# - No Celery (synchronous for easier debugging)
+
+version: '3.8'
+
+services:
+  # ===========================================
+  # BACKEND (FastAPI with hot reload)
+  # ===========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/champion_clone.db
+      - REDIS_URL=redis://redis:6379/0
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-change-in-production-123456789}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET:-dev-refresh-secret-change-in-production}
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3002,http://frontend:3000
+      - DEBUG=true
+      - ENVIRONMENT=development
+    volumes:
+      # Hot reload - mount source code
+      - ./backend:/app
+      # Persist data
+      - backend_data:/app/data
+      - backend_uploads:/app/uploads
+      - backend_audio:/app/audio
+      # Exclude venv from mount
+      - /app/venv
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ===========================================
+  # FRONTEND (Next.js with hot reload)
+  # ===========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NODE_ENV=development
+    volumes:
+      # Hot reload
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ===========================================
+  # REDIS (Sessions & Cache)
+  # ===========================================
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ===========================================
+  # MAILHOG (Email testing - optional)
+  # ===========================================
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    restart: unless-stopped
+
+volumes:
+  backend_data:
+  backend_uploads:
+  backend_audio:
+  redis_data:
+
+networks:
+  default:
+    name: champion-clone-dev

@@ -1,14 +1,19 @@
+# =============================================================================
+# Champion Clone Backend - Python Dependencies
+# =============================================================================
+
 # FastAPI & Server
 fastapi==0.109.2
 uvicorn[standard]==0.27.1
 python-multipart==0.0.9
+gunicorn==21.2.0              # Production WSGI server
 
 # Database
 sqlalchemy==2.0.25
-psycopg2-binary==2.9.9
-asyncpg==0.29.0
-aiosqlite==0.19.0
-alembic==1.13.1
+psycopg2-binary==2.9.9        # PostgreSQL sync driver
+asyncpg==0.29.0               # PostgreSQL async driver
+aiosqlite==0.19.0             # SQLite async (dev only)
+alembic==1.13.1               # Database migrations
 
 # Validation & Settings
 pydantic==2.6.1
@@ -17,9 +22,9 @@ pydantic-settings==2.1.0
 python-dotenv==1.0.1
 
 # AI Services
-anthropic>=0.40.0             # Updated for compatibility
-openai>=1.12.0
-groq>=0.4.0                   # FREE alternative to Claude (Llama 3.1 70B)
+anthropic>=0.40.0             # Claude API
+openai>=1.12.0                # Whisper API
+groq>=0.4.0                   # FREE alternative (Llama 3.1 70B)
 
 # Local Whisper (FREE transcription)
 openai-whisper>=20231117      # Local Whisper model
@@ -33,12 +38,25 @@ slowapi==0.1.9                # Rate limiting
 python-jose[cryptography]==3.3.0  # JWT tokens
 passlib[bcrypt]==1.7.4        # Password hashing
 
+# Async Task Queue
+celery[redis]==5.3.6          # Celery with Redis support
+redis==5.0.1                  # Redis client
+kombu==5.3.4                  # Message transport for Celery
+flower==2.0.1                 # Celery monitoring UI (optional)
+
 # Utilities
 aiofiles==23.2.1
 structlog==24.1.0
+httpx==0.28.1                 # Async HTTP client
+orjson==3.9.15                # Fast JSON serialization
+
+# Monitoring & Metrics
+prometheus-client==0.19.0     # Prometheus metrics
 
 # Testing
 pytest==8.0.0
 pytest-asyncio==0.23.0
 pytest-cov==4.1.0
-httpx==0.28.1
+
+# ElevenLabs (optional - TTS)
+elevenlabs>=0.2.26

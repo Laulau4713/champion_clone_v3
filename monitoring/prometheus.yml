@@ -1,0 +1,70 @@
+# =============================================================================
+# Prometheus Configuration - Champion Clone
+# =============================================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'champion-clone'
+
+# Alerting (optional - configure Alertmanager)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           - alertmanager:9093
+
+# Rule files (optional)
+# rule_files:
+#   - "alerts/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # FastAPI Backend
+  - job_name: 'backend'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['backend:8000']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'backend'
+
+  # Celery Workers (via Flower)
+  - job_name: 'celery'
+    static_configs:
+      - targets: ['celery_flower:5555']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'celery'
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'redis'
+
+  # PostgreSQL (via postgres_exporter if installed)
+  # - job_name: 'postgresql'
+  #   static_configs:
+  #     - targets: ['postgres_exporter:9187']
+
+  # Nginx (via nginx-prometheus-exporter if installed)
+  # - job_name: 'nginx'
+  #   static_configs:
+  #     - targets: ['nginx_exporter:9113']
+
+  # Node Exporter (system metrics)
+  # - job_name: 'node'
+  #   static_configs:
+  #     - targets: ['node_exporter:9100']
