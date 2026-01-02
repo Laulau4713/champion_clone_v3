@@ -51,7 +51,7 @@ ignore = [
 
 # Per-file ignores
 [lint.per-file-ignores]
-"api/routers/learning.py" = ["UP007"]  # Allow Optional[X] syntax
+"api/routers/learning.py" = ["UP007", "UP045"]  # Allow Optional[X] syntax
 
 # Allow autofix for all rules
 fixable = ["ALL"]
