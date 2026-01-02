@@ -15,35 +15,40 @@ Ce service remplace/étend le TrainingService original.
 
 import json
 import random
-from typing import Optional, List
+from dataclasses import dataclass
 from datetime import datetime
-from dataclasses import dataclass, asdict
+from typing import Any
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 import structlog
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import (
-    User, Skill, Sector, DifficultyLevel,
-    UserProgress, UserSkillProgress,
-    VoiceTrainingSession, VoiceTrainingMessage
-)
-from services.voice_service import voice_service
-from services.jauge_service import JaugeService, BehavioralDetector
-from services.event_service import EventService
-from services.interruption_service import InterruptionService
 from agents.content_agent.agent import ContentAgent
 from config import get_settings
 from domain.exceptions import (
-    NotFoundError,
-    SessionNotFoundError,
-    SessionNotActiveError,
-    ValidationError,
     ExternalServiceError,
+    NotFoundError,
+    SessionNotActiveError,
+    SessionNotFoundError,
+    ValidationError,
 )
+from models import (
+    DifficultyLevel,
+    Sector,
+    Skill,
+    User,
+    UserProgress,
+    UserSkillProgress,
+    VoiceTrainingMessage,
+    VoiceTrainingSession,
+)
+from services.event_service import EventService
+from services.jauge_service import BehavioralDetector, JaugeService
+from services.voice_service import voice_service
 
 try:
     import anthropic
+
     ANTHROPIC_AVAILABLE = True
 except ImportError:
     ANTHROPIC_AVAILABLE = False
@@ -55,15 +60,16 @@ logger = structlog.get_logger()
 @dataclass
 class ProspectResponseV2:
     """Réponse enrichie du prospect V2."""
+
     text: str
-    audio_base64: Optional[str]
+    audio_base64: str | None
     mood: str
     jauge: int  # -1 si caché (medium/expert)
     jauge_delta: int  # 0 si caché
-    behavioral_cue: Optional[str]
+    behavioral_cue: str | None
     is_event: bool
-    event_type: Optional[str]
-    feedback: Optional[dict]
+    event_type: str | None
+    feedback: dict | None
     conversion_possible: bool
 
     def to_dict(self) -> dict:
@@ -77,7 +83,7 @@ class ProspectResponseV2:
             "is_event": self.is_event,
             "event_type": self.event_type,
             "feedback": self.feedback,
-            "conversion_possible": self.conversion_possible
+            "conversion_possible": self.conversion_possible,
         }
 
 
@@ -99,33 +105,22 @@ class TrainingServiceV2:
             self.claude = None
             logger.warning("anthropic_not_available", message="Claude API not configured")
 
-    async def create_session(
-        self,
-        user: User,
-        skill_slug: str,
-        sector_slug: Optional[str] = None
-    ) -> dict:
+    async def create_session(self, user: User, skill_slug: str, sector_slug: str | None = None) -> dict:
         """
         Crée une session avec initialisation des mécaniques V2.
         """
         # Récupérer le skill
-        skill = await self.db.scalar(
-            select(Skill).where(Skill.slug == skill_slug)
-        )
+        skill = await self.db.scalar(select(Skill).where(Skill.slug == skill_slug))
         if not skill:
             raise NotFoundError("Skill", skill_slug)
 
         # Récupérer le secteur
         sector = None
         if sector_slug:
-            sector = await self.db.scalar(
-                select(Sector).where(Sector.slug == sector_slug)
-            )
+            sector = await self.db.scalar(select(Sector).where(Sector.slug == sector_slug))
 
         # Récupérer la progression utilisateur
-        progress = await self.db.scalar(
-            select(UserProgress).where(UserProgress.user_id == user.id)
-        )
+        progress = await self.db.scalar(select(UserProgress).where(UserProgress.user_id == user.id))
         if not progress:
             progress = UserProgress(user_id=user.id)
             self.db.add(progress)
@@ -135,9 +130,7 @@ class TrainingServiceV2:
         level = progress.current_level
 
         # Récupérer la config du niveau
-        level_db = await self.db.scalar(
-            select(DifficultyLevel).where(DifficultyLevel.level == level)
-        )
+        level_db = await self.db.scalar(select(DifficultyLevel).where(DifficultyLevel.level == level))
         level_config = {}
         if level_db:
             level_config = {
@@ -150,7 +143,7 @@ class TrainingServiceV2:
                 "situational_events": level_db.situational_events or {},
                 "reversals": level_db.reversals or {},
                 "feedback_settings": level_db.feedback_settings or {},
-                "hints_system": level_db.hints_system or {}
+                "hints_system": level_db.hints_system or {},
             }
 
         # Initialiser les services
@@ -159,12 +152,7 @@ class TrainingServiceV2:
 
         # Générer le scénario
         content_agent = ContentAgent(db=self.db, llm_client=None)
-        scenario = await content_agent.generate_scenario(
-            skill=skill,
-            level=level,
-            sector=sector,
-            use_cache=True
-        )
+        scenario = await content_agent.generate_scenario(skill=skill, level=level, sector=sector, use_cache=True)
 
         # Initialiser les objections cachées si activées
         hidden_objections = []
@@ -187,7 +175,7 @@ class TrainingServiceV2:
                             "expressed": obj.get("expressed"),
                             "hidden": obj.get("hidden"),
                             "discovery_questions": obj.get("discovery_questions", []),
-                            "discovered": False
+                            "discovered": False,
                         }
                         for obj in selected
                     ]
@@ -204,12 +192,14 @@ class TrainingServiceV2:
             scenario_json=scenario,
             current_gauge=starting_jauge,
             starting_gauge=starting_jauge,
-            gauge_history=[{
-                "timestamp": datetime.utcnow().isoformat(),
-                "value": starting_jauge,
-                "action": "session_start",
-                "delta": 0
-            }],
+            gauge_history=[
+                {
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "value": starting_jauge,
+                    "action": "session_start",
+                    "delta": 0,
+                }
+            ],
             current_mood=initial_mood.mood,
             hidden_objections=hidden_objections,
             discovered_objections=[],
@@ -218,7 +208,7 @@ class TrainingServiceV2:
             negative_actions=[],
             questions_asked=[],
             conversion_blockers=[],
-            status="active"
+            status="active",
         )
         self.db.add(session)
         await self.db.commit()
@@ -239,20 +229,14 @@ class TrainingServiceV2:
 
         if voice_service.is_configured().get("elevenlabs"):
             try:
-                audio_bytes, _ = await voice_service.text_to_speech(
-                    text=opening_text,
-                    personality=personality
-                )
+                audio_bytes, _ = await voice_service.text_to_speech(text=opening_text, personality=personality)
                 audio_base64 = voice_service.audio_to_base64(audio_bytes)
             except Exception as e:
                 logger.error("tts_error_opening", error=str(e))
 
         # Sauvegarder le message d'ouverture
         opening_message = VoiceTrainingMessage(
-            session_id=session.id,
-            role="prospect",
-            text=opening_text,
-            prospect_mood=initial_mood.mood
+            session_id=session.id, role="prospect", text=opening_text, prospect_mood=initial_mood.mood
         )
         self.db.add(opening_message)
         await self.db.commit()
@@ -263,7 +247,7 @@ class TrainingServiceV2:
             skill=skill_slug,
             level=level,
             starting_jauge=starting_jauge,
-            hidden_objections_count=len(hidden_objections)
+            hidden_objections_count=len(hidden_objections),
         )
 
         # Préparer la réponse
@@ -278,29 +262,18 @@ class TrainingServiceV2:
                     "name": scenario.get("prospect", {}).get("name"),
                     "role": scenario.get("prospect", {}).get("role"),
                     "company": scenario.get("prospect", {}).get("company"),
-                    "personality": personality
-                }
+                    "personality": personality,
+                },
             },
-            "skill": {
-                "slug": skill.slug,
-                "name": skill.name,
-                "evaluation_criteria": skill.evaluation_criteria
-            },
+            "skill": {"slug": skill.slug, "name": skill.name, "evaluation_criteria": skill.evaluation_criteria},
             "level": level,
             "jauge": starting_jauge if show_jauge else None,
             "mood": initial_mood.mood,
-            "opening_message": {
-                "text": opening_text,
-                "audio_base64": audio_base64
-            }
+            "opening_message": {"text": opening_text, "audio_base64": audio_base64},
         }
 
     async def process_user_message(
-        self,
-        session_id: int,
-        user: User,
-        audio_base64: Optional[str] = None,
-        text: Optional[str] = None
+        self, session_id: int, user: User, audio_base64: str | None = None, text: str | None = None
     ) -> ProspectResponseV2:
         """
         Traite un message avec toutes les mécaniques V2.
@@ -332,9 +305,7 @@ class TrainingServiceV2:
             raise ValidationError("No text or audio provided")
 
         # Récupérer la config du niveau
-        level_db = await self.db.scalar(
-            select(DifficultyLevel).where(DifficultyLevel.level == session.level)
-        )
+        level_db = await self.db.scalar(select(DifficultyLevel).where(DifficultyLevel.level == session.level))
         level_config = {}
         if level_db and level_db.emotional_state_system:
             level_config = level_db.emotional_state_system
@@ -342,10 +313,13 @@ class TrainingServiceV2:
         # Initialiser les services
         jauge_service = JaugeService(level=session.level, level_config=level_config)
         behavioral_detector = BehavioralDetector()
-        event_service = EventService(level=session.level, level_config={
-            "situational_events": level_db.situational_events if level_db else {},
-            "reversals": level_db.reversals if level_db else {}
-        })
+        event_service = EventService(
+            level=session.level,
+            level_config={
+                "situational_events": level_db.situational_events if level_db else {},
+                "reversals": level_db.reversals if level_db else {},
+            },
+        )
         event_service.triggered_events = session.triggered_events or []
         event_service.reversal_triggered = session.reversal_triggered
 
@@ -354,18 +328,11 @@ class TrainingServiceV2:
 
         # Vérifier les questions fermées consécutives
         if patterns["indicators"]["question_type"] == "closed":
-            session.questions_asked = (session.questions_asked or []) + [
-                {"type": "closed", "text": user_text[:100]}
-            ]
+            session.questions_asked = (session.questions_asked or []) + [{"type": "closed", "text": user_text[:100]}]
             if behavioral_detector.detect_closed_question_spam(session.questions_asked or []):
-                patterns["negative"].append({
-                    "pattern": "closed_question_spam",
-                    "action": "closed_question_spam"
-                })
+                patterns["negative"].append({"pattern": "closed_question_spam", "action": "closed_question_spam"})
         elif patterns["indicators"]["question_type"] == "open":
-            session.questions_asked = (session.questions_asked or []) + [
-                {"type": "open", "text": user_text[:100]}
-            ]
+            session.questions_asked = (session.questions_asked or []) + [{"type": "open", "text": user_text[:100]}]
 
         # Vérifier budget demandé trop tôt
         messages_result = await self.db.execute(
@@ -377,31 +344,20 @@ class TrainingServiceV2:
         message_count = len(history)
 
         if behavioral_detector.detect_budget_question_too_early(user_text, message_count):
-            patterns["negative"].append({
-                "pattern": "budget_question_too_early",
-                "action": "budget_question_too_early"
-            })
+            patterns["negative"].append({"pattern": "budget_question_too_early", "action": "budget_question_too_early"})
 
         # Appliquer les impacts sur la jauge
         jauge_delta = 0
         actions_log = []
 
         for pos in patterns["positive"]:
-            modification = jauge_service.apply_action(
-                session.current_gauge + jauge_delta,
-                pos["action"],
-                "positive"
-            )
+            modification = jauge_service.apply_action(session.current_gauge + jauge_delta, pos["action"], "positive")
             jauge_delta += modification.delta
             actions_log.append(modification.to_dict())
             session.positive_actions = (session.positive_actions or []) + [pos["action"]]
 
         for neg in patterns["negative"]:
-            modification = jauge_service.apply_action(
-                session.current_gauge + jauge_delta,
-                neg["action"],
-                "negative"
-            )
+            modification = jauge_service.apply_action(session.current_gauge + jauge_delta, neg["action"], "negative")
             jauge_delta += modification.delta
             actions_log.append(modification.to_dict())
             session.negative_actions = (session.negative_actions or []) + [neg["action"]]
@@ -413,13 +369,15 @@ class TrainingServiceV2:
         # Mettre à jour la jauge
         new_jauge = max(0, min(100, session.current_gauge + jauge_delta))
         session.current_gauge = new_jauge
-        session.gauge_history = (session.gauge_history or []) + [{
-            "timestamp": datetime.utcnow().isoformat(),
-            "value": new_jauge,
-            "action": "user_message",
-            "delta": jauge_delta,
-            "patterns": patterns
-        }]
+        session.gauge_history = (session.gauge_history or []) + [
+            {
+                "timestamp": datetime.utcnow().isoformat(),
+                "value": new_jauge,
+                "action": "user_message",
+                "delta": jauge_delta,
+                "patterns": patterns,
+            }
+        ]
 
         # Obtenir le nouveau mood
         mood_state = jauge_service.get_mood(new_jauge)
@@ -432,22 +390,18 @@ class TrainingServiceV2:
             text=user_text,
             duration_seconds=speech_duration,
             detected_patterns=patterns,
-            gauge_impact=jauge_delta
+            gauge_impact=jauge_delta,
         )
         self.db.add(user_message)
 
         # Vérifier les événements situationnels
-        event = event_service.should_trigger_event(
-            message_count=message_count,
-            jauge=new_jauge
-        )
+        event = event_service.should_trigger_event(message_count=message_count, jauge=new_jauge)
 
         # Vérifier les retournements (seulement si pas d'événement)
         reversal = None
         if not event:
             reversal = event_service.should_trigger_reversal(
-                jauge=new_jauge,
-                closing_attempted=session.closing_attempted
+                jauge=new_jauge, closing_attempted=session.closing_attempted
             )
             if reversal:
                 session.reversal_triggered = True
@@ -462,8 +416,7 @@ class TrainingServiceV2:
 
         # Vérifier la conversion
         conversion_possible, _ = jauge_service.check_conversion_possible(
-            jauge=new_jauge,
-            blockers=session.conversion_blockers or []
+            jauge=new_jauge, blockers=session.conversion_blockers or []
         )
         session.conversion_possible = conversion_possible
 
@@ -475,7 +428,7 @@ class TrainingServiceV2:
             event=event,
             reversal=reversal,
             patterns=patterns,
-            history=history
+            history=history,
         )
 
         # Ajouter un indice comportemental
@@ -496,10 +449,7 @@ class TrainingServiceV2:
         audio_base64_response = None
         if voice_service.is_configured().get("elevenlabs"):
             try:
-                audio_bytes, _ = await voice_service.text_to_speech(
-                    text=prospect_text,
-                    personality=personality
-                )
+                audio_bytes, _ = await voice_service.text_to_speech(text=prospect_text, personality=personality)
                 audio_base64_response = voice_service.audio_to_base64(audio_bytes)
             except Exception as e:
                 logger.error("tts_error_response", error=str(e))
@@ -512,7 +462,7 @@ class TrainingServiceV2:
             prospect_mood=mood_state.mood,
             is_event=event is not None,
             event_type=event.type if event else None,
-            behavioral_cues=[behavioral_cue] if behavioral_cue else []
+            behavioral_cues=[behavioral_cue] if behavioral_cue else [],
         )
         self.db.add(prospect_message)
         await self.db.commit()
@@ -529,7 +479,7 @@ class TrainingServiceV2:
                 "jauge_delta": jauge_delta if show_jauge else None,
                 "positive_actions": [p["pattern"] for p in patterns["positive"]],
                 "negative_actions": [n["pattern"] for n in patterns["negative"]],
-                "tips": self._generate_tips(patterns, mood_state.mood)
+                "tips": self._generate_tips(patterns, mood_state.mood),
             }
 
         return ProspectResponseV2(
@@ -542,7 +492,7 @@ class TrainingServiceV2:
             is_event=event is not None,
             event_type=event.type if event else None,
             feedback=feedback,
-            conversion_possible=conversion_possible
+            conversion_possible=conversion_possible,
         )
 
     async def _generate_prospect_response(
@@ -550,10 +500,10 @@ class TrainingServiceV2:
         session: VoiceTrainingSession,
         user_text: str,
         mood: str,
-        event: Optional[any],
-        reversal: Optional[any],
+        event: Any | None,
+        reversal: Any | None,
         patterns: dict,
-        history: list
+        history: list,
     ) -> str:
         """Génère la réponse du prospect via Claude."""
 
@@ -575,15 +525,9 @@ class TrainingServiceV2:
         conversation_history = []
         for msg in history[-10:]:  # Derniers 10 messages
             role = "assistant" if msg.role == "prospect" else "user"
-            conversation_history.append({
-                "role": role,
-                "content": msg.text
-            })
+            conversation_history.append({"role": role, "content": msg.text})
 
-        conversation_history.append({
-            "role": "user",
-            "content": user_text
-        })
+        conversation_history.append({"role": "user", "content": user_text})
 
         # Construire le prompt système
         hidden_objections_text = ""
@@ -599,9 +543,9 @@ OBJECTIONS CACHÉES (ne les révèle que si le commercial pose les bonnes questi
         positive_summary = ", ".join(patterns.get("positive", [])[:3]) or "Aucune"
         negative_summary = ", ".join(patterns.get("negative", [])[:3]) or "Aucune"
 
-        system_prompt = f"""Tu es {prospect.get('name', 'un prospect')}, {prospect.get('role', 'professionnel')} chez {prospect.get('company', 'une entreprise')}.
+        system_prompt = f"""Tu es {prospect.get("name", "un prospect")}, {prospect.get("role", "professionnel")} chez {prospect.get("company", "une entreprise")}.
 
-PERSONNALITÉ: {prospect.get('personality', 'neutral')}
+PERSONNALITÉ: {prospect.get("personality", "neutral")}
 HUMEUR ACTUELLE: {mood}
 JAUGE ÉMOTIONNELLE: {session.current_gauge}/100
 
@@ -612,8 +556,8 @@ COMPORTEMENT SELON TON HUMEUR:
 - Si interested: Questions constructives, s'ouvre, partage des infos
 - Si ready_to_buy: Signaux d'achat, questions pratiques
 
-TES PROBLÈMES: {', '.join(prospect.get('pain_points', []))}
-TON BESOIN CACHÉ: {prospect.get('hidden_need', 'non défini')}
+TES PROBLÈMES: {", ".join(prospect.get("pain_points", []))}
+TON BESOIN CACHÉ: {prospect.get("hidden_need", "non défini")}
 
 {hidden_objections_text}
 
@@ -632,10 +576,7 @@ Réponds naturellement en tant que prospect."""
 
         try:
             response = await self.claude.messages.create(
-                model=settings.CLAUDE_SONNET_MODEL,
-                max_tokens=200,
-                system=system_prompt,
-                messages=conversation_history
+                model=settings.CLAUDE_SONNET_MODEL, max_tokens=200, system=system_prompt, messages=conversation_history
             )
 
             return response.content[0].text
@@ -653,11 +594,11 @@ Réponds naturellement en tant que prospect."""
             "resistant": "Je ne sais pas trop...",
             "neutral": "D'accord, continuez.",
             "interested": "C'est intéressant. Pouvez-vous m'en dire plus?",
-            "ready_to_buy": "Oui, ça m'intéresse. Comment on procède?"
+            "ready_to_buy": "Oui, ça m'intéresse. Comment on procède?",
         }
         return fallbacks.get(mood, "Je comprends. Continuez...")
 
-    def _generate_tips(self, patterns: dict, mood: str) -> List[str]:
+    def _generate_tips(self, patterns: dict, mood: str) -> list[str]:
         """Génère des conseils basés sur l'analyse."""
         tips = []
 
@@ -688,11 +629,7 @@ Réponds naturellement en tant que prospect."""
 
         return tips[:3]  # Max 3 tips
 
-    async def end_session(
-        self,
-        session_id: int,
-        user: User
-    ) -> dict:
+    async def end_session(self, session_id: int, user: User) -> dict:
         """
         Termine la session et génère l'évaluation finale V2.
         """
@@ -712,11 +649,7 @@ Réponds naturellement en tant que prospect."""
         skill = await self.db.get(Skill, session.skill_id)
 
         # Générer l'évaluation finale
-        evaluation = await self._generate_final_evaluation(
-            session=session,
-            skill=skill,
-            messages=messages
-        )
+        evaluation = await self._generate_final_evaluation(session=session, skill=skill, messages=messages)
 
         # Mettre à jour la session
         session.status = "completed" if not session.converted else "converted"
@@ -725,23 +658,17 @@ Réponds naturellement en tant que prospect."""
         session.feedback_json = evaluation
 
         # Mettre à jour la progression
-        progress = await self.db.scalar(
-            select(UserProgress).where(UserProgress.user_id == user.id)
-        )
+        progress = await self.db.scalar(select(UserProgress).where(UserProgress.user_id == user.id))
 
         if progress:
             skill_progress = await self.db.scalar(
                 select(UserSkillProgress).where(
-                    UserSkillProgress.user_progress_id == progress.id,
-                    UserSkillProgress.skill_id == skill.id
+                    UserSkillProgress.user_progress_id == progress.id, UserSkillProgress.skill_id == skill.id
                 )
             )
 
             if not skill_progress:
-                skill_progress = UserSkillProgress(
-                    user_progress_id=progress.id,
-                    skill_id=skill.id
-                )
+                skill_progress = UserSkillProgress(user_progress_id=progress.id, skill_id=skill.id)
                 self.db.add(skill_progress)
 
             skill_progress.scenarios_completed = (skill_progress.scenarios_completed or 0) + 1
@@ -773,21 +700,12 @@ Réponds naturellement en tant que prospect."""
             session_id=session_id,
             score=evaluation["overall_score"],
             final_gauge=session.current_gauge,
-            converted=session.converted
+            converted=session.converted,
         )
 
-        return {
-            "session_id": session_id,
-            "status": session.status,
-            "evaluation": evaluation
-        }
+        return {"session_id": session_id, "status": session.status, "evaluation": evaluation}
 
-    async def _generate_final_evaluation(
-        self,
-        session: VoiceTrainingSession,
-        skill: Skill,
-        messages: list
-    ) -> dict:
+    async def _generate_final_evaluation(self, session: VoiceTrainingSession, skill: Skill, messages: list) -> dict:
         """Génère l'évaluation finale V2 de la session."""
 
         # Calcul basé sur les métriques collectées
@@ -862,7 +780,7 @@ Réponds naturellement en tant que prospect."""
             "points_forts": points_forts or ["Continue tes efforts!"],
             "axes_amelioration": axes_amelioration or ["Continue à pratiquer"],
             "conseil_principal": self._get_main_advice(session, overall_score),
-            "passed": overall_score >= skill.pass_threshold
+            "passed": overall_score >= skill.pass_threshold,
         }
 
     async def _enrich_evaluation_with_claude(
@@ -871,15 +789,12 @@ Réponds naturellement en tant que prospect."""
         skill: Skill,
         messages: list,
         base_score: float,
-        points_forts: List[str],
-        axes_amelioration: List[str]
+        points_forts: list[str],
+        axes_amelioration: list[str],
     ) -> dict:
         """Enrichit l'évaluation avec Claude."""
 
-        conversation = "\n".join([
-            f"{'COMMERCIAL' if m.role == 'user' else 'PROSPECT'}: {m.text}"
-            for m in messages
-        ])
+        conversation = "\n".join([f"{'COMMERCIAL' if m.role == 'user' else 'PROSPECT'}: {m.text}" for m in messages])
 
         prompt = f"""Évalue cette session d'entraînement commercial V2.
 
@@ -906,9 +821,7 @@ Analyse et complète cette évaluation en JSON (garde le score proche de {base_s
 }}"""
 
         response = await self.claude.messages.create(
-            model=settings.CLAUDE_SONNET_MODEL,
-            max_tokens=400,
-            messages=[{"role": "user", "content": prompt}]
+            model=settings.CLAUDE_SONNET_MODEL, max_tokens=400, messages=[{"role": "user", "content": prompt}]
         )
 
         content = response.content[0].text
@@ -936,7 +849,7 @@ Analyse et complète cette évaluation en JSON (garde le score proche de {base_s
                 return "Attention aux erreurs critiques. Reste calme et professionnel."
             return "Continue à pratiquer les fondamentaux."
 
-    async def get_session(self, session_id: int, user: User) -> Optional[dict]:
+    async def get_session(self, session_id: int, user: User) -> dict | None:
         """Récupère les détails d'une session V2."""
         session = await self.db.get(VoiceTrainingSession, session_id)
         if not session or session.user_id != user.id:
@@ -979,10 +892,10 @@ Analyse et complète cette évaluation en JSON (garde le score proche de {base_s
                     "patterns": m.detected_patterns,
                     "is_event": m.is_event,
                     "event_type": m.event_type,
-                    "created_at": m.created_at.isoformat()
+                    "created_at": m.created_at.isoformat(),
                 }
                 for m in messages
             ],
             "created_at": session.created_at.isoformat(),
-            "completed_at": session.completed_at.isoformat() if session.completed_at else None
+            "completed_at": session.completed_at.isoformat() if session.completed_at else None,
         }

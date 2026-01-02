@@ -11,15 +11,17 @@ Rate limited to prevent API quota exhaustion.
 """
 
 import os
+
+import structlog
 from celery import shared_task
 from celery.exceptions import MaxRetriesExceededError
-import structlog
 
 logger = structlog.get_logger()
 
 # =============================================================================
 # CLAUDE API CALL (Base task)
 # =============================================================================
+
 
 @shared_task(
     bind=True,
@@ -30,7 +32,9 @@ logger = structlog.get_logger()
     max_retries=3,
     rate_limit="30/m",
 )
-def call_claude_api(self, messages: list, model: str = "claude-sonnet-4-20250514", max_tokens: int = 1024, system: str = None):
+def call_claude_api(
+    self, messages: list, model: str = "claude-sonnet-4-20250514", max_tokens: int = 1024, system: str = None
+):
     """
     Generic Claude API call with retry logic.
 
@@ -80,7 +84,7 @@ def call_claude_api(self, messages: list, model: str = "claude-sonnet-4-20250514
     except anthropic.RateLimitError as e:
         logger.warning("claude_rate_limit", error=str(e))
         # Exponential backoff with jitter
-        raise self.retry(exc=e, countdown=60 * (2 ** self.request.retries))
+        raise self.retry(exc=e, countdown=60 * (2**self.request.retries))
 
     except anthropic.APIError as e:
         logger.error("claude_api_error", error=str(e))
@@ -94,6 +98,7 @@ def call_claude_api(self, messages: list, model: str = "claude-sonnet-4-20250514
 # =============================================================================
 # PATTERN ANALYSIS
 # =============================================================================
+
 
 @shared_task(
     bind=True,
@@ -132,7 +137,7 @@ def analyze_patterns_async(self, transcript: str, champion_id: int):
             "model": "claude-opus-4-20250514",  # Use Opus for quality
             "max_tokens": 2048,
             "system": system_prompt,
-        }
+        },
     ).get()
 
     logger.info("patterns_analyzed", champion_id=champion_id)
@@ -147,6 +152,7 @@ def analyze_patterns_async(self, transcript: str, champion_id: int):
 # =============================================================================
 # TRAINING RESPONSE GENERATION
 # =============================================================================
+
 
 @shared_task(
     bind=True,
@@ -177,9 +183,9 @@ def generate_training_response_async(
     """
     system_prompt = f"""Tu es un prospect dans un scénario de vente.
 
-    Scénario: {scenario.get('description', '')}
-    Profil client: {scenario.get('client_profile', '')}
-    Objections possibles: {scenario.get('objections', [])}
+    Scénario: {scenario.get("description", "")}
+    Profil client: {scenario.get("client_profile", "")}
+    Objections possibles: {scenario.get("objections", [])}
 
     Patterns du champion à tester: {patterns}
 
@@ -199,7 +205,7 @@ def generate_training_response_async(
             "model": "claude-sonnet-4-20250514",  # Sonnet for speed
             "max_tokens": 512,
             "system": system_prompt,
-        }
+        },
     ).get()
 
     logger.info("training_response_generated", session_id=session_id)
@@ -214,6 +220,7 @@ def generate_training_response_async(
 # =============================================================================
 # SESSION EVALUATION
 # =============================================================================
+
 
 @shared_task(
     bind=True,
@@ -246,15 +253,9 @@ def evaluate_session_async(self, session_id: int, conversation: list, scenario: 
     Sois constructif et spécifique.
     """
 
-    conversation_text = "\n".join([
-        f"{m['role'].upper()}: {m['content']}"
-        for m in conversation
-    ])
+    conversation_text = "\n".join([f"{m['role'].upper()}: {m['content']}" for m in conversation])
 
-    messages = [{
-        "role": "user",
-        "content": f"Scénario: {scenario}\n\nConversation:\n{conversation_text}"
-    }]
+    messages = [{"role": "user", "content": f"Scénario: {scenario}\n\nConversation:\n{conversation_text}"}]
 
     result = call_claude_api.apply(
         args=[messages],
@@ -262,7 +263,7 @@ def evaluate_session_async(self, session_id: int, conversation: list, scenario: 
             "model": "claude-opus-4-20250514",  # Opus for quality evaluation
             "max_tokens": 1024,
             "system": system_prompt,
-        }
+        },
     ).get()
 
     logger.info("session_evaluated", session_id=session_id)

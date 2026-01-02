@@ -11,6 +11,9 @@
 #   make clean        - Clean up
 # =============================================================================
 
+# Detect docker-compose command (v1 or v2)
+DOCKER_COMPOSE := $(shell which docker-compose 2>/dev/null || echo "docker compose")
+
 .PHONY: help dev dev-up dev-down dev-logs prod prod-up prod-down prod-logs \
         test lint build clean db-migrate db-reset celery-worker celery-flower \
         shell-backend shell-frontend
@@ -59,22 +62,22 @@ dev: dev-up
 	@echo "Mailhog:  http://localhost:8025"
 
 dev-up:
-	docker-compose -f docker-compose.dev.yml up -d
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up -d
 	@echo "Waiting for services to be ready..."
 	@sleep 5
-	docker-compose -f docker-compose.dev.yml ps
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml ps
 
 dev-down:
-	docker-compose -f docker-compose.dev.yml down
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml down
 
 dev-logs:
-	docker-compose -f docker-compose.dev.yml logs -f
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml logs -f
 
 dev-logs-backend:
-	docker-compose -f docker-compose.dev.yml logs -f backend
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml logs -f backend
 
 dev-logs-frontend:
-	docker-compose -f docker-compose.dev.yml logs -f frontend
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml logs -f frontend
 
 # Local development (without Docker)
 dev-local:
@@ -105,29 +108,29 @@ prod-up:
 		echo "Copy .env.prod.example to .env.prod and configure it."; \
 		exit 1; \
 	fi
-	docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml --env-file .env.prod up -d
 	@echo "Waiting for services to be ready..."
 	@sleep 10
-	docker-compose -f docker-compose.prod.yml ps
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml ps
 
 prod-down:
-	docker-compose -f docker-compose.prod.yml down
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml down
 
 prod-logs:
-	docker-compose -f docker-compose.prod.yml logs -f
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml logs -f
 
 prod-logs-backend:
-	docker-compose -f docker-compose.prod.yml logs -f backend
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml logs -f backend
 
 prod-logs-celery:
-	docker-compose -f docker-compose.prod.yml logs -f celery_worker
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml logs -f celery_worker
 
 # Scale backend instances
 prod-scale:
-	docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --scale backend=3 --scale celery_worker=4
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml --env-file .env.prod up -d --scale backend=3 --scale celery_worker=4
 
 prod-restart:
-	docker-compose -f docker-compose.prod.yml --env-file .env.prod restart backend celery_worker
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml --env-file .env.prod restart backend celery_worker
 
 # =============================================================================
 # TESTING
@@ -165,10 +168,10 @@ lint-fix:
 
 build:
 	docker-compose -f docker-compose.dev.yml build
-	docker-compose -f docker-compose.prod.yml build
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml build
 
 build-prod:
-	docker-compose -f docker-compose.prod.yml build --no-cache
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml build --no-cache
 
 build-backend:
 	docker build -t champion-backend:latest --target production ./backend
@@ -195,7 +198,7 @@ db-reset:
 	fi
 
 db-shell:
-	docker-compose -f docker-compose.prod.yml exec db psql -U champion -d champion_clone
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml exec db psql -U champion -d champion_clone
 
 # =============================================================================
 # CELERY
@@ -222,7 +225,7 @@ shell-frontend:
 	docker-compose -f docker-compose.dev.yml exec frontend /bin/sh
 
 shell-db:
-	docker-compose -f docker-compose.prod.yml exec db psql -U champion -d champion_clone
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml exec db psql -U champion -d champion_clone
 
 shell-redis:
 	docker-compose -f docker-compose.dev.yml exec redis redis-cli
@@ -233,7 +236,7 @@ shell-redis:
 
 clean:
 	docker-compose -f docker-compose.dev.yml down -v --remove-orphans
-	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml down -v --remove-orphans
 	docker system prune -f
 	@echo "Cleaned up containers and volumes"
 
@@ -270,7 +273,7 @@ deploy:
 
 ssl-init:
 	@echo "Initializing SSL certificates with Let's Encrypt..."
-	docker-compose -f docker-compose.prod.yml run --rm certbot certonly \
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml run --rm certbot certonly \
 		--webroot \
 		--webroot-path=/var/www/certbot \
 		--email admin@champion-clone.com \
@@ -281,17 +284,17 @@ ssl-init:
 		-d api.champion-clone.com
 
 ssl-renew:
-	docker-compose -f docker-compose.prod.yml run --rm certbot renew
-	docker-compose -f docker-compose.prod.yml exec nginx nginx -s reload
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml run --rm certbot renew
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml exec nginx nginx -s reload
 
 # =============================================================================
 # MONITORING
 # =============================================================================
 
 monitoring-up:
-	docker-compose -f docker-compose.prod.yml up -d prometheus grafana
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml up -d prometheus grafana
 	@echo "Prometheus: http://localhost:9090"
 	@echo "Grafana:    http://localhost:3000 (admin/admin)"
 
 monitoring-down:
-	docker-compose -f docker-compose.prod.yml stop prometheus grafana
+	$(DOCKER_COMPOSE) -f docker-compose.prod.yml stop prometheus grafana

@@ -4,12 +4,12 @@ Memory Schemas - Data structures for memory storage.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, Any
 from enum import Enum
 
 
 class MemoryType(Enum):
     """Types of memory entries."""
+
     PATTERN = "pattern"
     VOICE_PROFILE = "voice_profile"
     SESSION = "session"
@@ -20,14 +20,15 @@ class MemoryType(Enum):
 @dataclass
 class MemoryEntry:
     """Base memory entry structure."""
+
     id: str
     type: MemoryType
     content: str
     metadata: dict = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: datetime = field(default_factory=datetime.utcnow)
-    embedding: Optional[list[float]] = None
-    score: Optional[float] = None  # Relevance score from search
+    embedding: list[float] | None = None
+    score: float | None = None  # Relevance score from search
 
     def to_dict(self) -> dict:
         return {
@@ -37,18 +38,19 @@ class MemoryEntry:
             "metadata": self.metadata,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "score": self.score
+            "score": self.score,
         }
 
 
 @dataclass
 class PatternMemory:
     """Sales pattern stored in vector memory."""
+
     id: str
     champion_id: int
     pattern_type: str  # opening, objection, close, key_phrase
     content: str
-    context: Optional[str] = None
+    context: str | None = None
     effectiveness_score: float = 0.0
     usage_count: int = 0
     examples: list[str] = field(default_factory=list)
@@ -68,7 +70,7 @@ class PatternMemory:
             "examples": self.examples,
             "related_patterns": self.related_patterns,
             "metadata": self.metadata,
-            "created_at": self.created_at.isoformat()
+            "created_at": self.created_at.isoformat(),
         }
 
     @classmethod
@@ -84,18 +86,19 @@ class PatternMemory:
             examples=data.get("examples", []),
             related_patterns=data.get("related_patterns", []),
             metadata=data.get("metadata", {}),
-            created_at=datetime.fromisoformat(data["created_at"]) if "created_at" in data else datetime.utcnow()
+            created_at=datetime.fromisoformat(data["created_at"]) if "created_at" in data else datetime.utcnow(),
         )
 
 
 @dataclass
 class VoiceProfile:
     """Voice profile for a champion."""
+
     id: str
     champion_id: int
     name: str
     audio_samples: list[str] = field(default_factory=list)  # Paths to audio files
-    elevenlabs_voice_id: Optional[str] = None
+    elevenlabs_voice_id: str | None = None
     characteristics: dict = field(default_factory=dict)  # tone, pace, etc.
     created_at: datetime = field(default_factory=datetime.utcnow)
 
@@ -107,18 +110,19 @@ class VoiceProfile:
             "audio_samples": self.audio_samples,
             "elevenlabs_voice_id": self.elevenlabs_voice_id,
             "characteristics": self.characteristics,
-            "created_at": self.created_at.isoformat()
+            "created_at": self.created_at.isoformat(),
         }
 
 
 @dataclass
 class ConversationTurn:
     """Single turn in a training conversation."""
+
     role: str  # user, champion, system
     content: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    feedback: Optional[str] = None
-    score: Optional[float] = None
+    feedback: str | None = None
+    score: float | None = None
     patterns_used: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -128,13 +132,14 @@ class ConversationTurn:
             "timestamp": self.timestamp.isoformat(),
             "feedback": self.feedback,
             "score": self.score,
-            "patterns_used": self.patterns_used
+            "patterns_used": self.patterns_used,
         }
 
 
 @dataclass
 class SessionState:
     """Training session state stored in Redis."""
+
     session_id: str
     user_id: str
     champion_id: int
@@ -161,7 +166,7 @@ class SessionState:
             "status": self.status,
             "system_prompt": self.system_prompt,
             "started_at": self.started_at.isoformat(),
-            "last_activity": self.last_activity.isoformat()
+            "last_activity": self.last_activity.isoformat(),
         }
 
     @classmethod
@@ -173,7 +178,7 @@ class SessionState:
                 timestamp=datetime.fromisoformat(t["timestamp"]),
                 feedback=t.get("feedback"),
                 score=t.get("score"),
-                patterns_used=t.get("patterns_used", [])
+                patterns_used=t.get("patterns_used", []),
             )
             for t in data.get("conversation", [])
         ]
@@ -190,17 +195,14 @@ class SessionState:
             status=data.get("status", "active"),
             system_prompt=data.get("system_prompt", ""),
             started_at=datetime.fromisoformat(data["started_at"]) if "started_at" in data else datetime.utcnow(),
-            last_activity=datetime.fromisoformat(data["last_activity"]) if "last_activity" in data else datetime.utcnow()
+            last_activity=datetime.fromisoformat(data["last_activity"])
+            if "last_activity" in data
+            else datetime.utcnow(),
         )
 
-    def add_turn(self, role: str, content: str, feedback: Optional[str] = None, score: Optional[float] = None):
+    def add_turn(self, role: str, content: str, feedback: str | None = None, score: float | None = None):
         """Add a conversation turn."""
-        turn = ConversationTurn(
-            role=role,
-            content=content,
-            feedback=feedback,
-            score=score
-        )
+        turn = ConversationTurn(role=role, content=content, feedback=feedback, score=score)
         self.conversation.append(turn)
         self.last_activity = datetime.utcnow()
         if score is not None:

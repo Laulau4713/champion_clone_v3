@@ -9,7 +9,7 @@ Responsable de:
 
 import re
 from dataclasses import dataclass, field
-from typing import Optional, List
+
 import structlog
 
 logger = structlog.get_logger()
@@ -18,6 +18,7 @@ logger = structlog.get_logger()
 try:
     import librosa
     import numpy as np
+
     LIBROSA_AVAILABLE = True
 except ImportError:
     LIBROSA_AVAILABLE = False
@@ -27,6 +28,7 @@ except ImportError:
 @dataclass
 class ProsodyAnalysis:
     """Resultats de l'analyse de prosodie."""
+
     pitch_mean: float = 0.0
     pitch_variation: str = "stable"  # stable, variable, erratic
     tempo: float = 120.0  # words per minute approximation
@@ -40,6 +42,7 @@ class ProsodyAnalysis:
 @dataclass
 class EmotionAnalysis:
     """Resultats de l'analyse d'emotions."""
+
     confidence: float = 0.7
     hesitation: float = 0.3
     stress: float = 0.3
@@ -58,14 +61,25 @@ class AudioAnalyzer:
 
     # Mots d'hesitation francais
     HESITATION_WORDS = [
-        "euh", "hum", "hmm", "ah", "oh",
-        "enfin", "en fait", "voila", "donc",
-        "peut-etre", "je pense", "je crois",
-        "comment dire", "disons", "bon"
+        "euh",
+        "hum",
+        "hmm",
+        "ah",
+        "oh",
+        "enfin",
+        "en fait",
+        "voila",
+        "donc",
+        "peut-etre",
+        "je pense",
+        "je crois",
+        "comment dire",
+        "disons",
+        "bon",
     ]
 
     # Patterns de repetition
-    REPETITION_PATTERN = re.compile(r'\b(\w+)\s+\1\b', re.IGNORECASE)
+    REPETITION_PATTERN = re.compile(r"\b(\w+)\s+\1\b", re.IGNORECASE)
 
     def __init__(self):
         logger.info("audio_analyzer_initialized", librosa_available=LIBROSA_AVAILABLE)
@@ -143,18 +157,14 @@ class AudioAnalyzer:
                 pause_count=0,  # Requires silence detection
                 pause_total_duration=0.0,
                 volume=volume,
-                volume_variation=float(rms_std)
+                volume_variation=float(rms_std),
             )
 
         except Exception as e:
             logger.error("prosody_analysis_error", error=str(e))
             return ProsodyAnalysis()
 
-    async def detect_emotions(
-        self,
-        transcript: str,
-        prosody: Optional[ProsodyAnalysis] = None
-    ) -> EmotionAnalysis:
+    async def detect_emotions(self, transcript: str, prosody: ProsodyAnalysis | None = None) -> EmotionAnalysis:
         """
         Detecte les emotions a partir du texte et de la prosodie.
 
@@ -169,10 +179,7 @@ class AudioAnalyzer:
         transcript_lower = transcript.lower()
 
         # Count hesitation words
-        hesitation_count = sum(
-            1 for word in self.HESITATION_WORDS
-            if word in transcript_lower
-        )
+        hesitation_count = sum(1 for word in self.HESITATION_WORDS if word in transcript_lower)
 
         # Count repetitions
         repetitions = len(self.REPETITION_PATTERN.findall(transcript))
@@ -229,11 +236,7 @@ class AudioAnalyzer:
         # Generate feedback
         feedback = self._generate_feedback(confidence, hesitation_score, prosody)
 
-        indicators = {
-            "hesitation_words": hesitation_count,
-            "repetitions": repetitions,
-            "word_count": word_count
-        }
+        indicators = {"hesitation_words": hesitation_count, "repetitions": repetitions, "word_count": word_count}
 
         return EmotionAnalysis(
             confidence=confidence,
@@ -241,15 +244,10 @@ class AudioAnalyzer:
             stress=stress,
             enthusiasm=enthusiasm,
             indicators=indicators,
-            feedback=feedback
+            feedback=feedback,
         )
 
-    def _generate_feedback(
-        self,
-        confidence: float,
-        hesitation: float,
-        prosody: ProsodyAnalysis
-    ) -> str:
+    def _generate_feedback(self, confidence: float, hesitation: float, prosody: ProsodyAnalysis) -> str:
         """
         Genere un feedback base sur l'analyse.
 

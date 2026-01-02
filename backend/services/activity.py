@@ -4,14 +4,11 @@ Tracks user actions, journey progression, and error logging.
 """
 
 from datetime import datetime, timedelta
-from typing import Optional
-from sqlalchemy import select, func, and_
+
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import (
-    User, ActivityLog, UserJourney, ErrorLog, TrainingSession,
-    ActivityAction, JourneyStage
-)
+from models import ActivityAction, ActivityLog, ErrorLog, JourneyStage, TrainingSession, User, UserJourney
 
 
 class ActivityService:
@@ -28,11 +25,11 @@ class ActivityService:
         self,
         user_id: int,
         action: str,
-        resource_type: Optional[str] = None,
-        resource_id: Optional[int] = None,
-        extra_data: Optional[dict] = None,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None
+        resource_type: str | None = None,
+        resource_id: int | None = None,
+        extra_data: dict | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
     ) -> ActivityLog:
         """Log a user activity."""
         activity = ActivityLog(
@@ -42,7 +39,7 @@ class ActivityService:
             resource_id=resource_id,
             extra_data=extra_data,
             ip_address=ip_address,
-            user_agent=user_agent
+            user_agent=user_agent,
         )
         self.db.add(activity)
 
@@ -66,11 +63,7 @@ class ActivityService:
         return activity
 
     async def get_user_activities(
-        self,
-        user_id: int,
-        action: Optional[str] = None,
-        limit: int = 50,
-        offset: int = 0
+        self, user_id: int, action: str | None = None, limit: int = 50, offset: int = 0
     ) -> tuple[list[ActivityLog], int]:
         """Get activities for a user with optional filtering."""
         query = select(ActivityLog).where(ActivityLog.user_id == user_id)
@@ -94,12 +87,7 @@ class ActivityService:
     # JOURNEY TRACKING
     # =========================================================================
 
-    async def _check_journey_progression(
-        self,
-        user_id: int,
-        action: str,
-        resource_type: Optional[str] = None
-    ):
+    async def _check_journey_progression(self, user_id: int, action: str, resource_type: str | None = None):
         """Check if user should progress to next journey stage."""
         result = await self.db.execute(select(User).where(User.id == user_id))
         user = result.scalar_one_or_none()
@@ -145,20 +133,14 @@ class ActivityService:
         """Count completed training sessions for a user."""
         result = await self.db.execute(
             select(func.count(TrainingSession.id)).where(
-                and_(
-                    TrainingSession.user_id == str(user_id),
-                    TrainingSession.status == "completed"
-                )
+                and_(TrainingSession.user_id == str(user_id), TrainingSession.status == "completed")
             )
         )
         return result.scalar() or 0
 
     async def update_journey_stage(
-        self,
-        user_id: int,
-        new_stage: str,
-        extra_data: Optional[dict] = None
-    ) -> Optional[UserJourney]:
+        self, user_id: int, new_stage: str, extra_data: dict | None = None
+    ) -> UserJourney | None:
         """Update user's journey stage and log the transition."""
         result = await self.db.execute(select(User).where(User.id == user_id))
         user = result.scalar_one_or_none()
@@ -174,10 +156,7 @@ class ActivityService:
 
         # Log the transition
         journey_event = UserJourney(
-            user_id=user_id,
-            stage=new_stage,
-            previous_stage=previous_stage,
-            extra_data=extra_data
+            user_id=user_id, stage=new_stage, previous_stage=previous_stage, extra_data=extra_data
         )
         self.db.add(journey_event)
         await self.db.commit()
@@ -191,19 +170,13 @@ class ActivityService:
         stats = {}
 
         for stage in stages:
-            result = await self.db.execute(
-                select(func.count(User.id)).where(User.journey_stage == stage)
-            )
+            result = await self.db.execute(select(func.count(User.id)).where(User.journey_stage == stage))
             stats[stage] = result.scalar() or 0
 
         # Calculate total and conversion rates
         total_users = sum(stats.values())
         if total_users == 0:
-            return {
-                "stages": stats,
-                "total_users": 0,
-                "conversion_rates": {}
-            }
+            return {"stages": stats, "total_users": 0, "conversion_rates": {}}
 
         conversion_rates = {}
         prev_count = total_users
@@ -215,11 +188,7 @@ class ActivityService:
             conversion_rates[stage] = round(rate, 1)
             prev_count = stats[stage] if stats[stage] > 0 else prev_count
 
-        return {
-            "stages": stats,
-            "total_users": total_users,
-            "conversion_rates": conversion_rates
-        }
+        return {"stages": stats, "total_users": total_users, "conversion_rates": conversion_rates}
 
     # =========================================================================
     # ERROR LOGGING
@@ -229,10 +198,10 @@ class ActivityService:
         self,
         error_type: str,
         error_message: str,
-        user_id: Optional[int] = None,
-        stack_trace: Optional[str] = None,
-        endpoint: Optional[str] = None,
-        request_data: Optional[dict] = None
+        user_id: int | None = None,
+        stack_trace: str | None = None,
+        endpoint: str | None = None,
+        request_data: dict | None = None,
     ) -> ErrorLog:
         """Log an application error."""
         error = ErrorLog(
@@ -241,7 +210,7 @@ class ActivityService:
             error_message=error_message,
             stack_trace=stack_trace,
             endpoint=endpoint,
-            request_data=request_data
+            request_data=request_data,
         )
         self.db.add(error)
         await self.db.commit()
@@ -249,11 +218,7 @@ class ActivityService:
         return error
 
     async def get_errors(
-        self,
-        resolved: Optional[bool] = None,
-        error_type: Optional[str] = None,
-        limit: int = 50,
-        offset: int = 0
+        self, resolved: bool | None = None, error_type: str | None = None, limit: int = 50, offset: int = 0
     ) -> tuple[list[ErrorLog], int]:
         """Get error logs with optional filtering."""
         query = select(ErrorLog)
@@ -277,12 +242,7 @@ class ActivityService:
 
         return errors, total
 
-    async def resolve_error(
-        self,
-        error_id: int,
-        admin_id: int,
-        resolution_notes: Optional[str] = None
-    ) -> Optional[ErrorLog]:
+    async def resolve_error(self, error_id: int, admin_id: int, resolution_notes: str | None = None) -> ErrorLog | None:
         """Mark an error as resolved."""
         result = await self.db.execute(select(ErrorLog).where(ErrorLog.id == error_id))
         error = result.scalar_one_or_none()
@@ -303,9 +263,7 @@ class ActivityService:
         since = datetime.utcnow() - timedelta(days=days)
 
         # Total errors
-        total_result = await self.db.execute(
-            select(func.count(ErrorLog.id)).where(ErrorLog.created_at >= since)
-        )
+        total_result = await self.db.execute(select(func.count(ErrorLog.id)).where(ErrorLog.created_at >= since))
         total = total_result.scalar() or 0
 
         # Unresolved errors
@@ -313,7 +271,7 @@ class ActivityService:
             select(func.count(ErrorLog.id)).where(
                 and_(
                     ErrorLog.created_at >= since,
-                    ErrorLog.is_resolved == False  # noqa: E712
+                    ErrorLog.is_resolved == False,  # noqa: E712
                 )
             )
         )
@@ -334,7 +292,7 @@ class ActivityService:
             "unresolved": unresolved,
             "resolved": total - unresolved,
             "by_type": by_type,
-            "period_days": days
+            "period_days": days,
         }
 
     # =========================================================================
@@ -346,9 +304,7 @@ class ActivityService:
         since = datetime.utcnow() - timedelta(days=days)
 
         # Total activities
-        total_result = await self.db.execute(
-            select(func.count(ActivityLog.id)).where(ActivityLog.created_at >= since)
-        )
+        total_result = await self.db.execute(select(func.count(ActivityLog.id)).where(ActivityLog.created_at >= since))
         total = total_result.scalar() or 0
 
         # Activities by action
@@ -363,10 +319,7 @@ class ActivityService:
         # Daily activity counts
         # Note: SQLite doesn't have DATE() function, use date() from func
         daily_result = await self.db.execute(
-            select(
-                func.date(ActivityLog.created_at).label("date"),
-                func.count(ActivityLog.id)
-            )
+            select(func.date(ActivityLog.created_at).label("date"), func.count(ActivityLog.id))
             .where(ActivityLog.created_at >= since)
             .group_by(func.date(ActivityLog.created_at))
             .order_by(func.date(ActivityLog.created_at))
@@ -375,8 +328,7 @@ class ActivityService:
 
         # Active users (unique users with activities)
         active_users_result = await self.db.execute(
-            select(func.count(func.distinct(ActivityLog.user_id)))
-            .where(ActivityLog.created_at >= since)
+            select(func.count(func.distinct(ActivityLog.user_id))).where(ActivityLog.created_at >= since)
         )
         active_users = active_users_result.scalar() or 0
 
@@ -385,7 +337,7 @@ class ActivityService:
             "by_action": by_action,
             "daily": daily,
             "active_users": active_users,
-            "period_days": days
+            "period_days": days,
         }
 
     async def get_churn_risk_users(self, inactive_days: int = 14) -> list[User]:
@@ -393,13 +345,15 @@ class ActivityService:
         threshold = datetime.utcnow() - timedelta(days=inactive_days)
 
         result = await self.db.execute(
-            select(User).where(
+            select(User)
+            .where(
                 and_(
                     User.is_active == True,  # noqa: E712
                     User.last_activity_at < threshold,
-                    User.journey_stage != JourneyStage.CHURNED.value
+                    User.journey_stage != JourneyStage.CHURNED.value,
                 )
-            ).order_by(User.last_activity_at.asc())
+            )
+            .order_by(User.last_activity_at.asc())
         )
         return list(result.scalars().all())
 
@@ -412,7 +366,7 @@ class ActivityService:
                 and_(
                     User.is_active == True,  # noqa: E712
                     User.last_activity_at < threshold,
-                    User.journey_stage != JourneyStage.CHURNED.value
+                    User.journey_stage != JourneyStage.CHURNED.value,
                 )
             )
         )

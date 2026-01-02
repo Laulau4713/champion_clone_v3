@@ -8,20 +8,23 @@ Tests:
 - Object construction
 """
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime, timedelta
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from agents.audit_agent.agent import AuditAgent
 from agents.audit_agent.schemas import (
-    SessionAudit, UserProgressReport, ChampionComparison,
-    WeeklyDigest, PerformanceLevel
+    ChampionComparison,
+    PerformanceLevel,
+    SessionAudit,
+    WeeklyDigest,
 )
-
 
 # ============================================
 # Fixtures
 # ============================================
+
 
 @pytest.fixture
 def mock_db_session():
@@ -32,7 +35,7 @@ def mock_db_session():
 @pytest.fixture
 def audit_agent(mock_db_session):
     """Create an AuditAgent with mocked dependencies."""
-    with patch('agents.audit_agent.agent.anthropic.AsyncAnthropic'):
+    with patch("agents.audit_agent.agent.anthropic.AsyncAnthropic"):
         agent = AuditAgent(mock_db_session)
         agent.client = MagicMock()
         return agent
@@ -80,6 +83,7 @@ def mock_message():
 # JSON Parsing Tests
 # ============================================
 
+
 class TestJsonParsing:
     """Tests for _parse_json_response method."""
 
@@ -114,7 +118,7 @@ class TestJsonParsing:
 
     def test_parse_invalid_json_raises_error(self, audit_agent):
         """Should raise ValueError for invalid JSON."""
-        text = 'This is not valid JSON at all'
+        text = "This is not valid JSON at all"
 
         with pytest.raises(ValueError) as exc_info:
             audit_agent._parse_json_response(text)
@@ -123,7 +127,7 @@ class TestJsonParsing:
 
     def test_parse_json_with_nested_objects(self, audit_agent):
         """Should handle complex nested JSON."""
-        text = '''{"overall_score": 80, "skill_scores": {"listening": 85, "empathy": 75}, "turning_points": [{"moment": "intro", "gauge_change": 10}]}'''
+        text = """{"overall_score": 80, "skill_scores": {"listening": 85, "empathy": 75}, "turning_points": [{"moment": "intro", "gauge_change": 10}]}"""
         result = audit_agent._parse_json_response(text)
 
         assert result["overall_score"] == 80
@@ -134,6 +138,7 @@ class TestJsonParsing:
 # ============================================
 # Session Context Building Tests
 # ============================================
+
 
 class TestSessionContextBuilding:
     """Tests for _build_session_context method."""
@@ -180,6 +185,7 @@ class TestSessionContextBuilding:
 # ============================================
 # Performance Level Tests
 # ============================================
+
 
 class TestPerformanceLevelCalculation:
     """Tests for performance level determination in _build_session_audit."""
@@ -244,6 +250,7 @@ class TestPerformanceLevelCalculation:
 # ============================================
 # Object Construction Tests
 # ============================================
+
 
 class TestObjectConstruction:
     """Tests for object construction methods."""
@@ -337,6 +344,7 @@ class TestObjectConstruction:
 # ============================================
 # Async Method Tests (with mocked API)
 # ============================================
+
 
 class TestAsyncMethods:
     """Tests for async methods with mocked Anthropic API."""

@@ -4,10 +4,11 @@ Unit Tests for Agent Tools.
 Tests agent tools with mocked APIs (Groq, Whisper).
 """
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
-import os
 import json
+import os
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # Set test environment
 os.environ["GROQ_API_KEY"] = "test-groq-key"
@@ -18,6 +19,7 @@ os.environ["ANTHROPIC_API_KEY"] = "test-anthropic-key"
 # PatternTools Tests
 # ============================================
 
+
 class TestPatternTools:
     """Tests for PatternTools with mocked Groq API."""
 
@@ -26,27 +28,32 @@ class TestPatternTools:
         """Create a mock Groq response."""
         mock_response = MagicMock()
         mock_response.choices = [
-            MagicMock(message=MagicMock(content=json.dumps({
-                "openings": ["Bonjour, comment allez-vous?"],
-                "objection_handlers": [{"objection": "trop cher", "response": "Je comprends"}],
-                "closes": ["Ça vous intéresse?"],
-                "key_phrases": ["Je comprends"],
-                "tone_style": "professionnel",
-                "success_patterns": ["empathie"],
-                "communication_techniques": []
-            })))
+            MagicMock(
+                message=MagicMock(
+                    content=json.dumps(
+                        {
+                            "openings": ["Bonjour, comment allez-vous?"],
+                            "objection_handlers": [{"objection": "trop cher", "response": "Je comprends"}],
+                            "closes": ["Ça vous intéresse?"],
+                            "key_phrases": ["Je comprends"],
+                            "tone_style": "professionnel",
+                            "success_patterns": ["empathie"],
+                            "communication_techniques": [],
+                        }
+                    )
+                )
+            )
         ]
         return mock_response
 
     @pytest.mark.asyncio
     async def test_extract_patterns_success(self, mock_groq_response):
         """Test successful pattern extraction."""
-        with patch('agents.pattern_agent.tools.AsyncGroq') as mock_groq:
-            mock_groq.return_value.chat.completions.create = AsyncMock(
-                return_value=mock_groq_response
-            )
+        with patch("agents.pattern_agent.tools.AsyncGroq") as mock_groq:
+            mock_groq.return_value.chat.completions.create = AsyncMock(return_value=mock_groq_response)
 
             from agents.pattern_agent.tools import PatternTools
+
             tools = PatternTools()
 
             transcript = """
@@ -64,8 +71,9 @@ class TestPatternTools:
     @pytest.mark.asyncio
     async def test_extract_patterns_short_transcript(self):
         """Test extraction fails with short transcript."""
-        with patch('agents.pattern_agent.tools.AsyncGroq'):
+        with patch("agents.pattern_agent.tools.AsyncGroq"):
             from agents.pattern_agent.tools import PatternTools
+
             tools = PatternTools()
 
             result = await tools.extract_patterns("Too short")
@@ -78,23 +86,28 @@ class TestPatternTools:
         """Test successful scenario generation."""
         mock_response = MagicMock()
         mock_response.choices = [
-            MagicMock(message=MagicMock(content=json.dumps([
-                {
-                    "context": "Appel à froid",
-                    "prospect_type": "PME",
-                    "challenge": "Obtenir un RDV",
-                    "objectives": ["Créer le rapport"],
-                    "difficulty": "medium"
-                }
-            ])))
+            MagicMock(
+                message=MagicMock(
+                    content=json.dumps(
+                        [
+                            {
+                                "context": "Appel à froid",
+                                "prospect_type": "PME",
+                                "challenge": "Obtenir un RDV",
+                                "objectives": ["Créer le rapport"],
+                                "difficulty": "medium",
+                            }
+                        ]
+                    )
+                )
+            )
         ]
 
-        with patch('agents.pattern_agent.tools.AsyncGroq') as mock_groq:
-            mock_groq.return_value.chat.completions.create = AsyncMock(
-                return_value=mock_response
-            )
+        with patch("agents.pattern_agent.tools.AsyncGroq") as mock_groq:
+            mock_groq.return_value.chat.completions.create = AsyncMock(return_value=mock_response)
 
             from agents.pattern_agent.tools import PatternTools
+
             tools = PatternTools()
 
             patterns = {"openings": ["Bonjour"], "closes": ["Merci"]}
@@ -109,29 +122,34 @@ class TestPatternTools:
         """Test response analysis."""
         mock_response = MagicMock()
         mock_response.choices = [
-            MagicMock(message=MagicMock(content=json.dumps({
-                "score": 8,
-                "patterns_used": ["empathie"],
-                "patterns_missed": [],
-                "feedback": "Bonne réponse",
-                "strengths": ["Écoute active"],
-                "improvements": [],
-                "champion_alternative": "Alternative"
-            })))
+            MagicMock(
+                message=MagicMock(
+                    content=json.dumps(
+                        {
+                            "score": 8,
+                            "patterns_used": ["empathie"],
+                            "patterns_missed": [],
+                            "feedback": "Bonne réponse",
+                            "strengths": ["Écoute active"],
+                            "improvements": [],
+                            "champion_alternative": "Alternative",
+                        }
+                    )
+                )
+            )
         ]
 
-        with patch('agents.pattern_agent.tools.AsyncGroq') as mock_groq:
-            mock_groq.return_value.chat.completions.create = AsyncMock(
-                return_value=mock_response
-            )
+        with patch("agents.pattern_agent.tools.AsyncGroq") as mock_groq:
+            mock_groq.return_value.chat.completions.create = AsyncMock(return_value=mock_response)
 
             from agents.pattern_agent.tools import PatternTools
+
             tools = PatternTools()
 
             result = await tools.analyze_response_against_patterns(
                 response="Je comprends votre situation",
                 patterns={"openings": [], "key_phrases": ["Je comprends"]},
-                context="Appel commercial"
+                context="Appel commercial",
             )
 
             assert result["success"] is True
@@ -139,8 +157,9 @@ class TestPatternTools:
 
     def test_validate_patterns(self):
         """Test pattern validation."""
-        with patch('agents.pattern_agent.tools.AsyncGroq'):
+        with patch("agents.pattern_agent.tools.AsyncGroq"):
             from agents.pattern_agent.tools import PatternTools
+
             tools = PatternTools()
 
             # Test with missing keys
@@ -154,8 +173,9 @@ class TestPatternTools:
 
     def test_validate_scenario(self):
         """Test scenario validation."""
-        with patch('agents.pattern_agent.tools.AsyncGroq'):
+        with patch("agents.pattern_agent.tools.AsyncGroq"):
             from agents.pattern_agent.tools import PatternTools
+
             tools = PatternTools()
 
             scenario = {"context": "Test", "difficulty": "hard"}
@@ -168,8 +188,9 @@ class TestPatternTools:
 
     def test_get_default_scenario(self):
         """Test default scenario generation."""
-        with patch('agents.pattern_agent.tools.AsyncGroq'):
+        with patch("agents.pattern_agent.tools.AsyncGroq"):
             from agents.pattern_agent.tools import PatternTools
+
             tools = PatternTools()
 
             default = tools._get_default_scenario()
@@ -183,6 +204,7 @@ class TestPatternTools:
 # TrainingTools Tests
 # ============================================
 
+
 class TestTrainingTools:
     """Tests for TrainingTools with mocked Groq API."""
 
@@ -190,25 +212,20 @@ class TestTrainingTools:
     async def test_generate_prospect_response_success(self):
         """Test prospect response generation."""
         mock_response = MagicMock()
-        mock_response.choices = [
-            MagicMock(message=MagicMock(
-                content="Bonjour, je suis occupé en ce moment."
-            ))
-        ]
+        mock_response.choices = [MagicMock(message=MagicMock(content="Bonjour, je suis occupé en ce moment."))]
 
-        with patch('agents.training_agent.tools.AsyncGroq') as mock_groq:
-            mock_groq.return_value.chat.completions.create = AsyncMock(
-                return_value=mock_response
-            )
+        with patch("agents.training_agent.tools.AsyncGroq") as mock_groq:
+            mock_groq.return_value.chat.completions.create = AsyncMock(return_value=mock_response)
 
             from agents.training_agent.tools import TrainingTools
+
             tools = TrainingTools()
 
             result = await tools.generate_prospect_response(
                 user_message="Bonjour, comment allez-vous?",
                 conversation_history=[],
                 scenario={"context": "Vente CRM", "difficulty": "medium"},
-                patterns={"openings": ["Bonjour"]}
+                patterns={"openings": ["Bonjour"]},
             )
 
             assert result["success"] is True
@@ -220,28 +237,33 @@ class TestTrainingTools:
         """Test response evaluation."""
         mock_response = MagicMock()
         mock_response.choices = [
-            MagicMock(message=MagicMock(content=json.dumps({
-                "score": 7,
-                "feedback": "Bonne approche",
-                "suggestions": ["Poser plus de questions"],
-                "patterns_used": ["empathie"],
-                "patterns_to_try": ["closing"]
-            })))
+            MagicMock(
+                message=MagicMock(
+                    content=json.dumps(
+                        {
+                            "score": 7,
+                            "feedback": "Bonne approche",
+                            "suggestions": ["Poser plus de questions"],
+                            "patterns_used": ["empathie"],
+                            "patterns_to_try": ["closing"],
+                        }
+                    )
+                )
+            )
         ]
 
-        with patch('agents.training_agent.tools.AsyncGroq') as mock_groq:
-            mock_groq.return_value.chat.completions.create = AsyncMock(
-                return_value=mock_response
-            )
+        with patch("agents.training_agent.tools.AsyncGroq") as mock_groq:
+            mock_groq.return_value.chat.completions.create = AsyncMock(return_value=mock_response)
 
             from agents.training_agent.tools import TrainingTools
+
             tools = TrainingTools()
 
             result = await tools.evaluate_response(
                 user_response="Je comprends votre besoin",
                 patterns={"openings": [], "key_phrases": []},
                 scenario={"context": "test", "difficulty": "medium"},
-                conversation_history=[{"role": "user", "content": "Bonjour"}]
+                conversation_history=[{"role": "user", "content": "Bonjour"}],
             )
 
             assert result["success"] is True
@@ -253,32 +275,34 @@ class TestTrainingTools:
         """Test session summary generation."""
         mock_response = MagicMock()
         mock_response.choices = [
-            MagicMock(message=MagicMock(content=json.dumps({
-                "overall_score": 7.5,
-                "feedback_summary": "Bonne session",
-                "strengths": ["Communication claire"],
-                "areas_for_improvement": ["Closing"],
-                "patterns_mastered": ["Ouverture"],
-                "patterns_to_practice": ["Objections"],
-                "next_steps": ["Pratiquer le closing"]
-            })))
+            MagicMock(
+                message=MagicMock(
+                    content=json.dumps(
+                        {
+                            "overall_score": 7.5,
+                            "feedback_summary": "Bonne session",
+                            "strengths": ["Communication claire"],
+                            "areas_for_improvement": ["Closing"],
+                            "patterns_mastered": ["Ouverture"],
+                            "patterns_to_practice": ["Objections"],
+                            "next_steps": ["Pratiquer le closing"],
+                        }
+                    )
+                )
+            )
         ]
 
-        with patch('agents.training_agent.tools.AsyncGroq') as mock_groq:
-            mock_groq.return_value.chat.completions.create = AsyncMock(
-                return_value=mock_response
-            )
+        with patch("agents.training_agent.tools.AsyncGroq") as mock_groq:
+            mock_groq.return_value.chat.completions.create = AsyncMock(return_value=mock_response)
 
             from agents.training_agent.tools import TrainingTools
+
             tools = TrainingTools()
 
             result = await tools.generate_session_summary(
-                conversation=[
-                    {"role": "user", "content": "Bonjour"},
-                    {"role": "champion", "content": "Bonjour"}
-                ],
+                conversation=[{"role": "user", "content": "Bonjour"}, {"role": "champion", "content": "Bonjour"}],
                 patterns={"openings": []},
-                scenario={"context": "test"}
+                scenario={"context": "test"},
             )
 
             assert result["success"] is True
@@ -288,16 +312,17 @@ class TestTrainingTools:
     @pytest.mark.asyncio
     async def test_generate_tips(self):
         """Test tips generation."""
-        with patch('agents.training_agent.tools.AsyncGroq'):
+        with patch("agents.training_agent.tools.AsyncGroq"):
             from agents.training_agent.tools import TrainingTools
+
             tools = TrainingTools()
 
             tips = await tools.generate_tips(
                 scenario={"difficulty": "hard", "objectives": ["Convaincre"]},
                 patterns={
                     "openings": ["Bonjour, je suis ravi de vous parler"],
-                    "key_phrases": ["Je comprends parfaitement"]
-                }
+                    "key_phrases": ["Je comprends parfaitement"],
+                },
             )
 
             assert isinstance(tips, list)
@@ -305,8 +330,9 @@ class TestTrainingTools:
 
     def test_check_session_complete_max_messages(self):
         """Test session completion by message count."""
-        with patch('agents.training_agent.tools.AsyncGroq'):
+        with patch("agents.training_agent.tools.AsyncGroq"):
             from agents.training_agent.tools import TrainingTools
+
             tools = TrainingTools()
 
             # 10+ user messages should end session
@@ -316,8 +342,9 @@ class TestTrainingTools:
 
     def test_check_session_complete_ending_phrase(self):
         """Test session completion by ending phrase."""
-        with patch('agents.training_agent.tools.AsyncGroq'):
+        with patch("agents.training_agent.tools.AsyncGroq"):
             from agents.training_agent.tools import TrainingTools
+
             tools = TrainingTools()
 
             conversation = [{"role": "champion", "content": "D'accord, on signe le contrat"}]
@@ -326,13 +353,14 @@ class TestTrainingTools:
 
     def test_check_session_not_complete(self):
         """Test session not complete."""
-        with patch('agents.training_agent.tools.AsyncGroq'):
+        with patch("agents.training_agent.tools.AsyncGroq"):
             from agents.training_agent.tools import TrainingTools
+
             tools = TrainingTools()
 
             conversation = [
                 {"role": "user", "content": "Bonjour"},
-                {"role": "champion", "content": "Bonjour, comment puis-je vous aider?"}
+                {"role": "champion", "content": "Bonjour, comment puis-je vous aider?"},
             ]
 
             assert tools.check_session_complete(conversation, {}) is False
@@ -342,13 +370,15 @@ class TestTrainingTools:
 # AudioTools Tests
 # ============================================
 
+
 class TestAudioTools:
     """Tests for AudioTools with mocked Whisper."""
 
     def test_init_without_api_keys(self):
         """Test AudioTools initializes without requiring API keys."""
-        with patch('agents.audio_agent.tools.WHISPER_AVAILABLE', True):
+        with patch("agents.audio_agent.tools.WHISPER_AVAILABLE", True):
             from agents.audio_agent.tools import AudioTools
+
             tools = AudioTools()
 
             assert tools._whisper_model is None  # Lazy loaded
@@ -357,8 +387,9 @@ class TestAudioTools:
     @pytest.mark.asyncio
     async def test_transcribe_file_not_found(self):
         """Test transcription with non-existent file."""
-        with patch('agents.audio_agent.tools.WHISPER_AVAILABLE', True):
+        with patch("agents.audio_agent.tools.WHISPER_AVAILABLE", True):
             from agents.audio_agent.tools import AudioTools
+
             tools = AudioTools()
 
             result = await tools.transcribe("/nonexistent/file.mp3")
@@ -369,14 +400,16 @@ class TestAudioTools:
     @pytest.mark.asyncio
     async def test_transcribe_whisper_not_available(self):
         """Test transcription when Whisper is not installed."""
-        with patch('agents.audio_agent.tools.WHISPER_AVAILABLE', False):
+        with patch("agents.audio_agent.tools.WHISPER_AVAILABLE", False):
             from agents.audio_agent.tools import AudioTools
+
             tools = AudioTools()
 
             # Create a temp file
             import tempfile
-            with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as f:
-                f.write(b'fake audio data')
+
+            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as f:
+                f.write(b"fake audio data")
                 temp_path = f.name
 
             try:
@@ -390,6 +423,7 @@ class TestAudioTools:
     async def test_analyze_audio_file_not_found(self):
         """Test audio analysis with non-existent file."""
         from agents.audio_agent.tools import AudioTools
+
         tools = AudioTools()
 
         result = await tools.analyze_audio("/nonexistent/file.mp3")
@@ -399,13 +433,13 @@ class TestAudioTools:
     def test_clone_voice_no_elevenlabs(self):
         """Test voice cloning without ElevenLabs."""
         from agents.audio_agent.tools import AudioTools
+
         tools = AudioTools()
         tools.elevenlabs = None
 
         import asyncio
-        result = asyncio.get_event_loop().run_until_complete(
-            tools.clone_voice("Test", ["/fake/path.mp3"])
-        )
+
+        result = asyncio.get_event_loop().run_until_complete(tools.clone_voice("Test", ["/fake/path.mp3"]))
 
         assert result["success"] is False
         assert "not configured" in result["error"].lower()
@@ -413,13 +447,13 @@ class TestAudioTools:
     def test_text_to_speech_no_elevenlabs(self):
         """Test TTS without ElevenLabs."""
         from agents.audio_agent.tools import AudioTools
+
         tools = AudioTools()
         tools.elevenlabs = None
 
         import asyncio
-        result = asyncio.get_event_loop().run_until_complete(
-            tools.text_to_speech("Hello", "voice_id")
-        )
+
+        result = asyncio.get_event_loop().run_until_complete(tools.text_to_speech("Hello", "voice_id"))
 
         assert result["success"] is False
         assert "not configured" in result["error"].lower()
@@ -428,6 +462,7 @@ class TestAudioTools:
 # ============================================
 # BaseAgent Tests
 # ============================================
+
 
 class TestBaseAgent:
     """Tests for BaseAgent class."""
@@ -439,7 +474,7 @@ class TestBaseAgent:
 
     def test_agent_initialization(self, mock_anthropic):
         """Test agent initializes correctly."""
-        from agents.base_agent import BaseAgent, AgentStatus
+        from agents.base_agent import AgentStatus, BaseAgent
 
         class TestAgent(BaseAgent):
             def get_system_prompt(self):
@@ -459,7 +494,7 @@ class TestBaseAgent:
 
     def test_agent_get_status(self, mock_anthropic):
         """Test agent status retrieval."""
-        from agents.base_agent import BaseAgent, AgentStatus
+        from agents.base_agent import AgentStatus, BaseAgent
 
         class TestAgent(BaseAgent):
             def get_system_prompt(self):
@@ -482,7 +517,7 @@ class TestBaseAgent:
 
     def test_agent_reset(self, mock_anthropic):
         """Test agent reset."""
-        from agents.base_agent import BaseAgent, AgentStatus
+        from agents.base_agent import AgentStatus, BaseAgent
 
         class TestAgent(BaseAgent):
             def get_system_prompt(self):

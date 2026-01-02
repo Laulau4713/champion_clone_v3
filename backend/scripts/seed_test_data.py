@@ -15,9 +15,17 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from models import (
-    User, Champion, TrainingSession, ActivityLog, ErrorLog,
-    EmailTemplate, EmailLog, WebhookEndpoint, WebhookLog,
-    AdminAlert, UserJourney, SubscriptionEvent
+    ActivityLog,
+    AdminAlert,
+    Champion,
+    EmailLog,
+    EmailTemplate,
+    ErrorLog,
+    TrainingSession,
+    User,
+    UserJourney,
+    WebhookEndpoint,
+    WebhookLog,
 )
 from services.auth import hash_password
 
@@ -88,8 +96,8 @@ async def seed_data():
                 user_id=owner.id,
                 name=c_data["name"],
                 description=c_data["desc"],
-                video_path=f"/uploads/video_{random.randint(1000,9999)}.mp4",
-                audio_path=f"/audio/audio_{random.randint(1000,9999)}.wav",
+                video_path=f"/uploads/video_{random.randint(1000, 9999)}.mp4",
+                audio_path=f"/audio/audio_{random.randint(1000, 9999)}.wav",
                 transcript=f"Transcription de {c_data['name']}...",
                 patterns_json={"techniques": ["closing", "objection_handling"], "score": random.randint(70, 95)},
                 status="ready",
@@ -129,7 +137,7 @@ async def seed_data():
             db.add(session)
 
         await db.commit()
-        print(f"  Created 25 training sessions")
+        print("  Created 25 training sessions")
 
         print("\nCreating activity logs...")
         actions = ["login", "logout", "upload", "analyze", "training_start", "training_complete", "register"]
@@ -143,7 +151,11 @@ async def seed_data():
                 activity = ActivityLog(
                     user_id=user.id,
                     action=action,
-                    resource_type="champion" if action in ["upload", "analyze"] else "session" if "training" in action else None,
+                    resource_type="champion"
+                    if action in ["upload", "analyze"]
+                    else "session"
+                    if "training" in action
+                    else None,
                     resource_id=str(random.randint(1, 100)) if action not in ["login", "logout", "register"] else None,
                     ip_address=f"192.168.1.{random.randint(1, 254)}",
                     user_agent="Mozilla/5.0",
@@ -152,7 +164,7 @@ async def seed_data():
                 db.add(activity)
 
         await db.commit()
-        print(f"  Created ~450 activity logs")
+        print("  Created ~450 activity logs")
 
         print("\nCreating error logs...")
         error_types = ["ValidationError", "APIError", "DatabaseError", "TimeoutError", "AuthError"]
@@ -173,7 +185,7 @@ async def seed_data():
             db.add(error)
 
         await db.commit()
-        print(f"  Created 15 error logs")
+        print("  Created 15 error logs")
 
         print("\nCreating email templates...")
         templates = [
@@ -196,7 +208,7 @@ async def seed_data():
             db.add(template)
 
         await db.commit()
-        print(f"  Created email templates")
+        print("  Created email templates")
 
         print("\nCreating email logs...")
         statuses = ["sent", "sent", "sent", "sent", "opened", "clicked", "failed"]
@@ -215,7 +227,7 @@ async def seed_data():
             db.add(email_log)
 
         await db.commit()
-        print(f"  Created 50 email logs")
+        print("  Created 50 email logs")
 
         print("\nCreating webhook endpoints...")
         webhooks_data = [
@@ -243,7 +255,7 @@ async def seed_data():
             created_webhooks.append(webhook)
 
         await db.commit()
-        print(f"  Created webhook endpoints")
+        print("  Created webhook endpoints")
 
         print("\nCreating webhook logs...")
         if created_webhooks:
@@ -263,15 +275,40 @@ async def seed_data():
                 db.add(log)
 
         await db.commit()
-        print(f"  Created 30 webhook logs")
+        print("  Created 30 webhook logs")
 
         print("\nCreating admin alerts...")
         alerts_data = [
-            {"type": "system", "severity": "info", "title": "Mise a jour disponible", "message": "Version 2.1 disponible"},
-            {"type": "security", "severity": "warning", "title": "Tentatives de connexion", "message": "5 tentatives echouees pour user@test.com"},
-            {"type": "billing", "severity": "error", "title": "Paiement echoue", "message": "Le paiement pour user123 a echoue"},
-            {"type": "system", "severity": "critical", "title": "Service indisponible", "message": "Le service d'analyse est temporairement indisponible"},
-            {"type": "usage", "severity": "info", "title": "Nouveau record", "message": "100 sessions completees cette semaine!"},
+            {
+                "type": "system",
+                "severity": "info",
+                "title": "Mise a jour disponible",
+                "message": "Version 2.1 disponible",
+            },
+            {
+                "type": "security",
+                "severity": "warning",
+                "title": "Tentatives de connexion",
+                "message": "5 tentatives echouees pour user@test.com",
+            },
+            {
+                "type": "billing",
+                "severity": "error",
+                "title": "Paiement echoue",
+                "message": "Le paiement pour user123 a echoue",
+            },
+            {
+                "type": "system",
+                "severity": "critical",
+                "title": "Service indisponible",
+                "message": "Le service d'analyse est temporairement indisponible",
+            },
+            {
+                "type": "usage",
+                "severity": "info",
+                "title": "Nouveau record",
+                "message": "100 sessions completees cette semaine!",
+            },
         ]
 
         for a in alerts_data:
@@ -287,10 +324,18 @@ async def seed_data():
             db.add(alert)
 
         await db.commit()
-        print(f"  Created 5 admin alerts")
+        print("  Created 5 admin alerts")
 
         print("\nCreating user journeys...")
-        stages = ["registered", "first_login", "first_upload", "first_analysis", "first_training", "active_user", "power_user"]
+        stages = [
+            "registered",
+            "first_login",
+            "first_upload",
+            "first_analysis",
+            "first_training",
+            "active_user",
+            "power_user",
+        ]
 
         for user in created_users:
             # Create journey progression for each user
@@ -306,11 +351,11 @@ async def seed_data():
                 prev_stage = stages[i]
 
         await db.commit()
-        print(f"  Created user journeys")
+        print("  Created user journeys")
 
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("Test data seeded successfully!")
-        print("="*50)
+        print("=" * 50)
 
 
 if __name__ == "__main__":

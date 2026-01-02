@@ -5,7 +5,7 @@
       "name": "Facile",
       "days": [1, 8],
       "description": "Fondamentaux - Prospect coopératif qui guide l'apprentissage",
-      
+
       "ai_behavior": {
         "response_delay_seconds": [2.5, 4.0],
         "patience_level": "high",
@@ -14,7 +14,7 @@
         "forgiveness_level": "high",
         "memory_strictness": "low"
       },
-      
+
       "prospect_baseline": {
         "starting_mood": "curious",
         "aggression_level": 0.1,
@@ -23,7 +23,7 @@
         "information_sharing": "generous",
         "patience_with_mistakes": "high"
       },
-      
+
       "emotional_state_system": {
         "enabled": true,
         "starting_gauge": 60,
@@ -31,7 +31,7 @@
         "max_gauge": 100,
         "conversion_threshold": 75,
         "gauge_volatility": "low",
-        
+
         "gauge_modifiers": {
           "positive_actions": {
             "good_listening_signal": { "points": 3, "description": "Signal d'écoute approprié" },
@@ -54,7 +54,7 @@
             "contradiction": { "points": -3, "description": "Se contredit" }
           }
         },
-        
+
         "mood_stages": [
           { "range": [0, 25], "mood": "resistant", "behavior": "Répond par monosyllabes, sceptique" },
           { "range": [26, 50], "mood": "neutral", "behavior": "Écoute sans enthousiasme, pose des questions basiques" },
@@ -62,29 +62,29 @@
           { "range": [76, 100], "mood": "ready_to_buy", "behavior": "Signaux d'achat, questions pratiques, prêt à closer" }
         ]
       },
-      
+
       "hidden_objections": {
         "enabled": false,
         "description": "Pas d'objections cachées en niveau facile - le prospect dit ce qu'il pense"
       },
-      
+
       "situational_events": {
         "enabled": false,
         "description": "Pas d'interruptions situationnelles en niveau facile"
       },
-      
+
       "reversals": {
         "enabled": false,
         "description": "Pas de retournements de situation en niveau facile"
       },
-      
+
       "conversion_triggers": {
         "description": "Conditions pour que le prospect accepte le closing",
         "required_gauge": 75,
         "required_skills_demonstrated": ["ecoute_active", "questions_ouvertes"],
         "auto_accept_if": "gauge >= 80 AND no_major_mistakes_last_2_minutes"
       },
-      
+
       "feedback_settings": {
         "frequency": "after_each_response",
         "detail_level": "detailed",
@@ -93,7 +93,7 @@
         "show_gauge": true,
         "show_tips": true
       },
-      
+
       "hints_system": {
         "enabled": true,
         "trigger_after_silence_seconds": 5,
@@ -105,7 +105,7 @@
           "Le prospect attend une réponse à son objection"
         ]
       },
-      
+
       "scoring": {
         "bonus_multiplier_basics": 1.2,
         "penalty_reduction": 0.5,
@@ -114,13 +114,13 @@
         "excellence_threshold": 85
       }
     },
-    
+
     {
       "level_id": "medium",
       "name": "Intermédiaire",
       "days": [9, 20],
       "description": "Mise en pratique - Prospect réaliste avec objections et résistance modérée",
-      
+
       "ai_behavior": {
         "response_delay_seconds": [1.5, 3.0],
         "patience_level": "medium",
@@ -129,7 +129,7 @@
         "forgiveness_level": "medium",
         "memory_strictness": "medium"
       },
-      
+
       "prospect_baseline": {
         "starting_mood": "neutral",
         "aggression_level": 0.3,
@@ -138,7 +138,7 @@
         "information_sharing": "selective",
         "patience_with_mistakes": "medium"
       },
-      
+
       "emotional_state_system": {
         "enabled": true,
         "starting_gauge": 45,
@@ -146,7 +146,7 @@
         "max_gauge": 100,
         "conversion_threshold": 80,
         "gauge_volatility": "medium",
-        
+
         "gauge_modifiers": {
           "positive_actions": {
             "good_listening_signal": { "points": 2, "description": "Signal d'écoute approprié" },
@@ -174,7 +174,7 @@
             "free_discount": { "points": -6, "description": "Donne une remise sans contrepartie" }
           }
         },
-        
+
         "mood_stages": [
           { "range": [0, 20], "mood": "hostile", "behavior": "Fermeture, objections en rafale, menace de raccrocher" },
           { "range": [21, 40], "mood": "skeptical", "behavior": "Doute affiché, questions pièges, teste le commercial" },
@@ -183,7 +183,7 @@
           { "range": [81, 100], "mood": "ready_to_buy", "behavior": "Signaux d'achat clairs, négocie pour finaliser, prêt à s'engager" }
         ]
       },
-      
+
       "hidden_objections": {
         "enabled": true,
         "probability": 0.4,
@@ -214,7 +214,7 @@
           }
         ]
       },
-      
+
       "situational_events": {
         "enabled": true,
         "probability_per_scenario": 0.3,
@@ -240,7 +240,7 @@
           }
         ]
       },
-      
+
       "reversals": {
         "enabled": true,
         "probability": 0.25,
@@ -260,7 +260,7 @@
           }
         ]
       },
-      
+
       "interruption_triggers": {
         "conditions": [
           { "if": "commercial_speaks_more_than_seconds", "value": 45, "action": "prospect_interrupts" },
@@ -274,7 +274,7 @@
           "C'est bien joli tout ça, mais qu'est-ce qui vous différencie vraiment?"
         ]
       },
-      
+
       "conversion_triggers": {
         "description": "Conditions pour que le prospect accepte le closing",
         "required_gauge": 80,
@@ -289,7 +289,7 @@
           { "condition": "risk_reversal_offered", "gauge_bonus": 3 }
         ]
       },
-      
+
       "memory_coherence": {
         "enabled": true,
         "strictness": "medium",
@@ -307,7 +307,7 @@
           }
         ]
       },
-      
+
       "feedback_settings": {
         "frequency": "end_of_scenario",
         "detail_level": "moderate",
@@ -316,14 +316,14 @@
         "show_gauge": true,
         "show_tips": true
       },
-      
+
       "hints_system": {
         "enabled": true,
         "trigger_after_silence_seconds": 8,
         "max_hints_per_scenario": 2,
         "hint_style": "subtle"
       },
-      
+
       "scoring": {
         "bonus_multiplier_basics": 1.0,
         "penalty_reduction": 0.75,
@@ -332,13 +332,13 @@
         "excellence_threshold": 88
       }
     },
-    
+
     {
       "level_id": "expert",
       "name": "Expert",
       "days": [21, 30],
       "description": "Maîtrise - Prospects difficiles, situations complexes, pression réaliste",
-      
+
       "ai_behavior": {
         "response_delay_seconds": [0.5, 2.0],
         "patience_level": "low",
@@ -347,7 +347,7 @@
         "forgiveness_level": "low",
         "memory_strictness": "high"
       },
-      
+
       "prospect_baseline": {
         "starting_mood": "skeptical",
         "aggression_level": 0.6,
@@ -356,7 +356,7 @@
         "information_sharing": "reluctant",
         "patience_with_mistakes": "low"
       },
-      
+
       "emotional_state_system": {
         "enabled": true,
         "starting_gauge": 30,
@@ -364,7 +364,7 @@
         "max_gauge": 100,
         "conversion_threshold": 85,
         "gauge_volatility": "high",
-        
+
         "gauge_modifiers": {
           "positive_actions": {
             "good_listening_signal": { "points": 1, "description": "Signal d'écoute approprié" },
@@ -399,7 +399,7 @@
             "gave_up_too_early": { "points": -8, "description": "Abandonne trop tôt" }
           }
         },
-        
+
         "mood_stages": [
           { "range": [0, 15], "mood": "hostile", "behavior": "Attaque personnelle, menace de raccrocher, refuse tout" },
           { "range": [16, 35], "mood": "aggressive", "behavior": "Objections en rafale, ton sec, teste les limites" },
@@ -409,7 +409,7 @@
           { "range": [86, 100], "mood": "ready_to_buy", "behavior": "Prêt à négocier pour finaliser" }
         ]
       },
-      
+
       "hidden_objections": {
         "enabled": true,
         "probability": 0.7,
@@ -448,7 +448,7 @@
           }
         ]
       },
-      
+
       "situational_events": {
         "enabled": true,
         "probability_per_scenario": 0.6,
@@ -502,7 +502,7 @@
           }
         ]
       },
-      
+
       "reversals": {
         "enabled": true,
         "probability": 0.5,
@@ -535,7 +535,7 @@
           }
         ]
       },
-      
+
       "interruption_triggers": {
         "conditions": [
           { "if": "commercial_speaks_more_than_seconds", "value": 20, "action": "prospect_interrupts_aggressively" },
@@ -551,7 +551,7 @@
           "Votre pitch je l'ai entendu 100 fois. Qu'est-ce que VOUS avez de différent?"
         ]
       },
-      
+
       "behavioral_cues": {
         "enabled": true,
         "description": "Indices comportementaux que l'IA simule par le texte",
@@ -588,7 +588,7 @@
           }
         ]
       },
-      
+
       "multi_interlocutor": {
         "enabled": true,
         "probability": 0.3,
@@ -607,7 +607,7 @@
           }
         ]
       },
-      
+
       "conversion_triggers": {
         "description": "Conditions pour que le prospect accepte le closing",
         "required_gauge": 85,
@@ -630,7 +630,7 @@
           { "condition": "major_contradiction", "effect": "gauge_drop_20_and_trust_broken" }
         ]
       },
-      
+
       "memory_coherence": {
         "enabled": true,
         "strictness": "high",
@@ -653,7 +653,7 @@
           }
         ]
       },
-      
+
       "expert_challenges": {
         "enabled": true,
         "random_selection": 1,
@@ -690,7 +690,7 @@
           }
         ]
       },
-      
+
       "feedback_settings": {
         "frequency": "end_of_scenario",
         "detail_level": "minimal",
@@ -699,11 +699,11 @@
         "show_gauge": false,
         "show_tips": false
       },
-      
+
       "hints_system": {
         "enabled": false
       },
-      
+
       "scoring": {
         "bonus_multiplier_basics": 0.8,
         "penalty_multiplier": 1.3,
@@ -713,7 +713,7 @@
       }
     }
   ],
-  
+
   "progression_rules": {
     "easy_to_medium": {
       "required_skills_passed": 4,
@@ -726,7 +726,7 @@
       "required_days_completed": 20
     }
   },
-  
+
   "adaptive_difficulty": {
     "enabled": true,
     "within_level_adjustment": true,

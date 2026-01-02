@@ -8,16 +8,15 @@ Manages the lifecycle of multi-agent workflows:
 4. Aggregates results
 """
 
-import os
 import asyncio
 import uuid
-from datetime import datetime
-from typing import Optional, Any
 from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any
 
 import structlog
 
-from .decision_engine import DecisionEngine, Workflow, WorkflowStep, AgentType
+from .decision_engine import AgentType, DecisionEngine, Workflow, WorkflowStep
 
 logger = structlog.get_logger()
 
@@ -25,11 +24,12 @@ logger = structlog.get_logger()
 @dataclass
 class WorkflowExecution:
     """Tracks execution state of a workflow."""
+
     workflow_id: str
     request_id: str
     status: str = "pending"  # pending, running, completed, failed
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     results: dict = field(default_factory=dict)
     errors: list = field(default_factory=list)
     current_step: int = 0
@@ -72,7 +72,7 @@ class ChampionCloneOrchestrator:
         self._agents_loaded = True
         logger.info("orchestrator_agents_loaded", count=len(self.agents))
 
-    async def route(self, task: str, context: Optional[dict] = None) -> dict:
+    async def route(self, task: str, context: dict | None = None) -> dict:
         """
         Main entry point - route a task through the system.
 
@@ -99,19 +99,9 @@ class ChampionCloneOrchestrator:
 
         except Exception as e:
             logger.error("orchestrator_error", request_id=request_id, error=str(e))
-            return {
-                "request_id": request_id,
-                "status": "error",
-                "error": str(e),
-                "task": task
-            }
+            return {"request_id": request_id, "status": "error", "error": str(e), "task": task}
 
-    async def execute_workflow(
-        self,
-        workflow: Workflow,
-        request_id: str,
-        context: Optional[dict] = None
-    ) -> dict:
+    async def execute_workflow(self, workflow: Workflow, request_id: str, context: dict | None = None) -> dict:
         """
         Execute a complete workflow.
 
@@ -124,18 +114,12 @@ class ChampionCloneOrchestrator:
             Aggregated results from all steps
         """
         execution = WorkflowExecution(
-            workflow_id=workflow.id,
-            request_id=request_id,
-            status="running",
-            started_at=datetime.utcnow()
+            workflow_id=workflow.id, request_id=request_id, status="running", started_at=datetime.utcnow()
         )
         self.active_workflows[request_id] = execution
 
         logger.info(
-            "workflow_started",
-            workflow_id=workflow.id,
-            steps=len(workflow.steps),
-            reasoning=workflow.reasoning[:100]
+            "workflow_started", workflow_id=workflow.id, steps=len(workflow.steps), reasoning=workflow.reasoning[:100]
         )
 
         completed_steps: set[int] = set()
@@ -155,7 +139,7 @@ class ChampionCloneOrchestrator:
                 should_continue, reason = await self.decision_engine.should_continue(
                     step_results,
                     context.get("original_task", "") if context else "",
-                    [workflow.steps[i] for i in range(len(workflow.steps)) if i not in completed_steps]
+                    [workflow.steps[i] for i in range(len(workflow.steps)) if i not in completed_steps],
                 )
 
                 if not should_continue:
@@ -165,13 +149,10 @@ class ChampionCloneOrchestrator:
                 # Execute ready steps (potentially in parallel)
                 if len(ready_steps) > 1:
                     # Parallel execution
-                    tasks = [
-                        self._execute_step(workflow.steps[i], i, step_results, context)
-                        for i in ready_steps
-                    ]
+                    tasks = [self._execute_step(workflow.steps[i], i, step_results, context) for i in ready_steps]
                     results = await asyncio.gather(*tasks, return_exceptions=True)
 
-                    for i, result in zip(ready_steps, results):
+                    for i, result in zip(ready_steps, results, strict=False):
                         step_id = f"step_{i}"
                         if isinstance(result, Exception):
                             step_results[step_id] = {"status": "error", "error": str(result)}
@@ -186,12 +167,7 @@ class ChampionCloneOrchestrator:
                     step_id = f"step_{step_idx}"
 
                     try:
-                        result = await self._execute_step(
-                            workflow.steps[step_idx],
-                            step_idx,
-                            step_results,
-                            context
-                        )
+                        result = await self._execute_step(workflow.steps[step_idx], step_idx, step_results, context)
                         step_results[step_id] = result
                     except Exception as e:
                         step_results[step_id] = {"status": "error", "error": str(e)}
@@ -213,7 +189,7 @@ class ChampionCloneOrchestrator:
                 workflow_id=workflow.id,
                 status=execution.status,
                 steps_completed=len(completed_steps),
-                duration_ms=duration_ms
+                duration_ms=duration_ms,
             )
 
             return {
@@ -223,7 +199,7 @@ class ChampionCloneOrchestrator:
                 "reasoning": workflow.reasoning,
                 "results": step_results,
                 "errors": execution.errors,
-                "duration_ms": duration_ms
+                "duration_ms": duration_ms,
             }
 
         except Exception as e:
@@ -236,15 +212,11 @@ class ChampionCloneOrchestrator:
                 "workflow_id": workflow.id,
                 "status": "failed",
                 "error": str(e),
-                "partial_results": step_results
+                "partial_results": step_results,
             }
 
     async def _execute_step(
-        self,
-        step: WorkflowStep,
-        step_index: int,
-        previous_results: dict,
-        context: Optional[dict]
+        self, step: WorkflowStep, step_index: int, previous_results: dict, context: dict | None
     ) -> dict:
         """
         Execute a single workflow step.
@@ -262,33 +234,21 @@ class ChampionCloneOrchestrator:
         if not agent:
             raise ValueError(f"Unknown agent: {step.agent}")
 
-        logger.info(
-            "step_executing",
-            step_index=step_index,
-            agent=step.agent.value,
-            task=step.task[:100]
-        )
+        logger.info("step_executing", step_index=step_index, agent=step.agent.value, task=step.task[:100])
 
         # Build step context with previous results
-        step_context = {
-            "previous_results": previous_results,
-            "step_index": step_index,
-            **(context or {})
-        }
+        step_context = {"previous_results": previous_results, "step_index": step_index, **(context or {})}
 
         # Execute with timeout
         try:
-            result = await asyncio.wait_for(
-                agent.run(step.task, step_context),
-                timeout=step.timeout_seconds
-            )
+            result = await asyncio.wait_for(agent.run(step.task, step_context), timeout=step.timeout_seconds)
             return result
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.warning("step_timeout", step_index=step_index, timeout=step.timeout_seconds)
             raise TimeoutError(f"Step {step_index} timed out after {step.timeout_seconds}s")
 
-    async def get_workflow_status(self, request_id: str) -> Optional[dict]:
+    async def get_workflow_status(self, request_id: str) -> dict | None:
         """Get status of an active workflow."""
         execution = self.active_workflows.get(request_id)
         if not execution:
@@ -301,7 +261,7 @@ class ChampionCloneOrchestrator:
             "current_step": execution.current_step,
             "started_at": execution.started_at.isoformat() if execution.started_at else None,
             "completed_at": execution.completed_at.isoformat() if execution.completed_at else None,
-            "errors": execution.errors
+            "errors": execution.errors,
         }
 
     async def cancel_workflow(self, request_id: str) -> bool:
@@ -318,7 +278,4 @@ class ChampionCloneOrchestrator:
     def get_agent_statuses(self) -> dict:
         """Get status of all agents."""
         self._load_agents()
-        return {
-            agent_type.value: agent.get_status()
-            for agent_type, agent in self.agents.items()
-        }
+        return {agent_type.value: agent.get_status() for agent_type, agent in self.agents.items()}

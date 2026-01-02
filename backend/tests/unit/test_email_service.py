@@ -3,12 +3,13 @@ Unit tests for EmailService.
 Tests template management, email sending, and email logs.
 """
 
-import pytest
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
+from models import EmailLog, EmailTemplate, EmailTrigger, User
 from services.email import EmailService
-from models import User, EmailTemplate, EmailLog, EmailTrigger
 
 
 class TestTemplateManagement:
@@ -28,7 +29,7 @@ class TestTemplateManagement:
     @pytest.fixture
     def service(self, mock_db):
         """Create EmailService with mock db."""
-        with patch('services.email.get_settings') as mock_settings:
+        with patch("services.email.get_settings") as mock_settings:
             mock_settings.return_value = MagicMock(
                 smtp_host="",
                 smtp_port=587,
@@ -36,7 +37,7 @@ class TestTemplateManagement:
                 smtp_user="",
                 smtp_password="",
                 smtp_from="test@example.com",
-                cors_origins="http://localhost:3000"
+                cors_origins="http://localhost:3000",
             )
             return EmailService(mock_db)
 
@@ -45,7 +46,7 @@ class TestTemplateManagement:
         """Test getting all templates."""
         mock_templates = [
             MagicMock(spec=EmailTemplate, trigger="welcome"),
-            MagicMock(spec=EmailTemplate, trigger="inactive_3_days")
+            MagicMock(spec=EmailTemplate, trigger="inactive_3_days"),
         ]
 
         mock_result = MagicMock()
@@ -105,7 +106,7 @@ class TestTemplateManagement:
             body_html="<h1>Test</h1>",
             body_text="Test",
             variables=["user_name"],
-            is_active=True
+            is_active=True,
         )
 
         assert mock_db.add.called
@@ -122,10 +123,7 @@ class TestTemplateManagement:
         mock_result.scalar_one_or_none.return_value = mock_template
         mock_db.execute.return_value = mock_result
 
-        result = await service.update_template(
-            template_id=1,
-            subject="New Subject"
-        )
+        result = await service.update_template(template_id=1, subject="New Subject")
 
         assert mock_template.subject == "New Subject"
         assert mock_db.commit.called
@@ -177,11 +175,8 @@ class TestEmailRendering:
 
     @pytest.fixture
     def service(self, mock_db):
-        with patch('services.email.get_settings') as mock_settings:
-            mock_settings.return_value = MagicMock(
-                smtp_host="",
-                cors_origins="http://localhost:3000"
-            )
+        with patch("services.email.get_settings") as mock_settings:
+            mock_settings.return_value = MagicMock(smtp_host="", cors_origins="http://localhost:3000")
             return EmailService(mock_db)
 
     def test_render_template_simple(self, service):
@@ -226,7 +221,7 @@ class TestEmailSending:
 
     @pytest.fixture
     def service(self, mock_db):
-        with patch('services.email.get_settings') as mock_settings:
+        with patch("services.email.get_settings") as mock_settings:
             mock_settings.return_value = MagicMock(
                 smtp_host="",
                 smtp_port=587,
@@ -234,7 +229,7 @@ class TestEmailSending:
                 smtp_user="",
                 smtp_password="",
                 smtp_from="test@example.com",
-                cors_origins="http://localhost:3000"
+                cors_origins="http://localhost:3000",
             )
             return EmailService(mock_db)
 
@@ -334,24 +329,21 @@ class TestTriggerAutomation:
 
     @pytest.fixture
     def service(self, mock_db):
-        with patch('services.email.get_settings') as mock_settings:
-            mock_settings.return_value = MagicMock(
-                smtp_host="",
-                cors_origins="http://localhost:3000"
-            )
+        with patch("services.email.get_settings") as mock_settings:
+            mock_settings.return_value = MagicMock(smtp_host="", cors_origins="http://localhost:3000")
             return EmailService(mock_db)
 
     @pytest.mark.asyncio
     async def test_send_welcome_email(self, service):
         """Test sending welcome email."""
-        with patch.object(service, 'trigger_email', new_callable=AsyncMock) as mock_trigger:
+        with patch.object(service, "trigger_email", new_callable=AsyncMock) as mock_trigger:
             await service.send_welcome_email(user_id=1)
             mock_trigger.assert_called_once_with(EmailTrigger.WELCOME, 1)
 
     @pytest.mark.asyncio
     async def test_send_first_champion_email(self, service):
         """Test sending first champion email."""
-        with patch.object(service, 'trigger_email', new_callable=AsyncMock) as mock_trigger:
+        with patch.object(service, "trigger_email", new_callable=AsyncMock) as mock_trigger:
             await service.send_first_champion_email(user_id=1, champion_name="Sales Pro")
             mock_trigger.assert_called_once()
             args = mock_trigger.call_args
@@ -361,7 +353,7 @@ class TestTriggerAutomation:
     @pytest.mark.asyncio
     async def test_send_inactive_reminder_3_days(self, service):
         """Test sending 3-day inactive reminder."""
-        with patch.object(service, 'trigger_email', new_callable=AsyncMock) as mock_trigger:
+        with patch.object(service, "trigger_email", new_callable=AsyncMock) as mock_trigger:
             await service.send_inactive_reminder(user_id=1, days_inactive=3)
             args = mock_trigger.call_args
             assert args[0][0] == EmailTrigger.INACTIVE_3_DAYS
@@ -369,7 +361,7 @@ class TestTriggerAutomation:
     @pytest.mark.asyncio
     async def test_send_inactive_reminder_7_days(self, service):
         """Test sending 7-day inactive reminder."""
-        with patch.object(service, 'trigger_email', new_callable=AsyncMock) as mock_trigger:
+        with patch.object(service, "trigger_email", new_callable=AsyncMock) as mock_trigger:
             await service.send_inactive_reminder(user_id=1, days_inactive=7)
             args = mock_trigger.call_args
             assert args[0][0] == EmailTrigger.INACTIVE_7_DAYS
@@ -377,7 +369,7 @@ class TestTriggerAutomation:
     @pytest.mark.asyncio
     async def test_send_inactive_reminder_30_days(self, service):
         """Test sending 30-day inactive reminder."""
-        with patch.object(service, 'trigger_email', new_callable=AsyncMock) as mock_trigger:
+        with patch.object(service, "trigger_email", new_callable=AsyncMock) as mock_trigger:
             await service.send_inactive_reminder(user_id=1, days_inactive=30)
             args = mock_trigger.call_args
             assert args[0][0] == EmailTrigger.INACTIVE_30_DAYS
@@ -397,7 +389,7 @@ class TestEmailLogs:
 
     @pytest.fixture
     def service(self, mock_db):
-        with patch('services.email.get_settings') as mock_settings:
+        with patch("services.email.get_settings") as mock_settings:
             mock_settings.return_value = MagicMock(smtp_host="")
             return EmailService(mock_db)
 
@@ -432,11 +424,7 @@ class TestEmailLogs:
 
         mock_db.execute.side_effect = [mock_result, mock_count_result]
 
-        logs, total = await service.get_email_logs(
-            user_id=1,
-            trigger="welcome",
-            status="sent"
-        )
+        logs, total = await service.get_email_logs(user_id=1, trigger="welcome", status="sent")
 
         assert len(logs) == 1
 
@@ -456,15 +444,9 @@ class TestEmailLogs:
         mock_clicked.scalar.return_value = 20
 
         mock_by_trigger = MagicMock()
-        mock_by_trigger.all.return_value = [
-            ("welcome", 50),
-            ("inactive_3_days", 30),
-            ("first_champion", 25)
-        ]
+        mock_by_trigger.all.return_value = [("welcome", 50), ("inactive_3_days", 30), ("first_champion", 25)]
 
-        mock_db.execute.side_effect = [
-            mock_sent, mock_failed, mock_opened, mock_clicked, mock_by_trigger
-        ]
+        mock_db.execute.side_effect = [mock_sent, mock_failed, mock_opened, mock_clicked, mock_by_trigger]
 
         stats = await service.get_email_stats()
 

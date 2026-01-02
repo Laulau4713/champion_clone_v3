@@ -7,10 +7,10 @@ Used for:
 - Real-time scoring
 """
 
-import os
 import json
-from typing import Optional, Any
+import os
 from datetime import datetime, timedelta
+from typing import Any
 
 import structlog
 
@@ -19,12 +19,13 @@ logger = structlog.get_logger()
 # Try to import Redis
 try:
     import redis.asyncio as redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
     logger.warning("redis_not_available", message="Redis client not installed")
 
-from .schemas import SessionState, ConversationTurn
+from .schemas import SessionState
 
 
 class SessionMemory:
@@ -41,10 +42,10 @@ class SessionMemory:
     DEFAULT_TTL = 3600 * 4  # 4 hours
     KEY_PREFIX = "champion_clone:session:"
 
-    def __init__(self, url: Optional[str] = None, ttl: int = DEFAULT_TTL):
+    def __init__(self, url: str | None = None, ttl: int = DEFAULT_TTL):
         self.url = url or os.getenv("REDIS_URL", "redis://localhost:6379")
         self.ttl = ttl
-        self.client: Optional[redis.Redis] = None
+        self.client: redis.Redis | None = None
 
         if REDIS_AVAILABLE:
             self.client = redis.from_url(self.url, decode_responses=True)
@@ -57,13 +58,7 @@ class SessionMemory:
         """Generate Redis key for session."""
         return f"{self.KEY_PREFIX}{session_id}"
 
-    async def store(
-        self,
-        key: str,
-        value: Any,
-        metadata: Optional[dict] = None,
-        ttl: Optional[int] = None
-    ) -> bool:
+    async def store(self, key: str, value: Any, metadata: dict | None = None, ttl: int | None = None) -> bool:
         """
         Store a value.
 
@@ -80,15 +75,11 @@ class SessionMemory:
             data = json.dumps(value) if not isinstance(value, str) else value
 
             if self.client:
-                await self.client.setex(
-                    self._key(key),
-                    ttl or self.ttl,
-                    data
-                )
+                await self.client.setex(self._key(key), ttl or self.ttl, data)
             else:
                 self._fallback_store[key] = {
                     "data": data,
-                    "expires": datetime.utcnow() + timedelta(seconds=ttl or self.ttl)
+                    "expires": datetime.utcnow() + timedelta(seconds=ttl or self.ttl),
                 }
 
             return True
@@ -97,7 +88,7 @@ class SessionMemory:
             logger.error("session_store_error", key=key, error=str(e))
             return False
 
-    async def retrieve(self, key: str, limit: int = 1) -> Optional[Any]:
+    async def retrieve(self, key: str, limit: int = 1) -> Any | None:
         """
         Retrieve a value.
 
@@ -158,10 +149,7 @@ class SessionMemory:
         """Extend session TTL."""
         try:
             if self.client:
-                return await self.client.expire(
-                    self._key(key),
-                    additional_seconds
-                )
+                return await self.client.expire(self._key(key), additional_seconds)
             else:
                 entry = self._fallback_store.get(key)
                 if entry:
@@ -196,12 +184,9 @@ class TrainingSessionMemory(SessionMemory):
 
     async def create_session(self, session_state: SessionState) -> bool:
         """Create a new training session."""
-        return await self.store(
-            session_state.session_id,
-            session_state.to_dict()
-        )
+        return await self.store(session_state.session_id, session_state.to_dict())
 
-    async def get_session(self, session_id: str) -> Optional[SessionState]:
+    async def get_session(self, session_id: str) -> SessionState | None:
         """Get a training session."""
         data = await self.retrieve(session_id)
         if data:
@@ -211,18 +196,10 @@ class TrainingSessionMemory(SessionMemory):
     async def update_session(self, session_state: SessionState) -> bool:
         """Update a training session."""
         session_state.last_activity = datetime.utcnow()
-        return await self.store(
-            session_state.session_id,
-            session_state.to_dict()
-        )
+        return await self.store(session_state.session_id, session_state.to_dict())
 
     async def add_conversation_turn(
-        self,
-        session_id: str,
-        role: str,
-        content: str,
-        feedback: Optional[str] = None,
-        score: Optional[float] = None
+        self, session_id: str, role: str, content: str, feedback: str | None = None, score: float | None = None
     ) -> bool:
         """Add a turn to session conversation."""
         session = await self.get_session(session_id)
@@ -232,7 +209,7 @@ class TrainingSessionMemory(SessionMemory):
         session.add_turn(role, content, feedback, score)
         return await self.update_session(session)
 
-    async def complete_session(self, session_id: str) -> Optional[SessionState]:
+    async def complete_session(self, session_id: str) -> SessionState | None:
         """Mark session as completed."""
         session = await self.get_session(session_id)
         if not session:
@@ -242,7 +219,7 @@ class TrainingSessionMemory(SessionMemory):
         await self.update_session(session)
         return session
 
-    async def get_active_sessions(self, user_id: Optional[str] = None) -> list[SessionState]:
+    async def get_active_sessions(self, user_id: str | None = None) -> list[SessionState]:
         """Get all active sessions, optionally filtered by user."""
         sessions = []
         keys = await self.get_all_keys()

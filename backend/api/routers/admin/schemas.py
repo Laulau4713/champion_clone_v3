@@ -2,15 +2,14 @@
 Admin request/response schemas.
 """
 
-from typing import Optional, List
 from pydantic import BaseModel
 
 
 class UserUpdateRequest(BaseModel):
-    is_active: Optional[bool] = None
-    role: Optional[str] = None
-    subscription_plan: Optional[str] = None
-    subscription_status: Optional[str] = None
+    is_active: bool | None = None
+    role: str | None = None
+    subscription_plan: str | None = None
+    subscription_status: str | None = None
 
 
 class EmailTemplateRequest(BaseModel):
@@ -18,30 +17,30 @@ class EmailTemplateRequest(BaseModel):
     subject: str
     body_html: str
     body_text: str
-    variables: Optional[List[str]] = None
+    variables: list[str] | None = None
     is_active: bool = True
 
 
 class EmailTemplateUpdateRequest(BaseModel):
-    subject: Optional[str] = None
-    body_html: Optional[str] = None
-    body_text: Optional[str] = None
-    variables: Optional[List[str]] = None
-    is_active: Optional[bool] = None
+    subject: str | None = None
+    body_html: str | None = None
+    body_text: str | None = None
+    variables: list[str] | None = None
+    is_active: bool | None = None
 
 
 class WebhookEndpointRequest(BaseModel):
     name: str
     url: str
-    events: List[str]
+    events: list[str]
     is_active: bool = True
 
 
 class WebhookEndpointUpdateRequest(BaseModel):
-    name: Optional[str] = None
-    url: Optional[str] = None
-    events: Optional[List[str]] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    url: str | None = None
+    events: list[str] | None = None
+    is_active: bool | None = None
 
 
 class AdminNoteRequest(BaseModel):
@@ -50,4 +49,4 @@ class AdminNoteRequest(BaseModel):
 
 
 class ErrorResolveRequest(BaseModel):
-    resolution_notes: Optional[str] = None
+    resolution_notes: str | None = None

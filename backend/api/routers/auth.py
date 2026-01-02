@@ -12,30 +12,30 @@ Endpoints:
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from jose import JWTError
 import structlog
+from fastapi import APIRouter, Depends, Request
+from jose import JWTError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import get_settings
 from database import get_db
-from models import User, RefreshToken
-from schemas import (
-    UserRegister, UserLogin, UserResponse,
-    Token, RefreshTokenRequest, UserUpdate, PasswordChange
-)
-from services.auth import (
-    validate_password, hash_password, verify_password,
-    create_access_token, create_refresh_token,
-    verify_refresh_token, hash_refresh_token,
-    decode_access_token
-)
-from repositories import UserRepository, RefreshTokenRepository
 from domain.exceptions import (
-    NotFoundError,
     AlreadyExistsError,
-    ValidationError,
     AuthenticationError,
+    ValidationError,
+)
+from models import RefreshToken, User
+from repositories import RefreshTokenRepository, UserRepository
+from schemas import PasswordChange, RefreshTokenRequest, Token, UserLogin, UserRegister, UserResponse, UserUpdate
+from services.auth import (
+    create_access_token,
+    create_refresh_token,
+    decode_access_token,
+    hash_password,
+    hash_refresh_token,
+    validate_password,
+    verify_password,
+    verify_refresh_token,
 )
 
 settings = get_settings()
@@ -48,10 +48,8 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 # Dependencies
 # ============================================
 
-async def get_current_user(
-    request: Request,
-    db: AsyncSession = Depends(get_db)
-) -> User:
+
+async def get_current_user(request: Request, db: AsyncSession = Depends(get_db)) -> User:
     """
     Dependency to get the current authenticated user from JWT token.
     """
@@ -83,12 +81,9 @@ async def get_current_user(
 # Endpoints
 # ============================================
 
+
 @router.post("/register", response_model=UserResponse)
-async def register(
-    request: Request,
-    body: UserRegister,
-    db: AsyncSession = Depends(get_db)
-):
+async def register(request: Request, body: UserRegister, db: AsyncSession = Depends(get_db)):
     """
     Register a new user account.
 
@@ -111,11 +106,7 @@ async def register(
         raise AlreadyExistsError("User", "email", body.email)
 
     # Create new user
-    user = User(
-        email=body.email,
-        hashed_password=hash_password(body.password),
-        full_name=body.full_name
-    )
+    user = User(email=body.email, hashed_password=hash_password(body.password), full_name=body.full_name)
     user = await user_repo.create(user)
 
     logger.info("user_registered", user_id=user.id, email=user.email)
@@ -124,11 +115,7 @@ async def register(
 
 
 @router.post("/login", response_model=Token)
-async def login(
-    request: Request,
-    body: UserLogin,
-    db: AsyncSession = Depends(get_db)
-):
+async def login(request: Request, body: UserLogin, db: AsyncSession = Depends(get_db)):
     """
     Login and get JWT access and refresh tokens.
 
@@ -157,7 +144,7 @@ async def login(
         user_id=user.id,
         expires_at=expires_at,
         user_agent=request.headers.get("User-Agent"),
-        ip_address=request.client.host if request.client else None
+        ip_address=request.client.host if request.client else None,
     )
     await token_repo.create(db_refresh_token)
 
@@ -167,24 +154,18 @@ async def login(
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="bearer",
-        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_current_user_info(
-    current_user: User = Depends(get_current_user)
-):
+async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Get current authenticated user's information."""
     return UserResponse.model_validate(current_user)
 
 
 @router.post("/refresh", response_model=Token)
-async def refresh_access_token(
-    request: Request,
-    body: RefreshTokenRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def refresh_access_token(request: Request, body: RefreshTokenRequest, db: AsyncSession = Depends(get_db)):
     """
     Refresh an expired access token using a valid refresh token.
     """
@@ -224,7 +205,7 @@ async def refresh_access_token(
         access_token=new_access_token,
         refresh_token=body.refresh_token,
         token_type="bearer",
-        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
 
@@ -233,7 +214,7 @@ async def logout(
     request: Request,
     body: RefreshTokenRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Logout by revoking the refresh token."""
     token_repo = RefreshTokenRepository(db)
@@ -251,9 +232,7 @@ async def logout(
 
 @router.post("/logout-all")
 async def logout_all_devices(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    request: Request, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """Logout from all devices by revoking all refresh tokens."""
     token_repo = RefreshTokenRepository(db)
@@ -267,9 +246,7 @@ async def logout_all_devices(
 
 @router.patch("/me", response_model=UserResponse)
 async def update_profile(
-    body: UserUpdate,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    body: UserUpdate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """Update current user's profile (name, email)."""
     user_repo = UserRepository(db)
@@ -292,9 +269,7 @@ async def update_profile(
 
 @router.post("/change-password")
 async def change_password(
-    body: PasswordChange,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    body: PasswordChange, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """Change current user's password."""
     user_repo = UserRepository(db)

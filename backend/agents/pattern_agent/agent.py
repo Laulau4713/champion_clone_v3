@@ -3,11 +3,11 @@ Pattern Agent - Autonomous agent for sales pattern extraction and analysis.
 """
 
 import os
-from typing import Optional
 
 from agents.base_agent import BaseAgent, ToolResult
-from .tools import PatternTools
+
 from .memory import PatternAgentMemory
+from .tools import PatternTools
 
 
 class PatternAgent(BaseAgent):
@@ -68,10 +68,7 @@ RÈGLES:
 Choisis les outils appropriés pour accomplir la tâche."""
 
     def __init__(self):
-        super().__init__(
-            name="Pattern Agent",
-            model=os.getenv("CLAUDE_OPUS_MODEL", "claude-opus-4-20250514")
-        )
+        super().__init__(name="Pattern Agent", model=os.getenv("CLAUDE_OPUS_MODEL", "claude-opus-4-20250514"))
 
         self.tools_impl = PatternTools()
         self.memory = PatternAgentMemory()
@@ -86,14 +83,9 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "description": "Extract sales patterns from a transcript using Claude Opus",
                 "input_schema": {
                     "type": "object",
-                    "properties": {
-                        "transcript": {
-                            "type": "string",
-                            "description": "Full transcript text to analyze"
-                        }
-                    },
-                    "required": ["transcript"]
-                }
+                    "properties": {"transcript": {"type": "string", "description": "Full transcript text to analyze"}},
+                    "required": ["transcript"],
+                },
             },
             {
                 "name": "generate_scenarios",
@@ -101,18 +93,11 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "patterns": {
-                            "type": "object",
-                            "description": "Champion patterns dictionary"
-                        },
-                        "count": {
-                            "type": "integer",
-                            "default": 3,
-                            "description": "Number of scenarios to generate"
-                        }
+                        "patterns": {"type": "object", "description": "Champion patterns dictionary"},
+                        "count": {"type": "integer", "default": 3, "description": "Number of scenarios to generate"},
                     },
-                    "required": ["patterns"]
-                }
+                    "required": ["patterns"],
+                },
             },
             {
                 "name": "store_patterns",
@@ -120,17 +105,11 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "champion_id": {
-                            "type": "integer",
-                            "description": "Champion ID"
-                        },
-                        "patterns": {
-                            "type": "object",
-                            "description": "Patterns to store"
-                        }
+                        "champion_id": {"type": "integer", "description": "Champion ID"},
+                        "patterns": {"type": "object", "description": "Patterns to store"},
                     },
-                    "required": ["champion_id", "patterns"]
-                }
+                    "required": ["champion_id", "patterns"],
+                },
             },
             {
                 "name": "find_patterns",
@@ -138,27 +117,17 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "query": {
-                            "type": "string",
-                            "description": "Search query"
-                        },
-                        "champion_id": {
-                            "type": "integer",
-                            "description": "Filter by champion ID"
-                        },
+                        "query": {"type": "string", "description": "Search query"},
+                        "champion_id": {"type": "integer", "description": "Filter by champion ID"},
                         "pattern_type": {
                             "type": "string",
                             "enum": ["opening", "objection", "close", "key_phrase", "success_pattern"],
-                            "description": "Filter by pattern type"
+                            "description": "Filter by pattern type",
                         },
-                        "limit": {
-                            "type": "integer",
-                            "default": 5,
-                            "description": "Maximum results"
-                        }
+                        "limit": {"type": "integer", "default": 5, "description": "Maximum results"},
                     },
-                    "required": ["query"]
-                }
+                    "required": ["query"],
+                },
             },
             {
                 "name": "analyze_response",
@@ -166,56 +135,38 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "response": {
-                            "type": "string",
-                            "description": "User's response to analyze"
-                        },
-                        "patterns": {
-                            "type": "object",
-                            "description": "Champion patterns to compare against"
-                        },
-                        "context": {
-                            "type": "string",
-                            "description": "Conversation context"
-                        }
+                        "response": {"type": "string", "description": "User's response to analyze"},
+                        "patterns": {"type": "object", "description": "Champion patterns to compare against"},
+                        "context": {"type": "string", "description": "Conversation context"},
                     },
-                    "required": ["response", "patterns", "context"]
-                }
+                    "required": ["response", "patterns", "context"],
+                },
             },
             {
                 "name": "get_champion_patterns",
                 "description": "Retrieve all stored patterns for a champion",
                 "input_schema": {
                     "type": "object",
-                    "properties": {
-                        "champion_id": {
-                            "type": "integer",
-                            "description": "Champion ID"
-                        }
-                    },
-                    "required": ["champion_id"]
-                }
-            }
+                    "properties": {"champion_id": {"type": "integer", "description": "Champion ID"}},
+                    "required": ["champion_id"],
+                },
+            },
         ]
 
     async def execute_tool(self, name: str, input_data: dict) -> ToolResult:
         """Execute a tool and return the result."""
         try:
             if name == "extract_patterns":
-                result = await self.tools_impl.extract_patterns(
-                    transcript=input_data["transcript"]
-                )
+                result = await self.tools_impl.extract_patterns(transcript=input_data["transcript"])
 
             elif name == "generate_scenarios":
                 result = await self.tools_impl.generate_scenarios(
-                    patterns=input_data["patterns"],
-                    count=input_data.get("count", 3)
+                    patterns=input_data["patterns"], count=input_data.get("count", 3)
                 )
 
             elif name == "store_patterns":
                 stored = await self.memory.store_patterns_batch(
-                    champion_id=input_data["champion_id"],
-                    patterns=input_data["patterns"]
+                    champion_id=input_data["champion_id"], patterns=input_data["patterns"]
                 )
                 result = {"success": True, "stored": stored}
 
@@ -224,45 +175,28 @@ Choisis les outils appropriés pour accomplir la tâche."""
                     query=input_data["query"],
                     champion_id=input_data.get("champion_id"),
                     pattern_type=input_data.get("pattern_type"),
-                    limit=input_data.get("limit", 5)
+                    limit=input_data.get("limit", 5),
                 )
                 result = {"success": True, "patterns": patterns}
 
             elif name == "analyze_response":
                 result = await self.tools_impl.analyze_response_against_patterns(
-                    response=input_data["response"],
-                    patterns=input_data["patterns"],
-                    context=input_data["context"]
+                    response=input_data["response"], patterns=input_data["patterns"], context=input_data["context"]
                 )
 
             elif name == "get_champion_patterns":
-                patterns = await self.memory.get_champion_patterns(
-                    champion_id=input_data["champion_id"]
-                )
+                patterns = await self.memory.get_champion_patterns(champion_id=input_data["champion_id"])
                 result = {"success": True, "patterns": patterns}
 
             else:
-                return ToolResult(
-                    tool_name=name,
-                    success=False,
-                    output=None,
-                    error=f"Unknown tool: {name}"
-                )
+                return ToolResult(tool_name=name, success=False, output=None, error=f"Unknown tool: {name}")
 
             return ToolResult(
-                tool_name=name,
-                success=result.get("success", True),
-                output=result,
-                error=result.get("error")
+                tool_name=name, success=result.get("success", True), output=result, error=result.get("error")
             )
 
         except Exception as e:
-            return ToolResult(
-                tool_name=name,
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return ToolResult(tool_name=name, success=False, output=None, error=str(e))
 
     # ============================================
     # Convenience methods for direct API access

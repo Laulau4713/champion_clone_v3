@@ -8,21 +8,17 @@ Responsible for:
 - Caching scenarios for performance
 """
 
-import json
 import hashlib
-from typing import Optional
+import json
 from datetime import datetime
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 import structlog
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import Skill, Sector, CachedScenario
-from .prompts import (
-    SCENARIO_GENERATION_PROMPT,
-    SECTOR_ADAPTATION_PROMPT,
-    EXAMPLE_SCRIPT_PROMPT
-)
+from models import CachedScenario, Sector, Skill
+
+from .prompts import EXAMPLE_SCRIPT_PROMPT, SCENARIO_GENERATION_PROMPT, SECTOR_ADAPTATION_PROMPT
 
 logger = structlog.get_logger()
 
@@ -43,13 +39,7 @@ class ContentAgent:
         self._current_level = "intermediate"  # Track current level for default scenario
         logger.info("content_agent_initialized")
 
-    def _generate_cache_key(
-        self,
-        skill_id: int,
-        level: str,
-        sector_id: Optional[int] = None,
-        variant: int = 0
-    ) -> str:
+    def _generate_cache_key(self, skill_id: int, level: str, sector_id: int | None = None, variant: int = 0) -> str:
         """Generate a unique cache key."""
         content = f"{skill_id}|{level}|{sector_id}|{variant}"
         return hashlib.sha256(content.encode()).hexdigest()[:16]
@@ -58,9 +48,9 @@ class ContentAgent:
         self,
         skill: Skill,
         level: str,
-        sector: Optional[Sector] = None,
-        user_history: Optional[dict] = None,
-        use_cache: bool = True
+        sector: Sector | None = None,
+        user_history: dict | None = None,
+        use_cache: bool = True,
     ) -> dict:
         """
         Generate an adapted training scenario.
@@ -84,29 +74,23 @@ class ContentAgent:
         # Check cache
         if use_cache:
             cache_key = self._generate_cache_key(skill.id, level, sector_id)
-            cached = await self.db.scalar(
-                select(CachedScenario).where(
-                    CachedScenario.cache_key == cache_key
-                )
-            )
+            cached = await self.db.scalar(select(CachedScenario).where(CachedScenario.cache_key == cache_key))
             if cached:
                 cached.use_count += 1
                 cached.last_used_at = datetime.utcnow()
                 await self.db.commit()
-                logger.info(
-                    "scenario_cache_hit",
-                    cache_key=cache_key,
-                    use_count=cached.use_count
-                )
+                logger.info("scenario_cache_hit", cache_key=cache_key, use_count=cached.use_count)
                 return cached.scenario_json
 
         # Generate the scenario
         evaluation_criteria = ""
         if skill.evaluation_criteria:
-            evaluation_criteria = "\n".join([
-                f"- {c.get('name', 'Critère')} ({c.get('weight', 0)}%): {c.get('description', '')}"
-                for c in skill.evaluation_criteria
-            ])
+            evaluation_criteria = "\n".join(
+                [
+                    f"- {c.get('name', 'Critère')} ({c.get('weight', 0)}%): {c.get('description', '')}"
+                    for c in skill.evaluation_criteria
+                ]
+            )
 
         prompt = SCENARIO_GENERATION_PROMPT.format(
             skill_name=skill.name,
@@ -115,7 +99,7 @@ class ContentAgent:
             skill_description=skill.description,
             evaluation_criteria=evaluation_criteria,
             prospect_instructions=skill.prospect_instructions or "",
-            user_history=json.dumps(user_history, ensure_ascii=False) if user_history else "Aucun"
+            user_history=json.dumps(user_history, ensure_ascii=False) if user_history else "Aucun",
         )
 
         # Call LLM
@@ -130,11 +114,7 @@ class ContentAgent:
         if use_cache:
             cache_key = self._generate_cache_key(skill.id, level, sector_id)
             cache_entry = CachedScenario(
-                cache_key=cache_key,
-                skill_id=skill.id,
-                sector_id=sector_id,
-                level=level,
-                scenario_json=scenario
+                cache_key=cache_key, skill_id=skill.id, sector_id=sector_id, level=level, scenario_json=scenario
             )
             self.db.add(cache_entry)
             await self.db.commit()
@@ -142,11 +122,7 @@ class ContentAgent:
 
         return scenario
 
-    async def _adapt_to_sector(
-        self,
-        base_scenario: dict,
-        sector: Sector
-    ) -> dict:
+    async def _adapt_to_sector(self, base_scenario: dict, sector: Sector) -> dict:
         """Adapt a scenario to a specific sector."""
         vocabulary = ""
         if sector.vocabulary:
@@ -154,17 +130,13 @@ class ContentAgent:
 
         objections = ""
         if sector.typical_objections:
-            objections = "\n".join([
-                f"- {o.get('objection', '')}"
-                for o in sector.typical_objections[:5]
-            ])
+            objections = "\n".join([f"- {o.get('objection', '')}" for o in sector.typical_objections[:5]])
 
         personas = ""
         if sector.prospect_personas:
-            personas = "\n".join([
-                f"- {p.get('name', '')}: {p.get('description', '')}"
-                for p in sector.prospect_personas[:3]
-            ])
+            personas = "\n".join(
+                [f"- {p.get('name', '')}: {p.get('description', '')}" for p in sector.prospect_personas[:3]]
+            )
 
         prompt = SECTOR_ADAPTATION_PROMPT.format(
             sector_name=sector.name,
@@ -172,17 +144,14 @@ class ContentAgent:
             vocabulary=vocabulary,
             typical_objections=objections,
             prospect_personas=personas,
-            agent_context_prompt=sector.agent_context_prompt or ""
+            agent_context_prompt=sector.agent_context_prompt or "",
         )
 
         response = await self._call_llm(prompt)
         return self._parse_json_response(response)
 
     async def generate_example_script(
-        self,
-        skill: Skill,
-        sector: Optional[Sector] = None,
-        good_example: bool = True
+        self, skill: Skill, sector: Sector | None = None, good_example: bool = True
     ) -> dict:
         """
         Generate an example script (good or bad).
@@ -200,17 +169,13 @@ class ContentAgent:
             skill_description=skill.description,
             sector_context=sector.agent_context_prompt if sector else "Contexte générique",
             script_type="BON" if good_example else "MAUVAIS",
-            script_type_description="BON exemple (à suivre)" if good_example else "MAUVAIS exemple (à éviter)"
+            script_type_description="BON exemple (à suivre)" if good_example else "MAUVAIS exemple (à éviter)",
         )
 
         response = await self._call_llm(prompt)
         return self._parse_json_response(response)
 
-    async def personalize_difficulty(
-        self,
-        base_scenario: dict,
-        user_stats: dict
-    ) -> dict:
+    async def personalize_difficulty(self, base_scenario: dict, user_stats: dict) -> dict:
         """
         Adjust difficulty based on user performance.
 
@@ -240,11 +205,7 @@ class ContentAgent:
         return base_scenario
 
     async def get_scenario_variants(
-        self,
-        skill: Skill,
-        level: str,
-        sector: Optional[Sector] = None,
-        count: int = 3
+        self, skill: Skill, level: str, sector: Sector | None = None, count: int = 3
     ) -> list[dict]:
         """
         Generate multiple scenario variants for variety.
@@ -265,7 +226,7 @@ class ContentAgent:
                 skill=skill,
                 level=level,
                 sector=sector,
-                use_cache=False  # Don't cache variants
+                use_cache=False,  # Don't cache variants
             )
             variants.append(scenario)
 
@@ -320,7 +281,9 @@ class ContentAgent:
         if level in ("beginner", "easy"):
             personality = "friendly"
             mood = "open"
-            opening = "Bonjour ! Merci de me rappeler. J'ai vu votre solution et je suis vraiment curieux d'en savoir plus !"
+            opening = (
+                "Bonjour ! Merci de me rappeler. J'ai vu votre solution et je suis vraiment curieux d'en savoir plus !"
+            )
             difficulty_score = 30
         elif level in ("advanced", "expert", "hard"):
             personality = "skeptical"
@@ -344,19 +307,19 @@ class ContentAgent:
                 "pain_points": ["manque de temps", "budget serré", "équipe réduite"],
                 "hidden_need": "Cherche à automatiser les tâches répétitives",
                 "budget_situation": "flexible",
-                "decision_power": "decides"
+                "decision_power": "decides",
             },
             "context": "Premier appel de découverte suite à une demande sur le site. Marie a téléchargé un livre blanc sur l'automatisation marketing.",
             "opening_message": opening,
             "key_moments": [
                 "Découverte des besoins réels",
                 "Gestion de l'objection budget",
-                "Qualification du décideur"
+                "Qualification du décideur",
             ],
             "success_criteria": [
                 "Identifier le besoin principal",
                 "Comprendre le contexte de l'entreprise",
-                "Obtenir un RDV de démo"
+                "Obtenir un RDV de démo",
             ],
-            "difficulty_score": difficulty_score
+            "difficulty_score": difficulty_score,
         }

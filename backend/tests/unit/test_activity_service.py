@@ -3,15 +3,12 @@ Unit tests for ActivityService.
 Tests activity logging, journey tracking, error logging, and analytics.
 """
 
-import pytest
-from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
+import pytest
+
+from models import ActivityAction, ActivityLog, ErrorLog, JourneyStage, User
 from services.activity import ActivityService
-from models import (
-    User, ActivityLog, UserJourney, ErrorLog, TrainingSession,
-    ActivityAction, JourneyStage
-)
 
 
 class TestActivityLogging:
@@ -54,7 +51,7 @@ class TestActivityLogging:
             resource_id=123,
             extra_data={"key": "value"},
             ip_address="127.0.0.1",
-            user_agent="TestAgent"
+            user_agent="TestAgent",
         )
 
         # Verify
@@ -111,9 +108,7 @@ class TestActivityLogging:
 
         mock_db.execute.side_effect = [mock_result, mock_count_result]
 
-        activities, total = await service.get_user_activities(
-            user_id=1, limit=3, offset=0
-        )
+        activities, total = await service.get_user_activities(user_id=1, limit=3, offset=0)
 
         assert len(activities) == 3
         assert total == 10
@@ -131,9 +126,7 @@ class TestActivityLogging:
 
         mock_db.execute.side_effect = [mock_result, mock_count_result]
 
-        activities, total = await service.get_user_activities(
-            user_id=1, action="login"
-        )
+        activities, total = await service.get_user_activities(user_id=1, action="login")
 
         assert len(activities) == 1
 
@@ -165,10 +158,7 @@ class TestJourneyTracking:
         mock_result.scalar_one_or_none.return_value = mock_user
         mock_db.execute.return_value = mock_result
 
-        result = await service.update_journey_stage(
-            user_id=1,
-            new_stage=JourneyStage.FIRST_LOGIN.value
-        )
+        result = await service.update_journey_stage(user_id=1, new_stage=JourneyStage.FIRST_LOGIN.value)
 
         assert mock_user.journey_stage == JourneyStage.FIRST_LOGIN.value
         assert mock_db.add.called
@@ -185,10 +175,7 @@ class TestJourneyTracking:
         mock_result.scalar_one_or_none.return_value = mock_user
         mock_db.execute.return_value = mock_result
 
-        result = await service.update_journey_stage(
-            user_id=1,
-            new_stage=JourneyStage.FIRST_LOGIN.value
-        )
+        result = await service.update_journey_stage(user_id=1, new_stage=JourneyStage.FIRST_LOGIN.value)
 
         assert result is None
 
@@ -199,10 +186,7 @@ class TestJourneyTracking:
         mock_result.scalar_one_or_none.return_value = None
         mock_db.execute.return_value = mock_result
 
-        result = await service.update_journey_stage(
-            user_id=999,
-            new_stage=JourneyStage.FIRST_LOGIN.value
-        )
+        result = await service.update_journey_stage(user_id=999, new_stage=JourneyStage.FIRST_LOGIN.value)
 
         assert result is None
 
@@ -262,7 +246,7 @@ class TestErrorLogging:
             user_id=1,
             stack_trace="Traceback...",
             endpoint="/api/test",
-            request_data={"key": "value"}
+            request_data={"key": "value"},
         )
 
         assert mock_db.add.called
@@ -299,10 +283,7 @@ class TestErrorLogging:
 
         mock_db.execute.side_effect = [mock_result, mock_count_result]
 
-        errors, total = await service.get_errors(
-            resolved=False,
-            error_type="ValidationError"
-        )
+        errors, total = await service.get_errors(resolved=False, error_type="ValidationError")
 
         assert len(errors) == 1
 
@@ -317,11 +298,7 @@ class TestErrorLogging:
         mock_result.scalar_one_or_none.return_value = mock_error
         mock_db.execute.return_value = mock_result
 
-        result = await service.resolve_error(
-            error_id=1,
-            admin_id=1,
-            resolution_notes="Fixed the issue"
-        )
+        result = await service.resolve_error(error_id=1, admin_id=1, resolution_notes="Fixed the issue")
 
         assert mock_error.is_resolved is True
         assert mock_error.resolved_by == 1
@@ -348,11 +325,7 @@ class TestErrorLogging:
         mock_unresolved.scalar.return_value = 30
 
         mock_by_type = MagicMock()
-        mock_by_type.all.return_value = [
-            ("ValidationError", 50),
-            ("DatabaseError", 30),
-            ("AuthError", 20)
-        ]
+        mock_by_type.all.return_value = [("ValidationError", 50), ("DatabaseError", 30), ("AuthError", 20)]
 
         mock_db.execute.side_effect = [mock_total, mock_unresolved, mock_by_type]
 
@@ -387,25 +360,15 @@ class TestAnalytics:
         mock_total.scalar.return_value = 500
 
         mock_by_action = MagicMock()
-        mock_by_action.all.return_value = [
-            ("login", 200),
-            ("upload_video", 100),
-            ("complete_training", 200)
-        ]
+        mock_by_action.all.return_value = [("login", 200), ("upload_video", 100), ("complete_training", 200)]
 
         mock_daily = MagicMock()
-        mock_daily.all.return_value = [
-            ("2025-12-28", 150),
-            ("2025-12-29", 175),
-            ("2025-12-30", 175)
-        ]
+        mock_daily.all.return_value = [("2025-12-28", 150), ("2025-12-29", 175), ("2025-12-30", 175)]
 
         mock_active_users = MagicMock()
         mock_active_users.scalar.return_value = 50
 
-        mock_db.execute.side_effect = [
-            mock_total, mock_by_action, mock_daily, mock_active_users
-        ]
+        mock_db.execute.side_effect = [mock_total, mock_by_action, mock_daily, mock_active_users]
 
         stats = await service.get_activity_stats(days=30)
 

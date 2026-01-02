@@ -4,20 +4,20 @@ Decision Engine - Intelligent routing and workflow planning.
 Uses Claude Opus to analyze tasks and create execution plans.
 """
 
-import os
 import json
+import os
 from dataclasses import dataclass, field
-from typing import Optional
 from enum import Enum
 
-from anthropic import AsyncAnthropic
 import structlog
+from anthropic import AsyncAnthropic
 
 logger = structlog.get_logger()
 
 
 class AgentType(Enum):
     """Available agent types."""
+
     AUDIO = "audio"
     PATTERN = "pattern"
     TRAINING = "training"
@@ -26,6 +26,7 @@ class AgentType(Enum):
 @dataclass
 class WorkflowStep:
     """A single step in a workflow."""
+
     agent: AgentType
     task: str
     depends_on: list[str] = field(default_factory=list)
@@ -38,6 +39,7 @@ class WorkflowStep:
 @dataclass
 class Workflow:
     """Complete workflow with multiple steps."""
+
     id: str
     steps: list[WorkflowStep]
     reasoning: str
@@ -119,7 +121,7 @@ JSON uniquement, pas de markdown."""
         self.model = model
         self.client = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-    async def analyze(self, task: str, context: Optional[dict] = None) -> Workflow:
+    async def analyze(self, task: str, context: dict | None = None) -> Workflow:
         """
         Analyze a task and create an execution workflow.
 
@@ -138,10 +140,7 @@ JSON uniquement, pas de markdown."""
             response = await self.client.messages.create(
                 model=self.model,
                 max_tokens=2048,
-                messages=[{
-                    "role": "user",
-                    "content": self.ROUTING_PROMPT.format(task=task, context=context_str)
-                }]
+                messages=[{"role": "user", "content": self.ROUTING_PROMPT.format(task=task, context=context_str)}],
             )
 
             response_text = response.content[0].text.strip()
@@ -164,7 +163,7 @@ JSON uniquement, pas de markdown."""
                     task=step_data["task"],
                     depends_on=step_data.get("depends_on", []),
                     priority=step_data.get("priority", 1),
-                    timeout_seconds=step_data.get("timeout_seconds", 300)
+                    timeout_seconds=step_data.get("timeout_seconds", 300),
                 )
                 steps.append(step)
 
@@ -172,14 +171,14 @@ JSON uniquement, pas de markdown."""
                 id=f"wf_{hash(task) % 10000:04d}",
                 steps=steps,
                 reasoning=workflow_data.get("reasoning", ""),
-                parallel_groups=workflow_data.get("parallel_groups", [])
+                parallel_groups=workflow_data.get("parallel_groups", []),
             )
 
             logger.info(
                 "decision_engine_workflow_created",
                 workflow_id=workflow.id,
                 steps=len(steps),
-                reasoning=workflow.reasoning[:100]
+                reasoning=workflow.reasoning[:100],
             )
 
             return workflow
@@ -208,15 +207,12 @@ JSON uniquement, pas de markdown."""
             id="wf_fallback",
             steps=[WorkflowStep(agent=agent, task=task)],
             reasoning="Fallback workflow - routing failed",
-            parallel_groups=[[0]]
+            parallel_groups=[[0]],
         )
 
     async def should_continue(
-        self,
-        current_results: dict,
-        original_task: str,
-        remaining_steps: list[WorkflowStep]
-    ) -> tuple[bool, Optional[str]]:
+        self, current_results: dict, original_task: str, remaining_steps: list[WorkflowStep]
+    ) -> tuple[bool, str | None]:
         """
         Decide if workflow should continue or if task is complete.
 

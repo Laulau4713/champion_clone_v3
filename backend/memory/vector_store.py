@@ -9,7 +9,6 @@ Used for:
 
 import os
 import uuid
-from typing import Optional, Any
 from datetime import datetime
 
 import structlog
@@ -21,6 +20,7 @@ try:
     from qdrant_client import QdrantClient
     from qdrant_client.http import models as qdrant_models
     from qdrant_client.http.exceptions import UnexpectedResponse
+
     QDRANT_AVAILABLE = True
 except ImportError:
     QDRANT_AVAILABLE = False
@@ -28,6 +28,7 @@ except ImportError:
 
 try:
     from sentence_transformers import SentenceTransformer
+
     EMBEDDINGS_AVAILABLE = True
 except ImportError:
     EMBEDDINGS_AVAILABLE = False
@@ -50,10 +51,7 @@ class VectorMemory:
     VECTOR_SIZE = 384  # MiniLM output dimension
 
     def __init__(
-        self,
-        collection_name: str = DEFAULT_COLLECTION,
-        embedding_model: str = DEFAULT_MODEL,
-        url: Optional[str] = None
+        self, collection_name: str = DEFAULT_COLLECTION, embedding_model: str = DEFAULT_MODEL, url: str | None = None
     ):
         self.collection_name = collection_name
         self.embedding_model_name = embedding_model
@@ -85,7 +83,7 @@ class VectorMemory:
             "vector_memory_initialized",
             collection=collection_name,
             qdrant_available=self.client is not None,
-            embeddings_available=self.encoder is not None
+            embeddings_available=self.encoder is not None,
         )
 
     def _ensure_collection(self):
@@ -96,13 +94,12 @@ class VectorMemory:
             self.client.create_collection(
                 collection_name=self.collection_name,
                 vectors_config=qdrant_models.VectorParams(
-                    size=self.VECTOR_SIZE,
-                    distance=qdrant_models.Distance.COSINE
-                )
+                    size=self.VECTOR_SIZE, distance=qdrant_models.Distance.COSINE
+                ),
             )
             logger.info("collection_created", name=self.collection_name)
 
-    def _generate_embedding(self, text: str) -> Optional[list[float]]:
+    def _generate_embedding(self, text: str) -> list[float] | None:
         """Generate embedding for text."""
         if not self.encoder:
             return None
@@ -114,12 +111,7 @@ class VectorMemory:
             logger.error("embedding_generation_error", error=str(e))
             return None
 
-    async def store(
-        self,
-        key: str,
-        content: str,
-        metadata: Optional[dict] = None
-    ) -> bool:
+    async def store(self, key: str, content: str, metadata: dict | None = None) -> bool:
         """
         Store content with embedding.
 
@@ -140,22 +132,15 @@ class VectorMemory:
             if not embedding:
                 return False
 
-            payload = {
-                "content": content,
-                "key": key,
-                "created_at": datetime.utcnow().isoformat(),
-                **(metadata or {})
-            }
+            payload = {"content": content, "key": key, "created_at": datetime.utcnow().isoformat(), **(metadata or {})}
 
             self.client.upsert(
                 collection_name=self.collection_name,
                 points=[
                     qdrant_models.PointStruct(
-                        id=key if key.isdigit() else abs(hash(key)) % (10 ** 12),
-                        vector=embedding,
-                        payload=payload
+                        id=key if key.isdigit() else abs(hash(key)) % (10**12), vector=embedding, payload=payload
                     )
-                ]
+                ],
             )
 
             logger.debug("vector_stored", key=key, content_length=len(content))
@@ -165,10 +150,7 @@ class VectorMemory:
             logger.error("vector_store_error", key=key, error=str(e))
             return False
 
-    async def store_batch(
-        self,
-        items: list[dict]
-    ) -> int:
+    async def store_batch(self, items: list[dict]) -> int:
         """
         Store multiple items in batch.
 
@@ -192,14 +174,12 @@ class VectorMemory:
                 "content": item["content"],
                 "key": key,
                 "created_at": datetime.utcnow().isoformat(),
-                **(item.get("metadata", {}))
+                **(item.get("metadata", {})),
             }
 
             points.append(
                 qdrant_models.PointStruct(
-                    id=key if isinstance(key, int) else abs(hash(key)) % (10 ** 12),
-                    vector=embedding,
-                    payload=payload
+                    id=key if isinstance(key, int) else abs(hash(key)) % (10**12), vector=embedding, payload=payload
                 )
             )
 
@@ -207,10 +187,7 @@ class VectorMemory:
             return 0
 
         try:
-            self.client.upsert(
-                collection_name=self.collection_name,
-                points=points
-            )
+            self.client.upsert(collection_name=self.collection_name, points=points)
             logger.info("batch_stored", count=len(points))
             return len(points)
 
@@ -219,11 +196,7 @@ class VectorMemory:
             return 0
 
     async def retrieve(
-        self,
-        query: str,
-        limit: int = 5,
-        filters: Optional[dict] = None,
-        score_threshold: float = 0.5
+        self, query: str, limit: int = 5, filters: dict | None = None, score_threshold: float = 0.5
     ) -> list[dict]:
         """
         Retrieve similar content.
@@ -252,17 +225,11 @@ class VectorMemory:
                 for key, value in filters.items():
                     if isinstance(value, list):
                         conditions.append(
-                            qdrant_models.FieldCondition(
-                                key=key,
-                                match=qdrant_models.MatchAny(any=value)
-                            )
+                            qdrant_models.FieldCondition(key=key, match=qdrant_models.MatchAny(any=value))
                         )
                     else:
                         conditions.append(
-                            qdrant_models.FieldCondition(
-                                key=key,
-                                match=qdrant_models.MatchValue(value=value)
-                            )
+                            qdrant_models.FieldCondition(key=key, match=qdrant_models.MatchValue(value=value))
                         )
                 qdrant_filter = qdrant_models.Filter(must=conditions)
 
@@ -271,17 +238,10 @@ class VectorMemory:
                 query_vector=query_embedding,
                 limit=limit,
                 query_filter=qdrant_filter,
-                score_threshold=score_threshold
+                score_threshold=score_threshold,
             )
 
-            return [
-                {
-                    **hit.payload,
-                    "score": hit.score,
-                    "id": hit.id
-                }
-                for hit in results
-            ]
+            return [{**hit.payload, "score": hit.score, "id": hit.id} for hit in results]
 
         except Exception as e:
             logger.error("vector_retrieve_error", query=query[:50], error=str(e))
@@ -293,10 +253,9 @@ class VectorMemory:
             return False
 
         try:
-            point_id = key if isinstance(key, int) else abs(hash(key)) % (10 ** 12)
+            point_id = key if isinstance(key, int) else abs(hash(key)) % (10**12)
             self.client.delete(
-                collection_name=self.collection_name,
-                points_selector=qdrant_models.PointIdsList(points=[point_id])
+                collection_name=self.collection_name, points_selector=qdrant_models.PointIdsList(points=[point_id])
             )
             return True
         except Exception as e:
@@ -310,18 +269,13 @@ class VectorMemory:
 
         try:
             conditions = [
-                qdrant_models.FieldCondition(
-                    key=key,
-                    match=qdrant_models.MatchValue(value=value)
-                )
+                qdrant_models.FieldCondition(key=key, match=qdrant_models.MatchValue(value=value))
                 for key, value in filters.items()
             ]
 
             self.client.delete(
                 collection_name=self.collection_name,
-                points_selector=qdrant_models.FilterSelector(
-                    filter=qdrant_models.Filter(must=conditions)
-                )
+                points_selector=qdrant_models.FilterSelector(filter=qdrant_models.Filter(must=conditions)),
             )
             return 1  # Qdrant doesn't return count
         except Exception as e:
@@ -339,7 +293,7 @@ class VectorMemory:
                 "status": "available",
                 "points_count": info.points_count,
                 "vectors_count": info.vectors_count,
-                "segments_count": info.segments_count
+                "segments_count": info.segments_count,
             }
         except Exception as e:
             return {"status": "error", "error": str(e)}
@@ -356,8 +310,8 @@ class PatternVectorMemory(VectorMemory):
         champion_id: int,
         pattern_type: str,
         content: str,
-        context: Optional[str] = None,
-        examples: Optional[list[str]] = None
+        context: str | None = None,
+        examples: list[str] | None = None,
     ) -> str:
         """Store a sales pattern."""
         pattern_id = str(uuid.uuid4())[:8]
@@ -367,18 +321,14 @@ class PatternVectorMemory(VectorMemory):
             "pattern_type": pattern_type,
             "context": context,
             "examples": examples or [],
-            "usage_count": 0
+            "usage_count": 0,
         }
 
         success = await self.store(pattern_id, content, metadata)
         return pattern_id if success else ""
 
     async def find_similar_patterns(
-        self,
-        query: str,
-        champion_id: Optional[int] = None,
-        pattern_type: Optional[str] = None,
-        limit: int = 5
+        self, query: str, champion_id: int | None = None, pattern_type: str | None = None, limit: int = 5
     ) -> list[dict]:
         """Find similar patterns."""
         filters = {}
@@ -395,5 +345,5 @@ class PatternVectorMemory(VectorMemory):
             query="sales patterns techniques",  # Generic query
             limit=100,
             filters={"champion_id": champion_id},
-            score_threshold=0.0  # Get all
+            score_threshold=0.0,  # Get all
         )

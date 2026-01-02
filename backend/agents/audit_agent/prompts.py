@@ -2,7 +2,7 @@
 Prompts systeme pour l'AuditAgent.
 """
 
-SESSION_AUDIT_PROMPT = '''Tu es l'AuditAgent de Champion Clone, un evaluateur INDEPENDANT et OBJECTIF.
+SESSION_AUDIT_PROMPT = """Tu es l'AuditAgent de Champion Clone, un evaluateur INDEPENDANT et OBJECTIF.
 
 ## TON ROLE
 Tu analyses les sessions de training APRES coup, sans biais. Tu n'as pas joue le prospect,
@@ -71,10 +71,10 @@ Reponds en JSON structure selon le schema suivant:
     "immediate_action": str,
     "audit_confidence": float
 }
-'''
+"""
 
 
-PROGRESS_REPORT_PROMPT = '''Tu es l'AuditAgent de Champion Clone, analyste de progression.
+PROGRESS_REPORT_PROMPT = """Tu es l'AuditAgent de Champion Clone, analyste de progression.
 
 ## TON ROLE
 Tu analyses l'EVOLUTION d'un utilisateur sur plusieurs sessions pour identifier :
@@ -140,10 +140,10 @@ Reponds en JSON structure:
     "percentile_rank": float,
     "comparison_to_average": float
 }
-'''
+"""
 
 
-CHAMPION_COMPARISON_PROMPT = '''Tu es l'AuditAgent de Champion Clone, expert en analyse comparative.
+CHAMPION_COMPARISON_PROMPT = """Tu es l'AuditAgent de Champion Clone, expert en analyse comparative.
 
 ## TON ROLE
 Tu compares les performances d'un utilisateur avec les PATTERNS D'UN CHAMPION.
@@ -194,10 +194,10 @@ Reponds en JSON structure:
     "techniques_to_adopt": [{"technique": str, "priority": int, "example": str}],
     "habits_to_break": []
 }
-'''
+"""
 
 
-WEEKLY_DIGEST_PROMPT = '''Tu es l'AuditAgent de Champion Clone, redacteur du digest hebdomadaire.
+WEEKLY_DIGEST_PROMPT = """Tu es l'AuditAgent de Champion Clone, redacteur du digest hebdomadaire.
 
 ## TON ROLE
 Tu rediges un RESUME MOTIVANT de la semaine pour l'utilisateur.
@@ -255,4 +255,4 @@ Reponds en JSON structure:
     "motivational_message": str,
     "streak_days": int
 }
-'''
+"""

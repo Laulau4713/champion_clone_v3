@@ -5,15 +5,15 @@ Handles email template management and sending.
 
 import smtplib
 from datetime import datetime
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from typing import Optional
-from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
-import structlog
+from email.mime.text import MIMEText
 
-from models import User, EmailTemplate, EmailLog, EmailTrigger
+import structlog
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from config import get_settings
+from models import EmailLog, EmailTemplate, EmailTrigger, User
 
 logger = structlog.get_logger(__name__)
 
@@ -31,23 +31,17 @@ class EmailService:
 
     async def get_templates(self) -> list[EmailTemplate]:
         """Get all email templates."""
-        result = await self.db.execute(
-            select(EmailTemplate).order_by(EmailTemplate.trigger)
-        )
+        result = await self.db.execute(select(EmailTemplate).order_by(EmailTemplate.trigger))
         return list(result.scalars().all())
 
-    async def get_template(self, template_id: int) -> Optional[EmailTemplate]:
+    async def get_template(self, template_id: int) -> EmailTemplate | None:
         """Get a template by ID."""
-        result = await self.db.execute(
-            select(EmailTemplate).where(EmailTemplate.id == template_id)
-        )
+        result = await self.db.execute(select(EmailTemplate).where(EmailTemplate.id == template_id))
         return result.scalar_one_or_none()
 
-    async def get_template_by_trigger(self, trigger: str) -> Optional[EmailTemplate]:
+    async def get_template_by_trigger(self, trigger: str) -> EmailTemplate | None:
         """Get a template by trigger type."""
-        result = await self.db.execute(
-            select(EmailTemplate).where(EmailTemplate.trigger == trigger)
-        )
+        result = await self.db.execute(select(EmailTemplate).where(EmailTemplate.trigger == trigger))
         return result.scalar_one_or_none()
 
     async def create_template(
@@ -56,8 +50,8 @@ class EmailService:
         subject: str,
         body_html: str,
         body_text: str,
-        variables: Optional[list[str]] = None,
-        is_active: bool = True
+        variables: list[str] | None = None,
+        is_active: bool = True,
     ) -> EmailTemplate:
         """Create a new email template."""
         template = EmailTemplate(
@@ -66,7 +60,7 @@ class EmailService:
             body_html=body_html,
             body_text=body_text,
             variables=variables,
-            is_active=is_active
+            is_active=is_active,
         )
         self.db.add(template)
         await self.db.commit()
@@ -76,12 +70,12 @@ class EmailService:
     async def update_template(
         self,
         template_id: int,
-        subject: Optional[str] = None,
-        body_html: Optional[str] = None,
-        body_text: Optional[str] = None,
-        variables: Optional[list[str]] = None,
-        is_active: Optional[bool] = None
-    ) -> Optional[EmailTemplate]:
+        subject: str | None = None,
+        body_html: str | None = None,
+        body_text: str | None = None,
+        variables: list[str] | None = None,
+        is_active: bool | None = None,
+    ) -> EmailTemplate | None:
         """Update an email template."""
         template = await self.get_template(template_id)
         if not template:
@@ -116,23 +110,14 @@ class EmailService:
     # EMAIL SENDING
     # =========================================================================
 
-    def _render_template(
-        self,
-        content: str,
-        variables: dict
-    ) -> str:
+    def _render_template(self, content: str, variables: dict) -> str:
         """Render template with variables."""
         rendered = content
         for key, value in variables.items():
             rendered = rendered.replace(f"{{{{{key}}}}}", str(value))
         return rendered
 
-    async def send_email(
-        self,
-        user_id: int,
-        trigger: str,
-        variables: Optional[dict] = None
-    ) -> Optional[EmailLog]:
+    async def send_email(self, user_id: int, trigger: str, variables: dict | None = None) -> EmailLog | None:
         """Send an email using a template."""
         # Get user
         result = await self.db.execute(select(User).where(User.id == user_id))
@@ -152,7 +137,9 @@ class EmailService:
             "user_name": user.full_name or user.email.split("@")[0],
             "user_email": user.email,
             "app_name": "Champion Clone",
-            "app_url": self.settings.cors_origins.split(",")[0] if self.settings.cors_origins else "http://localhost:3000"
+            "app_url": self.settings.cors_origins.split(",")[0]
+            if self.settings.cors_origins
+            else "http://localhost:3000",
         }
         if variables:
             all_vars.update(variables)
@@ -169,7 +156,7 @@ class EmailService:
             trigger=trigger,
             to_email=user.email,
             subject=subject,
-            status="pending"
+            status="pending",
         )
         self.db.add(email_log)
         await self.db.commit()
@@ -182,12 +169,7 @@ class EmailService:
                 email_log.status = "sent"
             else:
                 # No SMTP configured, just log
-                logger.info(
-                    "email_simulated",
-                    to=user.email,
-                    subject=subject,
-                    trigger=trigger
-                )
+                logger.info("email_simulated", to=user.email, subject=subject, trigger=trigger)
                 email_log.status = "sent"
                 email_log.extra_data = {"simulated": True}
 
@@ -200,13 +182,7 @@ class EmailService:
         await self.db.refresh(email_log)
         return email_log
 
-    async def _send_smtp(
-        self,
-        to_email: str,
-        subject: str,
-        body_html: str,
-        body_text: str
-    ):
+    async def _send_smtp(self, to_email: str, subject: str, body_html: str, body_text: str):
         """Send email via SMTP."""
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
@@ -231,35 +207,24 @@ class EmailService:
     # =========================================================================
 
     async def trigger_email(
-        self,
-        trigger: EmailTrigger,
-        user_id: int,
-        variables: Optional[dict] = None
-    ) -> Optional[EmailLog]:
+        self, trigger: EmailTrigger, user_id: int, variables: dict | None = None
+    ) -> EmailLog | None:
         """Trigger an automated email."""
         return await self.send_email(user_id, trigger.value, variables)
 
-    async def send_welcome_email(self, user_id: int) -> Optional[EmailLog]:
+    async def send_welcome_email(self, user_id: int) -> EmailLog | None:
         """Send welcome email to new user."""
         return await self.trigger_email(EmailTrigger.WELCOME, user_id)
 
-    async def send_first_champion_email(self, user_id: int, champion_name: str) -> Optional[EmailLog]:
+    async def send_first_champion_email(self, user_id: int, champion_name: str) -> EmailLog | None:
         """Send email when user creates first champion."""
-        return await self.trigger_email(
-            EmailTrigger.FIRST_CHAMPION,
-            user_id,
-            {"champion_name": champion_name}
-        )
+        return await self.trigger_email(EmailTrigger.FIRST_CHAMPION, user_id, {"champion_name": champion_name})
 
-    async def send_first_session_email(self, user_id: int, score: float) -> Optional[EmailLog]:
+    async def send_first_session_email(self, user_id: int, score: float) -> EmailLog | None:
         """Send email when user completes first training session."""
-        return await self.trigger_email(
-            EmailTrigger.FIRST_SESSION,
-            user_id,
-            {"score": f"{score:.1f}"}
-        )
+        return await self.trigger_email(EmailTrigger.FIRST_SESSION, user_id, {"score": f"{score:.1f}"})
 
-    async def send_inactive_reminder(self, user_id: int, days_inactive: int) -> Optional[EmailLog]:
+    async def send_inactive_reminder(self, user_id: int, days_inactive: int) -> EmailLog | None:
         """Send reminder email to inactive user."""
         if days_inactive >= 30:
             trigger = EmailTrigger.INACTIVE_30_DAYS
@@ -276,11 +241,11 @@ class EmailService:
 
     async def get_email_logs(
         self,
-        user_id: Optional[int] = None,
-        trigger: Optional[str] = None,
-        status: Optional[str] = None,
+        user_id: int | None = None,
+        trigger: str | None = None,
+        status: str | None = None,
         limit: int = 50,
-        offset: int = 0
+        offset: int = 0,
     ) -> tuple[list[EmailLog], int]:
         """Get email logs with optional filtering."""
         query = select(EmailLog)
@@ -311,27 +276,19 @@ class EmailService:
     async def get_email_stats(self) -> dict:
         """Get email delivery statistics."""
         # Total sent
-        sent_result = await self.db.execute(
-            select(func.count(EmailLog.id)).where(EmailLog.status == "sent")
-        )
+        sent_result = await self.db.execute(select(func.count(EmailLog.id)).where(EmailLog.status == "sent"))
         sent = sent_result.scalar() or 0
 
         # Failed
-        failed_result = await self.db.execute(
-            select(func.count(EmailLog.id)).where(EmailLog.status == "failed")
-        )
+        failed_result = await self.db.execute(select(func.count(EmailLog.id)).where(EmailLog.status == "failed"))
         failed = failed_result.scalar() or 0
 
         # Opened
-        opened_result = await self.db.execute(
-            select(func.count(EmailLog.id)).where(EmailLog.opened_at.isnot(None))
-        )
+        opened_result = await self.db.execute(select(func.count(EmailLog.id)).where(EmailLog.opened_at.isnot(None)))
         opened = opened_result.scalar() or 0
 
         # Clicked
-        clicked_result = await self.db.execute(
-            select(func.count(EmailLog.id)).where(EmailLog.clicked_at.isnot(None))
-        )
+        clicked_result = await self.db.execute(select(func.count(EmailLog.id)).where(EmailLog.clicked_at.isnot(None)))
         clicked = clicked_result.scalar() or 0
 
         # By trigger
@@ -352,14 +309,12 @@ class EmailService:
             "open_rate": round((opened / sent * 100) if sent > 0 else 0, 1),
             "click_rate": round((clicked / sent * 100) if sent > 0 else 0, 1),
             "delivery_rate": round((sent / total * 100) if total > 0 else 0, 1),
-            "by_trigger": by_trigger
+            "by_trigger": by_trigger,
         }
 
     async def mark_opened(self, email_id: int) -> bool:
         """Mark an email as opened (for tracking pixel)."""
-        result = await self.db.execute(
-            select(EmailLog).where(EmailLog.id == email_id)
-        )
+        result = await self.db.execute(select(EmailLog).where(EmailLog.id == email_id))
         email = result.scalar_one_or_none()
         if not email:
             return False
@@ -373,9 +328,7 @@ class EmailService:
 
     async def mark_clicked(self, email_id: int) -> bool:
         """Mark an email as clicked."""
-        result = await self.db.execute(
-            select(EmailLog).where(EmailLog.id == email_id)
-        )
+        result = await self.db.execute(select(EmailLog).where(EmailLog.id == email_id))
         email = result.scalar_one_or_none()
         if not email:
             return False

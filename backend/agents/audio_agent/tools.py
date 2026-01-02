@@ -4,11 +4,10 @@ Audio Agent Tools - FFmpeg, Local Whisper, ElevenLabs integrations.
 Uses LOCAL Whisper model (FREE) instead of OpenAI Whisper API.
 """
 
-import os
 import asyncio
-from pathlib import Path
-from typing import Optional
+import os
 import uuid
+from pathlib import Path
 
 import ffmpeg
 import structlog
@@ -18,6 +17,7 @@ logger = structlog.get_logger()
 # Try to import local Whisper
 try:
     import whisper
+
     WHISPER_AVAILABLE = True
 except ImportError:
     WHISPER_AVAILABLE = False
@@ -26,6 +26,7 @@ except ImportError:
 # Try to import ElevenLabs
 try:
     from elevenlabs import ElevenLabs, Voice, VoiceSettings
+
     ELEVENLABS_AVAILABLE = True
 except ImportError:
     ELEVENLABS_AVAILABLE = False
@@ -61,12 +62,7 @@ class AudioTools:
             self._whisper_model = whisper.load_model(self._whisper_model_size)
         return self._whisper_model
 
-    async def extract_audio(
-        self,
-        video_path: str,
-        output_format: str = "mp3",
-        sample_rate: int = 16000
-    ) -> dict:
+    async def extract_audio(self, video_path: str, output_format: str = "mp3", sample_rate: int = 16000) -> dict:
         """
         Extract audio from video file using FFmpeg.
 
@@ -91,12 +87,7 @@ class AudioTools:
 
         try:
             # Run FFmpeg extraction
-            await asyncio.to_thread(
-                self._run_ffmpeg,
-                str(video_path),
-                str(audio_path),
-                sample_rate
-            )
+            await asyncio.to_thread(self._run_ffmpeg, str(video_path), str(audio_path), sample_rate)
 
             if not audio_path.exists():
                 return {"success": False, "error": "Audio extraction failed"}
@@ -110,7 +101,7 @@ class AudioTools:
                 "format": output_format,
                 "sample_rate": sample_rate,
                 "duration_seconds": duration,
-                "file_size_bytes": audio_path.stat().st_size
+                "file_size_bytes": audio_path.stat().st_size,
             }
 
         except Exception as e:
@@ -120,15 +111,14 @@ class AudioTools:
     def _run_ffmpeg(self, video_path: str, audio_path: str, sample_rate: int):
         """Synchronous FFmpeg execution."""
         (
-            ffmpeg
-            .input(video_path)
+            ffmpeg.input(video_path)
             .output(
                 audio_path,
-                acodec='libmp3lame',
-                ab='192k',
+                acodec="libmp3lame",
+                ab="192k",
                 ar=str(sample_rate),
                 ac=1,  # Mono
-                loglevel='error'
+                loglevel="error",
             )
             .overwrite_output()
             .run(capture_stdout=True, capture_stderr=True)
@@ -138,16 +128,11 @@ class AudioTools:
         """Get audio duration."""
         try:
             probe = await asyncio.to_thread(ffmpeg.probe, audio_path)
-            return float(probe['format']['duration'])
+            return float(probe["format"]["duration"])
         except Exception:
             return 0.0
 
-    async def transcribe(
-        self,
-        audio_path: str,
-        language: str = "fr",
-        prompt: Optional[str] = None
-    ) -> dict:
+    async def transcribe(self, audio_path: str, language: str = "fr", prompt: str | None = None) -> dict:
         """
         Transcribe audio using LOCAL Whisper model (FREE).
 
@@ -177,17 +162,13 @@ class AudioTools:
                 str(audio_path),
                 language=language,
                 initial_prompt=prompt or "Ceci est un enregistrement commercial, vente, coaching.",
-                verbose=False
+                verbose=False,
             )
 
             # Extract text and segments
             transcript = result.get("text", "").strip()
             segments = [
-                {
-                    "start": seg["start"],
-                    "end": seg["end"],
-                    "text": seg["text"].strip()
-                }
+                {"start": seg["start"], "end": seg["end"], "text": seg["text"].strip()}
                 for seg in result.get("segments", [])
             ]
 
@@ -201,19 +182,14 @@ class AudioTools:
                 "segments": segments,
                 "word_count": len(transcript.split()),
                 "duration_seconds": duration,
-                "model": f"whisper-local-{self._whisper_model_size}"
+                "model": f"whisper-local-{self._whisper_model_size}",
             }
 
         except Exception as e:
             logger.error("transcription_error", error=str(e))
             return {"success": False, "error": str(e)}
 
-    async def clone_voice(
-        self,
-        name: str,
-        audio_samples: list[str],
-        description: Optional[str] = None
-    ) -> dict:
+    async def clone_voice(self, name: str, audio_samples: list[str], description: str | None = None) -> dict:
         """
         Clone a voice using ElevenLabs.
 
@@ -242,33 +218,20 @@ class AudioTools:
 
             # Create voice clone
             voice = await asyncio.to_thread(
-                self.elevenlabs.clone,
-                name=name,
-                files=files,
-                description=description or f"Voice clone for {name}"
+                self.elevenlabs.clone, name=name, files=files, description=description or f"Voice clone for {name}"
             )
 
             # Close files
             for f in files:
                 f.close()
 
-            return {
-                "success": True,
-                "voice_id": voice.voice_id,
-                "name": voice.name,
-                "category": voice.category
-            }
+            return {"success": True, "voice_id": voice.voice_id, "name": voice.name, "category": voice.category}
 
         except Exception as e:
             logger.error("voice_clone_error", error=str(e))
             return {"success": False, "error": str(e)}
 
-    async def text_to_speech(
-        self,
-        text: str,
-        voice_id: str,
-        output_path: Optional[str] = None
-    ) -> dict:
+    async def text_to_speech(self, text: str, voice_id: str, output_path: str | None = None) -> dict:
         """
         Generate speech from text using ElevenLabs.
 
@@ -286,10 +249,7 @@ class AudioTools:
         try:
             # Generate audio
             audio = await asyncio.to_thread(
-                self.elevenlabs.generate,
-                text=text,
-                voice=voice_id,
-                model="eleven_multilingual_v2"
+                self.elevenlabs.generate, text=text, voice=voice_id, model="eleven_multilingual_v2"
             )
 
             # Save to file
@@ -300,11 +260,7 @@ class AudioTools:
                 for chunk in audio:
                     f.write(chunk)
 
-            return {
-                "success": True,
-                "audio_path": output_path,
-                "text_length": len(text)
-            }
+            return {"success": True, "audio_path": output_path, "text_length": len(text)}
 
         except Exception as e:
             logger.error("tts_error", error=str(e))
@@ -323,21 +279,18 @@ class AudioTools:
         try:
             probe = await asyncio.to_thread(ffmpeg.probe, audio_path)
 
-            audio_stream = next(
-                (s for s in probe['streams'] if s['codec_type'] == 'audio'),
-                None
-            )
+            audio_stream = next((s for s in probe["streams"] if s["codec_type"] == "audio"), None)
 
             if not audio_stream:
                 return {"success": False, "error": "No audio stream found"}
 
             return {
                 "success": True,
-                "duration_seconds": float(probe['format']['duration']),
-                "bit_rate": int(probe['format'].get('bit_rate', 0)),
-                "sample_rate": int(audio_stream.get('sample_rate', 0)),
-                "channels": int(audio_stream.get('channels', 0)),
-                "codec": audio_stream.get('codec_name', 'unknown')
+                "duration_seconds": float(probe["format"]["duration"]),
+                "bit_rate": int(probe["format"].get("bit_rate", 0)),
+                "sample_rate": int(audio_stream.get("sample_rate", 0)),
+                "channels": int(audio_stream.get("channels", 0)),
+                "codec": audio_stream.get("codec_name", "unknown"),
             }
 
         except Exception as e:

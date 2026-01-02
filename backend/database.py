@@ -3,13 +3,14 @@ Database connection and session management.
 Supports both PostgreSQL (production) and SQLite (development).
 """
 
-from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+import os
+from collections.abc import AsyncGenerator
+
+import structlog
+from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.pool import StaticPool
-import os
-from dotenv import load_dotenv
-import structlog
 
 load_dotenv()
 
@@ -18,6 +19,7 @@ logger = structlog.get_logger()
 
 class Base(DeclarativeBase):
     """Base class for all SQLAlchemy models."""
+
     pass
 
 

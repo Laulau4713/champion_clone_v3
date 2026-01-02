@@ -2,11 +2,10 @@
 Audio Agent Memory - Voice profiles and audio metadata storage.
 """
 
-import os
 import json
-from pathlib import Path
-from typing import Optional
+import os
 from datetime import datetime
+from pathlib import Path
 
 import structlog
 
@@ -25,7 +24,7 @@ class VoiceMemory:
     - Transcription cache
     """
 
-    def __init__(self, storage_path: Optional[str] = None):
+    def __init__(self, storage_path: str | None = None):
         self.storage_path = Path(storage_path or os.getenv("VOICE_STORAGE", "./data/voices"))
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
@@ -38,7 +37,7 @@ class VoiceMemory:
         """Load profiles from disk."""
         if self.profiles_file.exists():
             try:
-                with open(self.profiles_file, "r") as f:
+                with open(self.profiles_file) as f:
                     data = json.load(f)
                     for profile_data in data.get("profiles", []):
                         profile = VoiceProfile(
@@ -48,7 +47,7 @@ class VoiceMemory:
                             audio_samples=profile_data.get("audio_samples", []),
                             elevenlabs_voice_id=profile_data.get("elevenlabs_voice_id"),
                             characteristics=profile_data.get("characteristics", {}),
-                            created_at=datetime.fromisoformat(profile_data["created_at"])
+                            created_at=datetime.fromisoformat(profile_data["created_at"]),
                         )
                         self.profiles[profile.id] = profile
                 logger.info("voice_profiles_loaded", count=len(self.profiles))
@@ -58,15 +57,13 @@ class VoiceMemory:
     def _save_profiles(self):
         """Save profiles to disk."""
         try:
-            data = {
-                "profiles": [p.to_dict() for p in self.profiles.values()]
-            }
+            data = {"profiles": [p.to_dict() for p in self.profiles.values()]}
             with open(self.profiles_file, "w") as f:
                 json.dump(data, f, indent=2)
         except Exception as e:
             logger.error("voice_profiles_save_error", error=str(e))
 
-    async def store(self, key: str, value: dict, metadata: Optional[dict] = None) -> bool:
+    async def store(self, key: str, value: dict, metadata: dict | None = None) -> bool:
         """
         Store a voice profile.
 
@@ -113,10 +110,7 @@ class VoiceMemory:
 
         for profile in self.profiles.values():
             # Match by champion_id or name
-            if (
-                str(profile.champion_id) == query or
-                query.lower() in profile.name.lower()
-            ):
+            if str(profile.champion_id) == query or query.lower() in profile.name.lower():
                 results.append(profile.to_dict())
 
             if len(results) >= limit:
@@ -124,7 +118,7 @@ class VoiceMemory:
 
         return results
 
-    async def get_by_champion(self, champion_id: int) -> Optional[VoiceProfile]:
+    async def get_by_champion(self, champion_id: int) -> VoiceProfile | None:
         """Get voice profile for a champion."""
         for profile in self.profiles.values():
             if profile.champion_id == champion_id:

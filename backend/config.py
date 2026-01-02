@@ -5,9 +5,7 @@ Centralized settings management using Pydantic Settings.
 All configuration is loaded from environment variables or .env file.
 """
 
-import os
 from functools import lru_cache
-from typing import List
 
 from pydantic_settings import BaseSettings
 
@@ -77,8 +75,8 @@ class Settings(BaseSettings):
     # ===========================================
     # ElevenLabs Voice Configuration
     # ===========================================
-    ELEVENLABS_VOICE_FRIENDLY: str = ""    # Voix amicale (niveau facile)
-    ELEVENLABS_VOICE_NEUTRAL: str = ""     # Voix neutre (niveau moyen)
+    ELEVENLABS_VOICE_FRIENDLY: str = ""  # Voix amicale (niveau facile)
+    ELEVENLABS_VOICE_NEUTRAL: str = ""  # Voix neutre (niveau moyen)
     ELEVENLABS_VOICE_AGGRESSIVE: str = ""  # Voix pressée (niveau expert)
     ELEVENLABS_MODEL: str = "eleven_multilingual_v2"
 
@@ -150,7 +148,7 @@ class Settings(BaseSettings):
         return {ext.strip() for ext in self.ALLOWED_EXTENSIONS.split(",")}
 
     @property
-    def cors_origins_list(self) -> List[str]:
+    def cors_origins_list(self) -> list[str]:
         """Get CORS origins as a list."""
         if not self.CORS_ORIGINS:
             return ["http://localhost:3000", "http://127.0.0.1:3000"]
@@ -200,16 +198,12 @@ class Settings(BaseSettings):
             if self.DEBUG:
                 # Allow insecure default in DEBUG mode only
                 return
-            raise SystemExit(
-                "FATAL: JWT_SECRET not set. Generate with: openssl rand -hex 32"
-            )
+            raise SystemExit("FATAL: JWT_SECRET not set. Generate with: openssl rand -hex 32")
 
         if not self.REFRESH_TOKEN_SECRET:
             if self.DEBUG:
                 return
-            raise SystemExit(
-                "FATAL: REFRESH_TOKEN_SECRET not set. Generate with: openssl rand -hex 32"
-            )
+            raise SystemExit("FATAL: REFRESH_TOKEN_SECRET not set. Generate with: openssl rand -hex 32")
 
     class Config:
         env_file = ".env"

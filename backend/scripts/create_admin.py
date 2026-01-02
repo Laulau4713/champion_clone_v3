@@ -7,18 +7,20 @@ Usage:
   python scripts/create_admin.py --interactive                    # Dev (prompt)
   python scripts/create_admin.py --generate                       # Dev (auto)
 """
+
+import asyncio
 import os
-import sys
 import secrets
 import string
-import asyncio
+import sys
 from getpass import getpass
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import select
+
 from database import AsyncSessionLocal, init_db
-from models import User, UserJourney, JourneyStage
+from models import JourneyStage, User, UserJourney
 from services.auth import hash_password
 
 
@@ -32,7 +34,7 @@ def generate_secure_password(length: int = 16) -> str:
     ]
     pwd += [secrets.choice(alphabet) for _ in range(length - 4)]
     secrets.SystemRandom().shuffle(pwd)
-    return ''.join(pwd)
+    return "".join(pwd)
 
 
 def validate_password(password: str) -> tuple[bool, str]:
@@ -70,7 +72,7 @@ async def create_admin(email: str, password: str):
             role="admin",
             is_active=True,
             subscription_plan="enterprise",
-            subscription_status="active"
+            subscription_status="active",
         )
         db.add(admin)
         await db.flush()
@@ -117,6 +119,7 @@ async def main():
         sys.exit(f"❌ {msg}")
 
     await create_admin(email, password)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

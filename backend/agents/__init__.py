@@ -7,17 +7,9 @@ Multi-agent system with specialized agents:
 - TrainingAgent: Training session management
 """
 
-from .base_agent import BaseAgent, AgentStatus, ToolResult, ThinkResult
 from .audio_agent import AudioAgent
+from .base_agent import AgentStatus, BaseAgent, ThinkResult, ToolResult
 from .pattern_agent import PatternAgent
 from .training_agent import TrainingAgent
 
-__all__ = [
-    "BaseAgent",
-    "AgentStatus",
-    "ToolResult",
-    "ThinkResult",
-    "AudioAgent",
-    "PatternAgent",
-    "TrainingAgent"
-]
+__all__ = ["BaseAgent", "AgentStatus", "ToolResult", "ThinkResult", "AudioAgent", "PatternAgent", "TrainingAgent"]

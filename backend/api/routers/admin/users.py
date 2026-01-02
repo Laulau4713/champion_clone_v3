@@ -5,26 +5,31 @@ User management endpoints for admin panel.
 """
 
 from datetime import datetime
-from typing import Optional
 
+import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-import structlog
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.routers.admin.dependencies import require_admin
+from api.routers.admin.schemas import UserUpdateRequest
 from config import get_settings
 from database import get_db
 from models import (
-    User, Champion, TrainingSession, ActivityLog,
-    AdminNote, SubscriptionEvent, SubscriptionPlan, SubscriptionStatus,
-    AdminActionType
+    ActivityLog,
+    AdminActionType,
+    AdminNote,
+    Champion,
+    SubscriptionEvent,
+    SubscriptionPlan,
+    SubscriptionStatus,
+    TrainingSession,
+    User,
 )
-from api.routers.admin.dependencies import require_admin
-from api.routers.admin.schemas import UserUpdateRequest
 from services.activity import ActivityService
-from services.audit import AuditService, serialize_for_audit
+from services.audit import AuditService
 
 logger = structlog.get_logger()
 settings = get_settings()
@@ -41,11 +46,11 @@ async def list_users(
     db: AsyncSession = Depends(get_db),
     page: int = 1,
     per_page: int = 10,
-    search: Optional[str] = None,
-    role: Optional[str] = None,
-    is_active: Optional[bool] = None,
-    subscription_plan: Optional[str] = None,
-    journey_stage: Optional[str] = None
+    search: str | None = None,
+    role: str | None = None,
+    is_active: bool | None = None,
+    subscription_plan: str | None = None,
+    journey_stage: str | None = None,
 ):
     """List all users with pagination and filtering."""
     per_page = min(per_page, 100)
@@ -78,9 +83,7 @@ async def list_users(
 
     total = await db.scalar(count_query)
 
-    result = await db.execute(
-        query.order_by(User.created_at.desc()).offset(skip).limit(per_page)
-    )
+    result = await db.execute(query.order_by(User.created_at.desc()).offset(skip).limit(per_page))
     users = result.scalars().all()
 
     logger.info("admin_users_listed", admin_id=admin.id, count=len(users), page=page)
@@ -98,22 +101,20 @@ async def list_users(
                 "journey_stage": u.journey_stage,
                 "last_login_at": u.last_login_at.isoformat() if u.last_login_at else None,
                 "last_activity_at": u.last_activity_at.isoformat() if u.last_activity_at else None,
-                "created_at": u.created_at.isoformat() if u.created_at else None
+                "created_at": u.created_at.isoformat() if u.created_at else None,
             }
             for u in users
         ],
         "total": total or 0,
         "page": page,
         "per_page": per_page,
-        "total_pages": ((total or 0) + per_page - 1) // per_page
+        "total_pages": ((total or 0) + per_page - 1) // per_page,
     }
 
 
 @router.get("/users/churn-risk")
 async def get_churn_risk_users(
-    days: int = Query(14, ge=1, le=90),
-    admin: User = Depends(require_admin),
-    db: AsyncSession = Depends(get_db)
+    days: int = Query(14, ge=1, le=90), admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)
 ):
     """Get users at risk of churning (inactive for X days)."""
     activity_service = ActivityService(db)
@@ -128,30 +129,24 @@ async def get_churn_risk_users(
                 "subscription_plan": u.subscription_plan,
                 "journey_stage": u.journey_stage,
                 "last_activity_at": u.last_activity_at.isoformat() if u.last_activity_at else None,
-                "days_inactive": (datetime.utcnow() - u.last_activity_at).days if u.last_activity_at else None
+                "days_inactive": (datetime.utcnow() - u.last_activity_at).days if u.last_activity_at else None,
             }
             for u in users
         ],
         "count": len(users),
-        "threshold_days": days
+        "threshold_days": days,
     }
 
 
 @router.get("/users/{user_id}")
-async def get_user_detail(
-    user_id: int,
-    admin: User = Depends(require_admin),
-    db: AsyncSession = Depends(get_db)
-):
+async def get_user_detail(user_id: int, admin: User = Depends(require_admin), db: AsyncSession = Depends(get_db)):
     """Get detailed information about a specific user."""
     user = await db.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
     # Get user's champions
-    champions_result = await db.execute(
-        select(Champion).where(Champion.user_id == user_id)
-    )
+    champions_result = await db.execute(select(Champion).where(Champion.user_id == user_id))
     champions = champions_result.scalars().all()
 
     # Get user's sessions
@@ -165,10 +160,7 @@ async def get_user_detail(
 
     # Get recent activities
     activities_result = await db.execute(
-        select(ActivityLog)
-        .where(ActivityLog.user_id == user_id)
-        .order_by(ActivityLog.created_at.desc())
-        .limit(20)
+        select(ActivityLog).where(ActivityLog.user_id == user_id).order_by(ActivityLog.created_at.desc()).limit(20)
     )
     activities = activities_result.scalars().all()
 
@@ -195,20 +187,24 @@ async def get_user_detail(
             "is_active": user.is_active,
             "subscription_plan": user.subscription_plan,
             "subscription_status": user.subscription_status,
-            "subscription_started_at": user.subscription_started_at.isoformat() if user.subscription_started_at else None,
-            "subscription_expires_at": user.subscription_expires_at.isoformat() if user.subscription_expires_at else None,
+            "subscription_started_at": user.subscription_started_at.isoformat()
+            if user.subscription_started_at
+            else None,
+            "subscription_expires_at": user.subscription_expires_at.isoformat()
+            if user.subscription_expires_at
+            else None,
             "journey_stage": user.journey_stage,
             "login_count": user.login_count,
             "last_login_at": user.last_login_at.isoformat() if user.last_login_at else None,
             "last_activity_at": user.last_activity_at.isoformat() if user.last_activity_at else None,
-            "created_at": user.created_at.isoformat() if user.created_at else None
+            "created_at": user.created_at.isoformat() if user.created_at else None,
         },
         "champions": [
             {
                 "id": c.id,
                 "name": c.name,
                 "status": c.status,
-                "created_at": c.created_at.isoformat() if c.created_at else None
+                "created_at": c.created_at.isoformat() if c.created_at else None,
             }
             for c in champions
         ],
@@ -218,7 +214,7 @@ async def get_user_detail(
                 "champion_id": s.champion_id,
                 "score": s.overall_score,
                 "status": s.status,
-                "started_at": s.started_at.isoformat() if s.started_at else None
+                "started_at": s.started_at.isoformat() if s.started_at else None,
             }
             for s in sessions
         ],
@@ -228,7 +224,7 @@ async def get_user_detail(
                 "action": a.action,
                 "resource_type": a.resource_type,
                 "resource_id": a.resource_id,
-                "created_at": a.created_at.isoformat() if a.created_at else None
+                "created_at": a.created_at.isoformat() if a.created_at else None,
             }
             for a in activities
         ],
@@ -238,15 +234,11 @@ async def get_user_detail(
                 "content": n.content,
                 "is_pinned": n.is_pinned,
                 "admin_id": n.admin_id,
-                "created_at": n.created_at.isoformat() if n.created_at else None
+                "created_at": n.created_at.isoformat() if n.created_at else None,
             }
             for n in notes
         ],
-        "stats": {
-            "total_champions": len(champions),
-            "total_sessions": len(sessions),
-            "avg_score": round(avg_score, 1)
-        }
+        "stats": {"total_champions": len(champions), "total_sessions": len(sessions), "avg_score": round(avg_score, 1)},
     }
 
 
@@ -257,7 +249,7 @@ async def update_user(
     user_id: int,
     body: UserUpdateRequest,
     admin: User = Depends(require_admin),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Update a user's status, role, or subscription."""
     user = await db.get(User, user_id)
@@ -276,7 +268,7 @@ async def update_user(
         "is_active": user.is_active,
         "role": user.role,
         "subscription_plan": user.subscription_plan,
-        "subscription_status": user.subscription_status
+        "subscription_status": user.subscription_status,
     }
     new_values = {}
 
@@ -307,10 +299,12 @@ async def update_user(
             event_type="admin_change",
             from_plan=old_plan,
             to_plan=body.subscription_plan,
-            extra_data={"admin_id": admin.id}
+            extra_data={"admin_id": admin.id},
         )
         db.add(event)
-        logger.info("admin_subscription_changed", admin_id=admin.id, target_user_id=user_id, plan=body.subscription_plan)
+        logger.info(
+            "admin_subscription_changed", admin_id=admin.id, target_user_id=user_id, plan=body.subscription_plan
+        )
 
     if body.subscription_status is not None:
         valid_statuses = [s.value for s in SubscriptionStatus]
@@ -329,9 +323,9 @@ async def update_user(
             action=AdminActionType.USER_UPDATE.value,
             resource_type="user",
             resource_id=user_id,
-            old_value={k: old_values[k] for k in new_values.keys()},
+            old_value={k: old_values[k] for k in new_values},
             new_value=new_values,
-            request=request
+            request=request,
         )
 
     return {"status": "updated", "user_id": user_id}

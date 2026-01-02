@@ -7,12 +7,7 @@ The orchestrator is the central coordination layer that:
 - Maintains global context
 """
 
+from .decision_engine import DecisionEngine, Workflow, WorkflowStep
 from .main import ChampionCloneOrchestrator
-from .decision_engine import DecisionEngine, WorkflowStep, Workflow
 
-__all__ = [
-    "ChampionCloneOrchestrator",
-    "DecisionEngine",
-    "WorkflowStep",
-    "Workflow"
-]
+__all__ = ["ChampionCloneOrchestrator", "DecisionEngine", "WorkflowStep", "Workflow"]

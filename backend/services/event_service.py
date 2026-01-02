@@ -8,32 +8,33 @@ Ce service gère:
 """
 
 import random
-from typing import Optional, List
 from dataclasses import dataclass
 
 
 @dataclass
 class SituationalEvent:
     """Événement situationnel."""
+
     type: str
     prospect_says: str
     test: str
     good_response_bonus: int
     bad_response_penalty: int
     is_test: bool = False
-    adds_interlocutor: Optional[dict] = None
+    adds_interlocutor: dict | None = None
 
 
 @dataclass
 class Reversal:
     """Retournement de situation."""
+
     type: str
     prospect_says: str
     impact: str
     jauge_drop: int
-    reveals: Optional[str] = None
+    reveals: str | None = None
     is_fake: bool = False
-    test: Optional[str] = None
+    test: str | None = None
 
 
 class EventService:
@@ -51,7 +52,7 @@ class EventService:
                 "prospect_says": "Excusez-moi, j'ai un autre appel... (revient) Bon, où on en était?",
                 "test": "Le commercial résume brièvement et reprend le fil",
                 "good_response_bonus": 5,
-                "bad_response_penalty": -3
+                "bad_response_penalty": -3,
             },
             {
                 "type": "time_pressure",
@@ -60,7 +61,7 @@ class EventService:
                 "prospect_says": "Je dois y aller dans 5 minutes. On peut accélérer?",
                 "test": "Le commercial priorise et va à l'essentiel",
                 "good_response_bonus": 6,
-                "bad_response_penalty": -4
+                "bad_response_penalty": -4,
             },
             {
                 "type": "distraction",
@@ -69,8 +70,8 @@ class EventService:
                 "prospect_says": "Pardon, j'ai dû gérer un truc. Vous pouvez répéter le dernier point?",
                 "test": "Le commercial répète sans s'énerver",
                 "good_response_bonus": 3,
-                "bad_response_penalty": -2
-            }
+                "bad_response_penalty": -2,
+            },
         ],
         "expert": [
             {
@@ -80,7 +81,7 @@ class EventService:
                 "prospect_says": "Stop stop stop. Vous me faites perdre mon temps là.",
                 "test": "Le commercial reste calme et recadre positivement",
                 "good_response_bonus": 8,
-                "bad_response_penalty": -12
+                "bad_response_penalty": -12,
             },
             {
                 "type": "competitor_mention",
@@ -89,7 +90,7 @@ class EventService:
                 "prospect_says": "[Concurrent] m'a proposé la même chose 30% moins cher.",
                 "test": "Le commercial ne dénigre pas et recentre sur la valeur",
                 "good_response_bonus": 8,
-                "bad_response_penalty": -10
+                "bad_response_penalty": -10,
             },
             {
                 "type": "power_play",
@@ -98,7 +99,7 @@ class EventService:
                 "prospect_says": "Écoutez, j'ai 50 commerciaux comme vous qui m'appellent chaque semaine.",
                 "test": "Le commercial reste assertif sans être arrogant",
                 "good_response_bonus": 7,
-                "bad_response_penalty": -8
+                "bad_response_penalty": -8,
             },
             {
                 "type": "phone_on_speaker",
@@ -108,7 +109,7 @@ class EventService:
                 "test": "Le commercial s'adapte aux deux interlocuteurs",
                 "good_response_bonus": 5,
                 "bad_response_penalty": -5,
-                "adds_interlocutor": {"name": "Marc", "personality": "skeptical_technical"}
+                "adds_interlocutor": {"name": "Marc", "personality": "skeptical_technical"},
             },
             {
                 "type": "sudden_time_pressure",
@@ -117,7 +118,7 @@ class EventService:
                 "prospect_says": "Mon prochain rendez-vous arrive dans 2 minutes. Conclusion?",
                 "test": "Le commercial fait un closing éclair efficace",
                 "good_response_bonus": 10,
-                "bad_response_penalty": -8
+                "bad_response_penalty": -8,
             },
             {
                 "type": "fake_objection_test",
@@ -127,7 +128,7 @@ class EventService:
                 "test": "Le commercial tient sa position sans s'effondrer",
                 "good_response_bonus": 8,
                 "bad_response_penalty": -10,
-                "is_test": True
+                "is_test": True,
             },
             {
                 "type": "emotional_bait",
@@ -136,9 +137,9 @@ class EventService:
                 "prospect_says": "Vous êtes tous les mêmes, vous promettez la lune!",
                 "test": "Le commercial ne mord pas à l'hameçon émotionnel",
                 "good_response_bonus": 8,
-                "bad_response_penalty": -12
-            }
-        ]
+                "bad_response_penalty": -12,
+            },
+        ],
     }
 
     REVERSALS = {
@@ -150,7 +151,7 @@ class EventService:
                 "probability": 0.2,
                 "prospect_says": "Attendez, en fait je me demande si c'est vraiment le bon moment...",
                 "gauge_drop": 10,
-                "test": "Le commercial rassure sans presser"
+                "test": "Le commercial rassure sans presser",
             }
         ],
         "expert": [
@@ -160,7 +161,7 @@ class EventService:
                 "probability": 0.3,
                 "prospect_says": "Avant de finaliser, il y a quelque chose que je ne vous ai pas dit...",
                 "gauge_drop": 25,
-                "reveals": "major_hidden_objection"
+                "reveals": "major_hidden_objection",
             },
             {
                 "type": "price_attack_at_close",
@@ -168,7 +169,7 @@ class EventService:
                 "probability": 0.35,
                 "prospect_says": "OK je suis prêt à signer. Mais à -25%.",
                 "gauge_drop": 0,
-                "test": "Le commercial ne cède pas sans contrepartie"
+                "test": "Le commercial ne cède pas sans contrepartie",
             },
             {
                 "type": "ghost_decision_maker",
@@ -176,7 +177,7 @@ class EventService:
                 "probability": 0.25,
                 "prospect_says": "En fait, ce n'est pas moi qui signe. C'est mon DG, et il est difficile...",
                 "gauge_drop": 15,
-                "impact": "Must re-qualify and prepare champion"
+                "impact": "Must re-qualify and prepare champion",
             },
             {
                 "type": "fake_competitor_offer",
@@ -185,9 +186,9 @@ class EventService:
                 "prospect_says": "J'ai [concurrent] qui vient de m'envoyer une offre 40% en dessous.",
                 "gauge_drop": 0,
                 "is_fake": True,
-                "test": "Le commercial reste calme et creuse sans paniquer"
-            }
-        ]
+                "test": "Le commercial reste calme et creuse sans paniquer",
+            },
+        ],
     }
 
     # Indices comportementaux par état
@@ -198,21 +199,20 @@ class EventService:
         "resistant": ["(hésitant)", "(évasif)", "(distant)"],
         "neutral": ["(écoute)", "(attentif)", "(pensif)"],
         "interested": ["(prend des notes)", "(hochement de tête)", "(ton plus posé)", "(se penche en avant)"],
-        "ready_to_buy": ["(sourire)", "(enthousiaste)", "(ton engagé)", "(impatient de commencer)"]
+        "ready_to_buy": ["(sourire)", "(enthousiaste)", "(ton engagé)", "(impatient de commencer)"],
     }
 
     # Indices basés sur le delta de jauge
     DELTA_CUES = {
         "positive": ["(ton plus ouvert)", "(intéressé)", "(se détend)", "(sourire)"],
-        "negative": ["(se recule)", "(moue dubitative)", "(ton plus froid)", "(regarde ailleurs)"]
+        "negative": ["(se recule)", "(moue dubitative)", "(ton plus froid)", "(regarde ailleurs)"],
     }
-
 
     def __init__(self, level: str = "easy", level_config: dict = None):
         self.level = level
         self.level_config = level_config or {}
         self._load_events()
-        self.triggered_events: List[str] = []
+        self.triggered_events: list[str] = []
         self.reversal_triggered = False
 
     def _load_events(self):
@@ -231,12 +231,7 @@ class EventService:
         else:
             self.reversals = self.REVERSALS.get(self.level, [])
 
-    def should_trigger_event(
-        self,
-        message_count: int,
-        jauge: int,
-        context: str = "random"
-    ) -> Optional[SituationalEvent]:
+    def should_trigger_event(self, message_count: int, jauge: int, context: str = "random") -> SituationalEvent | None:
         """
         Décide si un événement doit se déclencher.
 
@@ -281,16 +276,12 @@ class EventService:
                     good_response_bonus=event.get("good_response_bonus", 5),
                     bad_response_penalty=event.get("bad_response_penalty", -5),
                     is_test=event.get("is_test", False),
-                    adds_interlocutor=event.get("adds_interlocutor")
+                    adds_interlocutor=event.get("adds_interlocutor"),
                 )
 
         return None
 
-    def should_trigger_reversal(
-        self,
-        jauge: int,
-        closing_attempted: bool = False
-    ) -> Optional[Reversal]:
+    def should_trigger_reversal(self, jauge: int, closing_attempted: bool = False) -> Reversal | None:
         """
         Décide si un retournement doit se déclencher.
         """
@@ -318,12 +309,12 @@ class EventService:
                         jauge_drop=reversal.get("gauge_drop", 0),
                         reveals=reversal.get("reveals"),
                         is_fake=reversal.get("is_fake", False),
-                        test=reversal.get("test")
+                        test=reversal.get("test"),
                     )
 
         return None
 
-    def get_behavioral_cue(self, mood: str, jauge_delta: int = 0) -> Optional[str]:
+    def get_behavioral_cue(self, mood: str, jauge_delta: int = 0) -> str | None:
         """
         Retourne un indice comportemental basé sur l'état actuel.
 
@@ -351,12 +342,7 @@ class EventService:
             return random.choice(cues)
         return None
 
-    def evaluate_event_response(
-        self,
-        event: SituationalEvent,
-        user_response: str,
-        patterns_detected: dict
-    ) -> dict:
+    def evaluate_event_response(self, event: SituationalEvent, user_response: str, patterns_detected: dict) -> dict:
         """
         Évalue la réponse du commercial à un événement.
 
@@ -413,14 +399,10 @@ class EventService:
         return {
             "handled_well": handled_well,
             "jauge_impact": jauge_impact,
-            "feedback": f"{'Bien géré!' if handled_well else 'Attention: ' + event.test}"
+            "feedback": f"{'Bien géré!' if handled_well else 'Attention: ' + event.test}",
         }
 
-    def get_hidden_objection(
-        self,
-        level_config: dict,
-        persona_objections: List[dict] = None
-    ) -> Optional[dict]:
+    def get_hidden_objection(self, level_config: dict, persona_objections: list[dict] = None) -> dict | None:
         """
         Sélectionne une objection cachée selon la config du niveau.
 
@@ -450,5 +432,5 @@ class EventService:
             "expressed": selected.get("expressed"),
             "hidden": selected.get("hidden"),
             "discovery_questions": selected.get("discovery_questions", []),
-            "discovered": False
+            "discovered": False,
         }

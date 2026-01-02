@@ -5,10 +5,8 @@ Uses Groq (FREE) with Llama 3.1 70B instead of Claude API.
 Can fallback to Anthropic if ANTHROPIC_API_KEY is set and Groq fails.
 """
 
-import os
 import json
-from typing import Optional
-from datetime import datetime
+import os
 
 import structlog
 
@@ -17,6 +15,7 @@ logger = structlog.get_logger()
 # Try to import Groq (FREE)
 try:
     from groq import AsyncGroq
+
     GROQ_AVAILABLE = True
 except ImportError:
     GROQ_AVAILABLE = False
@@ -24,6 +23,7 @@ except ImportError:
 # Fallback to Anthropic
 try:
     from anthropic import AsyncAnthropic
+
     ANTHROPIC_AVAILABLE = True
 except ImportError:
     ANTHROPIC_AVAILABLE = False
@@ -126,14 +126,12 @@ JSON uniquement."""
         else:
             self.client = None
             self.model = None
-            logger.warning("training_tools_init", msg="No LLM provider available. Set GROQ_API_KEY (free) or ANTHROPIC_API_KEY")
+            logger.warning(
+                "training_tools_init", msg="No LLM provider available. Set GROQ_API_KEY (free) or ANTHROPIC_API_KEY"
+            )
 
     async def _call_llm(
-        self,
-        messages: list,
-        system: Optional[str] = None,
-        max_tokens: int = 512,
-        temperature: float = 0.5
+        self, messages: list, system: str | None = None, max_tokens: int = 512, temperature: float = 0.5
     ) -> str:
         """Call LLM (Groq or Anthropic) and return text response."""
         if not self.client:
@@ -147,20 +145,13 @@ JSON uniquement."""
             groq_messages.extend(messages)
 
             response = await self.client.chat.completions.create(
-                model=self.model,
-                messages=groq_messages,
-                max_tokens=max_tokens,
-                temperature=temperature
+                model=self.model, messages=groq_messages, max_tokens=max_tokens, temperature=temperature
             )
             return response.choices[0].message.content.strip()
         else:
             # Anthropic API
             response = await self.client.messages.create(
-                model=self.model,
-                max_tokens=max_tokens,
-                system=system or "",
-                messages=messages,
-                temperature=temperature
+                model=self.model, max_tokens=max_tokens, system=system or "", messages=messages, temperature=temperature
             )
             return response.content[0].text.strip()
 
@@ -170,7 +161,7 @@ JSON uniquement."""
         conversation_history: list,
         scenario: dict,
         patterns: dict,
-        system_prompt: Optional[str] = None
+        system_prompt: str | None = None,
     ) -> dict:
         """
         Generate prospect's response to user message.
@@ -189,7 +180,7 @@ JSON uniquement."""
             system_prompt = self.PROSPECT_SYSTEM_PROMPT.format(
                 scenario=json.dumps(scenario, ensure_ascii=False),
                 patterns=json.dumps(patterns, ensure_ascii=False),
-                difficulty=scenario.get("difficulty", "medium").upper()
+                difficulty=scenario.get("difficulty", "medium").upper(),
             )
 
         # Build messages
@@ -203,27 +194,17 @@ JSON uniquement."""
 
         try:
             response_text = await self._call_llm(
-                messages=messages,
-                system=system_prompt,
-                max_tokens=256,
-                temperature=0.7
+                messages=messages, system=system_prompt, max_tokens=256, temperature=0.7
             )
 
-            return {
-                "success": True,
-                "response": response_text
-            }
+            return {"success": True, "response": response_text}
 
         except Exception as e:
             logger.error("prospect_response_error", error=str(e))
             return {"success": False, "error": str(e)}
 
     async def evaluate_response(
-        self,
-        user_response: str,
-        patterns: dict,
-        scenario: dict,
-        conversation_history: list
+        self, user_response: str, patterns: dict, scenario: dict, conversation_history: list
     ) -> dict:
         """
         Evaluate user's response.
@@ -241,15 +222,11 @@ JSON uniquement."""
             patterns=json.dumps(patterns, ensure_ascii=False, indent=2),
             scenario=json.dumps(scenario, ensure_ascii=False, indent=2),
             history=json.dumps(conversation_history[-4:], ensure_ascii=False, indent=2),
-            response=user_response
+            response=user_response,
         )
 
         try:
-            text = await self._call_llm(
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=512,
-                temperature=0.3
-            )
+            text = await self._call_llm(messages=[{"role": "user", "content": prompt}], max_tokens=512, temperature=0.3)
             if text.startswith("```"):
                 text = text.split("```")[1]
                 if text.startswith("json"):
@@ -264,7 +241,7 @@ JSON uniquement."""
                 "feedback": evaluation.get("feedback", "Continuez à pratiquer."),
                 "suggestions": evaluation.get("suggestions", []),
                 "patterns_used": evaluation.get("patterns_used", []),
-                "patterns_to_try": evaluation.get("patterns_to_try", [])
+                "patterns_to_try": evaluation.get("patterns_to_try", []),
             }
 
         except Exception as e:
@@ -274,15 +251,10 @@ JSON uniquement."""
                 "score": 5,
                 "feedback": "Évaluation non disponible.",
                 "suggestions": [],
-                "error": str(e)
+                "error": str(e),
             }
 
-    async def generate_session_summary(
-        self,
-        conversation: list,
-        patterns: dict,
-        scenario: dict
-    ) -> dict:
+    async def generate_session_summary(self, conversation: list, patterns: dict, scenario: dict) -> dict:
         """
         Generate summary for completed session.
 
@@ -297,14 +269,12 @@ JSON uniquement."""
         prompt = self.SUMMARY_PROMPT.format(
             scenario=json.dumps(scenario, ensure_ascii=False, indent=2),
             patterns=json.dumps(patterns, ensure_ascii=False, indent=2),
-            conversation=json.dumps(conversation, ensure_ascii=False, indent=2)
+            conversation=json.dumps(conversation, ensure_ascii=False, indent=2),
         )
 
         try:
             text = await self._call_llm(
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=1024,
-                temperature=0.3
+                messages=[{"role": "user", "content": prompt}], max_tokens=1024, temperature=0.3
             )
             if text.startswith("```"):
                 text = text.split("```")[1]
@@ -322,18 +292,14 @@ JSON uniquement."""
                 "areas_for_improvement": summary.get("areas_for_improvement", []),
                 "patterns_mastered": summary.get("patterns_mastered", []),
                 "patterns_to_practice": summary.get("patterns_to_practice", []),
-                "next_steps": summary.get("next_steps", [])
+                "next_steps": summary.get("next_steps", []),
             }
 
         except Exception as e:
             logger.error("summary_error", error=str(e))
 
             # Calculate from conversation
-            scores = [
-                msg.get("score", 5)
-                for msg in conversation
-                if msg.get("role") == "user" and msg.get("score")
-            ]
+            scores = [msg.get("score", 5) for msg in conversation if msg.get("role") == "user" and msg.get("score")]
             avg = sum(scores) / len(scores) if scores else 5
 
             return {
@@ -342,14 +308,10 @@ JSON uniquement."""
                 "feedback_summary": "Session terminée. Résumé automatique.",
                 "strengths": [],
                 "areas_for_improvement": [],
-                "error": str(e)
+                "error": str(e),
             }
 
-    async def generate_tips(
-        self,
-        scenario: dict,
-        patterns: dict
-    ) -> list[str]:
+    async def generate_tips(self, scenario: dict, patterns: dict) -> list[str]:
         """Generate tips for the user based on scenario."""
         tips = []
 
@@ -363,7 +325,7 @@ JSON uniquement."""
             tips.append(f"Technique d'ouverture à essayer: {patterns['openings'][0][:60]}...")
 
         if patterns.get("key_phrases"):
-            tips.append(f"Phrase clé: \"{patterns['key_phrases'][0][:50]}...\"")
+            tips.append(f'Phrase clé: "{patterns["key_phrases"][0][:50]}..."')
 
         objectives = scenario.get("objectives", [])
         if objectives:
@@ -381,9 +343,15 @@ JSON uniquement."""
         if conversation:
             last = conversation[-1].get("content", "").lower()
             endings = [
-                "d'accord", "on signe", "je prends", "marché conclu",
-                "envoyez-moi", "je vous rappelle", "pas intéressé",
-                "non merci", "au revoir"
+                "d'accord",
+                "on signe",
+                "je prends",
+                "marché conclu",
+                "envoyez-moi",
+                "je vous rappelle",
+                "pas intéressé",
+                "non merci",
+                "au revoir",
             ]
             if any(end in last for end in endings):
                 return True

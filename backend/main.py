@@ -7,19 +7,18 @@ A sales training platform that:
 3. Provides AI-powered practice sessions with feedback
 """
 
-import os
+from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-from contextlib import asynccontextmanager
 
+import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 from jose import jwt
-import structlog
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 # Configuration
 from config import get_settings
@@ -45,9 +44,7 @@ def get_rate_limit_key(request: Request) -> str:
         token = auth_header[7:]
         try:
             if settings.JWT_SECRET:
-                payload = jwt.decode(
-                    token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
-                )
+                payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
                 user_id = payload.get("sub")
                 if user_id:
                     return f"user:{user_id}"
@@ -71,7 +68,7 @@ structlog.configure(
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
-        structlog.processors.JSONRenderer()
+        structlog.processors.JSONRenderer(),
     ],
     wrapper_class=structlog.stdlib.BoundLogger,
     context_class=dict,
@@ -95,7 +92,9 @@ if not settings.JWT_SECRET:
 
 if not settings.REFRESH_TOKEN_SECRET:
     if settings.DEBUG:
-        logger.warning("refresh_secret_missing", message="REFRESH_TOKEN_SECRET not set! Using derived secret (DEBUG mode only)")
+        logger.warning(
+            "refresh_secret_missing", message="REFRESH_TOKEN_SECRET not set! Using derived secret (DEBUG mode only)"
+        )
     else:
         logger.error("refresh_secret_required", message="REFRESH_TOKEN_SECRET environment variable is required!")
         raise SystemExit("FATAL: REFRESH_TOKEN_SECRET not set. Generate with: openssl rand -hex 32")
@@ -105,32 +104,30 @@ if not settings.REFRESH_TOKEN_SECRET:
 # Database and Routers Imports
 # ============================================
 
-from database import init_db, close_db
-from schemas import ErrorResponse
+# Import routers
+from api.routers import achievements, admin, audit, auth, champions, learning, payments, training
+from api.routers import websocket as ws_router
+from database import close_db, init_db
 
 # Import domain exceptions
 from domain.exceptions import (
-    ChampionCloneError,
-    NotFoundError,
     AlreadyExistsError,
-    ValidationError,
     AuthenticationError,
     AuthorizationError,
-    ExternalServiceError,
-    SessionError,
-    SessionNotFoundError,
-    SessionNotActiveError,
     ConfigurationError,
+    ExternalServiceError,
+    NotFoundError,
+    SessionError,
+    SessionNotActiveError,
+    SessionNotFoundError,
+    ValidationError,
 )
-
-# Import routers
-from api.routers import auth, champions, training, admin, learning, payments, audit, achievements
-from api.routers import websocket as ws_router
-
+from schemas import ErrorResponse
 
 # ============================================
 # Application Lifespan
 # ============================================
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -155,10 +152,7 @@ async def lifespan(app: FastAPI):
 # ============================================
 
 app = FastAPI(
-    title="Champion Clone API",
-    description="Sales training platform powered by AI",
-    version="0.1.0",
-    lifespan=lifespan
+    title="Champion Clone API", description="Sales training platform powered by AI", version="0.1.0", lifespan=lifespan
 )
 
 # Attach rate limiter to app
@@ -196,6 +190,7 @@ app.include_router(ws_router.router)
 # Health Check
 # ============================================
 
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
@@ -206,67 +201,49 @@ async def health_check():
 # Domain Exception Handlers
 # ============================================
 
+
 @app.exception_handler(NotFoundError)
 async def not_found_handler(request: Request, exc: NotFoundError):
     """Handle resource not found errors."""
-    return JSONResponse(
-        status_code=404,
-        content={"error": "NotFound", "detail": str(exc), "resource": exc.resource}
-    )
+    return JSONResponse(status_code=404, content={"error": "NotFound", "detail": str(exc), "resource": exc.resource})
 
 
 @app.exception_handler(AlreadyExistsError)
 async def already_exists_handler(request: Request, exc: AlreadyExistsError):
     """Handle duplicate resource errors."""
-    return JSONResponse(
-        status_code=409,
-        content={"error": "Conflict", "detail": str(exc), "resource": exc.resource}
-    )
+    return JSONResponse(status_code=409, content={"error": "Conflict", "detail": str(exc), "resource": exc.resource})
 
 
 @app.exception_handler(ValidationError)
 async def validation_handler(request: Request, exc: ValidationError):
     """Handle business validation errors."""
-    return JSONResponse(
-        status_code=400,
-        content={"error": "ValidationError", "detail": str(exc)}
-    )
+    return JSONResponse(status_code=400, content={"error": "ValidationError", "detail": str(exc)})
 
 
 @app.exception_handler(AuthenticationError)
 async def auth_handler(request: Request, exc: AuthenticationError):
     """Handle authentication failures."""
-    return JSONResponse(
-        status_code=401,
-        content={"error": "Unauthorized", "detail": str(exc)}
-    )
+    return JSONResponse(status_code=401, content={"error": "Unauthorized", "detail": str(exc)})
 
 
 @app.exception_handler(AuthorizationError)
 async def authz_handler(request: Request, exc: AuthorizationError):
     """Handle authorization failures."""
-    return JSONResponse(
-        status_code=403,
-        content={"error": "Forbidden", "detail": str(exc)}
-    )
+    return JSONResponse(status_code=403, content={"error": "Forbidden", "detail": str(exc)})
 
 
 @app.exception_handler(ExternalServiceError)
 async def external_handler(request: Request, exc: ExternalServiceError):
     """Handle external service errors."""
     logger.error("external_service_error", service=exc.service, error=str(exc))
-    return JSONResponse(
-        status_code=502,
-        content={"error": "ServiceError", "detail": str(exc), "service": exc.service}
-    )
+    return JSONResponse(status_code=502, content={"error": "ServiceError", "detail": str(exc), "service": exc.service})
 
 
 @app.exception_handler(SessionNotFoundError)
 async def session_not_found_handler(request: Request, exc: SessionNotFoundError):
     """Handle session not found errors."""
     return JSONResponse(
-        status_code=404,
-        content={"error": "SessionNotFound", "detail": str(exc), "session_id": exc.session_id}
+        status_code=404, content={"error": "SessionNotFound", "detail": str(exc), "session_id": exc.session_id}
     )
 
 
@@ -275,32 +252,27 @@ async def session_not_active_handler(request: Request, exc: SessionNotActiveErro
     """Handle session not active errors."""
     return JSONResponse(
         status_code=409,
-        content={"error": "SessionNotActive", "detail": str(exc), "session_id": exc.session_id, "status": exc.status}
+        content={"error": "SessionNotActive", "detail": str(exc), "session_id": exc.session_id, "status": exc.status},
     )
 
 
 @app.exception_handler(SessionError)
 async def session_error_handler(request: Request, exc: SessionError):
     """Handle generic session errors."""
-    return JSONResponse(
-        status_code=400,
-        content={"error": "SessionError", "detail": str(exc)}
-    )
+    return JSONResponse(status_code=400, content={"error": "SessionError", "detail": str(exc)})
 
 
 @app.exception_handler(ConfigurationError)
 async def configuration_error_handler(request: Request, exc: ConfigurationError):
     """Handle configuration errors."""
     logger.error("configuration_error", key=exc.key, error=str(exc))
-    return JSONResponse(
-        status_code=503,
-        content={"error": "ConfigurationError", "detail": str(exc)}
-    )
+    return JSONResponse(status_code=503, content={"error": "ConfigurationError", "detail": str(exc)})
 
 
 # ============================================
 # General Error Handler
 # ============================================
+
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
@@ -309,10 +281,8 @@ async def general_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
         content=ErrorResponse(
-            error="Internal server error",
-            detail=str(exc) if settings.DEBUG else None,
-            code="INTERNAL_ERROR"
-        ).model_dump()
+            error="Internal server error", detail=str(exc) if settings.DEBUG else None, code="INTERNAL_ERROR"
+        ).model_dump(),
     )
 
 
@@ -323,9 +293,4 @@ async def general_exception_handler(request: Request, exc: Exception):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(
-        "main:app",
-        host=settings.HOST,
-        port=settings.PORT,
-        reload=settings.DEBUG
-    )
+    uvicorn.run("main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)

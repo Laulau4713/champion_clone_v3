@@ -2,15 +2,14 @@
 Routes API pour l'AuditAgent.
 """
 
+import structlog
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-import structlog
 
+from agents.audit_agent.agent import AuditAgent
+from api.routers.auth import get_current_user
 from database import get_db
 from models import User, VoiceTrainingSession
-from api.routers.auth import get_current_user
-from agents.audit_agent.agent import AuditAgent
 
 logger = structlog.get_logger()
 
@@ -19,9 +18,7 @@ router = APIRouter(prefix="/audit", tags=["Audit"])
 
 @router.get("/session/{session_id}")
 async def audit_session(
-    session_id: int,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
     Audit complet d'une session de training.
@@ -66,9 +63,7 @@ async def audit_session(
 
 @router.get("/progress")
 async def get_progress_report(
-    days: int = 7,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    days: int = 7, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
     Rapport de progression sur X jours.
@@ -114,10 +109,7 @@ async def get_progress_report(
 
 
 @router.get("/weekly-digest")
-async def get_weekly_digest(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def get_weekly_digest(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """
     Digest hebdomadaire personnalise.
     Stats, motivation, tips pour la semaine.
@@ -164,10 +156,7 @@ async def get_weekly_digest(
 
 
 @router.get("/next-action")
-async def get_next_recommendation(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def get_next_recommendation(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """
     Recommandation de la prochaine action optimale.
     """
@@ -178,9 +167,7 @@ async def get_next_recommendation(
 
 @router.get("/compare-champion/{champion_id}")
 async def compare_to_champion(
-    champion_id: int,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    champion_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
     Compare les performances de l'utilisateur a un champion.
@@ -193,19 +180,12 @@ async def compare_to_champion(
         raise HTTPException(status_code=404, detail="Champion not found")
 
     if not champion.patterns_json:
-        raise HTTPException(
-            status_code=400,
-            detail="Champion has no extracted patterns yet"
-        )
+        raise HTTPException(status_code=400, detail="Champion has no extracted patterns yet")
 
     agent = AuditAgent(db)
 
     try:
-        comparison = await agent.compare_to_champion(
-            current_user.id,
-            str(champion_id),
-            champion.patterns_json
-        )
+        comparison = await agent.compare_to_champion(current_user.id, str(champion_id), champion.patterns_json)
         return {
             "champion_id": champion_id,
             "champion_name": champion.name,
@@ -221,10 +201,5 @@ async def compare_to_champion(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(
-            "champion_comparison_failed",
-            user_id=current_user.id,
-            champion_id=champion_id,
-            error=str(e)
-        )
+        logger.error("champion_comparison_failed", user_id=current_user.id, champion_id=champion_id, error=str(e))
         raise HTTPException(status_code=500, detail=f"Comparison failed: {str(e)}")

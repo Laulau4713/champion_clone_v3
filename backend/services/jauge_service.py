@@ -15,15 +15,15 @@ Ce service gère:
 - Les conditions de conversion
 """
 
-from typing import Optional, List, Tuple
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
-import re
 
 
 @dataclass
 class JaugeModification:
     """Modification de la jauge."""
+
     action: str
     delta: int
     new_value: int
@@ -36,16 +36,17 @@ class JaugeModification:
             "delta": self.delta,
             "new_value": self.new_value,
             "reason": self.reason,
-            "timestamp": self.timestamp.isoformat()
+            "timestamp": self.timestamp.isoformat(),
         }
 
 
 @dataclass
 class MoodState:
     """État d'humeur actuel."""
+
     mood: str
     behavior: str
-    jauge_range: Tuple[int, int]
+    jauge_range: tuple[int, int]
 
 
 class JaugeService:
@@ -59,7 +60,7 @@ class JaugeService:
             {"range": [0, 25], "mood": "resistant", "behavior": "Répond par monosyllabes, sceptique"},
             {"range": [26, 50], "mood": "neutral", "behavior": "Écoute sans enthousiasme"},
             {"range": [51, 75], "mood": "interested", "behavior": "S'engage, pose des questions"},
-            {"range": [76, 100], "mood": "ready_to_buy", "behavior": "Signaux d'achat, prêt à closer"}
+            {"range": [76, 100], "mood": "ready_to_buy", "behavior": "Signaux d'achat, prêt à closer"},
         ],
         "medium": [
             {"range": [0, 20], "mood": "hostile", "behavior": "Veut raccrocher, agacé"},
@@ -67,7 +68,7 @@ class JaugeService:
             {"range": [41, 60], "mood": "skeptical", "behavior": "Doute affiché, teste le commercial"},
             {"range": [61, 75], "mood": "neutral", "behavior": "Commence à écouter"},
             {"range": [76, 90], "mood": "interested", "behavior": "Questions constructives"},
-            {"range": [91, 100], "mood": "ready_to_buy", "behavior": "Prêt à négocier"}
+            {"range": [91, 100], "mood": "ready_to_buy", "behavior": "Prêt à négocier"},
         ],
         "expert": [
             {"range": [0, 15], "mood": "hostile", "behavior": "Attaque personnelle, menace de raccrocher"},
@@ -75,8 +76,8 @@ class JaugeService:
             {"range": [36, 55], "mood": "skeptical", "behavior": "Questions pièges, bras croisés"},
             {"range": [56, 70], "mood": "neutral", "behavior": "Commence à écouter, moins fermé"},
             {"range": [71, 85], "mood": "interested", "behavior": "S'ouvre progressivement"},
-            {"range": [86, 100], "mood": "ready_to_buy", "behavior": "Prêt à négocier pour finaliser"}
-        ]
+            {"range": [86, 100], "mood": "ready_to_buy", "behavior": "Prêt à négocier pour finaliser"},
+        ],
     }
 
     # Modificateurs par défaut (peuvent être overridés par le niveau)
@@ -98,7 +99,7 @@ class JaugeService:
             "stayed_calm_under_pressure": {"points": 8, "description": "Resté calme sous pression"},
             "assertive_reframe": {"points": 8, "description": "Recadrage assertif réussi"},
             "creative_solution": {"points": 7, "description": "Propose une solution créative"},
-            "multi_stakeholder_managed": {"points": 10, "description": "Gère plusieurs interlocuteurs"}
+            "multi_stakeholder_managed": {"points": 10, "description": "Gère plusieurs interlocuteurs"},
         },
         "negative": {
             "interruption": {"points": -5, "description": "Coupe la parole"},
@@ -115,15 +116,15 @@ class JaugeService:
             "spoke_first_after_price": {"points": -8, "description": "Parlé en premier après le prix"},
             "budget_question_too_early": {"points": -5, "description": "Budget demandé trop tôt"},
             "defensive_reaction": {"points": -6, "description": "Réaction défensive"},
-            "gave_up_too_early": {"points": -8, "description": "Abandonne trop tôt"}
-        }
+            "gave_up_too_early": {"points": -8, "description": "Abandonne trop tôt"},
+        },
     }
 
     # Blockers de conversion
     CONVERSION_BLOCKERS = {
         "lost_temper": "Perte de calme -> conversion impossible",
         "denigrated_competitor": "Dénigrement -> jauge plafonnée à 70",
-        "major_contradiction": "Contradiction majeure -> confiance brisée"
+        "major_contradiction": "Contradiction majeure -> confiance brisée",
     }
 
     def __init__(self, level: str = "easy", level_config: dict = None):
@@ -142,7 +143,7 @@ class JaugeService:
         """Charge les modificateurs, avec override du niveau si présent."""
         modifiers = {
             "positive": dict(self.DEFAULT_MODIFIERS["positive"]),
-            "negative": dict(self.DEFAULT_MODIFIERS["negative"])
+            "negative": dict(self.DEFAULT_MODIFIERS["negative"]),
         }
 
         if "jauge_modifiers" in self.level_config:
@@ -164,21 +165,12 @@ class JaugeService:
         """Retourne l'humeur correspondant à la jauge."""
         for stage in self.mood_stages:
             if stage["range"][0] <= jauge <= stage["range"][1]:
-                return MoodState(
-                    mood=stage["mood"],
-                    behavior=stage["behavior"],
-                    jauge_range=tuple(stage["range"])
-                )
+                return MoodState(mood=stage["mood"], behavior=stage["behavior"], jauge_range=tuple(stage["range"]))
 
         # Fallback
         return MoodState(mood="neutral", behavior="Écoute", jauge_range=(0, 100))
 
-    def apply_action(
-        self,
-        current_jauge: int,
-        action: str,
-        action_type: str = "positive"
-    ) -> JaugeModification:
+    def apply_action(self, current_jauge: int, action: str, action_type: str = "positive") -> JaugeModification:
         """
         Applique une action et retourne la modification.
 
@@ -193,12 +185,7 @@ class JaugeService:
         modifier = self.modifiers.get(action_type, {}).get(action)
 
         if not modifier:
-            return JaugeModification(
-                action=action,
-                delta=0,
-                new_value=current_jauge,
-                reason="Action non reconnue"
-            )
+            return JaugeModification(action=action, delta=0, new_value=current_jauge, reason="Action non reconnue")
 
         # Appliquer la volatilité du niveau
         delta = int(modifier["points"] * self.volatility)
@@ -213,20 +200,11 @@ class JaugeService:
         else:
             new_value = max(0, min(100, current_jauge + delta))
 
-        return JaugeModification(
-            action=action,
-            delta=delta,
-            new_value=new_value,
-            reason=modifier["description"]
-        )
+        return JaugeModification(action=action, delta=delta, new_value=new_value, reason=modifier["description"])
 
     def check_conversion_possible(
-        self,
-        jauge: int,
-        blockers: List[str],
-        required_conditions: List[str] = None,
-        conditions_met: List[str] = None
-    ) -> Tuple[bool, List[str]]:
+        self, jauge: int, blockers: list[str], required_conditions: list[str] = None, conditions_met: list[str] = None
+    ) -> tuple[bool, list[str]]:
         """
         Vérifie si la conversion est possible.
 
@@ -252,7 +230,7 @@ class JaugeService:
 
         return len(reasons) == 0, reasons
 
-    def get_prospect_reaction(self, action: str, action_type: str) -> Optional[str]:
+    def get_prospect_reaction(self, action: str, action_type: str) -> str | None:
         """Retourne la réaction du prospect à une action."""
         modifier = self.modifiers.get(action_type, {}).get(action)
         if modifier:
@@ -270,53 +248,53 @@ class BehavioralDetector:
         "reformulation": {
             "regex": r"(si je comprends|en d'autres termes|vous dites que|ce que j'entends|j'ai bien compris)",
             "type": "positive",
-            "action": "relevant_reformulation"
+            "action": "relevant_reformulation",
         },
         "emotional_reformulation": {
             "regex": r"(je sens que|j'ai l'impression que|ça a l'air de|vous semblez)",
             "type": "positive",
-            "action": "emotional_reformulation"
+            "action": "emotional_reformulation",
         },
         "open_question": {
             "regex": r"^\s*(qu'est-ce|comment|pourquoi|quand|qui|où|quel|quelle)",
             "type": "positive",
-            "action": "good_open_question"
+            "action": "good_open_question",
         },
         "empathy": {
             "regex": r"(je comprends|je vois|c'est normal|à votre place|je peux imaginer)",
             "type": "positive",
-            "action": "empathy_shown"
+            "action": "empathy_shown",
         },
         "value_quantified": {
             "regex": r"(\d+\s*%|\d+\s*€|\d+\s*euros?|économiser|gagner|retour sur investissement|ROI)",
             "type": "positive",
-            "action": "roi_quantified"
+            "action": "roi_quantified",
         },
         "listening_signal": {
             "regex": r"\b(je vois|d'accord|hmm|intéressant|je comprends|très bien|effectivement)\b",
             "type": "positive",
-            "action": "good_listening_signal"
+            "action": "good_listening_signal",
         },
         "denigration": {
             "regex": r"(ils sont (mauvais|nuls)|ne faites pas confiance|problèmes avec|concurrent.*mauvais)",
             "type": "negative",
-            "action": "denigrated_competitor"
+            "action": "denigrated_competitor",
         },
         "immediate_discount": {
             "regex": r"(ok je fais|d'accord je baisse|je vous offre|je peux faire.*%\s*(de remise|moins))",
             "type": "negative",
-            "action": "immediate_discount"
+            "action": "immediate_discount",
         },
         "pressure": {
             "regex": r"(c'est maintenant ou jamais|dernière chance|vous devez|il faut signer)",
             "type": "negative",
-            "action": "aggressive_closing"
+            "action": "aggressive_closing",
         },
         "defensive": {
             "regex": r"(ce n'est pas ma faute|calmez-vous|vous avez tort|mais non)",
             "type": "negative",
-            "action": "defensive_reaction"
-        }
+            "action": "defensive_reaction",
+        },
     }
 
     # Indicateurs d'hésitation à compter
@@ -338,11 +316,7 @@ class BehavioralDetector:
         result = {
             "positive": [],
             "negative": [],
-            "indicators": {
-                "hesitation_count": 0,
-                "question_type": None,
-                "word_count": len(text.split())
-            }
+            "indicators": {"hesitation_count": 0, "question_type": None, "word_count": len(text.split())},
         }
 
         # Compter les hésitations
@@ -353,15 +327,9 @@ class BehavioralDetector:
         for pattern_name, config in self.PATTERNS.items():
             if re.search(config["regex"], text_lower, re.IGNORECASE):
                 if config["type"] == "positive":
-                    result["positive"].append({
-                        "pattern": pattern_name,
-                        "action": config["action"]
-                    })
+                    result["positive"].append({"pattern": pattern_name, "action": config["action"]})
                 elif config["type"] == "negative":
-                    result["negative"].append({
-                        "pattern": pattern_name,
-                        "action": config["action"]
-                    })
+                    result["negative"].append({"pattern": pattern_name, "action": config["action"]})
 
         # Détecter le type de question
         if "?" in text:
@@ -372,30 +340,18 @@ class BehavioralDetector:
 
         return result
 
-    def check_interruption(
-        self,
-        user_response_delay: float,
-        prospect_was_speaking: bool
-    ) -> bool:
+    def check_interruption(self, user_response_delay: float, prospect_was_speaking: bool) -> bool:
         """Vérifie si le commercial a coupé la parole."""
         return prospect_was_speaking and user_response_delay < 0.5
 
-    def check_spoke_first_after_price(
-        self,
-        last_prospect_message: str,
-        user_response_delay: float
-    ) -> bool:
+    def check_spoke_first_after_price(self, last_prospect_message: str, user_response_delay: float) -> bool:
         """Vérifie si le commercial a parlé en premier après annonce du prix."""
-        price_mentioned = bool(re.search(
-            r"(\d+\s*€|\d+\s*euros?|le prix|le tarif|ça coûte|ça fait)",
-            last_prospect_message.lower()
-        ))
+        price_mentioned = bool(
+            re.search(r"(\d+\s*€|\d+\s*euros?|le prix|le tarif|ça coûte|ça fait)", last_prospect_message.lower())
+        )
         return price_mentioned and user_response_delay < 2.0
 
-    def detect_closed_question_spam(
-        self,
-        recent_questions: List[dict]
-    ) -> bool:
+    def detect_closed_question_spam(self, recent_questions: list[dict]) -> bool:
         """Détecte si le commercial enchaîne trop de questions fermées."""
         if len(recent_questions) < 3:
             return False
@@ -404,11 +360,7 @@ class BehavioralDetector:
         closed_count = sum(1 for q in last_three if q.get("type") == "closed")
         return closed_count >= 3
 
-    def detect_budget_question_too_early(
-        self,
-        text: str,
-        message_count: int
-    ) -> bool:
+    def detect_budget_question_too_early(self, text: str, message_count: int) -> bool:
         """Détecte si le budget est demandé trop tôt."""
         budget_patterns = r"(quel.*budget|votre budget|combien.*prévu|c'est combien)"
         if re.search(budget_patterns, text.lower()):

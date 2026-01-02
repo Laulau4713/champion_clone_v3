@@ -8,29 +8,21 @@ Tests:
 - Behavioral pattern detection
 """
 
-import pytest
 from datetime import datetime
 
-from services.jauge_service import (
-    JaugeService, JaugeModification, MoodState, BehavioralDetector
-)
-
+from services.jauge_service import BehavioralDetector, JaugeModification, JaugeService
 
 # ============================================
 # JaugeModification Tests
 # ============================================
+
 
 class TestJaugeModification:
     """Tests for JaugeModification dataclass."""
 
     def test_to_dict(self):
         """Should convert to dictionary correctly."""
-        mod = JaugeModification(
-            action="empathy_shown",
-            delta=5,
-            new_value=55,
-            reason="Empathie demontrée"
-        )
+        mod = JaugeModification(action="empathy_shown", delta=5, new_value=55, reason="Empathie demontrée")
         result = mod.to_dict()
 
         assert result["action"] == "empathy_shown"
@@ -49,6 +41,7 @@ class TestJaugeModification:
 # ============================================
 # JaugeService Mood Tests
 # ============================================
+
 
 class TestJaugeServiceMood:
     """Tests for mood calculation."""
@@ -104,6 +97,7 @@ class TestJaugeServiceMood:
 # ============================================
 # JaugeService Action Tests
 # ============================================
+
 
 class TestJaugeServiceActions:
     """Tests for action application."""
@@ -182,6 +176,7 @@ class TestJaugeServiceActions:
 # JaugeService Conversion Tests
 # ============================================
 
+
 class TestJaugeServiceConversion:
     """Tests for conversion checking."""
 
@@ -198,9 +193,7 @@ class TestJaugeServiceConversion:
     def test_conversion_blocked_by_low_jauge(self):
         """Should block conversion when jauge too low."""
         service = JaugeService(level="easy")
-        can_convert, reasons = service.check_conversion_possible(
-            jauge=50, blockers=[]
-        )
+        can_convert, reasons = service.check_conversion_possible(jauge=50, blockers=[])
 
         assert can_convert is False
         assert any("insuffisante" in r.lower() for r in reasons)
@@ -208,9 +201,7 @@ class TestJaugeServiceConversion:
     def test_conversion_blocked_by_lost_temper(self):
         """Should block conversion when lost_temper blocker present."""
         service = JaugeService(level="easy")
-        can_convert, reasons = service.check_conversion_possible(
-            jauge=90, blockers=["lost_temper"]
-        )
+        can_convert, reasons = service.check_conversion_possible(jauge=90, blockers=["lost_temper"])
 
         assert can_convert is False
         assert any("calme" in r.lower() for r in reasons)
@@ -218,9 +209,7 @@ class TestJaugeServiceConversion:
     def test_conversion_blocked_by_denigration(self):
         """Should block conversion when denigration blocker present."""
         service = JaugeService(level="easy")
-        can_convert, reasons = service.check_conversion_possible(
-            jauge=90, blockers=["denigrated_competitor"]
-        )
+        can_convert, reasons = service.check_conversion_possible(jauge=90, blockers=["denigrated_competitor"])
 
         assert can_convert is False
         assert any("70" in r for r in reasons)
@@ -232,7 +221,7 @@ class TestJaugeServiceConversion:
             jauge=90,
             blockers=[],
             required_conditions=["budget_discussed", "decision_maker_identified"],
-            conditions_met=["budget_discussed"]
+            conditions_met=["budget_discussed"],
         )
 
         assert can_convert is False
@@ -254,6 +243,7 @@ class TestJaugeServiceConversion:
 # JaugeService Config Tests
 # ============================================
 
+
 class TestJaugeServiceConfig:
     """Tests for configuration handling."""
 
@@ -271,11 +261,7 @@ class TestJaugeServiceConfig:
     def test_custom_modifiers_override_defaults(self):
         """Should allow custom modifiers to override defaults."""
         config = {
-            "jauge_modifiers": {
-                "positive_actions": {
-                    "empathy_shown": {"points": 10, "description": "Custom empathy"}
-                }
-            }
+            "jauge_modifiers": {"positive_actions": {"empathy_shown": {"points": 10, "description": "Custom empathy"}}}
         }
         service = JaugeService(level="easy", level_config=config)
         result = service.apply_action(50, "empathy_shown", "positive")
@@ -287,7 +273,7 @@ class TestJaugeServiceConfig:
         config = {
             "mood_stages": [
                 {"range": [0, 50], "mood": "custom_low", "behavior": "Custom low"},
-                {"range": [51, 100], "mood": "custom_high", "behavior": "Custom high"}
+                {"range": [51, 100], "mood": "custom_high", "behavior": "Custom high"},
             ]
         }
         service = JaugeService(level="easy", level_config=config)
@@ -299,6 +285,7 @@ class TestJaugeServiceConfig:
 # ============================================
 # BehavioralDetector Pattern Tests
 # ============================================
+
 
 class TestBehavioralDetectorPatterns:
     """Tests for pattern detection."""
@@ -388,6 +375,7 @@ class TestBehavioralDetectorPatterns:
 # BehavioralDetector Indicator Tests
 # ============================================
 
+
 class TestBehavioralDetectorIndicators:
     """Tests for indicator detection."""
 
@@ -424,42 +412,33 @@ class TestBehavioralDetectorIndicators:
 # BehavioralDetector Timing Tests
 # ============================================
 
+
 class TestBehavioralDetectorTiming:
     """Tests for timing-based detection."""
 
     def test_check_interruption_true(self):
         """Should detect interruption when speaking over prospect."""
         detector = BehavioralDetector()
-        is_interruption = detector.check_interruption(
-            user_response_delay=0.3,
-            prospect_was_speaking=True
-        )
+        is_interruption = detector.check_interruption(user_response_delay=0.3, prospect_was_speaking=True)
         assert is_interruption is True
 
     def test_check_interruption_false_with_delay(self):
         """Should not flag interruption with proper delay."""
         detector = BehavioralDetector()
-        is_interruption = detector.check_interruption(
-            user_response_delay=1.0,
-            prospect_was_speaking=True
-        )
+        is_interruption = detector.check_interruption(user_response_delay=1.0, prospect_was_speaking=True)
         assert is_interruption is False
 
     def test_check_interruption_false_when_not_speaking(self):
         """Should not flag interruption if prospect wasnt speaking."""
         detector = BehavioralDetector()
-        is_interruption = detector.check_interruption(
-            user_response_delay=0.1,
-            prospect_was_speaking=False
-        )
+        is_interruption = detector.check_interruption(user_response_delay=0.1, prospect_was_speaking=False)
         assert is_interruption is False
 
     def test_spoke_first_after_price(self):
         """Should detect speaking first after price mention."""
         detector = BehavioralDetector()
         spoke_first = detector.check_spoke_first_after_price(
-            last_prospect_message="Le prix est de 5000 euros",
-            user_response_delay=1.0
+            last_prospect_message="Le prix est de 5000 euros", user_response_delay=1.0
         )
         assert spoke_first is True
 
@@ -467,47 +446,32 @@ class TestBehavioralDetectorTiming:
         """Should not flag when waited after price."""
         detector = BehavioralDetector()
         spoke_first = detector.check_spoke_first_after_price(
-            last_prospect_message="Le prix est de 5000 euros",
-            user_response_delay=3.0
+            last_prospect_message="Le prix est de 5000 euros", user_response_delay=3.0
         )
         assert spoke_first is False
 
     def test_closed_question_spam_detection(self):
         """Should detect closed question spam."""
         detector = BehavioralDetector()
-        recent_questions = [
-            {"type": "closed"},
-            {"type": "closed"},
-            {"type": "closed"}
-        ]
+        recent_questions = [{"type": "closed"}, {"type": "closed"}, {"type": "closed"}]
         is_spam = detector.detect_closed_question_spam(recent_questions)
         assert is_spam is True
 
     def test_no_spam_with_mixed_questions(self):
         """Should not flag spam with mixed question types."""
         detector = BehavioralDetector()
-        recent_questions = [
-            {"type": "open"},
-            {"type": "closed"},
-            {"type": "open"}
-        ]
+        recent_questions = [{"type": "open"}, {"type": "closed"}, {"type": "open"}]
         is_spam = detector.detect_closed_question_spam(recent_questions)
         assert is_spam is False
 
     def test_budget_question_too_early(self):
         """Should detect budget question asked too early."""
         detector = BehavioralDetector()
-        too_early = detector.detect_budget_question_too_early(
-            text="Quel est votre budget?",
-            message_count=4
-        )
+        too_early = detector.detect_budget_question_too_early(text="Quel est votre budget?", message_count=4)
         assert too_early is True
 
     def test_budget_question_at_right_time(self):
         """Should not flag budget question at right time."""
         detector = BehavioralDetector()
-        too_early = detector.detect_budget_question_too_early(
-            text="Quel est votre budget?",
-            message_count=10
-        )
+        too_early = detector.detect_budget_question_too_early(text="Quel est votre budget?", message_count=10)
         assert too_early is False

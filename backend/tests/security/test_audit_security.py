@@ -10,29 +10,24 @@ Tests OWASP Top 10 vulnerabilities:
 - A07: Identification and Authentication Failures
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import User, VoiceTrainingSession, Skill
+from models import Skill, User, VoiceTrainingSession
 from services.auth import create_access_token
-
 
 # ============================================
 # Fixtures
 # ============================================
 
+
 @pytest.fixture
 async def test_skill(db_session: AsyncSession) -> Skill:
     """Create a test skill."""
-    skill = Skill(
-        name="Test Skill",
-        slug="test_skill",
-        level="beginner",
-        description="For testing",
-        order=1
-    )
+    skill = Skill(name="Test Skill", slug="test_skill", level="beginner", description="For testing", order=1)
     db_session.add(skill)
     await db_session.commit()
     await db_session.refresh(skill)
@@ -40,11 +35,7 @@ async def test_skill(db_session: AsyncSession) -> Skill:
 
 
 @pytest.fixture
-async def user_session(
-    db_session: AsyncSession,
-    test_user: User,
-    test_skill: Skill
-) -> VoiceTrainingSession:
+async def user_session(db_session: AsyncSession, test_user: User, test_skill: Skill) -> VoiceTrainingSession:
     """Create a session for the test user."""
     session = VoiceTrainingSession(
         user_id=test_user.id,
@@ -53,7 +44,7 @@ async def user_session(
         scenario_json={},
         starting_gauge=50,
         current_gauge=60,
-        status="completed"
+        status="completed",
     )
     db_session.add(session)
     await db_session.commit()
@@ -64,12 +55,7 @@ async def user_session(
 @pytest.fixture
 async def other_user(db_session: AsyncSession) -> User:
     """Create another user for authorization tests."""
-    user = User(
-        email="other@example.com",
-        hashed_password="hashed_password",
-        full_name="Other User",
-        is_active=True
-    )
+    user = User(email="other@example.com", hashed_password="hashed_password", full_name="Other User", is_active=True)
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
@@ -77,11 +63,7 @@ async def other_user(db_session: AsyncSession) -> User:
 
 
 @pytest.fixture
-async def other_user_session(
-    db_session: AsyncSession,
-    other_user: User,
-    test_skill: Skill
-) -> VoiceTrainingSession:
+async def other_user_session(db_session: AsyncSession, other_user: User, test_skill: Skill) -> VoiceTrainingSession:
     """Create a session for another user."""
     session = VoiceTrainingSession(
         user_id=other_user.id,
@@ -90,7 +72,7 @@ async def other_user_session(
         scenario_json={},
         starting_gauge=50,
         current_gauge=60,
-        status="completed"
+        status="completed",
     )
     db_session.add(session)
     await db_session.commit()
@@ -102,35 +84,26 @@ async def other_user_session(
 # A01: Broken Access Control
 # ============================================
 
+
 class TestBrokenAccessControl:
     """Tests for access control vulnerabilities."""
 
     @pytest.mark.asyncio
     async def test_idor_session_audit(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        other_user_session: VoiceTrainingSession
+        self, client: AsyncClient, auth_headers: dict, other_user_session: VoiceTrainingSession
     ):
         """
         IDOR Test: Should not access other user's session.
 
         Attacker tries to access session ID belonging to another user.
         """
-        response = await client.get(
-            f"/audit/session/{other_user_session.id}",
-            headers=auth_headers
-        )
+        response = await client.get(f"/audit/session/{other_user_session.id}", headers=auth_headers)
 
         assert response.status_code == 403
         assert "denied" in response.json()["detail"].lower()
 
     @pytest.mark.asyncio
-    async def test_idor_enumeration_prevention(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_idor_enumeration_prevention(self, client: AsyncClient, auth_headers: dict):
         """
         Should not leak information through enumeration.
 
@@ -139,19 +112,12 @@ class TestBrokenAccessControl:
         """
         # Try multiple session IDs
         for session_id in [99999, 100000, 100001]:
-            response = await client.get(
-                f"/audit/session/{session_id}",
-                headers=auth_headers
-            )
+            response = await client.get(f"/audit/session/{session_id}", headers=auth_headers)
             # Should be 404 for non-existent, not revealing anything
             assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_vertical_privilege_escalation(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_vertical_privilege_escalation(self, client: AsyncClient, auth_headers: dict):
         """
         Regular user should not access admin endpoints.
         """
@@ -160,12 +126,7 @@ class TestBrokenAccessControl:
         assert response.status_code == 403
 
     @pytest.mark.asyncio
-    async def test_horizontal_privilege_escalation(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        other_user: User
-    ):
+    async def test_horizontal_privilege_escalation(self, client: AsyncClient, auth_headers: dict, other_user: User):
         """
         User A should not get progress report for User B.
 
@@ -183,20 +144,18 @@ class TestBrokenAccessControl:
 # A02: Cryptographic Failures
 # ============================================
 
+
 class TestCryptographicFailures:
     """Tests for cryptographic vulnerabilities."""
 
     @pytest.mark.asyncio
-    async def test_expired_token_rejected(
-        self,
-        client: AsyncClient,
-        test_user: User
-    ):
+    async def test_expired_token_rejected(self, client: AsyncClient, test_user: User):
         """Expired JWT tokens should be rejected."""
         # Create an expired token
-        with patch('services.auth.timedelta') as mock_timedelta:
+        with patch("services.auth.timedelta") as mock_timedelta:
             # Force token to be created with past expiry
             from datetime import timedelta
+
             mock_timedelta.return_value = timedelta(minutes=-30)
             expired_token = create_access_token(test_user.id, test_user.email)
 
@@ -223,18 +182,14 @@ class TestCryptographicFailures:
             assert response.status_code == 401, f"Token should be rejected: {token[:50]}..."
 
     @pytest.mark.asyncio
-    async def test_token_tampering_detected(
-        self,
-        client: AsyncClient,
-        test_user: User
-    ):
+    async def test_token_tampering_detected(self, client: AsyncClient, test_user: User):
         """Tampered JWT tokens should be rejected."""
         valid_token = create_access_token(test_user.id, test_user.email)
 
         # Tamper with the payload (change a character)
-        parts = valid_token.split('.')
+        parts = valid_token.split(".")
         if len(parts) == 3:
-            tampered = parts[0] + '.' + parts[1][:-1] + 'X' + '.' + parts[2]
+            tampered = parts[0] + "." + parts[1][:-1] + "X" + "." + parts[2]
             headers = {"Authorization": f"Bearer {tampered}"}
             response = await client.get("/audit/progress", headers=headers)
             assert response.status_code == 401
@@ -244,15 +199,12 @@ class TestCryptographicFailures:
 # A03: Injection
 # ============================================
 
+
 class TestInjection:
     """Tests for injection vulnerabilities."""
 
     @pytest.mark.asyncio
-    async def test_sql_injection_session_id(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_sql_injection_session_id(self, client: AsyncClient, auth_headers: dict):
         """SQL injection in session_id should be prevented."""
         payloads = [
             "1 OR 1=1",
@@ -262,19 +214,12 @@ class TestInjection:
         ]
 
         for payload in payloads:
-            response = await client.get(
-                f"/audit/session/{payload}",
-                headers=auth_headers
-            )
+            response = await client.get(f"/audit/session/{payload}", headers=auth_headers)
             # FastAPI should reject non-integer paths
             assert response.status_code == 422, f"Should reject: {payload}"
 
     @pytest.mark.asyncio
-    async def test_sql_injection_days_param(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_sql_injection_days_param(self, client: AsyncClient, auth_headers: dict):
         """SQL injection in days parameter should be prevented."""
         payloads = [
             "7; DROP TABLE sessions;--",
@@ -283,18 +228,11 @@ class TestInjection:
         ]
 
         for payload in payloads:
-            response = await client.get(
-                f"/audit/progress?days={payload}",
-                headers=auth_headers
-            )
+            response = await client.get(f"/audit/progress?days={payload}", headers=auth_headers)
             assert response.status_code == 422, f"Should reject: {payload}"
 
     @pytest.mark.asyncio
-    async def test_command_injection_prevented(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_command_injection_prevented(self, client: AsyncClient, auth_headers: dict):
         """Command injection should be prevented."""
         payloads = [
             "1%3B%20cat%20%2Fetc%2Fpasswd",  # URL encoded: 1; cat /etc/passwd
@@ -303,10 +241,7 @@ class TestInjection:
         ]
 
         for payload in payloads:
-            response = await client.get(
-                f"/audit/session/{payload}",
-                headers=auth_headers
-            )
+            response = await client.get(f"/audit/session/{payload}", headers=auth_headers)
             # Should not execute any commands - rejected as invalid integer
             assert response.status_code in [404, 422, 307]
 
@@ -315,15 +250,12 @@ class TestInjection:
 # A04: Insecure Design
 # ============================================
 
+
 class TestInsecureDesign:
     """Tests for insecure design patterns."""
 
     @pytest.mark.asyncio
-    async def test_no_sensitive_data_in_error_messages(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_no_sensitive_data_in_error_messages(self, client: AsyncClient, auth_headers: dict):
         """Error messages should not leak sensitive information."""
         response = await client.get("/audit/session/99999", headers=auth_headers)
 
@@ -338,11 +270,7 @@ class TestInsecureDesign:
         assert "sql" not in error_str
 
     @pytest.mark.asyncio
-    async def test_rate_limiting_exists(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_rate_limiting_exists(self, client: AsyncClient, auth_headers: dict):
         """Endpoints should have rate limiting."""
         # Make many requests quickly
         responses = []
@@ -360,32 +288,27 @@ class TestInsecureDesign:
 # A05: Security Misconfiguration
 # ============================================
 
+
 class TestSecurityMisconfiguration:
     """Tests for security misconfiguration."""
 
     @pytest.mark.asyncio
     async def test_no_stack_trace_in_errors(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        user_session: VoiceTrainingSession
+        self, client: AsyncClient, auth_headers: dict, user_session: VoiceTrainingSession
     ):
         """Stack traces should not be exposed in production errors."""
         # Force an error
-        with patch('agents.audit_agent.agent.AuditAgent.audit_session') as mock:
+        with patch("agents.audit_agent.agent.AuditAgent.audit_session") as mock:
             mock.side_effect = Exception("Internal error")
 
-            response = await client.get(
-                f"/audit/session/{user_session.id}",
-                headers=auth_headers
-            )
+            response = await client.get(f"/audit/session/{user_session.id}", headers=auth_headers)
 
             if response.status_code == 500:
                 error = response.json()
                 error_str = str(error)
 
                 # Should not contain file paths or stack traces
-                assert "File \"" not in error_str
+                assert 'File "' not in error_str
                 assert "line " not in error_str
                 assert "Traceback" not in error_str
 
@@ -393,10 +316,7 @@ class TestSecurityMisconfiguration:
     async def test_cors_not_wildcard(self, client: AsyncClient):
         """CORS should not allow all origins in production."""
         # Check OPTIONS response for CORS headers
-        response = await client.options(
-            "/audit/progress",
-            headers={"Origin": "https://evil-site.com"}
-        )
+        response = await client.options("/audit/progress", headers={"Origin": "https://evil-site.com"})
 
         cors_header = response.headers.get("access-control-allow-origin", "")
         # Should not be wildcard
@@ -406,6 +326,7 @@ class TestSecurityMisconfiguration:
 # ============================================
 # A07: Identification and Authentication Failures
 # ============================================
+
 
 class TestAuthenticationFailures:
     """Tests for authentication vulnerabilities."""
@@ -419,27 +340,17 @@ class TestAuthenticationFailures:
     @pytest.mark.asyncio
     async def test_empty_auth_header(self, client: AsyncClient):
         """Should reject empty auth header."""
-        response = await client.get(
-            "/audit/progress",
-            headers={"Authorization": ""}
-        )
+        response = await client.get("/audit/progress", headers={"Authorization": ""})
         assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_wrong_auth_scheme(self, client: AsyncClient):
         """Should reject non-Bearer auth schemes."""
-        response = await client.get(
-            "/audit/progress",
-            headers={"Authorization": "Basic dXNlcjpwYXNz"}
-        )
+        response = await client.get("/audit/progress", headers={"Authorization": "Basic dXNlcjpwYXNz"})
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_inactive_user_rejected(
-        self,
-        client: AsyncClient,
-        inactive_user: User
-    ):
+    async def test_inactive_user_rejected(self, client: AsyncClient, inactive_user: User):
         """Inactive users should be rejected."""
         token = create_access_token(inactive_user.id, inactive_user.email)
         headers = {"Authorization": f"Bearer {token}"}
@@ -448,12 +359,7 @@ class TestAuthenticationFailures:
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_deleted_user_rejected(
-        self,
-        client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User
-    ):
+    async def test_deleted_user_rejected(self, client: AsyncClient, db_session: AsyncSession, test_user: User):
         """Tokens for deleted users should be rejected."""
         # Create token first
         token = create_access_token(test_user.id, test_user.email)
@@ -472,15 +378,15 @@ class TestAuthenticationFailures:
 # Structure Tests
 # ============================================
 
+
 class TestCodeStructure:
     """Tests for code structure and organization."""
 
     def test_schemas_are_dataclasses(self):
         """Schemas should be proper dataclasses."""
-        from agents.audit_agent.schemas import (
-            SessionAudit, UserProgressReport, ChampionComparison, WeeklyDigest
-        )
         from dataclasses import is_dataclass
+
+        from agents.audit_agent.schemas import ChampionComparison, SessionAudit, UserProgressReport, WeeklyDigest
 
         assert is_dataclass(SessionAudit)
         assert is_dataclass(UserProgressReport)
@@ -499,10 +405,10 @@ class TestCodeStructure:
     def test_prompts_are_defined(self):
         """All required prompts should be defined."""
         from agents.audit_agent.prompts import (
-            SESSION_AUDIT_PROMPT,
-            PROGRESS_REPORT_PROMPT,
             CHAMPION_COMPARISON_PROMPT,
-            WEEKLY_DIGEST_PROMPT
+            PROGRESS_REPORT_PROMPT,
+            SESSION_AUDIT_PROMPT,
+            WEEKLY_DIGEST_PROMPT,
         )
 
         assert len(SESSION_AUDIT_PROMPT) > 100
@@ -515,11 +421,11 @@ class TestCodeStructure:
         from agents.audit_agent.agent import AuditAgent
 
         required_methods = [
-            'audit_session',
-            'generate_progress_report',
-            'compare_to_champion',
-            'generate_weekly_digest',
-            'get_next_recommendation'
+            "audit_session",
+            "generate_progress_report",
+            "compare_to_champion",
+            "generate_weekly_digest",
+            "get_next_recommendation",
         ]
 
         for method in required_methods:

@@ -5,15 +5,16 @@ Disabled by default - requires LEMONSQUEEZY_API_KEY in .env
 """
 
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-import structlog
 
-from database import get_db
-from models import User, SubscriptionEvent, SubscriptionPlan, SubscriptionStatus
-from schemas import SuccessResponse
+import structlog
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.routers.auth import get_current_user
+from database import get_db
+from models import SubscriptionEvent, SubscriptionPlan, SubscriptionStatus, User
+from schemas import SuccessResponse
 from services.payment_service import payment_service
 
 logger = structlog.get_logger()
@@ -25,37 +26,41 @@ router = APIRouter(prefix="/payments", tags=["Payments"])
 # SCHEMAS
 # =============================================================================
 
+
 from pydantic import BaseModel
-from typing import Optional
 
 
 class PaymentStatusResponse(BaseModel):
     """Payment system status."""
+
     enabled: bool
     plan: str
     status: str
-    subscription_id: Optional[str] = None
-    expires_at: Optional[datetime] = None
+    subscription_id: str | None = None
+    expires_at: datetime | None = None
 
 
 class CheckoutRequest(BaseModel):
     """Checkout request."""
+
     plan: str = "pro"  # starter, pro, enterprise
 
 
 class CheckoutResponse(BaseModel):
     """Checkout response."""
-    checkout_url: Optional[str] = None
+
+    checkout_url: str | None = None
     message: str
 
 
 class SubscriptionResponse(BaseModel):
     """Subscription details."""
+
     plan: str
     status: str
-    subscription_id: Optional[str] = None
-    started_at: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
+    subscription_id: str | None = None
+    started_at: datetime | None = None
+    expires_at: datetime | None = None
     cancel_at_period_end: bool = False
 
 
@@ -63,11 +68,9 @@ class SubscriptionResponse(BaseModel):
 # ENDPOINTS
 # =============================================================================
 
+
 @router.get("/status", response_model=PaymentStatusResponse)
-async def get_payment_status(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def get_payment_status(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """
     Get current payment/subscription status.
 
@@ -78,15 +81,13 @@ async def get_payment_status(
         plan=current_user.subscription_plan,
         status=current_user.subscription_status,
         subscription_id=current_user.stripe_customer_id,  # Using existing field for now
-        expires_at=current_user.subscription_expires_at
+        expires_at=current_user.subscription_expires_at,
     )
 
 
 @router.post("/checkout", response_model=CheckoutResponse)
 async def create_checkout(
-    request: CheckoutRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    request: CheckoutRequest, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
     Create a LemonSqueezy checkout session.
@@ -96,47 +97,30 @@ async def create_checkout(
     """
     if not payment_service.is_enabled():
         return CheckoutResponse(
-            checkout_url=None,
-            message="Le paiement n'est pas encore configuré. Contactez l'administrateur."
+            checkout_url=None, message="Le paiement n'est pas encore configuré. Contactez l'administrateur."
         )
 
     # Don't allow checkout if already subscribed
     if current_user.subscription_plan != SubscriptionPlan.FREE.value:
         if current_user.subscription_status == SubscriptionStatus.ACTIVE.value:
-            return CheckoutResponse(
-                checkout_url=None,
-                message="Vous avez déjà un abonnement actif."
-            )
+            return CheckoutResponse(checkout_url=None, message="Vous avez déjà un abonnement actif.")
 
     result = await payment_service.create_checkout(
-        user_id=current_user.id,
-        user_email=current_user.email,
-        plan=request.plan
+        user_id=current_user.id, user_email=current_user.email, plan=request.plan
     )
 
     if result is None:
         return CheckoutResponse(
-            checkout_url=None,
-            message="Erreur lors de la création du checkout. Réessayez plus tard."
+            checkout_url=None, message="Erreur lors de la création du checkout. Réessayez plus tard."
         )
 
-    logger.info(
-        "checkout_created",
-        user_id=current_user.id,
-        plan=request.plan
-    )
+    logger.info("checkout_created", user_id=current_user.id, plan=request.plan)
 
-    return CheckoutResponse(
-        checkout_url=result["checkout_url"],
-        message="Redirection vers le paiement..."
-    )
+    return CheckoutResponse(checkout_url=result["checkout_url"], message="Redirection vers le paiement...")
 
 
 @router.post("/webhook")
-async def handle_webhook(
-    request: Request,
-    db: AsyncSession = Depends(get_db)
-):
+async def handle_webhook(request: Request, db: AsyncSession = Depends(get_db)):
     """
     Handle LemonSqueezy webhooks.
 
@@ -165,6 +149,7 @@ async def handle_webhook(
 
     # Parse payload
     import json
+
     try:
         payload = json.loads(body)
     except json.JSONDecodeError:
@@ -220,16 +205,11 @@ async def handle_webhook(
             event_type="subscription_created",
             from_plan=SubscriptionPlan.FREE.value,
             to_plan=plan,
-            extra_data={"subscription_id": subscription_id}
+            extra_data={"subscription_id": subscription_id},
         )
         db.add(event)
 
-        logger.info(
-            "subscription_created",
-            user_id=user.id,
-            plan=plan,
-            subscription_id=subscription_id
-        )
+        logger.info("subscription_created", user_id=user.id, plan=plan, subscription_id=subscription_id)
 
     elif event_name == "subscription_updated":
         # Plan change or renewal
@@ -255,17 +235,11 @@ async def handle_webhook(
             event_type="subscription_updated",
             from_plan=old_plan,
             to_plan=new_plan,
-            extra_data={"subscription_id": subscription_id, "status": status}
+            extra_data={"subscription_id": subscription_id, "status": status},
         )
         db.add(event)
 
-        logger.info(
-            "subscription_updated",
-            user_id=user.id,
-            old_plan=old_plan,
-            new_plan=new_plan,
-            status=status
-        )
+        logger.info("subscription_updated", user_id=user.id, old_plan=old_plan, new_plan=new_plan, status=status)
 
     elif event_name == "subscription_cancelled":
         # Subscription cancelled (may still be active until period end)
@@ -284,19 +258,19 @@ async def handle_webhook(
             event_type="subscription_cancelled",
             from_plan=user.subscription_plan,
             to_plan=user.subscription_plan,  # Plan stays until expiry
-            extra_data={"subscription_id": subscription_id}
+            extra_data={"subscription_id": subscription_id},
         )
         db.add(event)
 
-        logger.info(
-            "subscription_cancelled",
-            user_id=user.id,
-            plan=user.subscription_plan
-        )
+        logger.info("subscription_cancelled", user_id=user.id, plan=user.subscription_plan)
 
     elif event_name in ("subscription_payment_failed", "subscription_expired"):
         # Payment failed or expired
-        user.subscription_status = SubscriptionStatus.PAST_DUE.value if event_name == "subscription_payment_failed" else SubscriptionStatus.EXPIRED.value
+        user.subscription_status = (
+            SubscriptionStatus.PAST_DUE.value
+            if event_name == "subscription_payment_failed"
+            else SubscriptionStatus.EXPIRED.value
+        )
 
         if event_name == "subscription_expired":
             # Downgrade to free
@@ -308,15 +282,11 @@ async def handle_webhook(
                 event_type="subscription_expired",
                 from_plan=old_plan,
                 to_plan=SubscriptionPlan.FREE.value,
-                extra_data={"subscription_id": subscription_id}
+                extra_data={"subscription_id": subscription_id},
             )
             db.add(event)
 
-        logger.info(
-            event_name,
-            user_id=user.id,
-            plan=user.subscription_plan
-        )
+        logger.info(event_name, user_id=user.id, plan=user.subscription_plan)
 
     await db.commit()
 
@@ -324,10 +294,7 @@ async def handle_webhook(
 
 
 @router.get("/subscription", response_model=SubscriptionResponse)
-async def get_subscription(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def get_subscription(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """
     Get detailed subscription information.
     """
@@ -339,70 +306,50 @@ async def get_subscription(
         subscription_id=current_user.stripe_customer_id,
         started_at=current_user.subscription_started_at,
         expires_at=current_user.subscription_expires_at,
-        cancel_at_period_end=cancel_at_period_end
+        cancel_at_period_end=cancel_at_period_end,
     )
 
 
 @router.post("/cancel", response_model=SuccessResponse)
-async def cancel_subscription(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def cancel_subscription(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """
     Cancel current subscription.
 
     Subscription remains active until the end of the billing period.
     """
     if not payment_service.is_enabled():
-        raise HTTPException(
-            status_code=503,
-            detail="Le paiement n'est pas configuré"
-        )
+        raise HTTPException(status_code=503, detail="Le paiement n'est pas configuré")
 
     if current_user.subscription_plan == SubscriptionPlan.FREE.value:
-        raise HTTPException(
-            status_code=400,
-            detail="Vous n'avez pas d'abonnement actif"
-        )
+        raise HTTPException(status_code=400, detail="Vous n'avez pas d'abonnement actif")
 
     subscription_id = current_user.stripe_customer_id
     if not subscription_id:
-        raise HTTPException(
-            status_code=400,
-            detail="Aucun abonnement trouvé"
-        )
+        raise HTTPException(status_code=400, detail="Aucun abonnement trouvé")
 
     success = await payment_service.cancel_subscription(subscription_id)
 
     if not success:
-        raise HTTPException(
-            status_code=500,
-            detail="Erreur lors de l'annulation. Contactez le support."
-        )
+        raise HTTPException(status_code=500, detail="Erreur lors de l'annulation. Contactez le support.")
 
     # Update local status (webhook will also update, but this is immediate feedback)
     current_user.subscription_status = SubscriptionStatus.CANCELLED.value
     await db.commit()
 
-    logger.info(
-        "subscription_cancel_requested",
-        user_id=current_user.id,
-        subscription_id=subscription_id
-    )
+    logger.info("subscription_cancel_requested", user_id=current_user.id, subscription_id=subscription_id)
 
-    return SuccessResponse(
-        success=True,
-        message="Votre abonnement sera annulé à la fin de la période de facturation."
-    )
+    return SuccessResponse(success=True, message="Votre abonnement sera annulé à la fin de la période de facturation.")
 
 
 # =============================================================================
 # HELPERS
 # =============================================================================
 
+
 def _variant_to_plan(variant_id: str) -> str:
     """Map LemonSqueezy variant ID to plan name."""
     from config import get_settings
+
     settings = get_settings()
 
     if variant_id == settings.LEMONSQUEEZY_VARIANT_STARTER:

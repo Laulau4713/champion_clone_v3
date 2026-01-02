@@ -9,7 +9,7 @@ Responsable de:
 
 import random
 from dataclasses import dataclass
-from typing import Optional
+
 import structlog
 
 logger = structlog.get_logger()
@@ -18,10 +18,11 @@ logger = structlog.get_logger()
 @dataclass
 class InterruptionDecision:
     """Résultat de la décision d'interruption."""
+
     should_interrupt: bool
-    phrase: Optional[str] = None
-    reason: Optional[str] = None
-    interruption_type: Optional[str] = None  # impatient, skeptical, disagreement
+    phrase: str | None = None
+    reason: str | None = None
+    interruption_type: str | None = None  # impatient, skeptical, disagreement
 
 
 class InterruptionService:
@@ -53,7 +54,7 @@ class InterruptionService:
             "interruption_probability": 0.4,
             "patience_seconds": 8,
             "hesitation_threshold": 3,
-        }
+        },
     }
 
     # Phrases d'interruption par type
@@ -79,7 +80,7 @@ class InterruptionService:
             "Attendez, c'est incorrect.",
             "Non, ça ne fonctionne pas comme ça.",
             "Je vous arrête, c'est faux.",
-        ]
+        ],
     }
 
     def __init__(self, level: str = "easy"):
@@ -97,8 +98,8 @@ class InterruptionService:
         self,
         speaking_duration: float,
         hesitation_count: int = 0,
-        emotions: Optional[dict] = None,
-        context: Optional[dict] = None
+        emotions: dict | None = None,
+        context: dict | None = None,
     ) -> InterruptionDecision:
         """
         Décide si le prospect doit interrompre.
@@ -125,7 +126,7 @@ class InterruptionService:
                 should_interrupt=True,
                 phrase=self.get_random_phrase("disagreement"),
                 reason="factual_error",
-                interruption_type="disagreement"
+                interruption_type="disagreement",
             )
 
         # 2. Parle trop longtemps → interrompre
@@ -134,7 +135,7 @@ class InterruptionService:
                 should_interrupt=True,
                 phrase=self.get_random_phrase("impatient"),
                 reason="speaking_too_long",
-                interruption_type="impatient"
+                interruption_type="impatient",
             )
 
         # 3. Trop d'hésitations (avec probabilité)
@@ -144,7 +145,7 @@ class InterruptionService:
                     should_interrupt=True,
                     phrase=self.get_random_phrase("impatient"),
                     reason="too_much_hesitation",
-                    interruption_type="impatient"
+                    interruption_type="impatient",
                 )
 
         # 4. Confiance faible détectée
@@ -155,7 +156,7 @@ class InterruptionService:
                     should_interrupt=True,
                     phrase=self.get_random_phrase("skeptical"),
                     reason="low_confidence",
-                    interruption_type="skeptical"
+                    interruption_type="skeptical",
                 )
 
         # 5. Interruption aléatoire selon probabilité de base
@@ -164,7 +165,7 @@ class InterruptionService:
                 should_interrupt=True,
                 phrase=self.get_random_phrase("impatient"),
                 reason="random",
-                interruption_type="impatient"
+                interruption_type="impatient",
             )
 
         return InterruptionDecision(should_interrupt=False)
@@ -179,8 +180,5 @@ class InterruptionService:
         Returns:
             Phrase d'interruption
         """
-        phrases = self.INTERRUPTION_PHRASES.get(
-            interruption_type,
-            self.INTERRUPTION_PHRASES["impatient"]
-        )
+        phrases = self.INTERRUPTION_PHRASES.get(interruption_type, self.INTERRUPTION_PHRASES["impatient"])
         return random.choice(phrases)

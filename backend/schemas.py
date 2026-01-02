@@ -3,34 +3,38 @@ Pydantic schemas for request/response validation.
 """
 
 from datetime import datetime
-from typing import Optional, List, Any
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from typing import Any
 
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 # ============================================
 # Auth Schemas
 # ============================================
 
+
 class UserRegister(BaseModel):
     """Schema for user registration."""
+
     email: EmailStr = Field(..., description="User email")
     password: str = Field(..., min_length=8, description="Password (min 8 characters)")
-    full_name: Optional[str] = Field(None, description="User's full name")
+    full_name: str | None = Field(None, description="User's full name")
 
 
 class UserLogin(BaseModel):
     """Schema for user login."""
+
     email: EmailStr = Field(..., description="User email")
     password: str = Field(..., description="User password")
 
 
 class UserResponse(BaseModel):
     """Schema for user response (no password!)."""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     email: str
-    full_name: Optional[str] = None
+    full_name: str | None = None
     is_active: bool
     role: str = "user"
     created_at: datetime
@@ -42,6 +46,7 @@ class UserResponse(BaseModel):
 
 class Token(BaseModel):
     """JWT token response with access and refresh tokens."""
+
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
@@ -50,17 +55,20 @@ class Token(BaseModel):
 
 class RefreshTokenRequest(BaseModel):
     """Request to refresh access token."""
+
     refresh_token: str = Field(..., description="Valid refresh token")
 
 
 class UserUpdate(BaseModel):
     """Schema for updating user profile."""
-    full_name: Optional[str] = Field(None, description="User's full name")
-    email: Optional[EmailStr] = Field(None, description="New email address")
+
+    full_name: str | None = Field(None, description="User's full name")
+    email: EmailStr | None = Field(None, description="New email address")
 
 
 class PasswordChange(BaseModel):
     """Schema for changing password."""
+
     current_password: str = Field(..., description="Current password")
     new_password: str = Field(..., min_length=8, description="New password (min 8 characters)")
 
@@ -69,40 +77,44 @@ class PasswordChange(BaseModel):
 # Champion Schemas
 # ============================================
 
+
 class ChampionBase(BaseModel):
     """Base champion fields."""
+
     name: str = Field(..., min_length=1, max_length=255, description="Champion's name")
-    description: Optional[str] = Field(None, description="Optional description")
+    description: str | None = Field(None, description="Optional description")
 
 
 class ChampionCreate(ChampionBase):
     """Schema for creating a champion (via file upload)."""
+
     pass
 
 
 class ChampionPatterns(BaseModel):
     """Extracted sales patterns structure."""
-    openings: List[str] = Field(default_factory=list, description="Opening techniques")
-    objection_handlers: List[dict[str, Any]] = Field(
-        default_factory=list,
-        description="Objection handling patterns with context"
+
+    openings: list[str] = Field(default_factory=list, description="Opening techniques")
+    objection_handlers: list[dict[str, Any]] = Field(
+        default_factory=list, description="Objection handling patterns with context"
     )
-    closes: List[str] = Field(default_factory=list, description="Closing techniques")
-    key_phrases: List[str] = Field(default_factory=list, description="Signature phrases")
+    closes: list[str] = Field(default_factory=list, description="Closing techniques")
+    key_phrases: list[str] = Field(default_factory=list, description="Signature phrases")
     tone_style: str = Field("", description="Overall communication style")
-    success_patterns: List[str] = Field(default_factory=list, description="Successful patterns identified")
+    success_patterns: list[str] = Field(default_factory=list, description="Successful patterns identified")
 
 
 class ChampionResponse(ChampionBase):
     """Schema for champion response."""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     # video_path and audio_path removed - never expose internal server paths
-    has_video: Optional[bool] = None  # Indicates if video exists
-    has_audio: Optional[bool] = None  # Indicates if audio was extracted
-    transcript: Optional[str] = None
-    patterns_json: Optional[dict[str, Any]] = None
+    has_video: bool | None = None  # Indicates if video exists
+    has_audio: bool | None = None  # Indicates if audio was extracted
+    transcript: str | None = None
+    patterns_json: dict[str, Any] | None = None
     status: str
     created_at: datetime
     updated_at: datetime
@@ -110,11 +122,12 @@ class ChampionResponse(ChampionBase):
 
 class ChampionListResponse(BaseModel):
     """Schema for listing champions."""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     status: str
     created_at: datetime
 
@@ -123,37 +136,43 @@ class ChampionListResponse(BaseModel):
 # Training Scenario Schemas
 # ============================================
 
+
 class TrainingScenario(BaseModel):
     """Generated training scenario."""
+
     context: str = Field(..., description="Business context for the scenario")
     prospect_type: str = Field(..., description="Type of prospect (e.g., 'skeptical CFO')")
     challenge: str = Field(..., description="Main challenge to overcome")
-    objectives: List[str] = Field(default_factory=list, description="Training objectives")
+    objectives: list[str] = Field(default_factory=list, description="Training objectives")
     difficulty: str = Field("medium", description="Difficulty level: easy, medium, hard")
 
 
 class ScenarioResponse(BaseModel):
     """Response containing generated scenarios."""
+
     champion_id: int
     champion_name: str
-    scenarios: List[TrainingScenario]
+    scenarios: list[TrainingScenario]
 
 
 # ============================================
 # Training Session Schemas
 # ============================================
 
+
 class SessionMessage(BaseModel):
     """Individual message in a training session."""
+
     role: str = Field(..., pattern="^(champion|user|system)$", description="Message sender")
     content: str = Field(..., min_length=1, description="Message content")
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    feedback: Optional[str] = Field(None, description="AI feedback on user response")
-    score: Optional[float] = Field(None, ge=0, le=10, description="Score 0-10")
+    feedback: str | None = Field(None, description="AI feedback on user response")
+    score: float | None = Field(None, ge=0, le=10, description="Score 0-10")
 
 
 class SessionStartRequest(BaseModel):
     """Request to start a new training session."""
+
     champion_id: int = Field(..., description="Champion to train against")
     scenario_index: int = Field(0, ge=0, description="Which scenario to use (0-based)")
     # user_id removed - now taken from JWT token
@@ -161,84 +180,95 @@ class SessionStartRequest(BaseModel):
 
 class SessionStartResponse(BaseModel):
     """Response after starting a session."""
+
     session_id: int
     champion_name: str
     scenario: TrainingScenario
     first_message: str = Field(..., description="Champion's opening message")
-    tips: List[str] = Field(default_factory=list, description="Tips for the user")
+    tips: list[str] = Field(default_factory=list, description="Tips for the user")
 
 
 class SessionRespondRequest(BaseModel):
     """User's response in a training session."""
+
     session_id: int = Field(..., description="Active session ID")
     user_response: str = Field(..., min_length=1, description="User's response to champion")
 
 
 class SessionRespondResponse(BaseModel):
     """Champion's response and feedback."""
+
     champion_response: str = Field(..., description="Champion's next message")
     feedback: str = Field(..., description="Feedback on user's response")
     score: float = Field(..., ge=0, le=10, description="Score for user's response")
-    suggestions: List[str] = Field(default_factory=list, description="Improvement suggestions")
+    suggestions: list[str] = Field(default_factory=list, description="Improvement suggestions")
     session_complete: bool = Field(False, description="Whether session is complete")
 
 
 class SessionEndRequest(BaseModel):
     """Request to end a training session."""
+
     session_id: int = Field(..., description="Session to end")
 
 
 class SessionSummary(BaseModel):
     """Summary of a completed session."""
+
     session_id: int
     champion_name: str
     total_exchanges: int
     overall_score: float
     feedback_summary: str
-    strengths: List[str]
-    areas_for_improvement: List[str]
+    strengths: list[str]
+    areas_for_improvement: list[str]
     duration_seconds: int
 
 
 class SessionResponse(BaseModel):
     """Full session response."""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     user_id: str
     champion_id: int
-    scenario: Optional[dict[str, Any]]
-    messages: List[dict[str, Any]]
-    overall_score: Optional[float]
-    feedback_summary: Optional[str]
+    scenario: dict[str, Any] | None
+    messages: list[dict[str, Any]]
+    overall_score: float | None
+    feedback_summary: str | None
     status: str
     started_at: datetime
-    ended_at: Optional[datetime]
+    ended_at: datetime | None
 
 
 # ============================================
 # Analysis Schemas
 # ============================================
 
+
 class AnalyzeRequest(BaseModel):
     """Request to analyze a champion's video."""
+
     force_reanalyze: bool = Field(False, description="Force re-analysis even if already done")
 
 
 class AnalyzeResponse(BaseModel):
     """Response from analysis endpoint."""
+
     champion_id: int
     status: str
     message: str
-    patterns: Optional[ChampionPatterns] = None
+    patterns: ChampionPatterns | None = None
 
 
 # ============================================
 # Upload Schemas
 # ============================================
 
+
 class UploadResponse(BaseModel):
     """Response after uploading a video."""
+
     champion_id: int
     name: str
     status: str
@@ -250,21 +280,25 @@ class UploadResponse(BaseModel):
 # Error Schemas
 # ============================================
 
+
 class ErrorResponse(BaseModel):
     """Standard error response."""
+
     error: str
-    detail: Optional[str] = None
+    detail: str | None = None
     code: str
 
 
 class ValidationErrorResponse(BaseModel):
     """Validation error details."""
-    loc: List[str]
+
+    loc: list[str]
     msg: str
     type: str
 
 
 class SuccessResponse(BaseModel):
     """Standard success response."""
+
     success: bool
     message: str

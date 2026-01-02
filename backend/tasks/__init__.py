@@ -10,30 +10,27 @@ Task modules:
 """
 
 from tasks.ai_tasks import (
-    call_claude_api,
     analyze_patterns_async,
-    generate_training_response_async,
+    call_claude_api,
     evaluate_session_async,
+    generate_training_response_async,
 )
-
 from tasks.audio_tasks import (
-    transcribe_audio,
-    generate_tts,
     extract_audio_from_video,
+    generate_tts,
+    transcribe_audio,
 )
-
 from tasks.email_tasks import (
     send_email,
-    send_welcome_email,
     send_inactive_user_reminders,
+    send_welcome_email,
 )
-
 from tasks.maintenance_tasks import (
-    cleanup_old_sessions,
-    cleanup_expired_tokens,
     cleanup_audio_files,
-    vacuum_database,
+    cleanup_expired_tokens,
+    cleanup_old_sessions,
     health_check,
+    vacuum_database,
 )
 
 __all__ = [

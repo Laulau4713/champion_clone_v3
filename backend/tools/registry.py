@@ -2,11 +2,10 @@
 Tool Registry - Discovery and management of agent tools.
 """
 
-import os
 import json
-from pathlib import Path
-from typing import Optional
+import os
 from dataclasses import dataclass
+from pathlib import Path
 
 import structlog
 
@@ -16,11 +15,12 @@ logger = structlog.get_logger()
 @dataclass
 class ToolDefinition:
     """Tool definition structure."""
+
     name: str
     description: str
     agent: str
     input_schema: dict
-    output_schema: Optional[dict] = None
+    output_schema: dict | None = None
     examples: list[dict] = None
 
     def to_dict(self) -> dict:
@@ -30,7 +30,7 @@ class ToolDefinition:
             "agent": self.agent,
             "input_schema": self.input_schema,
             "output_schema": self.output_schema,
-            "examples": self.examples or []
+            "examples": self.examples or [],
         }
 
 
@@ -44,11 +44,8 @@ class ToolRegistry:
     - Validation of tool calls
     """
 
-    def __init__(self, definitions_dir: Optional[str] = None):
-        self.definitions_dir = Path(
-            definitions_dir or
-            os.path.join(os.path.dirname(__file__), "definitions")
-        )
+    def __init__(self, definitions_dir: str | None = None):
+        self.definitions_dir = Path(definitions_dir or os.path.join(os.path.dirname(__file__), "definitions"))
         self.tools: dict[str, ToolDefinition] = {}
         self.tools_by_agent: dict[str, list[str]] = {}
 
@@ -67,7 +64,7 @@ class ToolRegistry:
 
         for json_file in json_files:
             try:
-                with open(json_file, "r") as f:
+                with open(json_file) as f:
                     data = json.load(f)
 
                 agent = data.get("agent", json_file.stem.replace("_tools", ""))
@@ -79,7 +76,7 @@ class ToolRegistry:
                         agent=agent,
                         input_schema=tool_data["input_schema"],
                         output_schema=tool_data.get("output_schema"),
-                        examples=tool_data.get("examples")
+                        examples=tool_data.get("examples"),
                     )
 
                     self.tools[tool.name] = tool
@@ -106,24 +103,21 @@ class ToolRegistry:
                         "type": "object",
                         "properties": {
                             "video_path": {"type": "string"},
-                            "output_format": {"type": "string", "enum": ["mp3", "wav"]}
+                            "output_format": {"type": "string", "enum": ["mp3", "wav"]},
                         },
-                        "required": ["video_path"]
-                    }
+                        "required": ["video_path"],
+                    },
                 },
                 {
                     "name": "transcribe",
                     "description": "Transcribe audio to text",
                     "input_schema": {
                         "type": "object",
-                        "properties": {
-                            "audio_path": {"type": "string"},
-                            "language": {"type": "string"}
-                        },
-                        "required": ["audio_path"]
-                    }
-                }
-            ]
+                        "properties": {"audio_path": {"type": "string"}, "language": {"type": "string"}},
+                        "required": ["audio_path"],
+                    },
+                },
+            ],
         }
 
         # Pattern tools
@@ -135,25 +129,20 @@ class ToolRegistry:
                     "description": "Extract sales patterns from transcript",
                     "input_schema": {
                         "type": "object",
-                        "properties": {
-                            "transcript": {"type": "string"}
-                        },
-                        "required": ["transcript"]
-                    }
+                        "properties": {"transcript": {"type": "string"}},
+                        "required": ["transcript"],
+                    },
                 },
                 {
                     "name": "generate_scenarios",
                     "description": "Generate training scenarios",
                     "input_schema": {
                         "type": "object",
-                        "properties": {
-                            "patterns": {"type": "object"},
-                            "count": {"type": "integer"}
-                        },
-                        "required": ["patterns"]
-                    }
-                }
-            ]
+                        "properties": {"patterns": {"type": "object"}, "count": {"type": "integer"}},
+                        "required": ["patterns"],
+                    },
+                },
+            ],
         }
 
         # Training tools
@@ -168,36 +157,33 @@ class ToolRegistry:
                         "properties": {
                             "champion_id": {"type": "integer"},
                             "scenario": {"type": "object"},
-                            "patterns": {"type": "object"}
+                            "patterns": {"type": "object"},
                         },
-                        "required": ["champion_id", "scenario", "patterns"]
-                    }
+                        "required": ["champion_id", "scenario", "patterns"],
+                    },
                 },
                 {
                     "name": "process_response",
                     "description": "Process user response",
                     "input_schema": {
                         "type": "object",
-                        "properties": {
-                            "session_id": {"type": "string"},
-                            "user_response": {"type": "string"}
-                        },
-                        "required": ["session_id", "user_response"]
-                    }
-                }
-            ]
+                        "properties": {"session_id": {"type": "string"}, "user_response": {"type": "string"}},
+                        "required": ["session_id", "user_response"],
+                    },
+                },
+            ],
         }
 
         # Write files
         for name, data in [
             ("audio_tools.json", audio_tools),
             ("pattern_tools.json", pattern_tools),
-            ("training_tools.json", training_tools)
+            ("training_tools.json", training_tools),
         ]:
             with open(self.definitions_dir / name, "w") as f:
                 json.dump(data, f, indent=2)
 
-    def get_tool(self, name: str) -> Optional[ToolDefinition]:
+    def get_tool(self, name: str) -> ToolDefinition | None:
         """Get tool by name."""
         return self.tools.get(name)
 
@@ -210,7 +196,7 @@ class ToolRegistry:
         """List all tools."""
         return [tool.to_dict() for tool in self.tools.values()]
 
-    def validate_tool_call(self, tool_name: str, input_data: dict) -> tuple[bool, Optional[str]]:
+    def validate_tool_call(self, tool_name: str, input_data: dict) -> tuple[bool, str | None]:
         """Validate a tool call against its schema."""
         tool = self.get_tool(tool_name)
         if not tool:

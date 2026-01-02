@@ -4,15 +4,13 @@ Admin Activities Router.
 Activity log endpoints for admin panel.
 """
 
-from typing import Optional
-
 from fastapi import APIRouter, Depends
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
 
-from database import get_db
-from models import User, ActivityLog
 from api.routers.admin.dependencies import require_admin
+from database import get_db
+from models import ActivityLog, User
 
 router = APIRouter(tags=["Admin - Activities"])
 
@@ -23,8 +21,8 @@ async def list_activities(
     db: AsyncSession = Depends(get_db),
     page: int = 1,
     per_page: int = 50,
-    user_id: Optional[int] = None,
-    action: Optional[str] = None
+    user_id: int | None = None,
+    action: str | None = None,
 ):
     """List activity logs with filtering."""
     per_page = min(per_page, 100)
@@ -43,9 +41,7 @@ async def list_activities(
 
     total = await db.scalar(count_query)
 
-    result = await db.execute(
-        query.order_by(ActivityLog.created_at.desc()).offset(skip).limit(per_page)
-    )
+    result = await db.execute(query.order_by(ActivityLog.created_at.desc()).offset(skip).limit(per_page))
     activities = result.scalars().all()
 
     return {
@@ -58,12 +54,12 @@ async def list_activities(
                 "resource_id": a.resource_id,
                 "extra_data": a.extra_data,
                 "ip_address": a.ip_address,
-                "created_at": a.created_at.isoformat() if a.created_at else None
+                "created_at": a.created_at.isoformat() if a.created_at else None,
             }
             for a in activities
         ],
         "total": total or 0,
         "page": page,
         "per_page": per_page,
-        "total_pages": ((total or 0) + per_page - 1) // per_page
+        "total_pages": ((total or 0) + per_page - 1) // per_page,
     }

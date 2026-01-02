@@ -19,29 +19,30 @@ Total: 39 endpoints
 
 from fastapi import APIRouter
 
-# Import sub-routers
-from api.routers.admin.stats import router as stats_router
-from api.routers.admin.users import router as users_router
-from api.routers.admin.sessions import router as sessions_router
 from api.routers.admin.activities import router as activities_router
-from api.routers.admin.errors import router as errors_router
-from api.routers.admin.emails import router as emails_router
-from api.routers.admin.webhooks import router as webhooks_router
-from api.routers.admin.notes import router as notes_router
 from api.routers.admin.alerts import router as alerts_router
 from api.routers.admin.audit import router as audit_router
+from api.routers.admin.dependencies import require_admin
+from api.routers.admin.emails import router as emails_router
+from api.routers.admin.errors import router as errors_router
+from api.routers.admin.notes import router as notes_router
 
 # Export schemas and dependencies for external use
 from api.routers.admin.schemas import (
-    UserUpdateRequest,
+    AdminNoteRequest,
     EmailTemplateRequest,
     EmailTemplateUpdateRequest,
+    ErrorResolveRequest,
+    UserUpdateRequest,
     WebhookEndpointRequest,
     WebhookEndpointUpdateRequest,
-    AdminNoteRequest,
-    ErrorResolveRequest
 )
-from api.routers.admin.dependencies import require_admin
+from api.routers.admin.sessions import router as sessions_router
+
+# Import sub-routers
+from api.routers.admin.stats import router as stats_router
+from api.routers.admin.users import router as users_router
+from api.routers.admin.webhooks import router as webhooks_router
 
 # Create main router
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -67,5 +68,5 @@ __all__ = [
     "WebhookEndpointRequest",
     "WebhookEndpointUpdateRequest",
     "AdminNoteRequest",
-    "ErrorResolveRequest"
+    "ErrorResolveRequest",
 ]

@@ -10,25 +10,22 @@ Tests:
 - Tips generation
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime
 
-from services.training_service_v2 import (
-    TrainingServiceV2, ProspectResponseV2
-)
+import pytest
+
 from domain.exceptions import (
     NotFoundError,
-    SessionNotFoundError,
     SessionNotActiveError,
+    SessionNotFoundError,
     ValidationError,
-    ExternalServiceError,
 )
-
+from services.training_service_v2 import ProspectResponseV2, TrainingServiceV2
 
 # ============================================
 # ProspectResponseV2 Tests
 # ============================================
+
 
 class TestProspectResponseV2:
     """Tests for ProspectResponseV2 dataclass."""
@@ -45,7 +42,7 @@ class TestProspectResponseV2:
             is_event=False,
             event_type=None,
             feedback={"tips": ["tip1"]},
-            conversion_possible=False
+            conversion_possible=False,
         )
         result = response.to_dict()
 
@@ -72,7 +69,7 @@ class TestProspectResponseV2:
             is_event=False,
             event_type=None,
             feedback=None,
-            conversion_possible=True
+            conversion_possible=True,
         )
 
         assert response.jauge == -1
@@ -90,7 +87,7 @@ class TestProspectResponseV2:
             is_event=True,
             event_type="phone_ring",
             feedback=None,
-            conversion_possible=False
+            conversion_possible=False,
         )
 
         assert response.is_event is True
@@ -101,6 +98,7 @@ class TestProspectResponseV2:
 # TrainingServiceV2 Initialization Tests
 # ============================================
 
+
 class TestTrainingServiceV2Init:
     """Tests for TrainingServiceV2 initialization."""
 
@@ -108,9 +106,11 @@ class TestTrainingServiceV2Init:
         """Should initialize Claude client with API key."""
         mock_db = MagicMock()
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', True), \
-             patch('services.training_service_v2.settings') as mock_settings, \
-             patch('services.training_service_v2.anthropic') as mock_anthropic:
+        with (
+            patch("services.training_service_v2.ANTHROPIC_AVAILABLE", True),
+            patch("services.training_service_v2.settings") as mock_settings,
+            patch("services.training_service_v2.anthropic") as mock_anthropic,
+        ):
             mock_settings.ANTHROPIC_API_KEY = "test-key"
             service = TrainingServiceV2(mock_db)
             mock_anthropic.AsyncAnthropic.assert_called_once_with(api_key="test-key")
@@ -120,8 +120,10 @@ class TestTrainingServiceV2Init:
         """Should handle missing API key gracefully."""
         mock_db = MagicMock()
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', True), \
-             patch('services.training_service_v2.settings') as mock_settings:
+        with (
+            patch("services.training_service_v2.ANTHROPIC_AVAILABLE", True),
+            patch("services.training_service_v2.settings") as mock_settings,
+        ):
             mock_settings.ANTHROPIC_API_KEY = None
             service = TrainingServiceV2(mock_db)
             assert service.claude is None
@@ -130,7 +132,7 @@ class TestTrainingServiceV2Init:
         """Should handle missing anthropic module."""
         mock_db = MagicMock()
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             assert service.claude is None
 
@@ -139,13 +141,14 @@ class TestTrainingServiceV2Init:
 # Fallback Response Tests
 # ============================================
 
+
 class TestFallbackResponses:
     """Tests for fallback responses."""
 
     def test_hostile_fallback(self):
         """Should return hostile fallback."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             response = service._get_fallback_response("hostile")
             assert "temps" in response.lower()
@@ -153,7 +156,7 @@ class TestFallbackResponses:
     def test_aggressive_fallback(self):
         """Should return aggressive fallback."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             response = service._get_fallback_response("aggressive")
             assert "convaincu" in response.lower()
@@ -161,7 +164,7 @@ class TestFallbackResponses:
     def test_skeptical_fallback(self):
         """Should return skeptical fallback."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             response = service._get_fallback_response("skeptical")
             assert "concr" in response.lower()
@@ -169,7 +172,7 @@ class TestFallbackResponses:
     def test_resistant_fallback(self):
         """Should return resistant fallback."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             response = service._get_fallback_response("resistant")
             assert "sais pas" in response.lower()
@@ -177,7 +180,7 @@ class TestFallbackResponses:
     def test_neutral_fallback(self):
         """Should return neutral fallback."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             response = service._get_fallback_response("neutral")
             assert "continuez" in response.lower()
@@ -185,7 +188,7 @@ class TestFallbackResponses:
     def test_interested_fallback(self):
         """Should return interested fallback."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             response = service._get_fallback_response("interested")
             assert "intéressant" in response.lower()
@@ -193,7 +196,7 @@ class TestFallbackResponses:
     def test_ready_to_buy_fallback(self):
         """Should return ready_to_buy fallback."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             response = service._get_fallback_response("ready_to_buy")
             assert "intéresse" in response.lower()
@@ -201,7 +204,7 @@ class TestFallbackResponses:
     def test_unknown_mood_fallback(self):
         """Should return default fallback for unknown mood."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             response = service._get_fallback_response("unknown_mood")
             assert "comprends" in response.lower()
@@ -211,13 +214,14 @@ class TestFallbackResponses:
 # Tips Generation Tests
 # ============================================
 
+
 class TestTipsGeneration:
     """Tests for tips generation."""
 
     def test_tips_no_positive_patterns(self):
         """Should suggest reformulation when no positive patterns."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             patterns = {"positive": [], "negative": [], "indicators": {}}
             tips = service._generate_tips(patterns, "neutral")
@@ -226,20 +230,16 @@ class TestTipsGeneration:
     def test_tips_too_many_hesitations(self):
         """Should warn about hesitations."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
-            patterns = {
-                "positive": [],
-                "negative": [],
-                "indicators": {"hesitation_count": 5}
-            }
+            patterns = {"positive": [], "negative": [], "indicators": {"hesitation_count": 5}}
             tips = service._generate_tips(patterns, "neutral")
             assert any("hésitations" in tip.lower() or "confiance" in tip.lower() for tip in tips)
 
     def test_tips_hostile_mood(self):
         """Should advise empathy for hostile mood."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             patterns = {"positive": [], "negative": [], "indicators": {}}
             tips = service._generate_tips(patterns, "hostile")
@@ -248,7 +248,7 @@ class TestTipsGeneration:
     def test_tips_aggressive_mood(self):
         """Should advise empathy for aggressive mood."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             patterns = {"positive": [], "negative": [], "indicators": {}}
             tips = service._generate_tips(patterns, "aggressive")
@@ -257,7 +257,7 @@ class TestTipsGeneration:
     def test_tips_skeptical_mood(self):
         """Should advise staying calm for skeptical mood."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             patterns = {"positive": [], "negative": [], "indicators": {}}
             tips = service._generate_tips(patterns, "skeptical")
@@ -266,7 +266,7 @@ class TestTipsGeneration:
     def test_tips_interested_mood(self):
         """Should encourage continuing for interested mood."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             patterns = {"positive": [], "negative": [], "indicators": {}}
             tips = service._generate_tips(patterns, "interested")
@@ -275,7 +275,7 @@ class TestTipsGeneration:
     def test_tips_ready_to_buy_mood(self):
         """Should suggest closing for ready_to_buy mood."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             patterns = {"positive": [], "negative": [], "indicators": {}}
             tips = service._generate_tips(patterns, "ready_to_buy")
@@ -284,33 +284,25 @@ class TestTipsGeneration:
     def test_tips_closed_question_spam(self):
         """Should advise open questions for closed question spam."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
-            patterns = {
-                "positive": [],
-                "negative": [{"action": "closed_question_spam"}],
-                "indicators": {}
-            }
+            patterns = {"positive": [], "negative": [{"action": "closed_question_spam"}], "indicators": {}}
             tips = service._generate_tips(patterns, "neutral")
             assert any("ouvertes" in tip.lower() for tip in tips)
 
     def test_tips_interruption(self):
         """Should advise letting prospect finish for interruption."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
-            patterns = {
-                "positive": [],
-                "negative": [{"action": "interruption"}],
-                "indicators": {}
-            }
+            patterns = {"positive": [], "negative": [{"action": "interruption"}], "indicators": {}}
             tips = service._generate_tips(patterns, "neutral")
             assert any("finir" in tip.lower() or "parler" in tip.lower() for tip in tips)
 
     def test_tips_max_three(self):
         """Should return max 3 tips."""
         mock_db = MagicMock()
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             patterns = {
                 "positive": [],
@@ -318,9 +310,9 @@ class TestTipsGeneration:
                     {"action": "closed_question_spam"},
                     {"action": "interruption"},
                     {"action": "aggressive_closing"},
-                    {"action": "defensive_reaction"}
+                    {"action": "defensive_reaction"},
                 ],
-                "indicators": {"hesitation_count": 5}
+                "indicators": {"hesitation_count": 5},
             }
             tips = service._generate_tips(patterns, "hostile")
             assert len(tips) <= 3
@@ -329,6 +321,7 @@ class TestTipsGeneration:
 # ============================================
 # Main Advice Tests
 # ============================================
+
 
 class TestMainAdvice:
     """Tests for main advice generation."""
@@ -339,7 +332,7 @@ class TestMainAdvice:
         mock_session = MagicMock()
         mock_session.conversion_blockers = []
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             advice = service._get_main_advice(mock_session, 90)
             assert "excellent" in advice.lower() or "maîtrise" in advice.lower()
@@ -350,7 +343,7 @@ class TestMainAdvice:
         mock_session = MagicMock()
         mock_session.conversion_blockers = []
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             advice = service._get_main_advice(mock_session, 75)
             assert "bon" in advice.lower() or "continue" in advice.lower()
@@ -361,7 +354,7 @@ class TestMainAdvice:
         mock_session = MagicMock()
         mock_session.conversion_blockers = []
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             advice = service._get_main_advice(mock_session, 55)
             assert "écoute" in advice.lower() or "progresse" in advice.lower()
@@ -372,7 +365,7 @@ class TestMainAdvice:
         mock_session = MagicMock()
         mock_session.conversion_blockers = ["lost_temper"]
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             advice = service._get_main_advice(mock_session, 35)
             assert "calme" in advice.lower() or "erreurs" in advice.lower()
@@ -383,7 +376,7 @@ class TestMainAdvice:
         mock_session = MagicMock()
         mock_session.conversion_blockers = []
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             advice = service._get_main_advice(mock_session, 35)
             assert "pratiquer" in advice.lower() or "fondamentaux" in advice.lower()
@@ -392,6 +385,7 @@ class TestMainAdvice:
 # ============================================
 # Session Creation Tests
 # ============================================
+
 
 class TestSessionCreation:
     """Tests for session creation."""
@@ -404,7 +398,7 @@ class TestSessionCreation:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             with pytest.raises(NotFoundError) as exc_info:
                 await service.create_session(mock_user, "nonexistent_skill")
@@ -415,6 +409,7 @@ class TestSessionCreation:
 # ============================================
 # User Message Processing Tests
 # ============================================
+
 
 class TestUserMessageProcessing:
     """Tests for user message processing."""
@@ -427,7 +422,7 @@ class TestUserMessageProcessing:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             with pytest.raises(SessionNotFoundError) as exc_info:
                 await service.process_user_message(999, mock_user, text="Hello")
@@ -444,7 +439,7 @@ class TestUserMessageProcessing:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             with pytest.raises(SessionNotFoundError) as exc_info:
                 await service.process_user_message(1, mock_user, text="Hello")
@@ -462,7 +457,7 @@ class TestUserMessageProcessing:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             with pytest.raises(SessionNotActiveError) as exc_info:
                 await service.process_user_message(1, mock_user, text="Hello")
@@ -483,8 +478,10 @@ class TestUserMessageProcessing:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False), \
-             patch('services.training_service_v2.voice_service') as mock_voice:
+        with (
+            patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False),
+            patch("services.training_service_v2.voice_service") as mock_voice,
+        ):
             mock_voice.is_configured.return_value = {"whisper": False}
             service = TrainingServiceV2(mock_db)
             with pytest.raises(ValidationError, match="No text or audio"):
@@ -494,6 +491,7 @@ class TestUserMessageProcessing:
 # ============================================
 # Session Ending Tests
 # ============================================
+
 
 class TestSessionEnding:
     """Tests for session ending."""
@@ -506,7 +504,7 @@ class TestSessionEnding:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             with pytest.raises(SessionNotFoundError) as exc_info:
                 await service.end_session(999, mock_user)
@@ -523,7 +521,7 @@ class TestSessionEnding:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             with pytest.raises(SessionNotFoundError) as exc_info:
                 await service.end_session(1, mock_user)
@@ -533,6 +531,7 @@ class TestSessionEnding:
 # ============================================
 # Get Session Tests
 # ============================================
+
 
 class TestGetSession:
     """Tests for getting session details."""
@@ -545,7 +544,7 @@ class TestGetSession:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             result = await service.get_session(999, mock_user)
             assert result is None
@@ -561,8 +560,7 @@ class TestGetSession:
         mock_user = MagicMock()
         mock_user.id = 1
 
-        with patch('services.training_service_v2.ANTHROPIC_AVAILABLE', False):
+        with patch("services.training_service_v2.ANTHROPIC_AVAILABLE", False):
             service = TrainingServiceV2(mock_db)
             result = await service.get_session(1, mock_user)
             assert result is None
-

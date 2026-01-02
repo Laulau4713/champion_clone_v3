@@ -16,9 +16,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sqlalchemy import select
+
 from database import AsyncSessionLocal, init_db
 from models import EmailTemplate, EmailTrigger
-
 
 # Email templates to seed
 TEMPLATES = [
@@ -77,7 +77,7 @@ Commencez maintenant : {{app_url}}/dashboard
 {{app_name}} - Entrainement commercial IA
         """,
         "variables": ["user_name", "user_email", "app_name", "app_url"],
-        "is_active": True
+        "is_active": True,
     },
     {
         "trigger": EmailTrigger.FIRST_CHAMPION.value,
@@ -138,7 +138,7 @@ Voir les scenarios : {{app_url}}/dashboard
 {{app_name}}
         """,
         "variables": ["user_name", "champion_name", "app_name", "app_url"],
-        "is_active": True
+        "is_active": True,
     },
     {
         "trigger": EmailTrigger.FIRST_SESSION.value,
@@ -192,7 +192,7 @@ Continuer l'entrainement : {{app_url}}/dashboard
 {{app_name}}
         """,
         "variables": ["user_name", "score", "app_name", "app_url"],
-        "is_active": True
+        "is_active": True,
     },
     {
         "trigger": EmailTrigger.INACTIVE_3_DAYS.value,
@@ -245,7 +245,7 @@ Reprendre l'entrainement : {{app_url}}/dashboard
 {{app_name}}
         """,
         "variables": ["user_name", "days_inactive", "app_name", "app_url"],
-        "is_active": True
+        "is_active": True,
     },
     {
         "trigger": EmailTrigger.INACTIVE_7_DAYS.value,
@@ -298,7 +298,7 @@ Je m'entraine maintenant : {{app_url}}/dashboard
 {{app_name}}
         """,
         "variables": ["user_name", "days_inactive", "app_name", "app_url"],
-        "is_active": True
+        "is_active": True,
     },
     {
         "trigger": EmailTrigger.INACTIVE_30_DAYS.value,
@@ -351,7 +351,7 @@ Revenir sur Champion Clone : {{app_url}}/dashboard
 {{app_name}}
         """,
         "variables": ["user_name", "days_inactive", "app_name", "app_url"],
-        "is_active": True
+        "is_active": True,
     },
     {
         "trigger": EmailTrigger.MILESTONE_10_SESSIONS.value,
@@ -403,7 +403,7 @@ Voir mes statistiques : {{app_url}}/dashboard
 {{app_name}}
         """,
         "variables": ["user_name", "app_name", "app_url"],
-        "is_active": True
+        "is_active": True,
     },
     {
         "trigger": EmailTrigger.MILESTONE_50_SESSIONS.value,
@@ -457,8 +457,8 @@ Continuer ma progression : {{app_url}}/dashboard
 {{app_name}}
         """,
         "variables": ["user_name", "app_name", "app_url"],
-        "is_active": True
-    }
+        "is_active": True,
+    },
 ]
 
 
@@ -475,9 +475,7 @@ async def seed_email_templates():
 
         for template_data in TEMPLATES:
             # Check if template already exists
-            result = await db.execute(
-                select(EmailTemplate).where(EmailTemplate.trigger == template_data["trigger"])
-            )
+            result = await db.execute(select(EmailTemplate).where(EmailTemplate.trigger == template_data["trigger"]))
             existing = result.scalar_one_or_none()
 
             if existing:
@@ -492,7 +490,7 @@ async def seed_email_templates():
                 body_html=template_data["body_html"].strip(),
                 body_text=template_data["body_text"].strip(),
                 variables=template_data["variables"],
-                is_active=template_data["is_active"]
+                is_active=template_data["is_active"],
             )
             db.add(template)
             print(f"  [CREATE] {template_data['trigger']}")

@@ -13,8 +13,9 @@ import os
 import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
-from celery import shared_task
+
 import structlog
+from celery import shared_task
 
 logger = structlog.get_logger()
 
@@ -25,6 +26,7 @@ AUDIO_DIR = Path(os.getenv("AUDIO_DIR", "./audio"))
 # =============================================================================
 # SESSION CLEANUP
 # =============================================================================
+
 
 @shared_task(bind=True)
 def cleanup_old_sessions(self, days_old: int = 30):
@@ -55,6 +57,7 @@ def cleanup_old_sessions(self, days_old: int = 30):
 # TOKEN CLEANUP
 # =============================================================================
 
+
 @shared_task(bind=True)
 def cleanup_expired_tokens(self):
     """
@@ -81,6 +84,7 @@ def cleanup_expired_tokens(self):
 # =============================================================================
 # AUDIO FILE CLEANUP
 # =============================================================================
+
 
 @shared_task(bind=True)
 def cleanup_audio_files(self, days_old: int = 7):
@@ -126,6 +130,7 @@ def cleanup_audio_files(self, days_old: int = 7):
 # DATABASE VACUUM
 # =============================================================================
 
+
 @shared_task(bind=True)
 def vacuum_database(self):
     """
@@ -168,6 +173,7 @@ def vacuum_database(self):
 # HEALTH CHECK
 # =============================================================================
 
+
 @shared_task(bind=True)
 def health_check(self):
     """
@@ -184,6 +190,7 @@ def health_check(self):
     # Check Redis
     try:
         from redis import Redis
+
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         r = Redis.from_url(redis_url)
         r.ping()
@@ -221,6 +228,7 @@ def health_check(self):
 # =============================================================================
 # UPLOAD FILE CLEANUP
 # =============================================================================
+
 
 @shared_task(bind=True)
 def cleanup_upload_files(self, days_old: int = 30):

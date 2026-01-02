@@ -5,9 +5,8 @@ Uses Groq (FREE) with Llama 3.1 70B instead of Claude API.
 Can fallback to Anthropic if ANTHROPIC_API_KEY is set and Groq fails.
 """
 
-import os
 import json
-from typing import Optional
+import os
 import uuid
 
 import structlog
@@ -17,6 +16,7 @@ logger = structlog.get_logger()
 # Try to import Groq (FREE)
 try:
     from groq import AsyncGroq
+
     GROQ_AVAILABLE = True
 except ImportError:
     GROQ_AVAILABLE = False
@@ -24,6 +24,7 @@ except ImportError:
 # Fallback to Anthropic
 try:
     from anthropic import AsyncAnthropic
+
     ANTHROPIC_AVAILABLE = True
 except ImportError:
     ANTHROPIC_AVAILABLE = False
@@ -102,7 +103,9 @@ Retourne un JSON array de scénarios, sans markdown."""
         else:
             self.client = None
             self.model = None
-            logger.warning("pattern_tools_init", msg="No LLM provider available. Set GROQ_API_KEY (free) or ANTHROPIC_API_KEY")
+            logger.warning(
+                "pattern_tools_init", msg="No LLM provider available. Set GROQ_API_KEY (free) or ANTHROPIC_API_KEY"
+            )
 
     async def _call_llm(self, prompt: str, max_tokens: int = 4096, temperature: float = 0.3) -> str:
         """Call LLM (Groq or Anthropic) and return text response."""
@@ -115,7 +118,7 @@ Retourne un JSON array de scénarios, sans markdown."""
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=max_tokens,
-                temperature=temperature
+                temperature=temperature,
             )
             return response.choices[0].message.content.strip()
         else:
@@ -124,7 +127,7 @@ Retourne un JSON array de scénarios, sans markdown."""
                 model=self.model,
                 max_tokens=max_tokens,
                 messages=[{"role": "user", "content": prompt}],
-                temperature=temperature
+                temperature=temperature,
             )
             return response.content[0].text.strip()
 
@@ -139,18 +142,13 @@ Retourne un JSON array de scénarios, sans markdown."""
             Dict with extracted patterns
         """
         if not transcript or len(transcript.strip()) < 100:
-            return {
-                "success": False,
-                "error": "Transcript too short for meaningful analysis"
-            }
+            return {"success": False, "error": "Transcript too short for meaningful analysis"}
 
         logger.info("extracting_patterns", transcript_length=len(transcript))
 
         try:
             response_text = await self._call_llm(
-                prompt=self.EXTRACTION_PROMPT.format(transcript=transcript),
-                max_tokens=4096,
-                temperature=0.3
+                prompt=self.EXTRACTION_PROMPT.format(transcript=transcript), max_tokens=4096, temperature=0.3
             )
 
             # Clean JSON from markdown
@@ -163,11 +161,7 @@ Retourne un JSON array de scénarios, sans markdown."""
             patterns = json.loads(response_text)
             patterns = self._validate_patterns(patterns)
 
-            return {
-                "success": True,
-                "patterns": patterns,
-                "model_used": self.model
-            }
+            return {"success": True, "patterns": patterns, "model_used": self.model}
 
         except json.JSONDecodeError as e:
             logger.error("json_parse_error", error=str(e))
@@ -185,13 +179,20 @@ Retourne un JSON array de scénarios, sans markdown."""
             "key_phrases": [],
             "tone_style": "",
             "success_patterns": [],
-            "communication_techniques": []
+            "communication_techniques": [],
         }
 
         validated = {**default, **patterns}
 
         # Ensure arrays
-        for key in ["openings", "objection_handlers", "closes", "key_phrases", "success_patterns", "communication_techniques"]:
+        for key in [
+            "openings",
+            "objection_handlers",
+            "closes",
+            "key_phrases",
+            "success_patterns",
+            "communication_techniques",
+        ]:
             if not isinstance(validated[key], list):
                 validated[key] = []
 
@@ -213,11 +214,10 @@ Retourne un JSON array de scénarios, sans markdown."""
         try:
             response_text = await self._call_llm(
                 prompt=self.SCENARIO_PROMPT.format(
-                    patterns=json.dumps(patterns, ensure_ascii=False, indent=2),
-                    count=count
+                    patterns=json.dumps(patterns, ensure_ascii=False, indent=2), count=count
                 ),
                 max_tokens=4096,
-                temperature=0.7
+                temperature=0.7,
             )
 
             if response_text.startswith("```"):
@@ -230,18 +230,11 @@ Retourne un JSON array de scénarios, sans markdown."""
             if not isinstance(scenarios, list):
                 scenarios = [scenarios]
 
-            return {
-                "success": True,
-                "scenarios": [self._validate_scenario(s) for s in scenarios]
-            }
+            return {"success": True, "scenarios": [self._validate_scenario(s) for s in scenarios]}
 
         except Exception as e:
             logger.error("scenario_generation_error", error=str(e))
-            return {
-                "success": False,
-                "error": str(e),
-                "scenarios": [self._get_default_scenario()]
-            }
+            return {"success": False, "error": str(e), "scenarios": [self._get_default_scenario()]}
 
     def _validate_scenario(self, scenario: dict) -> dict:
         return {
@@ -251,24 +244,21 @@ Retourne un JSON array de scénarios, sans markdown."""
             "challenge": scenario.get("challenge", "Convaincre le prospect"),
             "objectives": scenario.get("objectives", ["Pratiquer les techniques"]),
             "difficulty": scenario.get("difficulty", "medium"),
-            "expected_patterns": scenario.get("expected_patterns", [])
+            "expected_patterns": scenario.get("expected_patterns", []),
         }
 
     def _get_default_scenario(self) -> dict:
-        return self._validate_scenario({
-            "context": "Appel à un prospect qui a téléchargé un livre blanc.",
-            "prospect_type": "Responsable marketing d'une PME, curieux mais occupé",
-            "challenge": "Obtenir un rendez-vous de découverte",
-            "objectives": ["Créer un rapport", "Identifier les besoins", "Obtenir un engagement"],
-            "difficulty": "medium"
-        })
+        return self._validate_scenario(
+            {
+                "context": "Appel à un prospect qui a téléchargé un livre blanc.",
+                "prospect_type": "Responsable marketing d'une PME, curieux mais occupé",
+                "challenge": "Obtenir un rendez-vous de découverte",
+                "objectives": ["Créer un rapport", "Identifier les besoins", "Obtenir un engagement"],
+                "difficulty": "medium",
+            }
+        )
 
-    async def find_similar_patterns(
-        self,
-        query: str,
-        patterns_db: list[dict],
-        limit: int = 5
-    ) -> dict:
+    async def find_similar_patterns(self, query: str, patterns_db: list[dict], limit: int = 5) -> dict:
         """
         Find patterns similar to a query (semantic search simulation).
 
@@ -292,18 +282,9 @@ Retourne un JSON array de scénarios, sans markdown."""
                 if len(results) >= limit:
                     break
 
-        return {
-            "success": True,
-            "patterns": results,
-            "total_found": len(results)
-        }
+        return {"success": True, "patterns": results, "total_found": len(results)}
 
-    async def analyze_response_against_patterns(
-        self,
-        response: str,
-        patterns: dict,
-        context: str
-    ) -> dict:
+    async def analyze_response_against_patterns(self, response: str, patterns: dict, context: str) -> dict:
         """
         Analyze a user response against champion patterns.
 
@@ -342,11 +323,7 @@ RÉPONSE DE L'UTILISATEUR:
 JSON uniquement."""
 
         try:
-            text = await self._call_llm(
-                prompt=prompt,
-                max_tokens=1024,
-                temperature=0.4
-            )
+            text = await self._call_llm(prompt=prompt, max_tokens=1024, temperature=0.4)
             if text.startswith("```"):
                 text = text.split("```")[1]
                 if text.startswith("json"):
@@ -358,9 +335,4 @@ JSON uniquement."""
 
         except Exception as e:
             logger.error("response_analysis_error", error=str(e))
-            return {
-                "success": False,
-                "score": 5,
-                "feedback": "Analyse non disponible",
-                "error": str(e)
-            }
+            return {"success": False, "score": 5, "feedback": "Analyse non disponible", "error": str(e)}

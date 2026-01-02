@@ -8,16 +8,12 @@ Provides bidirectional communication for:
 - Event notifications (reversals, situational events)
 """
 
-import json
 import asyncio
-from typing import Optional, Dict, Any
 from datetime import datetime
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from jose import jwt, JWTError
 import structlog
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 from config import get_settings
 from database import AsyncSessionLocal
@@ -34,14 +30,15 @@ router = APIRouter(tags=["WebSocket"])
 # Connection Manager
 # ============================================
 
+
 class ConnectionManager:
     """Manages WebSocket connections for voice training sessions."""
 
     def __init__(self):
         # {session_id: {user_id: WebSocket}}
-        self.active_connections: Dict[int, Dict[int, WebSocket]] = {}
+        self.active_connections: dict[int, dict[int, WebSocket]] = {}
         # {user_id: session_id} for quick lookup
-        self.user_sessions: Dict[int, int] = {}
+        self.user_sessions: dict[int, int] = {}
 
     async def connect(self, websocket: WebSocket, session_id: int, user_id: int):
         """Accept and register a WebSocket connection."""
@@ -57,7 +54,7 @@ class ConnectionManager:
             "websocket_connected",
             session_id=session_id,
             user_id=user_id,
-            total_connections=len(self.active_connections)
+            total_connections=len(self.active_connections),
         )
 
     def disconnect(self, session_id: int, user_id: int):
@@ -69,11 +66,7 @@ class ConnectionManager:
 
         self.user_sessions.pop(user_id, None)
 
-        logger.info(
-            "websocket_disconnected",
-            session_id=session_id,
-            user_id=user_id
-        )
+        logger.info("websocket_disconnected", session_id=session_id, user_id=user_id)
 
     async def send_to_session(self, session_id: int, message: dict):
         """Send a message to all connections in a session."""
@@ -102,14 +95,11 @@ manager = ConnectionManager()
 # Authentication
 # ============================================
 
-async def get_user_from_token(token: str) -> Optional[User]:
+
+async def get_user_from_token(token: str) -> User | None:
     """Validate JWT token and return user."""
     try:
-        payload = jwt.decode(
-            token,
-            settings.JWT_SECRET,
-            algorithms=[settings.JWT_ALGORITHM]
-        )
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
         user_id = payload.get("sub")
         if not user_id:
             return None
@@ -127,12 +117,9 @@ async def get_user_from_token(token: str) -> Optional[User]:
 # WebSocket Endpoint
 # ============================================
 
+
 @router.websocket("/ws/voice/{session_id}")
-async def voice_training_websocket(
-    websocket: WebSocket,
-    session_id: int,
-    token: str = Query(...)
-):
+async def voice_training_websocket(websocket: WebSocket, session_id: int, token: str = Query(...)):
     """
     WebSocket endpoint for real-time voice training.
 
@@ -174,17 +161,19 @@ async def voice_training_websocket(
     await manager.connect(websocket, session_id, user.id)
 
     # Send initial state
-    await websocket.send_json({
-        "type": "connected",
-        "session_id": session_id,
-        "jauge": session.current_gauge,
-        "mood": session.current_mood,
-        "scenario": {
-            "title": session.scenario_json.get("title"),
-            "prospect_name": session.scenario_json.get("prospect", {}).get("name"),
-        },
-        "timestamp": datetime.utcnow().isoformat()
-    })
+    await websocket.send_json(
+        {
+            "type": "connected",
+            "session_id": session_id,
+            "jauge": session.current_gauge,
+            "mood": session.current_mood,
+            "scenario": {
+                "title": session.scenario_json.get("title"),
+                "prospect_name": session.scenario_json.get("prospect", {}).get("name"),
+            },
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    )
 
     try:
         while True:
@@ -202,31 +191,21 @@ async def voice_training_websocket(
                     session_id=session_id,
                     user=user,
                     text=data.get("text"),
-                    audio_base64=data.get("audio_base64")
+                    audio_base64=data.get("audio_base64"),
                 )
 
             elif message_type == "end_session":
-                await handle_end_session(
-                    websocket=websocket,
-                    session_id=session_id,
-                    user=user
-                )
+                await handle_end_session(websocket=websocket, session_id=session_id, user=user)
                 break  # Close connection after ending
 
             else:
-                await websocket.send_json({
-                    "type": "error",
-                    "message": f"Unknown message type: {message_type}"
-                })
+                await websocket.send_json({"type": "error", "message": f"Unknown message type: {message_type}"})
 
     except WebSocketDisconnect:
         logger.info("websocket_client_disconnected", session_id=session_id, user_id=user.id)
     except Exception as e:
         logger.error("websocket_error", session_id=session_id, error=str(e))
-        await websocket.send_json({
-            "type": "error",
-            "message": str(e)
-        })
+        await websocket.send_json({"type": "error", "message": str(e)})
     finally:
         manager.disconnect(session_id, user.id)
 
@@ -235,20 +214,14 @@ async def voice_training_websocket(
 # Message Handlers
 # ============================================
 
+
 async def handle_user_message(
-    websocket: WebSocket,
-    session_id: int,
-    user: User,
-    text: Optional[str],
-    audio_base64: Optional[str]
+    websocket: WebSocket, session_id: int, user: User, text: str | None, audio_base64: str | None
 ):
     """Process user message and send prospect response."""
 
     if not text and not audio_base64:
-        await websocket.send_json({
-            "type": "error",
-            "message": "text or audio_base64 required"
-        })
+        await websocket.send_json({"type": "error", "message": "text or audio_base64 required"})
         return
 
     async with AsyncSessionLocal() as db:
@@ -256,104 +229,90 @@ async def handle_user_message(
 
         try:
             # Send "thinking" indicator
-            await websocket.send_json({
-                "type": "prospect_thinking",
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            await websocket.send_json({"type": "prospect_thinking", "timestamp": datetime.utcnow().isoformat()})
 
             # Process message
             response = await service.process_user_message(
-                session_id=session_id,
-                user=user,
-                audio_base64=audio_base64,
-                text=text
+                session_id=session_id, user=user, audio_base64=audio_base64, text=text
             )
 
             # Send gauge update first (for animation)
-            await websocket.send_json({
-                "type": "gauge_update",
-                "jauge": response.jauge,
-                "delta": response.jauge_delta,
-                "mood": response.mood,
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            await websocket.send_json(
+                {
+                    "type": "gauge_update",
+                    "jauge": response.jauge,
+                    "delta": response.jauge_delta,
+                    "mood": response.mood,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Small delay for gauge animation
             await asyncio.sleep(0.3)
 
             # Check for events/reversals
             if response.is_event:
-                await websocket.send_json({
-                    "type": "event",
-                    "event_type": response.event_type,
-                    "message": response.text,
-                    "timestamp": datetime.utcnow().isoformat()
-                })
+                await websocket.send_json(
+                    {
+                        "type": "event",
+                        "event_type": response.event_type,
+                        "message": response.text,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
             # Send prospect response
-            await websocket.send_json({
-                "type": "prospect_response",
-                "text": response.text,
-                "audio_base64": response.audio_base64,
-                "mood": response.mood,
-                "jauge": response.jauge,
-                "jauge_delta": response.jauge_delta,
-                "behavioral_cue": response.behavioral_cue,
-                "is_event": response.is_event,
-                "event_type": response.event_type,
-                "feedback": response.feedback,
-                "conversion_possible": response.conversion_possible,
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            await websocket.send_json(
+                {
+                    "type": "prospect_response",
+                    "text": response.text,
+                    "audio_base64": response.audio_base64,
+                    "mood": response.mood,
+                    "jauge": response.jauge,
+                    "jauge_delta": response.jauge_delta,
+                    "behavioral_cue": response.behavioral_cue,
+                    "is_event": response.is_event,
+                    "event_type": response.event_type,
+                    "feedback": response.feedback,
+                    "conversion_possible": response.conversion_possible,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error("websocket_message_error", error=str(e))
-            await websocket.send_json({
-                "type": "error",
-                "message": f"Failed to process message: {str(e)}"
-            })
+            await websocket.send_json({"type": "error", "message": f"Failed to process message: {str(e)}"})
 
 
-async def handle_end_session(
-    websocket: WebSocket,
-    session_id: int,
-    user: User
-):
+async def handle_end_session(websocket: WebSocket, session_id: int, user: User):
     """End session and send evaluation."""
 
     async with AsyncSessionLocal() as db:
         service = TrainingServiceV2(db)
 
         try:
-            result = await service.end_session(
-                session_id=session_id,
-                user=user
-            )
+            result = await service.end_session(session_id=session_id, user=user)
 
-            await websocket.send_json({
-                "type": "session_ended",
-                "session_id": session_id,
-                "status": result["status"],
-                "evaluation": result["evaluation"],
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            await websocket.send_json(
+                {
+                    "type": "session_ended",
+                    "session_id": session_id,
+                    "status": result["status"],
+                    "evaluation": result["evaluation"],
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error("websocket_end_session_error", error=str(e))
-            await websocket.send_json({
-                "type": "error",
-                "message": f"Failed to end session: {str(e)}"
-            })
+            await websocket.send_json({"type": "error", "message": f"Failed to end session: {str(e)}"})
 
 
 # ============================================
 # Utility: Send event to session
 # ============================================
 
+
 async def notify_session_event(session_id: int, event_type: str, data: dict):
     """Send an event notification to all users in a session."""
-    await manager.send_to_session(session_id, {
-        "type": event_type,
-        **data,
-        "timestamp": datetime.utcnow().isoformat()
-    })
+    await manager.send_to_session(session_id, {"type": event_type, **data, "timestamp": datetime.utcnow().isoformat()})

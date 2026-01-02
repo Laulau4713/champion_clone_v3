@@ -4,16 +4,14 @@ Admin Sessions Router.
 Training session management endpoints for admin panel.
 """
 
-from typing import Optional
-
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
 import structlog
+from fastapi import APIRouter, Depends
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import get_db
-from models import User, Champion, TrainingSession
 from api.routers.admin.dependencies import require_admin
+from database import get_db
+from models import Champion, TrainingSession, User
 
 logger = structlog.get_logger()
 
@@ -26,16 +24,14 @@ async def list_all_sessions(
     db: AsyncSession = Depends(get_db),
     page: int = 1,
     per_page: int = 10,
-    status: Optional[str] = None,
-    champion_id: Optional[int] = None
+    status: str | None = None,
+    champion_id: int | None = None,
 ):
     """List all training sessions with filtering."""
     per_page = min(per_page, 100)
     skip = (page - 1) * per_page
 
-    query = select(TrainingSession, Champion.name).outerjoin(
-        Champion, TrainingSession.champion_id == Champion.id
-    )
+    query = select(TrainingSession, Champion.name).outerjoin(Champion, TrainingSession.champion_id == Champion.id)
     count_query = select(func.count(TrainingSession.id))
 
     if status:
@@ -48,9 +44,7 @@ async def list_all_sessions(
 
     total = await db.scalar(count_query)
 
-    result = await db.execute(
-        query.order_by(TrainingSession.started_at.desc()).offset(skip).limit(per_page)
-    )
+    result = await db.execute(query.order_by(TrainingSession.started_at.desc()).offset(skip).limit(per_page))
     rows = result.all()
 
     # Get user emails
@@ -63,9 +57,7 @@ async def list_all_sessions(
 
     users_map = {}
     if user_ids:
-        users_result = await db.execute(
-            select(User).where(User.id.in_(list(user_ids)))
-        )
+        users_result = await db.execute(select(User).where(User.id.in_(list(user_ids))))
         for user in users_result.scalars().all():
             users_map[str(user.id)] = user.email
 
@@ -81,12 +73,12 @@ async def list_all_sessions(
                 "champion_name": champion_name or f"Champion #{session.champion_id}",
                 "score": session.overall_score,
                 "status": session.status,
-                "started_at": session.started_at.isoformat() if session.started_at else None
+                "started_at": session.started_at.isoformat() if session.started_at else None,
             }
             for session, champion_name in rows
         ],
         "total": total or 0,
         "page": page,
         "per_page": per_page,
-        "total_pages": ((total or 0) + per_page - 1) // per_page
+        "total_pages": ((total or 0) + per_page - 1) // per_page,
     }

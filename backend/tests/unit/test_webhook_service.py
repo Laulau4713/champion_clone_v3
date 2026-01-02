@@ -3,15 +3,14 @@ Unit tests for WebhookService.
 Tests endpoint management, webhook delivery, and logging.
 """
 
-import pytest
-from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
 import hashlib
 import hmac
-import json
+from unittest.mock import AsyncMock, MagicMock, patch
 
-from services.webhooks import WebhookService
+import pytest
+
 from models import WebhookEndpoint, WebhookLog
+from services.webhooks import WebhookService
 
 
 class TestEndpointManagement:
@@ -38,7 +37,7 @@ class TestEndpointManagement:
         """Test getting all endpoints."""
         mock_endpoints = [
             MagicMock(spec=WebhookEndpoint, name="CRM"),
-            MagicMock(spec=WebhookEndpoint, name="Analytics")
+            MagicMock(spec=WebhookEndpoint, name="Analytics"),
         ]
 
         mock_result = MagicMock()
@@ -95,7 +94,7 @@ class TestEndpointManagement:
             name="New Webhook",
             url="https://example.com/webhook",
             events=["user.registered", "user.login"],
-            is_active=True
+            is_active=True,
         )
 
         assert mock_db.add.called
@@ -112,11 +111,7 @@ class TestEndpointManagement:
 
         mock_db.add.side_effect = capture_add
 
-        await service.create_endpoint(
-            name="New Webhook",
-            url="https://example.com/webhook",
-            events=["user.registered"]
-        )
+        await service.create_endpoint(name="New Webhook", url="https://example.com/webhook", events=["user.registered"])
 
         # Secret should be 64 chars (hex of 32 bytes)
         assert captured_endpoint is not None
@@ -134,11 +129,7 @@ class TestEndpointManagement:
         mock_result.scalar_one_or_none.return_value = mock_endpoint
         mock_db.execute.return_value = mock_result
 
-        result = await service.update_endpoint(
-            endpoint_id=1,
-            name="New Name",
-            url="https://new.com/webhook"
-        )
+        result = await service.update_endpoint(endpoint_id=1, name="New Name", url="https://new.com/webhook")
 
         assert mock_endpoint.name == "New Name"
         assert mock_endpoint.url == "https://new.com/webhook"
@@ -230,11 +221,7 @@ class TestSignature:
         assert len(signature) == 64  # SHA256 hex digest
 
         # Verify correct signature
-        expected = hmac.new(
-            secret.encode(),
-            payload.encode(),
-            hashlib.sha256
-        ).hexdigest()
+        expected = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
         assert signature == expected
 
     def test_sign_payload_different_payloads(self, service):
@@ -287,18 +274,14 @@ class TestWebhookDelivery:
         mock_result.scalars.return_value.all.return_value = [mock_endpoint]
         mock_db.execute.return_value = mock_result
 
-        with patch('httpx.AsyncClient') as mock_client, \
-             patch('services.webhooks.logger'):
+        with patch("httpx.AsyncClient") as mock_client, patch("services.webhooks.logger"):
             mock_response = MagicMock()
             mock_response.status_code = 200
             mock_response.text = "OK"
-            mock_client.return_value.__aenter__.return_value.post = AsyncMock(
-                return_value=mock_response
-            )
+            mock_client.return_value.__aenter__.return_value.post = AsyncMock(return_value=mock_response)
 
             logs = await service.send_event(
-                event="user.registered",
-                payload={"user_id": 1, "email": "test@example.com"}
+                event="user.registered", payload={"user_id": 1, "email": "test@example.com"}
             )
 
             assert mock_db.add.called
@@ -310,10 +293,7 @@ class TestWebhookDelivery:
         mock_result.scalars.return_value.all.return_value = []
         mock_db.execute.return_value = mock_result
 
-        logs = await service.send_event(
-            event="user.deleted",
-            payload={"user_id": 1}
-        )
+        logs = await service.send_event(event="user.deleted", payload={"user_id": 1})
 
         assert len(logs) == 0
 
@@ -342,14 +322,11 @@ class TestWebhookDelivery:
 
         mock_db.execute.side_effect = [mock_log_result, mock_endpoint_result]
 
-        with patch('httpx.AsyncClient') as mock_client, \
-             patch('services.webhooks.logger'):
+        with patch("httpx.AsyncClient") as mock_client, patch("services.webhooks.logger"):
             mock_response = MagicMock()
             mock_response.status_code = 200
             mock_response.text = "OK"
-            mock_client.return_value.__aenter__.return_value.post = AsyncMock(
-                return_value=mock_response
-            )
+            mock_client.return_value.__aenter__.return_value.post = AsyncMock(return_value=mock_response)
 
             result = await service.retry_webhook(1)
 
@@ -425,11 +402,7 @@ class TestWebhookLogs:
 
         mock_db.execute.side_effect = [mock_result, mock_count_result]
 
-        logs, total = await service.get_logs(
-            endpoint_id=1,
-            event="user.registered",
-            status="success"
-        )
+        logs, total = await service.get_logs(endpoint_id=1, event="user.registered", status="success")
 
         assert len(logs) == 1
 
@@ -449,19 +422,12 @@ class TestWebhookLogs:
         mock_pending.scalar.return_value = 5
 
         mock_by_event = MagicMock()
-        mock_by_event.all.return_value = [
-            ("user.registered", 40),
-            ("user.login", 30),
-            ("training.completed", 30)
-        ]
+        mock_by_event.all.return_value = [("user.registered", 40), ("user.login", 30), ("training.completed", 30)]
 
         mock_active = MagicMock()
         mock_active.scalar.return_value = 3
 
-        mock_db.execute.side_effect = [
-            mock_total, mock_success, mock_failed,
-            mock_pending, mock_by_event, mock_active
-        ]
+        mock_db.execute.side_effect = [mock_total, mock_success, mock_failed, mock_pending, mock_by_event, mock_active]
 
         stats = await service.get_webhook_stats()
 
@@ -487,99 +453,59 @@ class TestConvenienceMethods:
     @pytest.mark.asyncio
     async def test_emit_user_registered(self, service):
         """Test emitting user.registered event."""
-        with patch.object(service, 'send_event', new_callable=AsyncMock) as mock_send:
-            await service.emit_user_registered(
-                user_id=1,
-                email="test@example.com",
-                name="Test User"
-            )
+        with patch.object(service, "send_event", new_callable=AsyncMock) as mock_send:
+            await service.emit_user_registered(user_id=1, email="test@example.com", name="Test User")
 
             mock_send.assert_called_once_with(
-                "user.registered",
-                {"user_id": 1, "email": "test@example.com", "name": "Test User"}
+                "user.registered", {"user_id": 1, "email": "test@example.com", "name": "Test User"}
             )
 
     @pytest.mark.asyncio
     async def test_emit_user_login(self, service):
         """Test emitting user.login event."""
-        with patch.object(service, 'send_event', new_callable=AsyncMock) as mock_send:
+        with patch.object(service, "send_event", new_callable=AsyncMock) as mock_send:
             await service.emit_user_login(user_id=1, email="test@example.com")
 
-            mock_send.assert_called_once_with(
-                "user.login",
-                {"user_id": 1, "email": "test@example.com"}
-            )
+            mock_send.assert_called_once_with("user.login", {"user_id": 1, "email": "test@example.com"})
 
     @pytest.mark.asyncio
     async def test_emit_champion_created(self, service):
         """Test emitting champion.created event."""
-        with patch.object(service, 'send_event', new_callable=AsyncMock) as mock_send:
-            await service.emit_champion_created(
-                user_id=1,
-                champion_id=10,
-                name="Sales Pro"
-            )
+        with patch.object(service, "send_event", new_callable=AsyncMock) as mock_send:
+            await service.emit_champion_created(user_id=1, champion_id=10, name="Sales Pro")
 
             mock_send.assert_called_once_with(
-                "champion.created",
-                {"user_id": 1, "champion_id": 10, "name": "Sales Pro"}
+                "champion.created", {"user_id": 1, "champion_id": 10, "name": "Sales Pro"}
             )
 
     @pytest.mark.asyncio
     async def test_emit_champion_analyzed(self, service):
         """Test emitting champion.analyzed event."""
-        with patch.object(service, 'send_event', new_callable=AsyncMock) as mock_send:
-            await service.emit_champion_analyzed(
-                user_id=1,
-                champion_id=10,
-                name="Sales Pro"
-            )
+        with patch.object(service, "send_event", new_callable=AsyncMock) as mock_send:
+            await service.emit_champion_analyzed(user_id=1, champion_id=10, name="Sales Pro")
 
             mock_send.assert_called_once_with(
-                "champion.analyzed",
-                {"user_id": 1, "champion_id": 10, "name": "Sales Pro"}
+                "champion.analyzed", {"user_id": 1, "champion_id": 10, "name": "Sales Pro"}
             )
 
     @pytest.mark.asyncio
     async def test_emit_training_completed(self, service):
         """Test emitting training.completed event."""
-        with patch.object(service, 'send_event', new_callable=AsyncMock) as mock_send:
-            await service.emit_training_completed(
-                user_id=1,
-                session_id=5,
-                champion_id=10,
-                score=85.5
-            )
+        with patch.object(service, "send_event", new_callable=AsyncMock) as mock_send:
+            await service.emit_training_completed(user_id=1, session_id=5, champion_id=10, score=85.5)
 
             mock_send.assert_called_once_with(
-                "training.completed",
-                {
-                    "user_id": 1,
-                    "session_id": 5,
-                    "champion_id": 10,
-                    "score": 85.5
-                }
+                "training.completed", {"user_id": 1, "session_id": 5, "champion_id": 10, "score": 85.5}
             )
 
     @pytest.mark.asyncio
     async def test_emit_subscription_changed(self, service):
         """Test emitting subscription.changed event."""
-        with patch.object(service, 'send_event', new_callable=AsyncMock) as mock_send:
-            await service.emit_subscription_changed(
-                user_id=1,
-                from_plan="free",
-                to_plan="pro",
-                event_type="upgrade"
-            )
+        with patch.object(service, "send_event", new_callable=AsyncMock) as mock_send:
+            await service.emit_subscription_changed(user_id=1, from_plan="free", to_plan="pro", event_type="upgrade")
 
             mock_send.assert_called_once_with(
-                "subscription.changed",
-                {
-                    "user_id": 1,
-                    "from_plan": "free",
-                    "to_plan": "pro",
-                    "type": "upgrade"
-                }
+                "subscription.changed", {"user_id": 1, "from_plan": "free", "to_plan": "pro", "type": "upgrade"}
             )
 
 
@@ -588,7 +514,7 @@ class TestAvailableEvents:
 
     def test_events_list_exists(self):
         """Test that EVENTS list is defined."""
-        assert hasattr(WebhookService, 'EVENTS')
+        assert hasattr(WebhookService, "EVENTS")
         assert isinstance(WebhookService.EVENTS, list)
 
     def test_events_list_contains_user_events(self):

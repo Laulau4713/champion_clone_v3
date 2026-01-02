@@ -4,28 +4,19 @@ AuditAgent - Evaluation independante des sessions de training.
 
 import json
 import re
-from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
-from dataclasses import asdict
+from typing import Any
 
 import anthropic
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 import structlog
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import get_settings
-from models import (
-    VoiceTrainingSession, VoiceTrainingMessage, User,
-    UserSkillProgress, UserProgress, Skill
-)
-from .schemas import (
-    SessionAudit, UserProgressReport, ChampionComparison,
-    WeeklyDigest, SkillAnalysis, PerformanceLevel
-)
-from .prompts import (
-    SESSION_AUDIT_PROMPT, PROGRESS_REPORT_PROMPT,
-    CHAMPION_COMPARISON_PROMPT, WEEKLY_DIGEST_PROMPT
-)
+from models import Skill, User, UserProgress, UserSkillProgress, VoiceTrainingMessage, VoiceTrainingSession
+
+from .prompts import CHAMPION_COMPARISON_PROMPT, PROGRESS_REPORT_PROMPT, SESSION_AUDIT_PROMPT, WEEKLY_DIGEST_PROMPT
+from .schemas import ChampionComparison, PerformanceLevel, SessionAudit, UserProgressReport, WeeklyDigest
 
 settings = get_settings()
 logger = structlog.get_logger()
@@ -44,11 +35,7 @@ class AuditAgent:
         self.client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
         self.model = settings.CLAUDE_SONNET_MODEL  # Sonnet pour l'audit (bon rapport qualite/cout)
 
-    async def audit_session(
-        self,
-        session_id: int,
-        champion_patterns: Optional[Dict] = None
-    ) -> SessionAudit:
+    async def audit_session(self, session_id: int, champion_patterns: dict | None = None) -> SessionAudit:
         """
         Audit complet d'une session de training.
 
@@ -87,9 +74,9 @@ class AuditAgent:
             messages=[
                 {
                     "role": "user",
-                    "content": f"Analyse cette session de training:\n\n{json.dumps(context, ensure_ascii=False, indent=2, default=str)}"
+                    "content": f"Analyse cette session de training:\n\n{json.dumps(context, ensure_ascii=False, indent=2, default=str)}",
                 }
-            ]
+            ],
         )
 
         # Parser la reponse
@@ -102,19 +89,12 @@ class AuditAgent:
         await self._save_audit(session_id, audit)
 
         logger.info(
-            "session_audited",
-            session_id=session_id,
-            score=audit.overall_score,
-            level=audit.performance_level.value
+            "session_audited", session_id=session_id, score=audit.overall_score, level=audit.performance_level.value
         )
 
         return audit
 
-    async def generate_progress_report(
-        self,
-        user_id: int,
-        days: int = 7
-    ) -> UserProgressReport:
+    async def generate_progress_report(self, user_id: int, days: int = 7) -> UserProgressReport:
         """
         Genere un rapport de progression sur X jours.
 
@@ -171,21 +151,16 @@ class AuditAgent:
             messages=[
                 {
                     "role": "user",
-                    "content": f"Analyse la progression de cet utilisateur:\n\n{json.dumps(context, ensure_ascii=False, indent=2, default=str)}"
+                    "content": f"Analyse la progression de cet utilisateur:\n\n{json.dumps(context, ensure_ascii=False, indent=2, default=str)}",
                 }
-            ]
+            ],
         )
 
         # Parser et construire le rapport
         report_data = self._parse_json_response(response.content[0].text)
         return self._build_progress_report(user_id, period_start, report_data, sessions)
 
-    async def compare_to_champion(
-        self,
-        user_id: int,
-        champion_id: str,
-        champion_patterns: Dict
-    ) -> ChampionComparison:
+    async def compare_to_champion(self, user_id: int, champion_id: str, champion_patterns: dict) -> ChampionComparison:
         """
         Compare les performances d'un utilisateur a un champion.
 
@@ -236,18 +211,15 @@ class AuditAgent:
             messages=[
                 {
                     "role": "user",
-                    "content": f"Compare cet utilisateur au champion:\n\n{json.dumps(context, ensure_ascii=False, indent=2, default=str)}"
+                    "content": f"Compare cet utilisateur au champion:\n\n{json.dumps(context, ensure_ascii=False, indent=2, default=str)}",
                 }
-            ]
+            ],
         )
 
         comparison_data = self._parse_json_response(response.content[0].text)
         return self._build_champion_comparison(user_id, champion_id, comparison_data)
 
-    async def generate_weekly_digest(
-        self,
-        user_id: int
-    ) -> WeeklyDigest:
+    async def generate_weekly_digest(self, user_id: int) -> WeeklyDigest:
         """
         Genere le digest hebdomadaire pour un utilisateur.
 
@@ -280,14 +252,16 @@ class AuditAgent:
         }
 
         if progress:
-            context.update({
-                "sessions_completed": progress.sessions_analyzed,
-                "avg_score": progress.avg_score_period,
-                "trend": progress.overall_trend,
-                "skills_mastered": progress.skills_mastered,
-                "skills_struggling": progress.skills_struggling,
-                "focus_areas": progress.focus_areas,
-            })
+            context.update(
+                {
+                    "sessions_completed": progress.sessions_analyzed,
+                    "avg_score": progress.avg_score_period,
+                    "trend": progress.overall_trend,
+                    "skills_mastered": progress.skills_mastered,
+                    "skills_struggling": progress.skills_struggling,
+                    "focus_areas": progress.focus_areas,
+                }
+            )
 
         response = await self.client.messages.create(
             model=self.model,
@@ -296,18 +270,15 @@ class AuditAgent:
             messages=[
                 {
                     "role": "user",
-                    "content": f"Genere le digest hebdomadaire:\n\n{json.dumps(context, ensure_ascii=False, indent=2, default=str)}"
+                    "content": f"Genere le digest hebdomadaire:\n\n{json.dumps(context, ensure_ascii=False, indent=2, default=str)}",
                 }
-            ]
+            ],
         )
 
         digest_data = self._parse_json_response(response.content[0].text)
         return self._build_weekly_digest(user_id, digest_data)
 
-    async def get_next_recommendation(
-        self,
-        user_id: int
-    ) -> Dict[str, Any]:
+    async def get_next_recommendation(self, user_id: int) -> dict[str, Any]:
         """
         Recommande la prochaine action optimale pour l'utilisateur.
 
@@ -320,9 +291,7 @@ class AuditAgent:
             }
         """
         # Recuperer la progression actuelle
-        progress = await self.db.scalar(
-            select(UserProgress).where(UserProgress.user_id == user_id)
-        )
+        progress = await self.db.scalar(select(UserProgress).where(UserProgress.user_id == user_id))
 
         if not progress:
             # Nouvel utilisateur
@@ -330,13 +299,12 @@ class AuditAgent:
                 "action": "course",
                 "skill_slug": "ecoute_active",
                 "reason": "Commencez par le cours sur l'ecoute active pour poser les bases.",
-                "estimated_impact": 20.0
+                "estimated_impact": 20.0,
             }
 
         # Recuperer la progression par skill
         skills_result = await self.db.execute(
-            select(UserSkillProgress)
-            .where(UserSkillProgress.user_progress_id == progress.id)
+            select(UserSkillProgress).where(UserSkillProgress.user_progress_id == progress.id)
         )
         skills_progress = skills_result.scalars().all()
 
@@ -345,22 +313,21 @@ class AuditAgent:
                 "action": "course",
                 "skill_slug": "ecoute_active",
                 "reason": "Commencez par le premier cours pour debloquer les entrainements.",
-                "estimated_impact": 20.0
+                "estimated_impact": 20.0,
             }
 
         # Analyser pour trouver le meilleur next step
-        skills_needing_work = [
-            sp for sp in skills_progress
-            if not sp.is_validated and (sp.best_score or 0) < 80
-        ]
+        skills_needing_work = [sp for sp in skills_progress if not sp.is_validated and (sp.best_score or 0) < 80]
 
         if not skills_needing_work:
             # Tous les skills sont valides ou > 80%
             return {
                 "action": "training",
-                "skill_slug": skills_progress[0].skill.slug if skills_progress and skills_progress[0].skill else "ecoute_active",
+                "skill_slug": skills_progress[0].skill.slug
+                if skills_progress and skills_progress[0].skill
+                else "ecoute_active",
                 "reason": "Maintien des acquis - continuez a pratiquer !",
-                "estimated_impact": 5.0
+                "estimated_impact": 5.0,
             }
 
         # Prioriser le skill avec le plus bas score qui n'est pas valide
@@ -382,7 +349,7 @@ class AuditAgent:
             "action": action,
             "skill_slug": skill_slug,
             "reason": reason,
-            "estimated_impact": min(20, 100 - (priority_skill.best_score or 0))
+            "estimated_impact": min(20, 100 - (priority_skill.best_score or 0)),
         }
 
     # ═══════════════════════════════════════════════════════════════
@@ -390,23 +357,23 @@ class AuditAgent:
     # ═══════════════════════════════════════════════════════════════
 
     def _build_session_context(
-        self,
-        session: VoiceTrainingSession,
-        messages: List[VoiceTrainingMessage]
-    ) -> Dict[str, Any]:
+        self, session: VoiceTrainingSession, messages: list[VoiceTrainingMessage]
+    ) -> dict[str, Any]:
         """Construit le contexte pour l'audit de session."""
 
         # Construire la transcription
         transcript = []
         for msg in messages:
-            transcript.append({
-                "role": msg.role,
-                "text": msg.text,
-                "timestamp": msg.created_at.isoformat() if msg.created_at else None,
-                "detected_patterns": msg.detected_patterns,
-                "gauge_impact": msg.gauge_impact,
-                "behavioral_cues": msg.behavioral_cues,
-            })
+            transcript.append(
+                {
+                    "role": msg.role,
+                    "text": msg.text,
+                    "timestamp": msg.created_at.isoformat() if msg.created_at else None,
+                    "detected_patterns": msg.detected_patterns,
+                    "gauge_impact": msg.gauge_impact,
+                    "behavioral_cues": msg.behavioral_cues,
+                }
+            )
 
         duration_minutes = None
         if session.completed_at and session.created_at:
@@ -432,7 +399,7 @@ class AuditAgent:
             "duration_minutes": duration_minutes,
         }
 
-    def _parse_json_response(self, text: str) -> Dict[str, Any]:
+    def _parse_json_response(self, text: str) -> dict[str, Any]:
         """Parse la reponse JSON de Claude."""
         # Nettoyer le texte
         text = text.strip()
@@ -449,7 +416,7 @@ class AuditAgent:
             return json.loads(text.strip())
         except json.JSONDecodeError:
             # Fallback : essayer de trouver un objet JSON dans le texte
-            match = re.search(r'\{[\s\S]*\}', text)
+            match = re.search(r"\{[\s\S]*\}", text)
             if match:
                 try:
                     return json.loads(match.group())
@@ -458,11 +425,7 @@ class AuditAgent:
             logger.warning("json_parse_failed", text_preview=text[:200])
             raise ValueError(f"Could not parse JSON from response: {text[:200]}...")
 
-    def _build_session_audit(
-        self,
-        session: VoiceTrainingSession,
-        audit_data: Dict[str, Any]
-    ) -> SessionAudit:
+    def _build_session_audit(self, session: VoiceTrainingSession, audit_data: dict[str, Any]) -> SessionAudit:
         """Construit l'objet SessionAudit depuis les donnees Claude."""
 
         # Determiner le niveau de performance
@@ -502,11 +465,7 @@ class AuditAgent:
         )
 
     def _build_progress_report(
-        self,
-        user_id: int,
-        period_start: datetime,
-        report_data: Dict[str, Any],
-        sessions: List[VoiceTrainingSession]
+        self, user_id: int, period_start: datetime, report_data: dict[str, Any], sessions: list[VoiceTrainingSession]
     ) -> UserProgressReport:
         """Construit l'objet UserProgressReport."""
 
@@ -533,12 +492,7 @@ class AuditAgent:
             comparison_to_average=report_data.get("comparison_to_average", 0),
         )
 
-    def _build_champion_comparison(
-        self,
-        user_id: int,
-        champion_id: str,
-        data: Dict[str, Any]
-    ) -> ChampionComparison:
+    def _build_champion_comparison(self, user_id: int, champion_id: str, data: dict[str, Any]) -> ChampionComparison:
         """Construit l'objet ChampionComparison."""
 
         return ChampionComparison(
@@ -554,11 +508,7 @@ class AuditAgent:
             habits_to_break=data.get("habits_to_break", []),
         )
 
-    def _build_weekly_digest(
-        self,
-        user_id: int,
-        data: Dict[str, Any]
-    ) -> WeeklyDigest:
+    def _build_weekly_digest(self, user_id: int, data: dict[str, Any]) -> WeeklyDigest:
         """Construit l'objet WeeklyDigest."""
 
         now = datetime.utcnow()

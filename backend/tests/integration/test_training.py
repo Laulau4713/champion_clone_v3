@@ -10,18 +10,19 @@ Tests training endpoints:
 - POST /training/end
 """
 
-import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
 from datetime import datetime
+from unittest.mock import AsyncMock, patch
+
+import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import User, Champion, TrainingSession
-
+from models import Champion, TrainingSession, User
 
 # ============================================
 # Fixtures
 # ============================================
+
 
 @pytest.fixture
 async def ready_champion(db_session: AsyncSession) -> Champion:
@@ -32,15 +33,13 @@ async def ready_champion(db_session: AsyncSession) -> Champion:
         transcript="Bonjour, je suis commercial...",
         patterns_json={
             "openings": ["Bonjour, comment allez-vous?"],
-            "objection_handlers": [
-                {"objection": "trop cher", "response": "Je comprends votre préoccupation"}
-            ],
+            "objection_handlers": [{"objection": "trop cher", "response": "Je comprends votre préoccupation"}],
             "closes": ["Ça vous intéresse d'en discuter?"],
             "key_phrases": ["Je comprends"],
             "tone_style": "professionnel",
-            "success_patterns": ["empathie", "écoute active"]
+            "success_patterns": ["empathie", "écoute active"],
         },
-        status="ready"
+        status="ready",
     )
     db_session.add(champion)
     await db_session.commit()
@@ -51,11 +50,7 @@ async def ready_champion(db_session: AsyncSession) -> Champion:
 @pytest.fixture
 async def unanalyzed_champion(db_session: AsyncSession) -> Champion:
     """Create a champion without patterns."""
-    champion = Champion(
-        name="New Champion",
-        description="Not yet analyzed",
-        status="uploaded"
-    )
+    champion = Champion(name="New Champion", description="Not yet analyzed", status="uploaded")
     db_session.add(champion)
     await db_session.commit()
     await db_session.refresh(champion)
@@ -63,28 +58,20 @@ async def unanalyzed_champion(db_session: AsyncSession) -> Champion:
 
 
 @pytest.fixture
-async def training_session(
-    db_session: AsyncSession,
-    ready_champion: Champion,
-    test_user: User
-) -> TrainingSession:
+async def training_session(db_session: AsyncSession, ready_champion: Champion, test_user: User) -> TrainingSession:
     """Create a training session."""
     session = TrainingSession(
         user_id=str(test_user.id),
         champion_id=ready_champion.id,
-        scenario={
-            "context": "Appel à froid B2B",
-            "prospect_type": "Directeur commercial PME",
-            "difficulty": "medium"
-        },
+        scenario={"context": "Appel à froid B2B", "prospect_type": "Directeur commercial PME", "difficulty": "medium"},
         messages=[
             {
                 "role": "champion",
                 "content": "Bonjour, que puis-je faire pour vous?",
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
         ],
-        status="active"
+        status="active",
     )
     db_session.add(session)
     await db_session.commit()
@@ -93,24 +80,17 @@ async def training_session(
 
 
 @pytest.fixture
-async def completed_session(
-    db_session: AsyncSession,
-    ready_champion: Champion,
-    test_user: User
-) -> TrainingSession:
+async def completed_session(db_session: AsyncSession, ready_champion: Champion, test_user: User) -> TrainingSession:
     """Create a completed training session."""
     session = TrainingSession(
         user_id=str(test_user.id),
         champion_id=ready_champion.id,
         scenario={"context": "Test", "difficulty": "easy"},
-        messages=[
-            {"role": "champion", "content": "Bonjour"},
-            {"role": "user", "content": "Bonjour", "score": 7}
-        ],
+        messages=[{"role": "champion", "content": "Bonjour"}, {"role": "user", "content": "Bonjour", "score": 7}],
         status="completed",
         overall_score=7.5,
         feedback_summary="Bonne session",
-        ended_at=datetime.utcnow()
+        ended_at=datetime.utcnow(),
     )
     db_session.add(session)
     await db_session.commit()
@@ -121,6 +101,7 @@ async def completed_session(
 # ============================================
 # Scenario Generation Tests
 # ============================================
+
 
 class TestScenarios:
     """Tests for GET /scenarios/{champion_id} endpoint."""
@@ -134,9 +115,7 @@ class TestScenarios:
         assert "not found" in response.json()["detail"].lower()
 
     @pytest.mark.asyncio
-    async def test_generate_scenarios_champion_not_analyzed(
-        self, client: AsyncClient, unanalyzed_champion: Champion
-    ):
+    async def test_generate_scenarios_champion_not_analyzed(self, client: AsyncClient, unanalyzed_champion: Champion):
         """Should return 400 for unanalyzed champion."""
         response = await client.get(f"/scenarios/{unanalyzed_champion.id}")
 
@@ -144,23 +123,23 @@ class TestScenarios:
         assert "not analyzed" in response.json()["detail"].lower()
 
     @pytest.mark.asyncio
-    async def test_generate_scenarios_success(
-        self, client: AsyncClient, ready_champion: Champion
-    ):
+    async def test_generate_scenarios_success(self, client: AsyncClient, ready_champion: Champion):
         """Should generate scenarios for analyzed champion."""
         # Mock the pattern agent
-        with patch('api.routers.training.pattern_extractor') as mock_extractor:
-            mock_extractor.generate_scenarios = AsyncMock(return_value=[
-                {
-                    "id": "sc1",
-                    "context": "Appel à froid",
-                    "prospect_type": "PME",
-                    "challenge": "Obtenir un RDV",
-                    "objectives": ["Créer le rapport"],
-                    "difficulty": "medium",
-                    "expected_patterns": ["opening"]
-                }
-            ])
+        with patch("api.routers.training.pattern_extractor") as mock_extractor:
+            mock_extractor.generate_scenarios = AsyncMock(
+                return_value=[
+                    {
+                        "id": "sc1",
+                        "context": "Appel à froid",
+                        "prospect_type": "PME",
+                        "challenge": "Obtenir un RDV",
+                        "objectives": ["Créer le rapport"],
+                        "difficulty": "medium",
+                        "expected_patterns": ["opening"],
+                    }
+                ]
+            )
 
             response = await client.get(f"/scenarios/{ready_champion.id}")
 
@@ -170,23 +149,23 @@ class TestScenarios:
             assert len(data["scenarios"]) == 1
 
     @pytest.mark.asyncio
-    async def test_generate_scenarios_custom_count(
-        self, client: AsyncClient, ready_champion: Champion
-    ):
+    async def test_generate_scenarios_custom_count(self, client: AsyncClient, ready_champion: Champion):
         """Should respect count parameter."""
-        with patch('api.routers.training.pattern_extractor') as mock_extractor:
-            mock_extractor.generate_scenarios = AsyncMock(return_value=[
-                {
-                    "id": f"sc{i}",
-                    "context": f"Scenario {i}",
-                    "prospect_type": "PME",
-                    "challenge": "Obtenir un RDV",
-                    "objectives": ["Test"],
-                    "difficulty": "medium",
-                    "expected_patterns": []
-                }
-                for i in range(5)
-            ])
+        with patch("api.routers.training.pattern_extractor") as mock_extractor:
+            mock_extractor.generate_scenarios = AsyncMock(
+                return_value=[
+                    {
+                        "id": f"sc{i}",
+                        "context": f"Scenario {i}",
+                        "prospect_type": "PME",
+                        "challenge": "Obtenir un RDV",
+                        "objectives": ["Test"],
+                        "difficulty": "medium",
+                        "expected_patterns": [],
+                    }
+                    for i in range(5)
+                ]
+            )
 
             response = await client.get(f"/scenarios/{ready_champion.id}?count=5")
 
@@ -197,6 +176,7 @@ class TestScenarios:
 # ============================================
 # List Sessions Tests
 # ============================================
+
 
 class TestListSessions:
     """Tests for GET /training/sessions endpoint."""
@@ -210,9 +190,7 @@ class TestListSessions:
         assert response.json() == []
 
     @pytest.mark.asyncio
-    async def test_list_sessions_with_data(
-        self, client: AsyncClient, training_session: TrainingSession
-    ):
+    async def test_list_sessions_with_data(self, client: AsyncClient, training_session: TrainingSession):
         """Should return list of sessions."""
         response = await client.get("/training/sessions")
 
@@ -224,9 +202,7 @@ class TestListSessions:
 
     @pytest.mark.asyncio
     async def test_list_sessions_filter_by_status(
-        self, client: AsyncClient,
-        training_session: TrainingSession,
-        completed_session: TrainingSession
+        self, client: AsyncClient, training_session: TrainingSession, completed_session: TrainingSession
     ):
         """Should filter sessions by status."""
         response = await client.get("/training/sessions?status=completed")
@@ -238,14 +214,10 @@ class TestListSessions:
 
     @pytest.mark.asyncio
     async def test_list_sessions_filter_by_champion(
-        self, client: AsyncClient,
-        training_session: TrainingSession,
-        ready_champion: Champion
+        self, client: AsyncClient, training_session: TrainingSession, ready_champion: Champion
     ):
         """Should filter sessions by champion."""
-        response = await client.get(
-            f"/training/sessions?champion_id={ready_champion.id}"
-        )
+        response = await client.get(f"/training/sessions?champion_id={ready_champion.id}")
 
         assert response.status_code == 200
         data = response.json()
@@ -254,14 +226,10 @@ class TestListSessions:
 
     @pytest.mark.asyncio
     async def test_list_sessions_filter_by_user(
-        self, client: AsyncClient,
-        training_session: TrainingSession,
-        test_user: User
+        self, client: AsyncClient, training_session: TrainingSession, test_user: User
     ):
         """Should filter sessions by user_id."""
-        response = await client.get(
-            f"/training/sessions?user_id={test_user.id}"
-        )
+        response = await client.get(f"/training/sessions?user_id={test_user.id}")
 
         assert response.status_code == 200
         data = response.json()
@@ -273,13 +241,12 @@ class TestListSessions:
 # Get Session Tests
 # ============================================
 
+
 class TestGetSession:
     """Tests for GET /training/sessions/{session_id} endpoint."""
 
     @pytest.mark.asyncio
-    async def test_get_session_success(
-        self, client: AsyncClient, training_session: TrainingSession
-    ):
+    async def test_get_session_success(self, client: AsyncClient, training_session: TrainingSession):
         """Should return session details."""
         response = await client.get(f"/training/sessions/{training_session.id}")
 
@@ -298,9 +265,7 @@ class TestGetSession:
         assert "not found" in response.json()["detail"].lower()
 
     @pytest.mark.asyncio
-    async def test_get_completed_session(
-        self, client: AsyncClient, completed_session: TrainingSession
-    ):
+    async def test_get_completed_session(self, client: AsyncClient, completed_session: TrainingSession):
         """Should return completed session with score."""
         response = await client.get(f"/training/sessions/{completed_session.id}")
 
@@ -314,43 +279,33 @@ class TestGetSession:
 # Start Session Tests
 # ============================================
 
+
 class TestStartSession:
     """Tests for POST /training/start endpoint."""
 
     @pytest.mark.asyncio
     async def test_start_session_unauthorized(self, client: AsyncClient):
         """Should require authentication."""
-        response = await client.post(
-            "/training/start",
-            params={"champion_id": 1, "scenario_index": 0}
-        )
+        response = await client.post("/training/start", params={"champion_id": 1, "scenario_index": 0})
 
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_start_session_champion_not_found(
-        self, client: AsyncClient, auth_headers: dict
-    ):
+    async def test_start_session_champion_not_found(self, client: AsyncClient, auth_headers: dict):
         """Should return 404 for non-existent champion."""
         response = await client.post(
-            "/training/start",
-            params={"champion_id": 99999, "scenario_index": 0},
-            headers=auth_headers
+            "/training/start", params={"champion_id": 99999, "scenario_index": 0}, headers=auth_headers
         )
 
         assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_start_session_champion_not_analyzed(
-        self, client: AsyncClient,
-        auth_headers: dict,
-        unanalyzed_champion: Champion
+        self, client: AsyncClient, auth_headers: dict, unanalyzed_champion: Champion
     ):
         """Should return 400 for unanalyzed champion."""
         response = await client.post(
-            "/training/start",
-            params={"champion_id": unanalyzed_champion.id, "scenario_index": 0},
-            headers=auth_headers
+            "/training/start", params={"champion_id": unanalyzed_champion.id, "scenario_index": 0}, headers=auth_headers
         )
 
         assert response.status_code == 400
@@ -361,29 +316,21 @@ class TestStartSession:
 # End Session Tests
 # ============================================
 
+
 class TestEndSession:
     """Tests for POST /training/end endpoint."""
 
     @pytest.mark.asyncio
     async def test_end_session_unauthorized(self, client: AsyncClient):
         """Should require authentication."""
-        response = await client.post(
-            "/training/end",
-            params={"session_id": 1}
-        )
+        response = await client.post("/training/end", params={"session_id": 1})
 
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_end_session_not_found(
-        self, client: AsyncClient, auth_headers: dict
-    ):
+    async def test_end_session_not_found(self, client: AsyncClient, auth_headers: dict):
         """Should return 404 for non-existent session."""
-        response = await client.post(
-            "/training/end",
-            params={"session_id": 99999},
-            headers=auth_headers
-        )
+        response = await client.post("/training/end", params={"session_id": 99999}, headers=auth_headers)
 
         assert response.status_code == 404
 
@@ -392,46 +339,35 @@ class TestEndSession:
 # Respond in Session Tests
 # ============================================
 
+
 class TestRespondInSession:
     """Tests for POST /training/respond endpoint."""
 
     @pytest.mark.asyncio
     async def test_respond_unauthorized(self, client: AsyncClient):
         """Should require authentication."""
-        response = await client.post(
-            "/training/respond",
-            params={"session_id": 1, "user_response": "Hello"}
-        )
+        response = await client.post("/training/respond", params={"session_id": 1, "user_response": "Hello"})
 
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_respond_session_not_found(
-        self, client: AsyncClient, auth_headers: dict
-    ):
+    async def test_respond_session_not_found(self, client: AsyncClient, auth_headers: dict):
         """Should return 404 for non-existent session."""
         response = await client.post(
-            "/training/respond",
-            params={"session_id": 99999, "user_response": "Hello"},
-            headers=auth_headers
+            "/training/respond", params={"session_id": 99999, "user_response": "Hello"}, headers=auth_headers
         )
 
         assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_respond_session_not_active(
-        self, client: AsyncClient,
-        auth_headers: dict,
-        completed_session: TrainingSession
+        self, client: AsyncClient, auth_headers: dict, completed_session: TrainingSession
     ):
         """Should return 400 for completed session."""
         response = await client.post(
             "/training/respond",
-            params={
-                "session_id": completed_session.id,
-                "user_response": "Hello"
-            },
-            headers=auth_headers
+            params={"session_id": completed_session.id, "user_response": "Hello"},
+            headers=auth_headers,
         )
 
         assert response.status_code == 400

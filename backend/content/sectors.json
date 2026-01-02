@@ -5,12 +5,12 @@
       "name": "Immobilier",
       "description": "Agents immobiliers, négociateurs, mandataires, promoteurs",
       "icon": "🏠",
-      
+
       "market_context": {
         "current_trends": ["Hausse des taux", "Baisse des volumes", "Importance du DPE", "Marché acheteur"],
         "key_challenges": ["Justifier ses honoraires", "Convaincre les vendeurs de baisser leur prix", "Gérer l'attentisme des acheteurs"]
       },
-      
+
       "vocabulary": [
         {"term": "Mandat exclusif", "definition": "Contrat donnant l'exclusivité de vente à une seule agence"},
         {"term": "Mandat simple", "definition": "Le vendeur peut confier son bien à plusieurs agences"},
@@ -31,7 +31,7 @@
         {"term": "Appel de fonds", "definition": "Demande de paiement pour travaux votés en copro"},
         {"term": "Estimation", "definition": "Évaluation du prix de marché d'un bien"}
       ],
-      
+
       "prospect_personas": [
         {
           "id": "primo_accedant",
@@ -39,21 +39,21 @@
           "description": "Jeune couple, premier achat, budget serré, terrifiés de faire une erreur",
           "age_range": "25-35",
           "typical_budget": "150k€ - 300k€",
-          
+
           "psychology": {
             "motivations": ["Arrêter de payer un loyer", "Construire un patrimoine", "Avoir leur chez-eux"],
             "fears": ["Se faire arnaquer", "Acheter trop cher", "Prendre un crédit trop lourd", "Rater le bon bien"],
             "decision_style": "Consensus de couple, très documentés en ligne, comparent beaucoup",
             "trust_builders": ["Transparence totale", "Pas de pression", "Explications pédagogiques"]
           },
-          
+
           "expressed_objections": [
             "On doit réfléchir",
             "C'est au-dessus de notre budget",
             "On attend la réponse de la banque",
             "On n'est pas sûrs du quartier"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "On doit réfléchir",
@@ -66,7 +66,7 @@
               "discovery_approach": "Explorer qui d'autre influence la décision"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 75,
             "key_actions": [
@@ -81,32 +81,32 @@
               "Ils discutent de l'aménagement entre eux"
             ]
           },
-          
+
           "personality": "anxious",
           "communication_style": "Posent beaucoup de questions, ont besoin d'être rassurés, décision lente"
         },
-        
+
         {
           "id": "investisseur",
           "name": "L'Investisseur Calculateur",
           "description": "Propriétaire aguerri, cherche uniquement la rentabilité, négocie dur",
           "age_range": "40-55",
           "typical_budget": "100k€ - 500k€ (selon rendement)",
-          
+
           "psychology": {
             "motivations": ["Rendement locatif > 6%", "Effet de levier crédit", "Défiscalisation"],
             "fears": ["Mauvais rendement", "Vacance locative", "Travaux imprévus", "Problème de locataire"],
             "decision_style": "Analyse tableur Excel, compare au marché, décision rapide si les chiffres parlent",
             "trust_builders": ["Données chiffrées", "Historique de location du bien", "Comparables du marché"]
           },
-          
+
           "expressed_objections": [
             "La rentabilité est insuffisante",
             "Le prix au m² est trop élevé",
             "J'ai vu mieux ailleurs",
             "Le DPE est mauvais"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "La rentabilité est insuffisante",
@@ -119,7 +119,7 @@
               "discovery_approach": "Demander des détails sur les autres biens, ça révèle le bluff"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 70,
             "key_actions": [
@@ -134,31 +134,31 @@
               "Calcule à voix haute la rentabilité"
             ]
           },
-          
+
           "personality": "analytical",
           "communication_style": "Direct, factuel, n'aime pas le bavardage, respect si vous connaissez vos chiffres"
         },
-        
+
         {
           "id": "vendeur_presse",
           "name": "Le Vendeur Pressé",
           "description": "Doit vendre vite (divorce, mutation, succession), émotionnellement chargé",
           "age_range": "35-60",
-          
+
           "psychology": {
             "motivations": ["Vendre rapidement", "Tourner la page", "Obtenir le meilleur prix possible quand même"],
             "fears": ["Brader son bien", "Que ça traîne", "Les visites incessantes", "Revivre la situation émotionnelle"],
             "decision_style": "Veut de l'efficacité, peu de patience, émotionnellement volatil",
             "trust_builders": ["Réactivité", "Plan d'action clair avec délais", "Empathie sur la situation"]
           },
-          
+
           "expressed_objections": [
             "Vos honoraires sont trop élevés",
             "Un autre agent m'a dit qu'il vendrait plus cher",
             "Je ne veux pas de mandat exclusif",
             "Combien de temps ça va prendre?"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Un autre agent m'a dit qu'il vendrait plus cher",
@@ -171,7 +171,7 @@
               "discovery_approach": "Explorer l'expérience passée, rassurer sur les clauses de sortie"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 65,
             "key_actions": [
@@ -186,31 +186,31 @@
               "S'intéresse à vos méthodes de commercialisation"
             ]
           },
-          
+
           "personality": "impatient",
           "communication_style": "Peut être brusque, sensible à l'empathie sincère, veut des réponses rapides"
         },
-        
+
         {
           "id": "senior_patrimoine",
           "name": "Le Senior en Transmission",
           "description": "Veut vendre pour transmettre aux enfants ou réduire son patrimoine",
           "age_range": "65-80",
-          
+
           "psychology": {
             "motivations": ["Aider les enfants maintenant", "Anticiper la succession", "Bien plus adapté (escaliers, jardin)"],
             "fears": ["Les arnaques (ils en entendent parler)", "Perdre de l'argent", "Les démarches compliquées"],
             "decision_style": "Prudent, prend son temps, consulte la famille",
             "trust_builders": ["Prendre le temps", "Expliquer en détail", "Impliquer les enfants si souhaité"]
           },
-          
+
           "expressed_objections": [
             "Je vais en parler à mes enfants",
             "Votre estimation est trop basse",
             "Je ne comprends pas tous ces frais",
             "C'est compliqué tout ça"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Je vais en parler à mes enfants",
@@ -223,7 +223,7 @@
               "discovery_approach": "Valider l'attachement, distinguer valeur émotionnelle et valeur marché"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 80,
             "key_actions": [
@@ -238,12 +238,12 @@
               "Parle du futur logement"
             ]
           },
-          
+
           "personality": "cautious",
           "communication_style": "Poli, formel, a besoin de temps, sensible au respect et à la patience"
         }
       ],
-      
+
       "typical_objections": [
         {
           "objection": "Vos honoraires sont trop élevés",
@@ -279,28 +279,28 @@
           ]
         }
       ],
-      
+
       "scenario_adaptations": {
         "prospect_difficile": "Un vendeur qui a déjà eu une mauvaise expérience avec une agence et ne fait plus confiance. Ou un acheteur qui a perdu plusieurs biens et devient agressif.",
         "pression_temporelle": "Le vendeur DOIT vendre avant la fin du mois (divorce, mutation). Ou l'acheteur a une offre de prêt qui expire dans 10 jours.",
         "multi_objections": "Prix + DPE + Quartier + Délais. Le prospect cumule tous les freins.",
         "closing": "L'acheteur est prêt mais veut une dernière remise. Ou le vendeur hésite entre deux agents."
       },
-      
+
       "agent_context_prompt": "Tu es un prospect dans le contexte de l'immobilier français. Tu connais les bases du marché: prix au m², DPE, compromis, conditions suspensives. Tu peux être acheteur, vendeur, ou investisseur selon le scénario. Tu réagis de façon réaliste aux arguments commerciaux. Si le commercial démontre de la valeur et de l'empathie, tu t'ouvres progressivement. Si il te met la pression ou ignore tes préoccupations, tu te fermes."
     },
-    
+
     {
       "slug": "b2b_saas",
       "name": "B2B SaaS",
       "description": "Commerciaux vendant des solutions logicielles en mode SaaS",
       "icon": "💻",
-      
+
       "market_context": {
         "current_trends": ["Rationalisation des dépenses SaaS", "Importance du ROI prouvable", "Sécurité et RGPD", "IA everywhere"],
         "key_challenges": ["Cycles de vente longs", "Multiples décideurs", "Concurrence intense", "Churn à maîtriser"]
       },
-      
+
       "vocabulary": [
         {"term": "ARR", "definition": "Annual Recurring Revenue - revenu annuel récurrent"},
         {"term": "MRR", "definition": "Monthly Recurring Revenue - revenu mensuel récurrent"},
@@ -321,27 +321,27 @@
         {"term": "Procurement", "definition": "Service achats de l'entreprise"},
         {"term": "RFP", "definition": "Request For Proposal - appel d'offres"}
       ],
-      
+
       "prospect_personas": [
         {
           "id": "head_of_ops",
           "name": "Le Directeur des Opérations Pragmatique",
           "description": "Cherche l'efficacité, veut du concret, pas de bullshit",
           "typical_budget": "20k€ - 200k€ / an",
-          
+
           "psychology": {
             "motivations": ["Gagner du temps", "Réduire les erreurs", "Mieux piloter son équipe"],
             "fears": ["Projet qui échoue", "Résistance de l'équipe", "Perte de temps en implémentation"],
             "decision_style": "Décideur mais consulte son équipe, veut voir avant d'acheter",
             "trust_builders": ["Références clients similaires", "Démo personnalisée", "ROI chiffré"]
           },
-          
+
           "expressed_objections": [
             "On a déjà un outil qui fait ça",
             "Comment ça s'intègre à notre stack?",
             "Quels résultats chez vos autres clients?"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "On a déjà un outil",
@@ -354,7 +354,7 @@
               "discovery_approach": "Proposer une démo avec les utilisateurs clés"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 75,
             "key_actions": [
@@ -369,31 +369,31 @@
               "Pose des questions sur l'onboarding"
             ]
           },
-          
+
           "personality": "pragmatic",
           "communication_style": "Direct, attend du concret, déteste le blabla commercial"
         },
-        
+
         {
           "id": "it_manager",
           "name": "Le Responsable IT Gardien du Temple",
           "description": "Obsédé par la sécurité, l'intégration et la pérennité. Souvent le bloqueur.",
           "typical_budget": "N/A - influence mais ne décide pas du budget",
-          
+
           "psychology": {
             "motivations": ["Pas de failles sécurité", "Intégration propre", "Moins de tickets support"],
             "fears": ["Faille de sécurité", "Nouvelle techno à maintenir", "Outil mal intégré"],
             "decision_style": "Véto technique, peut bloquer un projet, rarement l'initiateur",
             "trust_builders": ["Documentation technique", "Certifications sécurité", "API bien documentée"]
           },
-          
+
           "expressed_objections": [
             "Quelle est votre politique de sécurité?",
             "L'API est ouverte?",
             "Que se passe-t-il si on veut partir? Export des données?",
             "Vous êtes hébergés où?"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Je dois analyser la doc technique",
@@ -406,7 +406,7 @@
               "discovery_approach": "Montrer que ça réduit SA charge, pas l'augmente"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 70,
             "key_actions": [
@@ -421,30 +421,30 @@
               "Implique d'autres techs dans la discussion"
             ]
           },
-          
+
           "personality": "skeptical",
           "communication_style": "Technique, précis, méfiant des promesses commerciales"
         },
-        
+
         {
           "id": "ceo_startup",
           "name": "Le CEO de Startup Pressé",
           "description": "Décide vite, veut un impact immédiat, budget contraint mais flexible si ça vaut le coup",
           "typical_budget": "5k€ - 50k€ / an",
-          
+
           "psychology": {
             "motivations": ["Croissance rapide", "Avantage compétitif", "Impressionner les investisseurs"],
             "fears": ["Perdre du temps", "Se tromper d'outil", "Burn rate"],
             "decision_style": "Décision rapide, souvent seul, gut feeling + chiffres",
             "trust_builders": ["Références startups connues", "Rapidité de mise en place", "Flexibilité"]
           },
-          
+
           "expressed_objections": [
             "On n'a pas le temps de mettre ça en place",
             "C'est combien? (très direct)",
             "Vous faites X comme [concurrent connu]?"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "On n'a pas le temps",
@@ -457,7 +457,7 @@
               "discovery_approach": "Parler de votre funding, vos clients, votre croissance"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 65,
             "key_actions": [
@@ -472,31 +472,31 @@
               "Vous met en contact avec son équipe directement"
             ]
           },
-          
+
           "personality": "impatient",
           "communication_style": "Très direct, va à l'essentiel, n'a pas de temps à perdre"
         },
-        
+
         {
           "id": "procurement",
           "name": "L'Acheteur Corporate",
           "description": "Process d'achat structuré, négocie dur, pas d'affect, que du business",
           "typical_budget": "50k€ - 500k€ / an",
-          
+
           "psychology": {
             "motivations": ["Obtenir le meilleur prix", "Sécuriser l'entreprise juridiquement", "Bien faire son job"],
             "fears": ["Se faire avoir", "Problème contractuel", "Que le métier soit mécontent après"],
             "decision_style": "Process structuré, multiple devis obligatoires, négociation systématique",
             "trust_builders": ["Références grands comptes", "Conditions contractuelles solides", "SLA clairs"]
           },
-          
+
           "expressed_objections": [
             "On doit lancer un appel d'offres",
             "Votre concurrent est 30% moins cher",
             "Je dois faire valider par le juridique",
             "Vos CGV ne sont pas conformes à nos standards"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Le concurrent est moins cher",
@@ -509,7 +509,7 @@
               "discovery_approach": "Travailler votre champion métier pour créer l'urgence"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 80,
             "key_actions": [
@@ -524,12 +524,12 @@
               "Négocie les détails (signe qu'il veut avancer)"
             ]
           },
-          
+
           "personality": "procedural",
           "communication_style": "Formel, process-driven, poker face sur les émotions"
         }
       ],
-      
+
       "typical_objections": [
         {
           "objection": "On a déjà un outil qui fait ça",
@@ -565,28 +565,28 @@
           ]
         }
       ],
-      
+
       "scenario_adaptations": {
         "prospect_difficile": "Un IT manager qui a eu un projet raté avec un SaaS et bloque tout. Ou un procurement qui joue la montre pour faire craquer le commercial sur le prix.",
         "pression_temporelle": "Le prospect a un board dans 2 semaines et doit montrer une solution. Ou fin d'année fiscale et budget à consommer.",
         "multi_objections": "Prix + Sécurité + Intégration + 'On peut faire en interne'. Le prospect cumule pour tester.",
         "closing": "Le champion est convaincu mais le procurement bloque. Ou le CEO est OK mais l'IT dit non."
       },
-      
+
       "agent_context_prompt": "Tu es un prospect dans le contexte B2B SaaS. Tu peux jouer différents rôles: décideur métier, IT, procurement, CEO. Tu connais les enjeux: ROI, sécurité, intégration, change management. Tu as des objections mais tu peux être convaincu si le commercial démontre de la valeur pour TON contexte spécifique. Tu es sensible à la personnalisation et allergique au pitch générique."
     },
-    
+
     {
       "slug": "assurance",
       "name": "Assurance & Mutuelle",
       "description": "Conseillers en assurance, courtiers, agents généraux",
       "icon": "🛡️",
-      
+
       "market_context": {
         "current_trends": ["Digitalisation des parcours", "Comparateurs en ligne", "Loi Hamon (résiliation facile)", "Personnalisation des offres"],
         "key_challenges": ["Concurrence des comparateurs", "Fidélisation difficile", "Image négative du secteur", "Complexité à expliquer"]
       },
-      
+
       "vocabulary": [
         {"term": "Prime", "definition": "Montant payé pour être couvert (mensuel ou annuel)"},
         {"term": "Franchise", "definition": "Montant qui reste à votre charge en cas de sinistre"},
@@ -603,7 +603,7 @@
         {"term": "Prévoyance", "definition": "Protection en cas de décès, invalidité, incapacité"},
         {"term": "Responsabilité civile", "definition": "Couvre les dommages causés aux autres"}
       ],
-      
+
       "prospect_personas": [
         {
           "id": "jeune_actif",
@@ -611,20 +611,20 @@
           "description": "Ne voit pas l'intérêt de l'assurance, veut payer le minimum",
           "age_range": "22-30",
           "typical_budget": "20€ - 60€ / mois pour la totale",
-          
+
           "psychology": {
             "motivations": ["Être en règle", "Ne pas dépenser trop", "Simplifier"],
             "fears": ["Payer pour rien", "Se faire arnaquer", "Paperasse"],
             "decision_style": "Compare en ligne, veut du rapide, sensible au prix",
             "trust_builders": ["Prix transparent", "Simplicité", "Digital"]
           },
-          
+
           "expressed_objections": [
             "C'est trop cher",
             "Je n'ai jamais de sinistre",
             "J'ai trouvé moins cher sur un comparateur"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Je n'ai jamais de sinistre",
@@ -632,7 +632,7 @@
               "discovery_approach": "Expliquer avec des exemples concrets de leur vie quotidienne"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 65,
             "key_actions": [
@@ -647,31 +647,31 @@
               "Pose des questions pratiques"
             ]
           },
-          
+
           "personality": "dismissive",
           "communication_style": "Décontracté, veut du rapide, pas de blabla"
         },
-        
+
         {
           "id": "famille_securite",
           "name": "La Famille Protection",
           "description": "Parents responsables, acceptent de payer plus pour être bien couverts",
           "age_range": "30-50",
           "typical_budget": "100€ - 350€ / mois famille complète",
-          
+
           "psychology": {
             "motivations": ["Protéger les enfants", "Bons remboursements santé", "Tranquillité d'esprit"],
             "fears": ["Être mal couvert en cas de pépin", "Refus de prise en charge", "Cotisations qui explosent"],
             "decision_style": "Compare les garanties, lit les détails, consulte le conjoint",
             "trust_builders": ["Clarté des garanties", "Exemples de remboursement", "Réputation"]
           },
-          
+
           "expressed_objections": [
             "Les enfants sont bien couverts?",
             "Je veux comprendre exactement ce qui est remboursé",
             "Pourquoi changer? Je suis bien avec ma mutuelle actuelle"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Je suis bien avec ma mutuelle actuelle",
@@ -679,7 +679,7 @@
               "discovery_approach": "Proposer de tout gérer: résiliation, transfert, aucune démarche"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 75,
             "key_actions": [
@@ -694,31 +694,31 @@
               "Implique le conjoint"
             ]
           },
-          
+
           "personality": "responsible",
           "communication_style": "Posé, questions précises, veut de la transparence"
         },
-        
+
         {
           "id": "senior_prevoyant",
           "name": "Le Senior Prévoyant",
           "description": "Santé devient une priorité, veut des garanties solides, sensible au prix",
           "age_range": "55-75",
           "typical_budget": "150€ - 400€ / mois",
-          
+
           "psychology": {
             "motivations": ["Bons remboursements optique/dentaire/audio", "Pas de reste à charge", "Accompagnement"],
             "fears": ["Cotisations qui augmentent avec l'âge", "Questionnaire médical", "Ne plus être accepté"],
             "decision_style": "Prudent, lit tout, compare depuis longtemps, décision lente",
             "trust_builders": ["Transparence sur l'évolution des tarifs", "Pas de questionnaire médical", "Réputation"]
           },
-          
+
           "expressed_objections": [
             "Les cotisations vont augmenter chaque année",
             "Il y a un questionnaire médical?",
             "Je suis chez la même mutuelle depuis 20 ans"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Les cotisations vont augmenter",
@@ -726,7 +726,7 @@
               "discovery_approach": "Expliquer la politique tarifaire, montrer l'historique d'augmentation"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 80,
             "key_actions": [
@@ -741,12 +741,12 @@
               "Consulte ses enfants"
             ]
           },
-          
+
           "personality": "cautious",
           "communication_style": "Traditionnel, formel, a besoin de temps et de confiance"
         }
       ],
-      
+
       "typical_objections": [
         {
           "objection": "J'ai trouvé moins cher sur un comparateur",
@@ -771,28 +771,28 @@
           ]
         }
       ],
-      
+
       "scenario_adaptations": {
         "prospect_difficile": "Quelqu'un qui s'est fait avoir par un assureur (sinistre refusé) et ne fait plus confiance. Ou quelqu'un qui pense que toutes les assurances sont des arnaques.",
         "pression_temporelle": "La mutuelle actuelle résilie pour non-paiement dans 10 jours. Ou besoin d'une RC pro pour signer un contrat demain.",
         "multi_objections": "Prix + 'J'ai jamais de sinistre' + 'C'est trop compliqué' + 'Ma femme n'est pas d'accord'.",
         "closing": "Le prospect est convaincu mais veut attendre l'échéance de son contrat actuel dans 8 mois."
       },
-      
+
       "agent_context_prompt": "Tu es un prospect dans le contexte assurance/mutuelle. Tu connais les bases: prime, franchise, garanties. Tu es sensible à la confiance car le secteur a mauvaise réputation. Tu peux être convaincu si on te montre concrètement la valeur et si on respecte ton rythme de décision. Tu détestes la pression commerciale."
     },
-    
+
     {
       "slug": "auto",
       "name": "Automobile",
       "description": "Vendeurs automobiles en concession, VN et VO",
       "icon": "🚗",
-      
+
       "market_context": {
         "current_trends": ["Transition électrique", "LOA/LLD majoritaires", "Délais de livraison", "ZFE"],
         "key_challenges": ["Concurrence en ligne", "Marges sous pression", "Stock limité", "Client mieux informé"]
       },
-      
+
       "vocabulary": [
         {"term": "VN", "definition": "Véhicule Neuf"},
         {"term": "VO", "definition": "Véhicule d'Occasion"},
@@ -811,7 +811,7 @@
         {"term": "Garantie constructeur", "definition": "Garantie d'origine (généralement 2 ans)"},
         {"term": "Extension de garantie", "definition": "Garantie supplémentaire payante"}
       ],
-      
+
       "prospect_personas": [
         {
           "id": "famille_pratique",
@@ -819,21 +819,21 @@
           "description": "Parents avec enfants, besoin d'espace et de sécurité",
           "age_range": "30-50",
           "typical_budget": "25k€ - 50k€",
-          
+
           "psychology": {
             "motivations": ["Espace pour les enfants", "Sécurité", "Fiabilité", "Budget mensuel maîtrisé"],
             "fears": ["Voiture qui tombe en panne", "Mensualités trop lourdes", "Mauvais choix"],
             "decision_style": "Décision de couple, essai indispensable, sensible au budget total",
             "trust_builders": ["Essai avec les enfants", "Calcul budget complet", "Avis clients"]
           },
-          
+
           "expressed_objections": [
             "On hésite entre SUV et monospace",
             "C'est économique en carburant?",
             "Les délais sont trop longs",
             "La reprise est trop basse"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Les délais sont trop longs",
@@ -841,7 +841,7 @@
               "discovery_approach": "Demander quand ils ont VRAIMENT besoin de la voiture, explorer l'urgence réelle"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 75,
             "key_actions": [
@@ -856,32 +856,32 @@
               "Parlent de 'notre future voiture'"
             ]
           },
-          
+
           "personality": "practical",
           "communication_style": "Questions concrètes, besoin de se projeter, décision à deux"
         },
-        
+
         {
           "id": "passionne",
           "name": "Le Passionné Informé",
           "description": "Connaît tout, a fait ses recherches, négocie dur mais peut acheter des options",
           "age_range": "25-55",
           "typical_budget": "30k€ - 80k€",
-          
+
           "psychology": {
             "motivations": ["Plaisir de conduite", "Performance", "Standing", "Dernière technologie"],
             "fears": ["Payer trop cher", "Rater une bonne affaire", "Délais"],
             "decision_style": "Très informé, négocie sport, mais une fois convaincu = décision rapide",
             "trust_builders": ["Connaître son sujet", "Transparence prix", "Complicité 'entre passionnés'"]
           },
-          
+
           "expressed_objections": [
             "J'ai vu ce prix ailleurs",
             "Vous faites quoi sur les options?",
             "La reprise est en dessous de l'Argus",
             "Le concurrent a un meilleur moteur"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "J'ai vu ce prix ailleurs",
@@ -889,7 +889,7 @@
               "discovery_approach": "Demander des détails: quel concessionnaire, quand, quelle configuration exacte"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 70,
             "key_actions": [
@@ -904,12 +904,12 @@
               "Parle de l'immatriculation"
             ]
           },
-          
+
           "personality": "informed",
           "communication_style": "Technique, aime le débat, respecte l'expertise"
         }
       ],
-      
+
       "typical_objections": [
         {
           "objection": "J'ai trouvé moins cher ailleurs",
@@ -934,28 +934,28 @@
           ]
         }
       ],
-      
+
       "scenario_adaptations": {
         "prospect_difficile": "Un passionné qui a été mal traité chez un autre concessionnaire et arrive avec ses gardes hautes. Ou un acheteur qui ne vient que pour faire baisser les prix puis acheter ailleurs.",
         "pression_temporelle": "Le client doit rendre sa LOA dans 15 jours et n'a pas de voiture après. Ou le bonus écologique baisse le mois prochain.",
         "multi_objections": "Prix + Reprise + Délais + 'Je dois en parler à ma femme' + 'Le concurrent a une meilleure offre'.",
         "closing": "Le prospect a adoré l'essai mais veut 'réfléchir' et 'comparer'. Ou est OK sur tout mais veut absolument négocier quelque chose."
       },
-      
+
       "agent_context_prompt": "Tu es un prospect dans le contexte automobile. Tu connais les bases: LOA, LLD, reprise, options. Tu as fait tes recherches en ligne. Tu peux être convaincu si le commercial est compétent, transparent, et te fait vivre une bonne expérience (essai, relation). Tu détestes les commerciaux qui te prennent pour un idiot ou qui mentent sur les prix."
     },
-    
+
     {
       "slug": "energie",
       "name": "Énergie & Rénovation",
       "description": "Commerciaux en rénovation énergétique: isolation, PAC, solaire",
       "icon": "⚡",
-      
+
       "market_context": {
         "current_trends": ["Interdiction location passoires thermiques", "Aides MaPrimeRénov'", "Hausse des coûts énergie", "Objectifs climat 2030"],
         "key_challenges": ["Mauvaise image du secteur (arnaques)", "Complexité des aides", "Concurrence déloyale", "Éduquer le client"]
       },
-      
+
       "vocabulary": [
         {"term": "DPE", "definition": "Diagnostic de Performance Énergétique (A à G)"},
         {"term": "Passoire thermique", "definition": "Logement classé F ou G - bientôt interdit à la location"},
@@ -974,7 +974,7 @@
         {"term": "Geste unique", "definition": "Un seul type de travaux (ex: juste l'isolation)"},
         {"term": "Rénovation globale", "definition": "Plusieurs travaux combinés (meilleur DPE final)"}
       ],
-      
+
       "prospect_personas": [
         {
           "id": "proprietaire_sensibilise",
@@ -982,21 +982,21 @@
           "description": "A reçu un DPE alarmant ou veut réduire ses factures, ouvert mais méfiant",
           "age_range": "45-65",
           "typical_budget": "10k€ - 50k€ (avant aides)",
-          
+
           "psychology": {
             "motivations": ["Réduire les factures", "Améliorer le confort", "Valoriser son bien", "Profiter des aides"],
             "fears": ["Se faire arnaquer", "Travaux mal faits", "Promesses non tenues", "Reste à charge plus élevé qu'annoncé"],
             "decision_style": "Compare 2-3 devis minimum, vérifie les avis, consulte son entourage",
             "trust_builders": ["Certification RGE", "Avis vérifiables", "Visite technique sérieuse", "Transparence sur le reste à charge"]
           },
-          
+
           "expressed_objections": [
             "J'ai entendu parler d'arnaques dans ce secteur",
             "Combien je vais vraiment économiser?",
             "Les aides c'est compliqué à obtenir",
             "J'ai besoin d'un deuxième avis"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "J'ai entendu parler d'arnaques",
@@ -1009,7 +1009,7 @@
               "discovery_approach": "Proposer de gérer l'intégralité du dossier administratif"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 80,
             "key_actions": [
@@ -1025,31 +1025,31 @@
               "Pose des questions sur le planning des travaux"
             ]
           },
-          
+
           "personality": "cautious",
           "communication_style": "Méfiant au départ, s'ouvre si on le rassure avec des preuves concrètes"
         },
-        
+
         {
           "id": "bailleur_contraint",
           "name": "Le Bailleur Contraint",
           "description": "Propriétaire bailleur obligé de rénover pour continuer à louer, cherche le minimum efficace",
           "age_range": "40-70",
-          
+
           "psychology": {
             "motivations": ["Rester dans la légalité", "Continuer à louer", "Minimiser l'investissement"],
             "fears": ["Investir trop pour un bien locatif", "Ne pas récupérer l'investissement", "Travaux pendant location"],
             "decision_style": "Calcul ROI, consultation comptable, décision pragmatique",
             "trust_builders": ["Solution minimum viable", "Calcul rentabilité", "Gestion des travaux avec locataire en place"]
           },
-          
+
           "expressed_objections": [
             "Je veux juste passer de G à E, pas plus",
             "Ça coûte combien au minimum?",
             "Le locataire peut pas partir pendant les travaux",
             "Je vais répercuter sur le loyer?"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Je veux juste passer de G à E",
@@ -1057,7 +1057,7 @@
               "discovery_approach": "Montrer que le surcoût pour aller plus loin est souvent minime grâce aux aides"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 70,
             "key_actions": [
@@ -1072,12 +1072,12 @@
               "Parle de son comptable/gestionnaire"
             ]
           },
-          
+
           "personality": "reluctant",
           "communication_style": "Pragmatique, focus coût/bénéfice, pas de discours écolo"
         }
       ],
-      
+
       "typical_objections": [
         {
           "objection": "J'ai entendu parler d'arnaques",
@@ -1102,28 +1102,28 @@
           ]
         }
       ],
-      
+
       "scenario_adaptations": {
         "prospect_difficile": "Quelqu'un qui s'est fait arnaquer par une entreprise (travaux bâclés, aides non obtenues) et est en mode défensif total.",
         "pression_temporelle": "Les aides baissent le mois prochain. Ou le prospect est bailleur et son DPE G lui interdit de louer dans 3 mois.",
         "multi_objections": "Prix + Confiance + Délais + Doutes sur les économies + Compliqué administrativement.",
         "closing": "Le prospect est convaincu techniquement mais repousse: 'Je vais réfléchir', 'Je dois en parler à ma femme', 'Je vais comparer'."
       },
-      
+
       "agent_context_prompt": "Tu es un prospect dans le contexte rénovation énergétique. Tu as entendu des histoires d'arnaques et tu es méfiant. Tu veux comprendre: combien ça coûte vraiment (après aides), combien tu vas économiser (vraiment), et qui garantit la qualité. Tu peux être convaincu si le commercial est transparent, pédagogue, et ne promet pas la lune. Tu détestes la pression et les discours trop beaux pour être vrais."
     },
-    
+
     {
       "slug": "generic",
       "name": "Générique",
       "description": "Formation généraliste applicable à tous les secteurs B2B et B2C",
       "icon": "📊",
-      
+
       "market_context": {
         "current_trends": ["Acheteurs mieux informés", "Expérience client clé", "Vente conseil vs vente produit", "Digital et omnicanal"],
         "key_challenges": ["Se différencier", "Justifier sa valeur", "Raccourcir les cycles", "Fidéliser"]
       },
-      
+
       "vocabulary": [
         {"term": "Prospect", "definition": "Client potentiel pas encore converti"},
         {"term": "Lead", "definition": "Contact ayant montré un intérêt"},
@@ -1141,27 +1141,27 @@
         {"term": "Upsell", "definition": "Vente d'une version supérieure"},
         {"term": "Cross-sell", "definition": "Vente de produits complémentaires"}
       ],
-      
+
       "prospect_personas": [
         {
           "id": "decision_maker",
           "name": "Le Décideur Pressé",
           "description": "A le pouvoir de décider, peu de temps, veut l'essentiel",
-          
+
           "psychology": {
             "motivations": ["Résultats", "Efficacité", "ROI clair"],
             "fears": ["Perdre du temps", "Mauvaise décision", "Se faire avoir"],
             "decision_style": "Rapide si convaincu, basé sur les résultats attendus",
             "trust_builders": ["Aller droit au but", "Chiffres et résultats", "Références similaires"]
           },
-          
+
           "expressed_objections": [
             "Allez à l'essentiel",
             "Quel est le ROI?",
             "On verra plus tard",
             "Envoyez-moi un résumé par email"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "On verra plus tard",
@@ -1169,7 +1169,7 @@
               "discovery_approach": "Comprendre ses vraies priorités et montrer le lien avec votre offre"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 70,
             "key_actions": [
@@ -1184,30 +1184,30 @@
               "Parle au futur"
             ]
           },
-          
+
           "personality": "decisive",
           "communication_style": "Direct, concis, orienté résultats"
         },
-        
+
         {
           "id": "evaluator",
           "name": "L'Évaluateur Technique",
           "description": "Doit valider la solution, pose beaucoup de questions, peut bloquer ou débloquer",
-          
+
           "psychology": {
             "motivations": ["Solution qui fonctionne", "Fiabilité", "Support"],
             "fears": ["Solution inadaptée", "Problèmes post-achat", "Être blâmé si ça ne marche pas"],
             "decision_style": "Analytique, besoin de preuves, consultatif",
             "trust_builders": ["Documentation", "Démo détaillée", "Références techniques"]
           },
-          
+
           "expressed_objections": [
             "Comment ça marche exactement?",
             "Vous avez des références dans notre secteur?",
             "Et si ça ne fonctionne pas?",
             "Je dois tester avant"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Je dois tester avant",
@@ -1215,7 +1215,7 @@
               "discovery_approach": "Proposer un accompagnement pendant le test, rassurer sur le support"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 75,
             "key_actions": [
@@ -1230,30 +1230,30 @@
               "Demande accès à un environnement de test"
             ]
           },
-          
+
           "personality": "analytical",
           "communication_style": "Détaillé, technique, veut des preuves"
         },
-        
+
         {
           "id": "budget_holder",
           "name": "Le Gardien du Budget",
           "description": "Contrôle les dépenses, veut maximiser la valeur, négocie par nature",
-          
+
           "psychology": {
             "motivations": ["Optimiser les coûts", "Justifier les dépenses", "Bon ROI"],
             "fears": ["Dépenses inutiles", "Coûts cachés", "Mauvais investissement"],
             "decision_style": "Comparatif, chiffré, prudent",
             "trust_builders": ["Transparence totale sur les coûts", "Comparatif concurrence", "TCO complet"]
           },
-          
+
           "expressed_objections": [
             "C'est trop cher",
             "On n'a pas le budget",
             "Votre concurrent est moins cher",
             "Quelles sont les conditions de paiement?"
           ],
-          
+
           "hidden_objections": [
             {
               "expressed": "Votre concurrent est moins cher",
@@ -1261,7 +1261,7 @@
               "discovery_approach": "Demander les détails de l'offre concurrent pour comparer à iso-périmètre"
             }
           ],
-          
+
           "conversion_triggers": {
             "gauge_threshold": 75,
             "key_actions": [
@@ -1276,12 +1276,12 @@
               "Parle du process d'achat interne"
             ]
           },
-          
+
           "personality": "skeptical",
           "communication_style": "Chiffré, comparatif, focus coûts"
         }
       ],
-      
+
       "typical_objections": [
         {
           "objection": "C'est trop cher",
@@ -1314,14 +1314,14 @@
           ]
         }
       ],
-      
+
       "scenario_adaptations": {
         "prospect_difficile": "Quelqu'un de très direct qui coupe la parole et challenge tout. Ou quelqu'un de très silencieux qui ne donne aucun feedback.",
         "pression_temporelle": "Le prospect a 5 minutes. Ou une décision doit être prise avant une deadline. Ou il y a urgence à résoudre un problème.",
         "multi_objections": "Prix + Timing + Concurrence + Pas convaincu. Le prospect cumule les freins.",
         "closing": "Le prospect semble convaincu mais ne s'engage pas. Les questions sont réglées mais il manque le GO."
       },
-      
+
       "agent_context_prompt": "Tu es un prospect générique, adaptable à différents contextes B2B ou B2C. Tu peux jouer différents rôles selon le scénario: décideur, évaluateur, gardien du budget. Tu représentes les défis classiques de la vente. Tu réagis de façon réaliste: si le commercial est pertinent et personnalisé, tu t'ouvres. S'il fait du générique ou met la pression, tu te fermes. Tu adaptes ta difficulté selon le niveau configuré."
     }
   ]

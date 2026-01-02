@@ -2,10 +2,7 @@
 Pattern Agent Memory - Vector storage for patterns.
 """
 
-from typing import Optional
-
 from memory.vector_store import PatternVectorMemory
-from memory.schemas import PatternMemory
 
 
 class PatternAgentMemory:
@@ -18,7 +15,7 @@ class PatternAgentMemory:
     def __init__(self):
         self.vector_memory = PatternVectorMemory()
 
-    async def store(self, key: str, value: dict, metadata: Optional[dict] = None) -> bool:
+    async def store(self, key: str, value: dict, metadata: dict | None = None) -> bool:
         """Store a pattern."""
         return await self.vector_memory.store(key, str(value), metadata)
 
@@ -26,11 +23,7 @@ class PatternAgentMemory:
         """Retrieve similar patterns."""
         return await self.vector_memory.retrieve(query, limit=limit)
 
-    async def store_patterns_batch(
-        self,
-        champion_id: int,
-        patterns: dict
-    ) -> dict:
+    async def store_patterns_batch(self, champion_id: int, patterns: dict) -> dict:
         """
         Store all patterns for a champion.
 
@@ -41,21 +34,12 @@ class PatternAgentMemory:
         Returns:
             Dict with storage results
         """
-        stored = {
-            "openings": 0,
-            "objection_handlers": 0,
-            "closes": 0,
-            "key_phrases": 0,
-            "success_patterns": 0
-        }
+        stored = {"openings": 0, "objection_handlers": 0, "closes": 0, "key_phrases": 0, "success_patterns": 0}
 
         # Store openings
         for i, opening in enumerate(patterns.get("openings", [])):
             pattern_id = await self.vector_memory.store_pattern(
-                champion_id=champion_id,
-                pattern_type="opening",
-                content=opening,
-                context=f"Opening technique {i+1}"
+                champion_id=champion_id, pattern_type="opening", content=opening, context=f"Opening technique {i + 1}"
             )
             if pattern_id:
                 stored["openings"] += 1
@@ -68,7 +52,7 @@ class PatternAgentMemory:
                 pattern_type="objection",
                 content=content,
                 context=handler.get("example", ""),
-                examples=[handler.get("example", "")] if handler.get("example") else []
+                examples=[handler.get("example", "")] if handler.get("example") else [],
             )
             if pattern_id:
                 stored["objection_handlers"] += 1
@@ -76,10 +60,7 @@ class PatternAgentMemory:
         # Store closes
         for i, close in enumerate(patterns.get("closes", [])):
             pattern_id = await self.vector_memory.store_pattern(
-                champion_id=champion_id,
-                pattern_type="close",
-                content=close,
-                context=f"Closing technique {i+1}"
+                champion_id=champion_id, pattern_type="close", content=close, context=f"Closing technique {i + 1}"
             )
             if pattern_id:
                 stored["closes"] += 1
@@ -87,9 +68,7 @@ class PatternAgentMemory:
         # Store key phrases
         for i, phrase in enumerate(patterns.get("key_phrases", [])):
             pattern_id = await self.vector_memory.store_pattern(
-                champion_id=champion_id,
-                pattern_type="key_phrase",
-                content=phrase
+                champion_id=champion_id, pattern_type="key_phrase", content=phrase
             )
             if pattern_id:
                 stored["key_phrases"] += 1
@@ -97,9 +76,7 @@ class PatternAgentMemory:
         # Store success patterns
         for i, pattern in enumerate(patterns.get("success_patterns", [])):
             pattern_id = await self.vector_memory.store_pattern(
-                champion_id=champion_id,
-                pattern_type="success_pattern",
-                content=pattern
+                champion_id=champion_id, pattern_type="success_pattern", content=pattern
             )
             if pattern_id:
                 stored["success_patterns"] += 1
@@ -111,18 +88,11 @@ class PatternAgentMemory:
         return await self.vector_memory.get_patterns_by_champion(champion_id)
 
     async def find_relevant_patterns(
-        self,
-        query: str,
-        champion_id: Optional[int] = None,
-        pattern_type: Optional[str] = None,
-        limit: int = 5
+        self, query: str, champion_id: int | None = None, pattern_type: str | None = None, limit: int = 5
     ) -> list[dict]:
         """Find patterns relevant to a query."""
         return await self.vector_memory.find_similar_patterns(
-            query=query,
-            champion_id=champion_id,
-            pattern_type=pattern_type,
-            limit=limit
+            query=query, champion_id=champion_id, pattern_type=pattern_type, limit=limit
         )
 
     async def get_stats(self) -> dict:

@@ -1,13 +1,9 @@
 """Tests pour AudioAnalyzer."""
+
 import pytest
 
 # Import the service
-from services.audio_analyzer import (
-    AudioAnalyzer,
-    ProsodyAnalysis,
-    EmotionAnalysis,
-    LIBROSA_AVAILABLE
-)
+from services.audio_analyzer import LIBROSA_AVAILABLE, AudioAnalyzer, EmotionAnalysis, ProsodyAnalysis
 
 
 class TestAudioAnalyzer:
@@ -28,7 +24,7 @@ class TestAudioAnalyzer:
             pause_count=2,
             pause_total_duration=0.5,
             volume="normal",
-            volume_variation=0.01
+            volume_variation=0.01,
         )
 
     # ===================================================================
@@ -57,7 +53,7 @@ class TestAudioAnalyzer:
             pause_count=5,
             pause_total_duration=2.0,
             volume="low",
-            volume_variation=0.02
+            volume_variation=0.02,
         )
 
         transcript = "Euh... donc en fait... peut-etre que... voila, je pense que..."
@@ -90,7 +86,7 @@ class TestAudioAnalyzer:
             pause_count=2,
             pause_total_duration=1.0,
             volume="low",
-            volume_variation=0.01
+            volume_variation=0.01,
         )
 
         transcript = "Euh... je pense que..."
@@ -214,7 +210,7 @@ class TestAudioAnalyzer:
         # Prosodie rapide et erratique = stress eleve
         prosody = ProsodyAnalysis(
             tempo=180.0,  # Fast
-            pitch_variation="erratic"
+            pitch_variation="erratic",
         )
 
         transcript = "Oui oui bien sur, pas de probleme."
@@ -229,7 +225,7 @@ class TestAudioAnalyzer:
         prosody = ProsodyAnalysis(
             tempo=140.0,  # Above normal
             volume="loud",
-            pitch_variation="variable"
+            pitch_variation="variable",
         )
 
         transcript = "C'est vraiment fantastique ce que vous proposez!"

@@ -8,18 +8,17 @@ Provides:
 """
 
 import asyncio
-from typing import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from models import Base, User
 from database import get_db
-from services.auth import hash_password, create_access_token
 from main import app
-
+from models import Base, User
+from services.auth import create_access_token, hash_password
 
 # ============================================
 # Database Fixtures
@@ -40,11 +39,7 @@ def event_loop() -> Generator:
 @pytest_asyncio.fixture(scope="function")
 async def db_engine():
     """Create a fresh database engine for each test."""
-    engine = create_async_engine(
-        TEST_DATABASE_URL,
-        echo=False,
-        future=True
-    )
+    engine = create_async_engine(TEST_DATABASE_URL, echo=False, future=True)
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -60,11 +55,7 @@ async def db_engine():
 @pytest_asyncio.fixture(scope="function")
 async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
     """Create a database session for testing."""
-    async_session_maker = async_sessionmaker(
-        db_engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
+    async_session_maker = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session_maker() as session:
         yield session
@@ -73,6 +64,7 @@ async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
 # ============================================
 # API Client Fixtures
 # ============================================
+
 
 @pytest_asyncio.fixture(scope="function")
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
@@ -94,14 +86,12 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 # User Fixtures
 # ============================================
 
+
 @pytest_asyncio.fixture(scope="function")
 async def test_user(db_session: AsyncSession) -> User:
     """Create a test user in the database."""
     user = User(
-        email="test@example.com",
-        hashed_password=hash_password("TestPass123$"),
-        full_name="Test User",
-        is_active=True
+        email="test@example.com", hashed_password=hash_password("TestPass123$"), full_name="Test User", is_active=True
     )
     db_session.add(user)
     await db_session.commit()
@@ -116,7 +106,7 @@ async def inactive_user(db_session: AsyncSession) -> User:
         email="inactive@example.com",
         hashed_password=hash_password("TestPass123$"),
         full_name="Inactive User",
-        is_active=False
+        is_active=False,
     )
     db_session.add(user)
     await db_session.commit()
@@ -132,7 +122,7 @@ async def admin_user(db_session: AsyncSession) -> User:
         hashed_password=hash_password("AdminPass123$"),
         full_name="Admin User",
         role="admin",
-        is_active=True
+        is_active=True,
     )
     db_session.add(user)
     await db_session.commit()
@@ -158,14 +148,11 @@ def admin_auth_headers(admin_user: User) -> dict:
 # Test Data
 # ============================================
 
+
 @pytest.fixture
 def valid_user_data() -> dict:
     """Valid user registration data."""
-    return {
-        "email": "newuser@example.com",
-        "password": "ValidPass123$",
-        "full_name": "New User"
-    }
+    return {"email": "newuser@example.com", "password": "ValidPass123$", "full_name": "New User"}
 
 
 @pytest.fixture
@@ -174,5 +161,5 @@ def weak_password_data() -> dict:
     return {
         "email": "weak@example.com",
         "password": "weakpassword",  # 12 chars but no uppercase, digit, or special
-        "full_name": "Weak Password User"
+        "full_name": "Weak Password User",
     }

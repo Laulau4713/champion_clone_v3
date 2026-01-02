@@ -9,23 +9,18 @@ Endpoints:
 - DELETE /champions/{champion_id} - Delete champion
 """
 
-import os
 import uuid
 from pathlib import Path
-from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Depends, Request, Query, UploadFile, File, Form
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 import structlog
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import get_settings
 from database import get_db
-from models import User, Champion, AnalysisLog
-from schemas import (
-    ChampionResponse, ChampionListResponse,
-    UploadResponse, AnalyzeRequest, AnalyzeResponse
-)
+from models import AnalysisLog, Champion, User
+from schemas import AnalyzeRequest, AnalyzeResponse, ChampionListResponse, ChampionResponse, UploadResponse
 
 settings = get_settings()
 logger = structlog.get_logger()
@@ -37,6 +32,7 @@ router = APIRouter(tags=["Champions"])
 # Video Validation
 # ============================================
 
+
 def validate_video_file(file_bytes: bytes) -> bool:
     """
     Validate that file is actually a video by checking magic bytes.
@@ -44,12 +40,12 @@ def validate_video_file(file_bytes: bytes) -> bool:
     # Check for MP4/MOV (ftyp at offset 4)
     if len(file_bytes) >= 12:
         ftyp_marker = file_bytes[4:8]
-        if ftyp_marker == b'ftyp':
+        if ftyp_marker == b"ftyp":
             return True
 
     # Check for AVI (RIFF at offset 0, AVI at offset 8)
     if len(file_bytes) >= 12:
-        if file_bytes[0:4] == b'RIFF' and file_bytes[8:11] == b'AVI':
+        if file_bytes[0:4] == b"RIFF" and file_bytes[8:11] == b"AVI":
             return True
 
     return False
@@ -61,19 +57,19 @@ def validate_video_file(file_bytes: bytes) -> bool:
 
 from api.routers.auth import get_current_user
 
-
 # ============================================
 # Endpoints
 # ============================================
+
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_champion_video(
     request: Request,
     name: str = Form(..., description="Champion's name"),
-    description: Optional[str] = Form(None, description="Optional description"),
+    description: str | None = Form(None, description="Optional description"),
     video: UploadFile = File(..., description="Video file (MP4/MOV). Max 500 MB."),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     Upload a champion's video for analysis.
@@ -87,8 +83,7 @@ async def upload_champion_video(
     file_ext = Path(video.filename).suffix.lower() if video.filename else ""
     if file_ext not in settings.allowed_extensions_set:
         raise HTTPException(
-            status_code=400,
-            detail=f"Invalid file extension. Allowed: {settings.ALLOWED_EXTENSIONS}. Got: {file_ext}"
+            status_code=400, detail=f"Invalid file extension. Allowed: {settings.ALLOWED_EXTENSIONS}. Got: {file_ext}"
         )
 
     # Validate magic bytes
@@ -96,10 +91,7 @@ async def upload_champion_video(
     await video.seek(0)
 
     if not validate_video_file(first_bytes):
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid file content. File does not appear to be a valid video."
-        )
+        raise HTTPException(status_code=400, detail="Invalid file content. File does not appear to be a valid video.")
 
     # Generate unique filename
     unique_filename = f"{uuid.uuid4()}{file_ext}"
@@ -122,17 +114,12 @@ async def upload_champion_video(
                     video_path.unlink(missing_ok=True)
                     raise HTTPException(
                         status_code=413,
-                        detail=f"File too large. Maximum size: {settings.MAX_UPLOAD_SIZE // (1024*1024)} MB"
+                        detail=f"File too large. Maximum size: {settings.MAX_UPLOAD_SIZE // (1024 * 1024)} MB",
                     )
                 buffer.write(chunk)
 
         # Create champion record
-        champion = Champion(
-            name=name,
-            description=description,
-            video_path=str(video_path),
-            status="uploaded"
-        )
+        champion = Champion(name=name, description=description, video_path=str(video_path), status="uploaded")
         db.add(champion)
         await db.flush()
 
@@ -141,7 +128,7 @@ async def upload_champion_video(
             champion_id=champion.id,
             step="upload",
             status="completed",
-            details={"filename": video.filename, "size": video_path.stat().st_size}
+            details={"filename": video.filename, "size": video_path.stat().st_size},
         )
         db.add(log)
         await db.commit()
@@ -152,7 +139,7 @@ async def upload_champion_video(
             champion_id=champion.id,
             name=champion.name,
             status=champion.status,
-            message="Video uploaded successfully. Use POST /analyze/{champion_id} to process."
+            message="Video uploaded successfully. Use POST /analyze/{champion_id} to process.",
         )
 
     except HTTPException:
@@ -170,7 +157,7 @@ async def analyze_champion(
     champion_id: int,
     body: AnalyzeRequest = None,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     Analyze a champion's video to extract sales patterns.
@@ -194,7 +181,7 @@ async def analyze_champion(
             champion_id=champion.id,
             status="already_analyzed",
             message="Patterns already extracted. Use force_reanalyze=true to re-analyze.",
-            patterns=champion.patterns_json
+            patterns=champion.patterns_json,
         )
 
     if not champion.video_path:
@@ -206,11 +193,7 @@ async def analyze_champion(
         champion.status = "processing"
         await db.commit()
 
-        log = AnalysisLog(
-            champion_id=champion_id,
-            step="analysis_start",
-            status="started"
-        )
+        log = AnalysisLog(champion_id=champion_id, step="analysis_start", status="started")
         db.add(log)
         await db.commit()
 
@@ -219,31 +202,24 @@ async def analyze_champion(
         pattern_agent = PatternAgent()
 
         # Step 1: Extract audio and transcribe
-        audio_result = await audio_agent.execute_tool(
-            "extract_audio",
-            {"video_path": champion.video_path}
-        )
+        audio_result = await audio_agent.execute_tool("extract_audio", {"video_path": champion.video_path})
         champion.audio_path = audio_result.data.get("audio_path")
 
-        transcript_result = await audio_agent.execute_tool(
-            "transcribe",
-            {"audio_path": champion.audio_path}
-        )
+        transcript_result = await audio_agent.execute_tool("transcribe", {"audio_path": champion.audio_path})
         champion.transcript = transcript_result.data.get("transcript")
 
         log = AnalysisLog(
             champion_id=champion_id,
             step="transcription",
             status="completed",
-            details={"transcript_length": len(champion.transcript) if champion.transcript else 0}
+            details={"transcript_length": len(champion.transcript) if champion.transcript else 0},
         )
         db.add(log)
         await db.commit()
 
         # Step 2: Extract patterns
         pattern_result = await pattern_agent.execute_tool(
-            "extract_patterns",
-            {"transcript": champion.transcript, "champion_name": champion.name}
+            "extract_patterns", {"transcript": champion.transcript, "champion_name": champion.name}
         )
         patterns = pattern_result.data.get("patterns", {})
         champion.patterns_json = patterns
@@ -256,8 +232,8 @@ async def analyze_champion(
             details={
                 "openings": len(patterns.get("openings", [])),
                 "objection_handlers": len(patterns.get("objection_handlers", [])),
-                "closes": len(patterns.get("closes", []))
-            }
+                "closes": len(patterns.get("closes", [])),
+            },
         )
         db.add(log)
         await db.commit()
@@ -268,19 +244,14 @@ async def analyze_champion(
             champion_id=champion.id,
             status="completed",
             message="Analysis complete. Patterns extracted successfully.",
-            patterns=patterns
+            patterns=patterns,
         )
 
     except Exception as e:
         logger.error("analysis_error", champion_id=champion_id, error=str(e))
 
         champion.status = "error"
-        log = AnalysisLog(
-            champion_id=champion_id,
-            step="analysis",
-            status="error",
-            error_message=str(e)
-        )
+        log = AnalysisLog(champion_id=champion_id, step="analysis", status="error", error_message=str(e))
         db.add(log)
         await db.commit()
 
@@ -289,8 +260,7 @@ async def analyze_champion(
 
 @router.get("/champions", response_model=list[ChampionListResponse])
 async def list_champions(
-    status: Optional[str] = Query(None, description="Filter by status"),
-    db: AsyncSession = Depends(get_db)
+    status: str | None = Query(None, description="Filter by status"), db: AsyncSession = Depends(get_db)
 ):
     """List all champions."""
     query = select(Champion).order_by(Champion.created_at.desc())
@@ -305,10 +275,7 @@ async def list_champions(
 
 
 @router.get("/champions/{champion_id}", response_model=ChampionResponse)
-async def get_champion(
-    champion_id: int,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_champion(champion_id: int, db: AsyncSession = Depends(get_db)):
     """Get a specific champion's details."""
     result = await db.execute(select(Champion).where(Champion.id == champion_id))
     champion = result.scalar_one_or_none()
@@ -326,15 +293,13 @@ async def get_champion(
         patterns_json=champion.patterns_json,
         status=champion.status,
         created_at=champion.created_at,
-        updated_at=champion.updated_at
+        updated_at=champion.updated_at,
     )
 
 
 @router.delete("/champions/{champion_id}")
 async def delete_champion(
-    champion_id: int,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    champion_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """Delete a champion and associated files."""
     result = await db.execute(select(Champion).where(Champion.id == champion_id))

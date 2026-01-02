@@ -14,29 +14,25 @@ Security tests:
 - Input validation
 """
 
+from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
-from datetime import datetime, timedelta
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import User, Champion, VoiceTrainingSession, VoiceTrainingMessage, Skill
-from agents.audit_agent.schemas import PerformanceLevel
-
+from models import Champion, Skill, User, VoiceTrainingMessage, VoiceTrainingSession
 
 # ============================================
 # Fixtures
 # ============================================
 
+
 @pytest.fixture
 async def test_skill(db_session: AsyncSession) -> Skill:
     """Create a test skill."""
     skill = Skill(
-        name="Ecoute Active",
-        slug="ecoute_active",
-        level="intermediate",
-        description="Skill d'ecoute active",
-        order=1
+        name="Ecoute Active", slug="ecoute_active", level="intermediate", description="Skill d'ecoute active", order=1
     )
     db_session.add(skill)
     await db_session.commit()
@@ -45,11 +41,7 @@ async def test_skill(db_session: AsyncSession) -> Skill:
 
 
 @pytest.fixture
-async def voice_session(
-    db_session: AsyncSession,
-    test_user: User,
-    test_skill: Skill
-) -> VoiceTrainingSession:
+async def voice_session(db_session: AsyncSession, test_user: User, test_skill: Skill) -> VoiceTrainingSession:
     """Create a voice training session for testing."""
     session = VoiceTrainingSession(
         user_id=test_user.id,
@@ -68,7 +60,7 @@ async def voice_session(
         converted=True,
         status="completed",
         score=78.5,
-        completed_at=datetime.utcnow()
+        completed_at=datetime.utcnow(),
     )
     db_session.add(session)
     await db_session.commit()
@@ -81,14 +73,14 @@ async def voice_session(
             role="prospect",
             text="Bonjour, je suis presse.",
             detected_patterns=[],
-            gauge_impact=0
+            gauge_impact=0,
         ),
         VoiceTrainingMessage(
             session_id=session.id,
             role="user",
             text="Je comprends, je serai bref. J'ai une solution qui pourrait vous faire gagner du temps.",
             detected_patterns=["empathy", "value_proposition"],
-            gauge_impact=10
+            gauge_impact=10,
         ),
     ]
     for msg in messages:
@@ -99,17 +91,9 @@ async def voice_session(
 
 
 @pytest.fixture
-async def other_user_session(
-    db_session: AsyncSession,
-    test_skill: Skill
-) -> VoiceTrainingSession:
+async def other_user_session(db_session: AsyncSession, test_skill: Skill) -> VoiceTrainingSession:
     """Create a session belonging to another user."""
-    other_user = User(
-        email="other@example.com",
-        hashed_password="hashed",
-        full_name="Other User",
-        is_active=True
-    )
+    other_user = User(email="other@example.com", hashed_password="hashed", full_name="Other User", is_active=True)
     db_session.add(other_user)
     await db_session.commit()
     await db_session.refresh(other_user)
@@ -121,7 +105,7 @@ async def other_user_session(
         scenario_json={"context": "Test"},
         starting_gauge=50,
         current_gauge=60,
-        status="completed"
+        status="completed",
     )
     db_session.add(session)
     await db_session.commit()
@@ -138,14 +122,12 @@ async def champion_with_patterns(db_session: AsyncSession) -> Champion:
         status="ready",
         patterns_json={
             "openings": ["Bonjour, comment allez-vous?"],
-            "objection_handlers": [
-                {"objection": "trop cher", "response": "Je comprends"}
-            ],
+            "objection_handlers": [{"objection": "trop cher", "response": "Je comprends"}],
             "closes": ["Qu'en pensez-vous?"],
             "key_phrases": ["Je comprends", "Excellent point"],
             "tone_style": "professionnel et empathique",
-            "success_patterns": ["empathy", "active_listening", "mirroring"]
-        }
+            "success_patterns": ["empathy", "active_listening", "mirroring"],
+        },
     )
     db_session.add(champion)
     await db_session.commit()
@@ -157,11 +139,12 @@ async def champion_with_patterns(db_session: AsyncSession) -> Champion:
 # Mock Helpers
 # ============================================
 
+
 def mock_audit_response():
     """Return a mock Claude API response for audit."""
     mock_response = MagicMock()
     mock_response.content = [MagicMock()]
-    mock_response.content[0].text = '''{
+    mock_response.content[0].text = """{
         "overall_score": 78.5,
         "performance_level": "bon",
         "skill_scores": {"empathy": 85, "listening": 75},
@@ -178,7 +161,7 @@ def mock_audit_response():
         "top_weakness": "Technique de closing",
         "immediate_action": "Pratiquer le closing",
         "audit_confidence": 0.85
-    }'''
+    }"""
     return mock_response
 
 
@@ -186,7 +169,7 @@ def mock_progress_response():
     """Return a mock Claude API response for progress report."""
     mock_response = MagicMock()
     mock_response.content = [MagicMock()]
-    mock_response.content[0].text = '''{
+    mock_response.content[0].text = """{
         "overall_trend": "improving",
         "score_evolution": [{"date": "2025-12-25", "score": 70}, {"date": "2025-12-30", "score": 78}],
         "avg_score": 74.0,
@@ -202,7 +185,7 @@ def mock_progress_response():
         "recommended_path": [{"skill": "closing", "action": "practice", "priority": 1}],
         "percentile_rank": 65,
         "comparison_to_average": 10
-    }'''
+    }"""
     return mock_response
 
 
@@ -210,7 +193,7 @@ def mock_digest_response():
     """Return a mock Claude API response for weekly digest."""
     mock_response = MagicMock()
     mock_response.content = [MagicMock()]
-    mock_response.content[0].text = '''{
+    mock_response.content[0].text = """{
         "sessions_completed": 3,
         "total_training_minutes": 45,
         "avg_score": 75.0,
@@ -222,7 +205,7 @@ def mock_digest_response():
         "daily_tips": ["Monday: Focus on opening", "Tuesday: Practice empathy"],
         "motivational_message": "Great progress this week!",
         "streak_days": 5
-    }'''
+    }"""
     return mock_response
 
 
@@ -230,7 +213,7 @@ def mock_comparison_response():
     """Return a mock Claude API response for champion comparison."""
     mock_response = MagicMock()
     mock_response.content = [MagicMock()]
-    mock_response.content[0].text = '''{
+    mock_response.content[0].text = """{
         "overall_similarity": 65,
         "technique_similarity": 70,
         "tone_similarity": 60,
@@ -239,13 +222,14 @@ def mock_comparison_response():
         "overused_techniques": ["filler_words"],
         "techniques_to_adopt": [{"technique": "mirroring", "priority": 1, "example": "I hear you say..."}],
         "habits_to_break": ["interrupting"]
-    }'''
+    }"""
     return mock_response
 
 
 # ============================================
 # Authentication Tests
 # ============================================
+
 
 class TestAuditAuthentication:
     """Tests for authentication requirements."""
@@ -285,41 +269,30 @@ class TestAuditAuthentication:
 # Authorization Tests
 # ============================================
 
+
 class TestAuditAuthorization:
     """Tests for authorization (access control)."""
 
     @pytest.mark.asyncio
     async def test_cannot_audit_other_users_session(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        other_user_session: VoiceTrainingSession
+        self, client: AsyncClient, auth_headers: dict, other_user_session: VoiceTrainingSession
     ):
         """Should deny access to other user's session."""
-        response = await client.get(
-            f"/audit/session/{other_user_session.id}",
-            headers=auth_headers
-        )
+        response = await client.get(f"/audit/session/{other_user_session.id}", headers=auth_headers)
         assert response.status_code == 403
         assert "Access denied" in response.json()["detail"]
 
     @pytest.mark.asyncio
     async def test_admin_can_audit_any_session(
-        self,
-        client: AsyncClient,
-        admin_auth_headers: dict,
-        other_user_session: VoiceTrainingSession
+        self, client: AsyncClient, admin_auth_headers: dict, other_user_session: VoiceTrainingSession
     ):
         """Admin should access any session."""
-        with patch('agents.audit_agent.agent.anthropic.AsyncAnthropic') as mock_anthropic:
+        with patch("agents.audit_agent.agent.anthropic.AsyncAnthropic") as mock_anthropic:
             mock_client = AsyncMock()
             mock_client.messages.create = AsyncMock(return_value=mock_audit_response())
             mock_anthropic.return_value = mock_client
 
-            response = await client.get(
-                f"/audit/session/{other_user_session.id}",
-                headers=admin_auth_headers
-            )
+            response = await client.get(f"/audit/session/{other_user_session.id}", headers=admin_auth_headers)
             # Should not be 403
             assert response.status_code != 403
 
@@ -328,15 +301,12 @@ class TestAuditAuthorization:
 # Session Audit Tests
 # ============================================
 
+
 class TestSessionAudit:
     """Tests for GET /audit/session/{session_id}."""
 
     @pytest.mark.asyncio
-    async def test_audit_session_not_found(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_audit_session_not_found(self, client: AsyncClient, auth_headers: dict):
         """Should return 404 for non-existent session."""
         response = await client.get("/audit/session/99999", headers=auth_headers)
         assert response.status_code == 404
@@ -344,21 +314,15 @@ class TestSessionAudit:
 
     @pytest.mark.asyncio
     async def test_audit_session_success(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        voice_session: VoiceTrainingSession
+        self, client: AsyncClient, auth_headers: dict, voice_session: VoiceTrainingSession
     ):
         """Should return audit for valid session."""
-        with patch('agents.audit_agent.agent.anthropic.AsyncAnthropic') as mock_anthropic:
+        with patch("agents.audit_agent.agent.anthropic.AsyncAnthropic") as mock_anthropic:
             mock_client = AsyncMock()
             mock_client.messages.create = AsyncMock(return_value=mock_audit_response())
             mock_anthropic.return_value = mock_client
 
-            response = await client.get(
-                f"/audit/session/{voice_session.id}",
-                headers=auth_headers
-            )
+            response = await client.get(f"/audit/session/{voice_session.id}", headers=auth_headers)
 
             assert response.status_code == 200
             data = response.json()
@@ -372,35 +336,24 @@ class TestSessionAudit:
 # Progress Report Tests
 # ============================================
 
+
 class TestProgressReport:
     """Tests for GET /audit/progress."""
 
     @pytest.mark.asyncio
-    async def test_progress_invalid_days_too_low(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_progress_invalid_days_too_low(self, client: AsyncClient, auth_headers: dict):
         """Should reject days < 1."""
         response = await client.get("/audit/progress?days=0", headers=auth_headers)
         assert response.status_code == 400
 
     @pytest.mark.asyncio
-    async def test_progress_invalid_days_too_high(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_progress_invalid_days_too_high(self, client: AsyncClient, auth_headers: dict):
         """Should reject days > 90."""
         response = await client.get("/audit/progress?days=91", headers=auth_headers)
         assert response.status_code == 400
 
     @pytest.mark.asyncio
-    async def test_progress_no_sessions(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_progress_no_sessions(self, client: AsyncClient, auth_headers: dict):
         """Should return message when no sessions found."""
         response = await client.get("/audit/progress?days=7", headers=auth_headers)
 
@@ -411,13 +364,10 @@ class TestProgressReport:
 
     @pytest.mark.asyncio
     async def test_progress_with_sessions(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        voice_session: VoiceTrainingSession
+        self, client: AsyncClient, auth_headers: dict, voice_session: VoiceTrainingSession
     ):
         """Should return progress report with sessions."""
-        with patch('agents.audit_agent.agent.anthropic.AsyncAnthropic') as mock_anthropic:
+        with patch("agents.audit_agent.agent.anthropic.AsyncAnthropic") as mock_anthropic:
             mock_client = AsyncMock()
             mock_client.messages.create = AsyncMock(return_value=mock_progress_response())
             mock_anthropic.return_value = mock_client
@@ -434,23 +384,18 @@ class TestProgressReport:
 # Weekly Digest Tests
 # ============================================
 
+
 class TestWeeklyDigest:
     """Tests for GET /audit/weekly-digest."""
 
     @pytest.mark.asyncio
-    async def test_digest_no_activity(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_digest_no_activity(self, client: AsyncClient, auth_headers: dict):
         """Should return default digest for no activity."""
         # When no sessions exist, the endpoint returns a default response
         # without calling Claude (caught ValueError in router)
-        with patch('api.routers.audit.AuditAgent') as mock_agent_class:
+        with patch("api.routers.audit.AuditAgent") as mock_agent_class:
             mock_agent = AsyncMock()
-            mock_agent.generate_weekly_digest = AsyncMock(
-                side_effect=ValueError("No sessions")
-            )
+            mock_agent.generate_weekly_digest = AsyncMock(side_effect=ValueError("No sessions"))
             mock_agent_class.return_value = mock_agent
 
             response = await client.get("/audit/weekly-digest", headers=auth_headers)
@@ -462,19 +407,13 @@ class TestWeeklyDigest:
 
     @pytest.mark.asyncio
     async def test_digest_with_activity(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        voice_session: VoiceTrainingSession
+        self, client: AsyncClient, auth_headers: dict, voice_session: VoiceTrainingSession
     ):
         """Should return personalized digest with activity."""
-        with patch('agents.audit_agent.agent.anthropic.AsyncAnthropic') as mock_anthropic:
+        with patch("agents.audit_agent.agent.anthropic.AsyncAnthropic") as mock_anthropic:
             mock_client = AsyncMock()
             # First call for progress report, second for digest
-            mock_client.messages.create = AsyncMock(side_effect=[
-                mock_progress_response(),
-                mock_digest_response()
-            ])
+            mock_client.messages.create = AsyncMock(side_effect=[mock_progress_response(), mock_digest_response()])
             mock_anthropic.return_value = mock_client
 
             response = await client.get("/audit/weekly-digest", headers=auth_headers)
@@ -488,15 +427,12 @@ class TestWeeklyDigest:
 # Next Action Tests
 # ============================================
 
+
 class TestNextAction:
     """Tests for GET /audit/next-action."""
 
     @pytest.mark.asyncio
-    async def test_next_action_new_user(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_next_action_new_user(self, client: AsyncClient, auth_headers: dict):
         """Should recommend first course for new user."""
         response = await client.get("/audit/next-action", headers=auth_headers)
 
@@ -511,41 +447,27 @@ class TestNextAction:
 # Champion Comparison Tests
 # ============================================
 
+
 class TestChampionComparison:
     """Tests for GET /audit/compare-champion/{champion_id}."""
 
     @pytest.mark.asyncio
-    async def test_compare_champion_not_found(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_compare_champion_not_found(self, client: AsyncClient, auth_headers: dict):
         """Should return 404 for non-existent champion."""
         response = await client.get("/audit/compare-champion/99999", headers=auth_headers)
         assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_compare_champion_no_patterns(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        db_session: AsyncSession
+        self, client: AsyncClient, auth_headers: dict, db_session: AsyncSession
     ):
         """Should return 400 for champion without patterns."""
-        champion = Champion(
-            name="New Champion",
-            description="Not analyzed",
-            status="uploaded",
-            patterns_json=None
-        )
+        champion = Champion(name="New Champion", description="Not analyzed", status="uploaded", patterns_json=None)
         db_session.add(champion)
         await db_session.commit()
         await db_session.refresh(champion)
 
-        response = await client.get(
-            f"/audit/compare-champion/{champion.id}",
-            headers=auth_headers
-        )
+        response = await client.get(f"/audit/compare-champion/{champion.id}", headers=auth_headers)
         assert response.status_code == 400
         assert "no extracted patterns" in response.json()["detail"].lower()
 
@@ -555,18 +477,15 @@ class TestChampionComparison:
         client: AsyncClient,
         auth_headers: dict,
         champion_with_patterns: Champion,
-        voice_session: VoiceTrainingSession
+        voice_session: VoiceTrainingSession,
     ):
         """Should return comparison with valid champion."""
-        with patch('agents.audit_agent.agent.anthropic.AsyncAnthropic') as mock_anthropic:
+        with patch("agents.audit_agent.agent.anthropic.AsyncAnthropic") as mock_anthropic:
             mock_client = AsyncMock()
             mock_client.messages.create = AsyncMock(return_value=mock_comparison_response())
             mock_anthropic.return_value = mock_client
 
-            response = await client.get(
-                f"/audit/compare-champion/{champion_with_patterns.id}",
-                headers=auth_headers
-            )
+            response = await client.get(f"/audit/compare-champion/{champion_with_patterns.id}", headers=auth_headers)
 
             assert response.status_code == 200
             data = response.json()
@@ -579,70 +498,44 @@ class TestChampionComparison:
 # Input Validation Tests (Security)
 # ============================================
 
+
 class TestInputValidation:
     """Tests for input validation and security."""
 
     @pytest.mark.asyncio
-    async def test_session_id_must_be_integer(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_session_id_must_be_integer(self, client: AsyncClient, auth_headers: dict):
         """Should reject non-integer session_id."""
         response = await client.get("/audit/session/abc", headers=auth_headers)
         assert response.status_code == 422  # Validation error
 
     @pytest.mark.asyncio
-    async def test_session_id_must_be_positive(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_session_id_must_be_positive(self, client: AsyncClient, auth_headers: dict):
         """Should handle negative session_id."""
         response = await client.get("/audit/session/-1", headers=auth_headers)
         # Either 422 (validation) or 404 (not found)
         assert response.status_code in [404, 422]
 
     @pytest.mark.asyncio
-    async def test_days_must_be_integer(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_days_must_be_integer(self, client: AsyncClient, auth_headers: dict):
         """Should reject non-integer days parameter."""
         response = await client.get("/audit/progress?days=abc", headers=auth_headers)
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_champion_id_must_be_integer(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_champion_id_must_be_integer(self, client: AsyncClient, auth_headers: dict):
         """Should reject non-integer champion_id."""
         response = await client.get("/audit/compare-champion/abc", headers=auth_headers)
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_sql_injection_in_session_id(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_sql_injection_in_session_id(self, client: AsyncClient, auth_headers: dict):
         """Should not be vulnerable to SQL injection."""
-        response = await client.get(
-            "/audit/session/1; DROP TABLE users;--",
-            headers=auth_headers
-        )
+        response = await client.get("/audit/session/1; DROP TABLE users;--", headers=auth_headers)
         # Should be rejected as invalid input
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_large_days_value(
-        self,
-        client: AsyncClient,
-        auth_headers: dict
-    ):
+    async def test_large_days_value(self, client: AsyncClient, auth_headers: dict):
         """Should handle extremely large days value."""
         response = await client.get("/audit/progress?days=999999", headers=auth_headers)
         assert response.status_code == 400
@@ -652,28 +545,21 @@ class TestInputValidation:
 # Error Handling Tests
 # ============================================
 
+
 class TestErrorHandling:
     """Tests for error handling."""
 
     @pytest.mark.asyncio
     async def test_api_error_handling(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        voice_session: VoiceTrainingSession
+        self, client: AsyncClient, auth_headers: dict, voice_session: VoiceTrainingSession
     ):
         """Should handle API errors gracefully."""
-        with patch('agents.audit_agent.agent.anthropic.AsyncAnthropic') as mock_anthropic:
+        with patch("agents.audit_agent.agent.anthropic.AsyncAnthropic") as mock_anthropic:
             mock_client = AsyncMock()
-            mock_client.messages.create = AsyncMock(
-                side_effect=Exception("API Error")
-            )
+            mock_client.messages.create = AsyncMock(side_effect=Exception("API Error"))
             mock_anthropic.return_value = mock_client
 
-            response = await client.get(
-                f"/audit/session/{voice_session.id}",
-                headers=auth_headers
-            )
+            response = await client.get(f"/audit/session/{voice_session.id}", headers=auth_headers)
 
             assert response.status_code == 500
             assert "Audit failed" in response.json()["detail"]

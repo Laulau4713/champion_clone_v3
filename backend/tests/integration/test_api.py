@@ -43,9 +43,7 @@ class TestAuthRegister:
         assert "hashed_password" not in data
 
     @pytest.mark.asyncio
-    async def test_register_weak_password_fails(
-        self, client: AsyncClient, weak_password_data: dict
-    ):
+    async def test_register_weak_password_fails(self, client: AsyncClient, weak_password_data: dict):
         """Should reject weak password."""
         response = await client.post("/auth/register", json=weak_password_data)
 
@@ -54,15 +52,11 @@ class TestAuthRegister:
         assert "ValidationError" in str(data)
 
     @pytest.mark.asyncio
-    async def test_register_duplicate_email_fails(
-        self, client: AsyncClient, test_user: User
-    ):
+    async def test_register_duplicate_email_fails(self, client: AsyncClient, test_user: User):
         """Should reject duplicate email."""
-        response = await client.post("/auth/register", json={
-            "email": test_user.email,
-            "password": "ValidPass123$",
-            "full_name": "Duplicate"
-        })
+        response = await client.post(
+            "/auth/register", json={"email": test_user.email, "password": "ValidPass123$", "full_name": "Duplicate"}
+        )
 
         assert response.status_code == 409
         data = response.json()
@@ -75,10 +69,7 @@ class TestAuthLogin:
     @pytest.mark.asyncio
     async def test_login_success(self, client: AsyncClient, test_user: User):
         """Should login successfully with correct credentials."""
-        response = await client.post("/auth/login", json={
-            "email": test_user.email,
-            "password": "TestPass123$"
-        })
+        response = await client.post("/auth/login", json={"email": test_user.email, "password": "TestPass123$"})
 
         assert response.status_code == 200
         data = response.json()
@@ -88,14 +79,9 @@ class TestAuthLogin:
         assert data["expires_in"] > 0
 
     @pytest.mark.asyncio
-    async def test_login_wrong_password_fails(
-        self, client: AsyncClient, test_user: User
-    ):
+    async def test_login_wrong_password_fails(self, client: AsyncClient, test_user: User):
         """Should reject incorrect password."""
-        response = await client.post("/auth/login", json={
-            "email": test_user.email,
-            "password": "WrongPassword123$"
-        })
+        response = await client.post("/auth/login", json={"email": test_user.email, "password": "WrongPassword123$"})
 
         assert response.status_code == 401
         data = response.json()
@@ -104,22 +90,16 @@ class TestAuthLogin:
     @pytest.mark.asyncio
     async def test_login_nonexistent_email_fails(self, client: AsyncClient):
         """Should reject non-existent email."""
-        response = await client.post("/auth/login", json={
-            "email": "nonexistent@example.com",
-            "password": "TestPass123$"
-        })
+        response = await client.post(
+            "/auth/login", json={"email": "nonexistent@example.com", "password": "TestPass123$"}
+        )
 
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_login_inactive_user_fails(
-        self, client: AsyncClient, inactive_user: User
-    ):
+    async def test_login_inactive_user_fails(self, client: AsyncClient, inactive_user: User):
         """Should reject inactive user."""
-        response = await client.post("/auth/login", json={
-            "email": inactive_user.email,
-            "password": "TestPass123$"
-        })
+        response = await client.post("/auth/login", json={"email": inactive_user.email, "password": "TestPass123$"})
 
         assert response.status_code == 401
         data = response.json()
@@ -130,9 +110,7 @@ class TestAuthMe:
     """Tests for /auth/me endpoint."""
 
     @pytest.mark.asyncio
-    async def test_me_with_valid_token(
-        self, client: AsyncClient, test_user: User, auth_headers: dict
-    ):
+    async def test_me_with_valid_token(self, client: AsyncClient, test_user: User, auth_headers: dict):
         """Should return current user with valid token."""
         response = await client.get("/auth/me", headers=auth_headers)
 
@@ -151,10 +129,7 @@ class TestAuthMe:
     @pytest.mark.asyncio
     async def test_me_with_invalid_token_fails(self, client: AsyncClient):
         """Should reject invalid token."""
-        response = await client.get(
-            "/auth/me",
-            headers={"Authorization": "Bearer invalid.token.here"}
-        )
+        response = await client.get("/auth/me", headers={"Authorization": "Bearer invalid.token.here"})
 
         assert response.status_code == 401
 
@@ -163,21 +138,14 @@ class TestAuthRefresh:
     """Tests for /auth/refresh endpoint."""
 
     @pytest.mark.asyncio
-    async def test_refresh_with_valid_token(
-        self, client: AsyncClient, test_user: User
-    ):
+    async def test_refresh_with_valid_token(self, client: AsyncClient, test_user: User):
         """Should refresh access token with valid refresh token."""
         # First login to get refresh token
-        login_response = await client.post("/auth/login", json={
-            "email": test_user.email,
-            "password": "TestPass123$"
-        })
+        login_response = await client.post("/auth/login", json={"email": test_user.email, "password": "TestPass123$"})
         refresh_token = login_response.json()["refresh_token"]
 
         # Then refresh
-        response = await client.post("/auth/refresh", json={
-            "refresh_token": refresh_token
-        })
+        response = await client.post("/auth/refresh", json={"refresh_token": refresh_token})
 
         assert response.status_code == 200
         data = response.json()
@@ -186,9 +154,7 @@ class TestAuthRefresh:
     @pytest.mark.asyncio
     async def test_refresh_with_invalid_token_fails(self, client: AsyncClient):
         """Should reject invalid refresh token."""
-        response = await client.post("/auth/refresh", json={
-            "refresh_token": "invalid.refresh.token"
-        })
+        response = await client.post("/auth/refresh", json={"refresh_token": "invalid.refresh.token"})
 
         assert response.status_code == 401
 
@@ -200,17 +166,14 @@ class TestAuthLogout:
     async def test_logout_success(self, client: AsyncClient, test_user: User):
         """Should successfully logout and revoke refresh token."""
         # First login
-        login_response = await client.post("/auth/login", json={
-            "email": test_user.email,
-            "password": "TestPass123$"
-        })
+        login_response = await client.post("/auth/login", json={"email": test_user.email, "password": "TestPass123$"})
         tokens = login_response.json()
 
         # Then logout
         response = await client.post(
             "/auth/logout",
             headers={"Authorization": f"Bearer {tokens['access_token']}"},
-            json={"refresh_token": tokens["refresh_token"]}
+            json={"refresh_token": tokens["refresh_token"]},
         )
 
         assert response.status_code == 200
@@ -218,17 +181,13 @@ class TestAuthLogout:
         assert data["message"] == "Successfully logged out"
 
         # Verify refresh token is revoked
-        refresh_response = await client.post("/auth/refresh", json={
-            "refresh_token": tokens["refresh_token"]
-        })
+        refresh_response = await client.post("/auth/refresh", json={"refresh_token": tokens["refresh_token"]})
         assert refresh_response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_logout_without_auth_fails(self, client: AsyncClient):
         """Should reject logout without authentication."""
-        response = await client.post("/auth/logout", json={
-            "refresh_token": "some.token.here"
-        })
+        response = await client.post("/auth/logout", json={"refresh_token": "some.token.here"})
         assert response.status_code == 401
 
 
@@ -239,37 +198,24 @@ class TestAuthLogoutAll:
     async def test_logout_all_success(self, client: AsyncClient, test_user: User):
         """Should logout from all devices."""
         # Login twice to create multiple tokens
-        login1 = await client.post("/auth/login", json={
-            "email": test_user.email,
-            "password": "TestPass123$"
-        })
+        login1 = await client.post("/auth/login", json={"email": test_user.email, "password": "TestPass123$"})
         tokens1 = login1.json()
 
-        login2 = await client.post("/auth/login", json={
-            "email": test_user.email,
-            "password": "TestPass123$"
-        })
+        login2 = await client.post("/auth/login", json={"email": test_user.email, "password": "TestPass123$"})
         tokens2 = login2.json()
 
         # Logout all using first token
-        response = await client.post(
-            "/auth/logout-all",
-            headers={"Authorization": f"Bearer {tokens1['access_token']}"}
-        )
+        response = await client.post("/auth/logout-all", headers={"Authorization": f"Bearer {tokens1['access_token']}"})
 
         assert response.status_code == 200
         data = response.json()
         assert "Successfully logged out from all devices" in data["message"]
 
         # Verify both refresh tokens are revoked
-        refresh1 = await client.post("/auth/refresh", json={
-            "refresh_token": tokens1["refresh_token"]
-        })
+        refresh1 = await client.post("/auth/refresh", json={"refresh_token": tokens1["refresh_token"]})
         assert refresh1.status_code == 401
 
-        refresh2 = await client.post("/auth/refresh", json={
-            "refresh_token": tokens2["refresh_token"]
-        })
+        refresh2 = await client.post("/auth/refresh", json={"refresh_token": tokens2["refresh_token"]})
         assert refresh2.status_code == 401
 
 
@@ -288,9 +234,7 @@ class TestChampionEndpoints:
     async def test_upload_without_auth_fails(self, client: AsyncClient):
         """Should reject upload without authentication."""
         response = await client.post(
-            "/upload",
-            data={"name": "Test Champion"},
-            files={"video": ("test.mp4", b"fake video content", "video/mp4")}
+            "/upload", data={"name": "Test Champion"}, files={"video": ("test.mp4", b"fake video content", "video/mp4")}
         )
 
         assert response.status_code == 401

@@ -8,11 +8,11 @@ import hmac
 import json
 import secrets
 from datetime import datetime, timedelta
-from typing import Optional
+
 import httpx
-from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
 import structlog
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import WebhookEndpoint, WebhookLog
 
@@ -34,7 +34,7 @@ class WebhookService:
         "training.started",
         "training.completed",
         "subscription.changed",
-        "subscription.expired"
+        "subscription.expired",
     ]
 
     def __init__(self, db: AsyncSession):
@@ -54,31 +54,17 @@ class WebhookService:
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
-    async def get_endpoint(self, endpoint_id: int) -> Optional[WebhookEndpoint]:
+    async def get_endpoint(self, endpoint_id: int) -> WebhookEndpoint | None:
         """Get a webhook endpoint by ID."""
-        result = await self.db.execute(
-            select(WebhookEndpoint).where(WebhookEndpoint.id == endpoint_id)
-        )
+        result = await self.db.execute(select(WebhookEndpoint).where(WebhookEndpoint.id == endpoint_id))
         return result.scalar_one_or_none()
 
-    async def create_endpoint(
-        self,
-        name: str,
-        url: str,
-        events: list[str],
-        is_active: bool = True
-    ) -> WebhookEndpoint:
+    async def create_endpoint(self, name: str, url: str, events: list[str], is_active: bool = True) -> WebhookEndpoint:
         """Create a new webhook endpoint."""
         # Generate secret for HMAC
         secret = secrets.token_hex(32)
 
-        endpoint = WebhookEndpoint(
-            name=name,
-            url=url,
-            secret=secret,
-            events=events,
-            is_active=is_active
-        )
+        endpoint = WebhookEndpoint(name=name, url=url, secret=secret, events=events, is_active=is_active)
         self.db.add(endpoint)
         await self.db.commit()
         await self.db.refresh(endpoint)
@@ -87,11 +73,11 @@ class WebhookService:
     async def update_endpoint(
         self,
         endpoint_id: int,
-        name: Optional[str] = None,
-        url: Optional[str] = None,
-        events: Optional[list[str]] = None,
-        is_active: Optional[bool] = None
-    ) -> Optional[WebhookEndpoint]:
+        name: str | None = None,
+        url: str | None = None,
+        events: list[str] | None = None,
+        is_active: bool | None = None,
+    ) -> WebhookEndpoint | None:
         """Update a webhook endpoint."""
         endpoint = await self.get_endpoint(endpoint_id)
         if not endpoint:
@@ -120,7 +106,7 @@ class WebhookService:
         await self.db.commit()
         return True
 
-    async def regenerate_secret(self, endpoint_id: int) -> Optional[str]:
+    async def regenerate_secret(self, endpoint_id: int) -> str | None:
         """Regenerate the secret for an endpoint."""
         endpoint = await self.get_endpoint(endpoint_id)
         if not endpoint:
@@ -138,18 +124,9 @@ class WebhookService:
 
     def _sign_payload(self, payload: str, secret: str) -> str:
         """Create HMAC signature for payload."""
-        return hmac.new(
-            secret.encode(),
-            payload.encode(),
-            hashlib.sha256
-        ).hexdigest()
+        return hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
 
-    async def send_event(
-        self,
-        event: str,
-        payload: dict,
-        endpoint_id: Optional[int] = None
-    ) -> list[WebhookLog]:
+    async def send_event(self, event: str, payload: dict, endpoint_id: int | None = None) -> list[WebhookLog]:
         """Send an event to all subscribed endpoints."""
         logs = []
 
@@ -167,31 +144,17 @@ class WebhookService:
 
         return logs
 
-    async def _deliver_webhook(
-        self,
-        endpoint: WebhookEndpoint,
-        event: str,
-        payload: dict
-    ) -> WebhookLog:
+    async def _deliver_webhook(self, endpoint: WebhookEndpoint, event: str, payload: dict) -> WebhookLog:
         """Deliver a webhook to a single endpoint."""
         # Prepare payload
-        full_payload = {
-            "event": event,
-            "timestamp": datetime.utcnow().isoformat(),
-            "data": payload
-        }
+        full_payload = {"event": event, "timestamp": datetime.utcnow().isoformat(), "data": payload}
         payload_json = json.dumps(full_payload, default=str)
 
         # Create signature
         signature = self._sign_payload(payload_json, endpoint.secret)
 
         # Create log entry
-        log = WebhookLog(
-            endpoint_id=endpoint.id,
-            event=event,
-            payload=full_payload,
-            status="pending"
-        )
+        log = WebhookLog(endpoint_id=endpoint.id, event=event, payload=full_payload, status="pending")
         self.db.add(log)
         await self.db.commit()
         await self.db.refresh(log)
@@ -206,8 +169,8 @@ class WebhookService:
                         "Content-Type": "application/json",
                         "X-Webhook-Signature": f"sha256={signature}",
                         "X-Webhook-Event": event,
-                        "X-Webhook-Timestamp": full_payload["timestamp"]
-                    }
+                        "X-Webhook-Timestamp": full_payload["timestamp"],
+                    },
                 )
 
                 log.response_code = response.status_code
@@ -216,20 +179,14 @@ class WebhookService:
                 if 200 <= response.status_code < 300:
                     log.status = "success"
                     logger.info(
-                        "webhook_delivered",
-                        endpoint=endpoint.name,
-                        event=event,
-                        status_code=response.status_code
+                        "webhook_delivered", endpoint=endpoint.name, event=event, status_code=response.status_code
                     )
                 else:
                     log.status = "failed"
                     log.error_message = f"HTTP {response.status_code}"
                     log.next_retry_at = datetime.utcnow() + timedelta(minutes=5)
                     logger.warning(
-                        "webhook_failed",
-                        endpoint=endpoint.name,
-                        event=event,
-                        status_code=response.status_code
+                        "webhook_failed", endpoint=endpoint.name, event=event, status_code=response.status_code
                     )
 
         except httpx.TimeoutException:
@@ -248,11 +205,9 @@ class WebhookService:
         await self.db.refresh(log)
         return log
 
-    async def retry_webhook(self, log_id: int) -> Optional[WebhookLog]:
+    async def retry_webhook(self, log_id: int) -> WebhookLog | None:
         """Retry a failed webhook."""
-        result = await self.db.execute(
-            select(WebhookLog).where(WebhookLog.id == log_id)
-        )
+        result = await self.db.execute(select(WebhookLog).where(WebhookLog.id == log_id))
         log = result.scalar_one_or_none()
         if not log or log.status == "success":
             return None
@@ -273,7 +228,7 @@ class WebhookService:
             select(WebhookLog).where(
                 WebhookLog.status == "failed",
                 WebhookLog.next_retry_at <= datetime.utcnow(),
-                WebhookLog.attempts < 5  # Max 5 attempts
+                WebhookLog.attempts < 5,  # Max 5 attempts
             )
         )
         logs = result.scalars().all()
@@ -291,11 +246,11 @@ class WebhookService:
 
     async def get_logs(
         self,
-        endpoint_id: Optional[int] = None,
-        event: Optional[str] = None,
-        status: Optional[str] = None,
+        endpoint_id: int | None = None,
+        event: str | None = None,
+        status: str | None = None,
         limit: int = 50,
-        offset: int = 0
+        offset: int = 0,
     ) -> tuple[list[WebhookLog], int]:
         """Get webhook logs with optional filtering."""
         query = select(WebhookLog)
@@ -330,23 +285,16 @@ class WebhookService:
         total = total_result.scalar() or 0
 
         # Success
-        success_result = await self.db.execute(
-            select(func.count(WebhookLog.id)).where(WebhookLog.status == "success")
-        )
+        success_result = await self.db.execute(select(func.count(WebhookLog.id)).where(WebhookLog.status == "success"))
         success = success_result.scalar() or 0
 
         # Failed
-        failed_result = await self.db.execute(
-            select(func.count(WebhookLog.id)).where(WebhookLog.status == "failed")
-        )
+        failed_result = await self.db.execute(select(func.count(WebhookLog.id)).where(WebhookLog.status == "failed"))
         failed = failed_result.scalar() or 0
 
         # Pending retries
         pending_result = await self.db.execute(
-            select(func.count(WebhookLog.id)).where(
-                WebhookLog.status == "failed",
-                WebhookLog.next_retry_at.isnot(None)
-            )
+            select(func.count(WebhookLog.id)).where(WebhookLog.status == "failed", WebhookLog.next_retry_at.isnot(None))
         )
         pending_retries = pending_result.scalar() or 0
 
@@ -374,70 +322,38 @@ class WebhookService:
             "success_rate": round((success / total * 100) if total > 0 else 0, 1),
             "by_event": by_event,
             "active_endpoints": active_endpoints,
-            "available_events": self.EVENTS
+            "available_events": self.EVENTS,
         }
 
     # =========================================================================
     # CONVENIENCE METHODS FOR COMMON EVENTS
     # =========================================================================
 
-    async def emit_user_registered(self, user_id: int, email: str, name: Optional[str] = None):
+    async def emit_user_registered(self, user_id: int, email: str, name: str | None = None):
         """Emit user.registered event."""
-        await self.send_event("user.registered", {
-            "user_id": user_id,
-            "email": email,
-            "name": name
-        })
+        await self.send_event("user.registered", {"user_id": user_id, "email": email, "name": name})
 
     async def emit_user_login(self, user_id: int, email: str):
         """Emit user.login event."""
-        await self.send_event("user.login", {
-            "user_id": user_id,
-            "email": email
-        })
+        await self.send_event("user.login", {"user_id": user_id, "email": email})
 
     async def emit_champion_created(self, user_id: int, champion_id: int, name: str):
         """Emit champion.created event."""
-        await self.send_event("champion.created", {
-            "user_id": user_id,
-            "champion_id": champion_id,
-            "name": name
-        })
+        await self.send_event("champion.created", {"user_id": user_id, "champion_id": champion_id, "name": name})
 
     async def emit_champion_analyzed(self, user_id: int, champion_id: int, name: str):
         """Emit champion.analyzed event."""
-        await self.send_event("champion.analyzed", {
-            "user_id": user_id,
-            "champion_id": champion_id,
-            "name": name
-        })
+        await self.send_event("champion.analyzed", {"user_id": user_id, "champion_id": champion_id, "name": name})
 
-    async def emit_training_completed(
-        self,
-        user_id: int,
-        session_id: int,
-        champion_id: int,
-        score: float
-    ):
+    async def emit_training_completed(self, user_id: int, session_id: int, champion_id: int, score: float):
         """Emit training.completed event."""
-        await self.send_event("training.completed", {
-            "user_id": user_id,
-            "session_id": session_id,
-            "champion_id": champion_id,
-            "score": score
-        })
+        await self.send_event(
+            "training.completed",
+            {"user_id": user_id, "session_id": session_id, "champion_id": champion_id, "score": score},
+        )
 
-    async def emit_subscription_changed(
-        self,
-        user_id: int,
-        from_plan: str,
-        to_plan: str,
-        event_type: str
-    ):
+    async def emit_subscription_changed(self, user_id: int, from_plan: str, to_plan: str, event_type: str):
         """Emit subscription.changed event."""
-        await self.send_event("subscription.changed", {
-            "user_id": user_id,
-            "from_plan": from_plan,
-            "to_plan": to_plan,
-            "type": event_type
-        })
+        await self.send_event(
+            "subscription.changed", {"user_id": user_id, "from_plan": from_plan, "to_plan": to_plan, "type": event_type}
+        )

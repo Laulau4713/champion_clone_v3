@@ -18,15 +18,19 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import (
-    User, Champion, TrainingSession, ActivityLog, ErrorLog,
-    EmailTemplate, EmailLog, WebhookEndpoint, WebhookLog,
-    AdminAlert, AdminNote, UserJourney
+    ActivityLog,
+    AdminAlert,
+    AdminNote,
+    EmailTemplate,
+    ErrorLog,
+    User,
+    WebhookEndpoint,
 )
-
 
 # ============================================
 # Stats Endpoints Tests
 # ============================================
+
 
 class TestAdminStats:
     """Tests for /admin/stats endpoints."""
@@ -107,6 +111,7 @@ class TestAdminStats:
 # Users Endpoints Tests
 # ============================================
 
+
 class TestAdminUsers:
     """Tests for /admin/users endpoints."""
 
@@ -161,9 +166,7 @@ class TestAdminUsers:
     async def test_update_user(self, client: AsyncClient, admin_auth_headers: dict, test_user: User):
         """Admin can update user via PATCH."""
         response = await client.patch(
-            f"/admin/users/{test_user.id}",
-            headers=admin_auth_headers,
-            json={"is_active": False}
+            f"/admin/users/{test_user.id}", headers=admin_auth_headers, json={"is_active": False}
         )
         assert response.status_code == 200
         data = response.json()
@@ -174,9 +177,7 @@ class TestAdminUsers:
     async def test_update_user_role(self, client: AsyncClient, admin_auth_headers: dict, test_user: User):
         """Admin can update user role."""
         response = await client.patch(
-            f"/admin/users/{test_user.id}",
-            headers=admin_auth_headers,
-            json={"role": "admin"}
+            f"/admin/users/{test_user.id}", headers=admin_auth_headers, json={"role": "admin"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -197,6 +198,7 @@ class TestAdminUsers:
 # Sessions Endpoints Tests
 # ============================================
 
+
 class TestAdminSessions:
     """Tests for /admin/sessions endpoints."""
 
@@ -211,36 +213,25 @@ class TestAdminSessions:
 
     @pytest.mark.asyncio
     async def test_list_sessions_with_status_filter(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession, test_user: User
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession, test_user: User
     ):
         """Admin can filter sessions by status."""
-        from models import TrainingSession, Champion
+        from models import Champion, TrainingSession
 
         # Create a champion first
-        champion = Champion(
-            user_id=test_user.id,
-            name="Test Champion",
-            status="ready"
-        )
+        champion = Champion(user_id=test_user.id, name="Test Champion", status="ready")
         db_session.add(champion)
         await db_session.commit()
         await db_session.refresh(champion)
 
         # Create sessions
         session = TrainingSession(
-            user_id=str(test_user.id),
-            champion_id=champion.id,
-            scenario={"context": "test"},
-            status="completed"
+            user_id=str(test_user.id), champion_id=champion.id, scenario={"context": "test"}, status="completed"
         )
         db_session.add(session)
         await db_session.commit()
 
-        response = await client.get(
-            "/admin/sessions?status=completed",
-            headers=admin_auth_headers
-        )
+        response = await client.get("/admin/sessions?status=completed", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         for item in data["items"]:
@@ -248,34 +239,23 @@ class TestAdminSessions:
 
     @pytest.mark.asyncio
     async def test_list_sessions_with_champion_filter(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession, test_user: User
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession, test_user: User
     ):
         """Admin can filter sessions by champion."""
-        from models import TrainingSession, Champion
+        from models import Champion, TrainingSession
 
-        champion = Champion(
-            user_id=test_user.id,
-            name="Filter Test Champion",
-            status="ready"
-        )
+        champion = Champion(user_id=test_user.id, name="Filter Test Champion", status="ready")
         db_session.add(champion)
         await db_session.commit()
         await db_session.refresh(champion)
 
         session = TrainingSession(
-            user_id=str(test_user.id),
-            champion_id=champion.id,
-            scenario={"context": "test"},
-            status="active"
+            user_id=str(test_user.id), champion_id=champion.id, scenario={"context": "test"}, status="active"
         )
         db_session.add(session)
         await db_session.commit()
 
-        response = await client.get(
-            f"/admin/sessions?champion_id={champion.id}",
-            headers=admin_auth_headers
-        )
+        response = await client.get(f"/admin/sessions?champion_id={champion.id}", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         for item in data["items"]:
@@ -285,6 +265,7 @@ class TestAdminSessions:
 # ============================================
 # Activities Endpoints Tests
 # ============================================
+
 
 class TestAdminActivities:
     """Tests for /admin/activities endpoints."""
@@ -299,16 +280,11 @@ class TestAdminActivities:
 
     @pytest.mark.asyncio
     async def test_list_activities_filter_by_action(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession, test_user: User
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession, test_user: User
     ):
         """Admin can filter activities by action."""
         # Create an activity
-        activity = ActivityLog(
-            user_id=test_user.id,
-            action="login",
-            ip_address="127.0.0.1"
-        )
+        activity = ActivityLog(user_id=test_user.id, action="login", ip_address="127.0.0.1")
         db_session.add(activity)
         await db_session.commit()
 
@@ -323,6 +299,7 @@ class TestAdminActivities:
 # Errors Endpoints Tests
 # ============================================
 
+
 class TestAdminErrors:
     """Tests for /admin/errors endpoints."""
 
@@ -336,16 +313,12 @@ class TestAdminErrors:
 
     @pytest.mark.asyncio
     async def test_list_errors_filter_resolved(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession
     ):
         """Admin can filter errors by resolved status."""
         # Create an error
         error = ErrorLog(
-            error_type="TestError",
-            error_message="Test error message",
-            endpoint="/test",
-            is_resolved=False
+            error_type="TestError", error_message="Test error message", endpoint="/test", is_resolved=False
         )
         db_session.add(error)
         await db_session.commit()
@@ -354,16 +327,9 @@ class TestAdminErrors:
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_get_error_detail(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_get_error_detail(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can get error details."""
-        error = ErrorLog(
-            error_type="DetailError",
-            error_message="Detail test",
-            endpoint="/detail"
-        )
+        error = ErrorLog(error_type="DetailError", error_message="Detail test", endpoint="/detail")
         db_session.add(error)
         await db_session.commit()
         await db_session.refresh(error)
@@ -372,17 +338,9 @@ class TestAdminErrors:
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_resolve_error(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_resolve_error(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can resolve an error."""
-        error = ErrorLog(
-            error_type="TestError",
-            error_message="Test",
-            endpoint="/test",
-            is_resolved=False
-        )
+        error = ErrorLog(error_type="TestError", error_message="Test", endpoint="/test", is_resolved=False)
         db_session.add(error)
         await db_session.commit()
         await db_session.refresh(error)
@@ -390,7 +348,7 @@ class TestAdminErrors:
         response = await client.post(
             f"/admin/errors/{error.id}/resolve",
             headers=admin_auth_headers,
-            json={"resolution_notes": "Fixed the issue"}
+            json={"resolution_notes": "Fixed the issue"},
         )
         assert response.status_code == 200
         data = response.json()
@@ -401,6 +359,7 @@ class TestAdminErrors:
 # ============================================
 # Email Templates Endpoints Tests
 # ============================================
+
 
 class TestAdminEmails:
     """Tests for /admin/email-templates and /admin/email-logs endpoints."""
@@ -424,8 +383,8 @@ class TestAdminEmails:
                 "trigger": "test.event",
                 "subject": "Test Subject",
                 "body_html": "<h1>Test</h1>",
-                "body_text": "Test"
-            }
+                "body_text": "Test",
+            },
         )
         assert response.status_code == 200
         data = response.json()
@@ -434,15 +393,11 @@ class TestAdminEmails:
 
     @pytest.mark.asyncio
     async def test_create_duplicate_template_fails(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession
     ):
         """Should reject duplicate trigger."""
         template = EmailTemplate(
-            trigger="duplicate.trigger",
-            subject="Original",
-            body_html="<p>Original</p>",
-            body_text="Original"
+            trigger="duplicate.trigger", subject="Original", body_html="<p>Original</p>", body_text="Original"
         )
         db_session.add(template)
         await db_session.commit()
@@ -454,8 +409,8 @@ class TestAdminEmails:
                 "trigger": "duplicate.trigger",
                 "subject": "Duplicate",
                 "body_html": "<p>Dup</p>",
-                "body_text": "Dup"
-            }
+                "body_text": "Dup",
+            },
         )
         assert response.status_code == 400
 
@@ -469,9 +424,7 @@ class TestAdminEmails:
     async def test_update_template_not_found(self, client: AsyncClient, admin_auth_headers: dict):
         """Should return 404 when updating non-existent template."""
         response = await client.patch(
-            "/admin/email-templates/99999",
-            headers=admin_auth_headers,
-            json={"subject": "Ghost Template"}
+            "/admin/email-templates/99999", headers=admin_auth_headers, json={"subject": "Ghost Template"}
         )
         assert response.status_code == 404
 
@@ -484,82 +437,54 @@ class TestAdminEmails:
     @pytest.mark.asyncio
     async def test_send_test_email_template_not_found(self, client: AsyncClient, admin_auth_headers: dict):
         """Should return 404 when testing non-existent template."""
-        response = await client.post(
-            "/admin/email-templates/99999/send-test",
-            headers=admin_auth_headers
-        )
+        response = await client.post("/admin/email-templates/99999/send-test", headers=admin_auth_headers)
         assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_list_email_logs_with_filters(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession, test_user: User
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession, test_user: User
     ):
         """Admin can filter email logs."""
         from models import EmailLog
 
         log = EmailLog(
-            user_id=test_user.id,
-            trigger="test.trigger",
-            to_email=test_user.email,
-            subject="Test",
-            status="sent"
+            user_id=test_user.id, trigger="test.trigger", to_email=test_user.email, subject="Test", status="sent"
         )
         db_session.add(log)
         await db_session.commit()
 
         response = await client.get(
-            f"/admin/email-logs?user_id={test_user.id}&trigger=test.trigger&status=sent",
-            headers=admin_auth_headers
+            f"/admin/email-logs?user_id={test_user.id}&trigger=test.trigger&status=sent", headers=admin_auth_headers
         )
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
 
     @pytest.mark.asyncio
-    async def test_get_email_template(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_get_email_template(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can get a single email template."""
-        template = EmailTemplate(
-            trigger="get.test",
-            subject="Get Test",
-            body_html="<p>Test</p>",
-            body_text="Test"
-        )
+        template = EmailTemplate(trigger="get.test", subject="Get Test", body_html="<p>Test</p>", body_text="Test")
         db_session.add(template)
         await db_session.commit()
         await db_session.refresh(template)
 
-        response = await client.get(
-            f"/admin/email-templates/{template.id}",
-            headers=admin_auth_headers
-        )
+        response = await client.get(f"/admin/email-templates/{template.id}", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data["trigger"] == "get.test"
 
     @pytest.mark.asyncio
-    async def test_update_email_template(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_update_email_template(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can update an email template."""
         template = EmailTemplate(
-            trigger="update.test",
-            subject="Original",
-            body_html="<p>Original</p>",
-            body_text="Original"
+            trigger="update.test", subject="Original", body_html="<p>Original</p>", body_text="Original"
         )
         db_session.add(template)
         await db_session.commit()
         await db_session.refresh(template)
 
         response = await client.patch(
-            f"/admin/email-templates/{template.id}",
-            headers=admin_auth_headers,
-            json={"subject": "Updated Subject"}
+            f"/admin/email-templates/{template.id}", headers=admin_auth_headers, json={"subject": "Updated Subject"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -567,25 +492,14 @@ class TestAdminEmails:
         assert data["template_id"] == template.id
 
     @pytest.mark.asyncio
-    async def test_delete_email_template(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_delete_email_template(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can delete an email template."""
-        template = EmailTemplate(
-            trigger="delete.test",
-            subject="Delete",
-            body_html="<p>Delete</p>",
-            body_text="Delete"
-        )
+        template = EmailTemplate(trigger="delete.test", subject="Delete", body_html="<p>Delete</p>", body_text="Delete")
         db_session.add(template)
         await db_session.commit()
         await db_session.refresh(template)
 
-        response = await client.delete(
-            f"/admin/email-templates/{template.id}",
-            headers=admin_auth_headers
-        )
+        response = await client.delete(f"/admin/email-templates/{template.id}", headers=admin_auth_headers)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -600,6 +514,7 @@ class TestAdminEmails:
 # ============================================
 # Webhook Endpoints Tests
 # ============================================
+
 
 class TestAdminWebhooks:
     """Tests for /admin/webhooks endpoints."""
@@ -620,11 +535,7 @@ class TestAdminWebhooks:
         response = await client.post(
             "/admin/webhooks",
             headers=admin_auth_headers,
-            json={
-                "name": "Test Webhook",
-                "url": "https://example.com/webhook",
-                "events": ["user.registered"]
-            }
+            json={"name": "Test Webhook", "url": "https://example.com/webhook", "events": ["user.registered"]},
         )
         assert response.status_code == 200
         data = response.json()
@@ -638,11 +549,7 @@ class TestAdminWebhooks:
         response = await client.post(
             "/admin/webhooks",
             headers=admin_auth_headers,
-            json={
-                "name": "Invalid Webhook",
-                "url": "https://example.com/invalid",
-                "events": ["invalid.event"]
-            }
+            json={"name": "Invalid Webhook", "url": "https://example.com/invalid", "events": ["invalid.event"]},
         )
         assert response.status_code == 400
 
@@ -656,9 +563,7 @@ class TestAdminWebhooks:
     async def test_update_webhook_not_found(self, client: AsyncClient, admin_auth_headers: dict):
         """Should return 404 when updating non-existent webhook."""
         response = await client.patch(
-            "/admin/webhooks/99999",
-            headers=admin_auth_headers,
-            json={"name": "Ghost Webhook"}
+            "/admin/webhooks/99999", headers=admin_auth_headers, json={"name": "Ghost Webhook"}
         )
         assert response.status_code == 404
 
@@ -670,24 +575,17 @@ class TestAdminWebhooks:
 
     @pytest.mark.asyncio
     async def test_regenerate_webhook_secret(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession
     ):
         """Admin can regenerate webhook secret."""
         webhook = WebhookEndpoint(
-            name="Regen Test",
-            url="https://example.com/regen",
-            secret="old_secret",
-            events=["user.registered"]
+            name="Regen Test", url="https://example.com/regen", secret="old_secret", events=["user.registered"]
         )
         db_session.add(webhook)
         await db_session.commit()
         await db_session.refresh(webhook)
 
-        response = await client.post(
-            f"/admin/webhooks/{webhook.id}/regenerate-secret",
-            headers=admin_auth_headers
-        )
+        response = await client.post(f"/admin/webhooks/{webhook.id}/regenerate-secret", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "regenerated"
@@ -696,54 +594,34 @@ class TestAdminWebhooks:
     @pytest.mark.asyncio
     async def test_regenerate_secret_not_found(self, client: AsyncClient, admin_auth_headers: dict):
         """Should return 404 when regenerating secret for non-existent webhook."""
-        response = await client.post(
-            "/admin/webhooks/99999/regenerate-secret",
-            headers=admin_auth_headers
-        )
+        response = await client.post("/admin/webhooks/99999/regenerate-secret", headers=admin_auth_headers)
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_get_webhook(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_get_webhook(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can get a single webhook."""
         webhook = WebhookEndpoint(
-            name="Get Test",
-            url="https://example.com/get",
-            secret="secret123",
-            events=["user.registered"]
+            name="Get Test", url="https://example.com/get", secret="secret123", events=["user.registered"]
         )
         db_session.add(webhook)
         await db_session.commit()
         await db_session.refresh(webhook)
 
-        response = await client.get(
-            f"/admin/webhooks/{webhook.id}",
-            headers=admin_auth_headers
-        )
+        response = await client.get(f"/admin/webhooks/{webhook.id}", headers=admin_auth_headers)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_update_webhook(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_update_webhook(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can update a webhook endpoint."""
         webhook = WebhookEndpoint(
-            name="Original",
-            url="https://example.com/original",
-            secret="secret123",
-            events=["user.registered"]
+            name="Original", url="https://example.com/original", secret="secret123", events=["user.registered"]
         )
         db_session.add(webhook)
         await db_session.commit()
         await db_session.refresh(webhook)
 
         response = await client.patch(
-            f"/admin/webhooks/{webhook.id}",
-            headers=admin_auth_headers,
-            json={"name": "Updated Name"}
+            f"/admin/webhooks/{webhook.id}", headers=admin_auth_headers, json={"name": "Updated Name"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -751,25 +629,16 @@ class TestAdminWebhooks:
         assert data["endpoint_id"] == webhook.id
 
     @pytest.mark.asyncio
-    async def test_delete_webhook(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_delete_webhook(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can delete a webhook endpoint."""
         webhook = WebhookEndpoint(
-            name="Delete Test",
-            url="https://example.com/delete",
-            secret="secret",
-            events=["user.registered"]
+            name="Delete Test", url="https://example.com/delete", secret="secret", events=["user.registered"]
         )
         db_session.add(webhook)
         await db_session.commit()
         await db_session.refresh(webhook)
 
-        response = await client.delete(
-            f"/admin/webhooks/{webhook.id}",
-            headers=admin_auth_headers
-        )
+        response = await client.delete(f"/admin/webhooks/{webhook.id}", headers=admin_auth_headers)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -785,6 +654,7 @@ class TestAdminWebhooks:
 # Alerts Endpoints Tests
 # ============================================
 
+
 class TestAdminAlerts:
     """Tests for /admin/alerts endpoints."""
 
@@ -798,33 +668,19 @@ class TestAdminAlerts:
 
     @pytest.mark.asyncio
     async def test_list_alerts_unread_only(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession
     ):
         """Admin can filter unread alerts only."""
         # Create read and unread alerts
-        read_alert = AdminAlert(
-            type="test",
-            severity="info",
-            title="Read Alert",
-            message="Already read",
-            is_read=True
-        )
+        read_alert = AdminAlert(type="test", severity="info", title="Read Alert", message="Already read", is_read=True)
         unread_alert = AdminAlert(
-            type="test",
-            severity="warning",
-            title="Unread Alert",
-            message="Not read yet",
-            is_read=False
+            type="test", severity="warning", title="Unread Alert", message="Not read yet", is_read=False
         )
         db_session.add(read_alert)
         db_session.add(unread_alert)
         await db_session.commit()
 
-        response = await client.get(
-            "/admin/alerts?unread_only=true",
-            headers=admin_auth_headers
-        )
+        response = await client.get("/admin/alerts?unread_only=true", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         for item in data["items"]:
@@ -832,97 +688,55 @@ class TestAdminAlerts:
 
     @pytest.mark.asyncio
     async def test_list_alerts_pagination(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession
     ):
         """Admin can paginate alerts."""
         # Create multiple alerts
         for i in range(5):
-            alert = AdminAlert(
-                type="test",
-                severity="info",
-                title=f"Alert {i}",
-                message=f"Message {i}"
-            )
+            alert = AdminAlert(type="test", severity="info", title=f"Alert {i}", message=f"Message {i}")
             db_session.add(alert)
         await db_session.commit()
 
-        response = await client.get(
-            "/admin/alerts?page=1&per_page=2",
-            headers=admin_auth_headers
-        )
+        response = await client.get("/admin/alerts?page=1&per_page=2", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data["per_page"] == 2
         assert len(data["items"]) <= 2
 
     @pytest.mark.asyncio
-    async def test_mark_alert_read(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_mark_alert_read(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can mark alert as read."""
-        alert = AdminAlert(
-            type="test",
-            severity="info",
-            title="Test",
-            message="Test message",
-            is_read=False
-        )
+        alert = AdminAlert(type="test", severity="info", title="Test", message="Test message", is_read=False)
         db_session.add(alert)
         await db_session.commit()
         await db_session.refresh(alert)
 
-        response = await client.post(
-            f"/admin/alerts/{alert.id}/read",
-            headers=admin_auth_headers
-        )
+        response = await client.post(f"/admin/alerts/{alert.id}/read", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "read"
         assert data["alert_id"] == alert.id
 
     @pytest.mark.asyncio
-    async def test_dismiss_alert(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_dismiss_alert(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can dismiss an alert."""
-        alert = AdminAlert(
-            type="test",
-            severity="warning",
-            title="Dismiss Test",
-            message="Test",
-            is_dismissed=False
-        )
+        alert = AdminAlert(type="test", severity="warning", title="Dismiss Test", message="Test", is_dismissed=False)
         db_session.add(alert)
         await db_session.commit()
         await db_session.refresh(alert)
 
-        response = await client.post(
-            f"/admin/alerts/{alert.id}/dismiss",
-            headers=admin_auth_headers
-        )
+        response = await client.post(f"/admin/alerts/{alert.id}/dismiss", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "dismissed"
         assert data["alert_id"] == alert.id
 
     @pytest.mark.asyncio
-    async def test_mark_all_alerts_read(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession
-    ):
+    async def test_mark_all_alerts_read(self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession):
         """Admin can mark all alerts as read."""
         # Create multiple unread alerts
         for i in range(3):
-            alert = AdminAlert(
-                type="test",
-                severity="info",
-                title=f"Alert {i}",
-                message="Test",
-                is_read=False
-            )
+            alert = AdminAlert(type="test", severity="info", title=f"Alert {i}", message="Test", is_read=False)
             db_session.add(alert)
         await db_session.commit()
 
@@ -934,34 +748,24 @@ class TestAdminAlerts:
 # Notes Endpoints Tests
 # ============================================
 
+
 class TestAdminNotes:
     """Tests for /admin/notes endpoints."""
 
     @pytest.mark.asyncio
-    async def test_list_notes_for_user(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        test_user: User
-    ):
+    async def test_list_notes_for_user(self, client: AsyncClient, admin_auth_headers: dict, test_user: User):
         """Admin can list notes for a user."""
-        response = await client.get(
-            f"/admin/users/{test_user.id}/notes",
-            headers=admin_auth_headers
-        )
+        response = await client.get(f"/admin/users/{test_user.id}/notes", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
         assert isinstance(data["items"], list)
 
     @pytest.mark.asyncio
-    async def test_create_note(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        test_user: User, admin_user: User
-    ):
+    async def test_create_note(self, client: AsyncClient, admin_auth_headers: dict, test_user: User, admin_user: User):
         """Admin can create a note for a user."""
         response = await client.post(
-            f"/admin/users/{test_user.id}/notes",
-            headers=admin_auth_headers,
-            json={"content": "This is a test note"}
+            f"/admin/users/{test_user.id}/notes", headers=admin_auth_headers, json={"content": "This is a test note"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -970,42 +774,32 @@ class TestAdminNotes:
 
     @pytest.mark.asyncio
     async def test_create_pinned_note(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        test_user: User, admin_user: User
+        self, client: AsyncClient, admin_auth_headers: dict, test_user: User, admin_user: User
     ):
         """Admin can create a pinned note."""
         response = await client.post(
             f"/admin/users/{test_user.id}/notes",
             headers=admin_auth_headers,
-            json={"content": "Important pinned note", "is_pinned": True}
+            json={"content": "Important pinned note", "is_pinned": True},
         )
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "created"
 
     @pytest.mark.asyncio
-    async def test_create_note_for_nonexistent_user(
-        self, client: AsyncClient, admin_auth_headers: dict
-    ):
+    async def test_create_note_for_nonexistent_user(self, client: AsyncClient, admin_auth_headers: dict):
         """Should return 404 for non-existent user."""
         response = await client.post(
-            "/admin/users/99999/notes",
-            headers=admin_auth_headers,
-            json={"content": "Note for ghost user"}
+            "/admin/users/99999/notes", headers=admin_auth_headers, json={"content": "Note for ghost user"}
         )
         assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_update_note(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession, test_user: User, admin_user: User
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession, test_user: User, admin_user: User
     ):
         """Admin can update a note."""
-        note = AdminNote(
-            user_id=test_user.id,
-            admin_id=admin_user.id,
-            content="Original content"
-        )
+        note = AdminNote(user_id=test_user.id, admin_id=admin_user.id, content="Original content")
         db_session.add(note)
         await db_session.commit()
         await db_session.refresh(note)
@@ -1013,60 +807,42 @@ class TestAdminNotes:
         response = await client.patch(
             f"/admin/notes/{note.id}",
             headers=admin_auth_headers,
-            json={"content": "Updated content", "is_pinned": True}
+            json={"content": "Updated content", "is_pinned": True},
         )
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "updated"
 
     @pytest.mark.asyncio
-    async def test_update_nonexistent_note(
-        self, client: AsyncClient, admin_auth_headers: dict
-    ):
+    async def test_update_nonexistent_note(self, client: AsyncClient, admin_auth_headers: dict):
         """Should return 404 for non-existent note."""
-        response = await client.patch(
-            "/admin/notes/99999",
-            headers=admin_auth_headers,
-            json={"content": "Ghost note"}
-        )
+        response = await client.patch("/admin/notes/99999", headers=admin_auth_headers, json={"content": "Ghost note"})
         assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_delete_note(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        db_session: AsyncSession, test_user: User, admin_user: User
+        self, client: AsyncClient, admin_auth_headers: dict, db_session: AsyncSession, test_user: User, admin_user: User
     ):
         """Admin can delete a note."""
-        note = AdminNote(
-            user_id=test_user.id,
-            admin_id=admin_user.id,
-            content="To delete"
-        )
+        note = AdminNote(user_id=test_user.id, admin_id=admin_user.id, content="To delete")
         db_session.add(note)
         await db_session.commit()
         await db_session.refresh(note)
 
-        response = await client.delete(
-            f"/admin/notes/{note.id}",
-            headers=admin_auth_headers
-        )
+        response = await client.delete(f"/admin/notes/{note.id}", headers=admin_auth_headers)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_delete_nonexistent_note(
-        self, client: AsyncClient, admin_auth_headers: dict
-    ):
+    async def test_delete_nonexistent_note(self, client: AsyncClient, admin_auth_headers: dict):
         """Should return 404 for non-existent note."""
-        response = await client.delete(
-            "/admin/notes/99999",
-            headers=admin_auth_headers
-        )
+        response = await client.delete("/admin/notes/99999", headers=admin_auth_headers)
         assert response.status_code == 404
 
 
 # ============================================
 # Audit Log Tests
 # ============================================
+
 
 class TestAdminAuditLogs:
     """Tests for /admin/audit-logs endpoints."""
@@ -1084,52 +860,35 @@ class TestAdminAuditLogs:
     @pytest.mark.asyncio
     async def test_list_audit_logs_pagination(self, client: AsyncClient, admin_auth_headers: dict):
         """Admin can paginate audit logs."""
-        response = await client.get(
-            "/admin/audit-logs?page=1&per_page=10",
-            headers=admin_auth_headers
-        )
+        response = await client.get("/admin/audit-logs?page=1&per_page=10", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data["page"] == 1
         assert data["per_page"] == 10
 
     @pytest.mark.asyncio
-    async def test_user_update_creates_audit_log(
-        self, client: AsyncClient, admin_auth_headers: dict,
-        test_user: User
-    ):
+    async def test_user_update_creates_audit_log(self, client: AsyncClient, admin_auth_headers: dict, test_user: User):
         """User update creates an audit log entry."""
         # First, update a user
-        await client.patch(
-            f"/admin/users/{test_user.id}",
-            headers=admin_auth_headers,
-            json={"is_active": False}
-        )
+        await client.patch(f"/admin/users/{test_user.id}", headers=admin_auth_headers, json={"is_active": False})
 
         # Then check audit logs
-        response = await client.get(
-            "/admin/audit-logs?resource_type=user",
-            headers=admin_auth_headers
-        )
+        response = await client.get("/admin/audit-logs?resource_type=user", headers=admin_auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data["total"] >= 1
 
     @pytest.mark.asyncio
-    async def test_get_audit_log_not_found(
-        self, client: AsyncClient, admin_auth_headers: dict
-    ):
+    async def test_get_audit_log_not_found(self, client: AsyncClient, admin_auth_headers: dict):
         """Should return 404 for non-existent audit log."""
-        response = await client.get(
-            "/admin/audit-logs/99999",
-            headers=admin_auth_headers
-        )
+        response = await client.get("/admin/audit-logs/99999", headers=admin_auth_headers)
         assert response.status_code == 404
 
 
 # ============================================
 # Authorization Tests
 # ============================================
+
 
 class TestAdminAuthorization:
     """Tests for admin authorization across all endpoints."""
@@ -1167,9 +926,5 @@ class TestAdminAuthorization:
     @pytest.mark.asyncio
     async def test_non_admin_cannot_update_user(self, client: AsyncClient, auth_headers: dict, test_user: User):
         """Regular user cannot update users via admin endpoint."""
-        response = await client.patch(
-            f"/admin/users/{test_user.id}",
-            headers=auth_headers,
-            json={"role": "admin"}
-        )
+        response = await client.patch(f"/admin/users/{test_user.id}", headers=auth_headers, json={"role": "admin"})
         assert response.status_code == 403

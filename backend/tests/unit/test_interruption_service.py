@@ -1,6 +1,6 @@
 """Tests pour InterruptionService."""
-import pytest
-from services.interruption_service import InterruptionService, InterruptionDecision
+
+from services.interruption_service import InterruptionDecision, InterruptionService
 
 
 class TestInterruptionService:
@@ -99,10 +99,7 @@ class TestInterruptionService:
         # Simuler plusieurs appels pour atteindre la probabilite
         interrupted = False
         for _ in range(20):
-            result = service.should_interrupt(
-                speaking_duration=5.0,
-                hesitation_count=5
-            )
+            result = service.should_interrupt(speaking_duration=5.0, hesitation_count=5)
             if result.should_interrupt and result.reason == "too_much_hesitation":
                 interrupted = True
                 break
@@ -118,10 +115,7 @@ class TestInterruptionService:
 
         interrupted = False
         for _ in range(20):
-            result = service.should_interrupt(
-                speaking_duration=5.0,
-                emotions=emotions
-            )
+            result = service.should_interrupt(speaking_duration=5.0, emotions=emotions)
             if result.should_interrupt and result.reason == "low_confidence":
                 interrupted = True
                 break
@@ -188,10 +182,10 @@ class TestInterruptionService:
         service = InterruptionService(level="expert")
         result = service.should_interrupt(speaking_duration=15.0)
 
-        assert hasattr(result, 'should_interrupt')
-        assert hasattr(result, 'phrase')
-        assert hasattr(result, 'reason')
-        assert hasattr(result, 'interruption_type')
+        assert hasattr(result, "should_interrupt")
+        assert hasattr(result, "phrase")
+        assert hasattr(result, "reason")
+        assert hasattr(result, "interruption_type")
 
     def test_interruption_with_none_emotions(self):
         """Interruption avec emotions None."""

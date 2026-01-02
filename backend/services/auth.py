@@ -7,14 +7,14 @@ Provides authentication utilities:
 - Password validation
 """
 
-import re
 import hashlib
+import re
 import secrets
 from datetime import datetime, timedelta
 
 import bcrypt
-from jose import jwt, JWTError
 import structlog
+from jose import JWTError, jwt
 
 from config import get_settings
 
@@ -25,6 +25,7 @@ logger = structlog.get_logger()
 # ============================================
 # Password Functions
 # ============================================
+
 
 def validate_password(password: str) -> tuple[bool, str]:
     """
@@ -44,13 +45,13 @@ def validate_password(password: str) -> tuple[bool, str]:
     if len(password) < settings.PASSWORD_MIN_LENGTH:
         return False, f"Password must be at least {settings.PASSWORD_MIN_LENGTH} characters"
 
-    if not re.search(r'[A-Z]', password):
+    if not re.search(r"[A-Z]", password):
         return False, "Password must contain at least one uppercase letter (A-Z)"
 
-    if not re.search(r'[a-z]', password):
+    if not re.search(r"[a-z]", password):
         return False, "Password must contain at least one lowercase letter (a-z)"
 
-    if not re.search(r'\d', password):
+    if not re.search(r"\d", password):
         return False, "Password must contain at least one digit (0-9)"
 
     if not re.search(r'[!@#$%^&*()_+\-=\[\]{}|;\':",./<>?]', password):
@@ -61,16 +62,16 @@ def validate_password(password: str) -> tuple[bool, str]:
 
 def hash_password(password: str) -> str:
     """Hash a password using bcrypt."""
-    password_bytes = password.encode('utf-8')[:72]  # bcrypt limit
+    password_bytes = password.encode("utf-8")[:72]  # bcrypt limit
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password_bytes, salt)
-    return hashed.decode('utf-8')
+    return hashed.decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against its hash."""
-    password_bytes = plain_password.encode('utf-8')[:72]
-    hashed_bytes = hashed_password.encode('utf-8')
+    password_bytes = plain_password.encode("utf-8")[:72]
+    hashed_bytes = hashed_password.encode("utf-8")
     return bcrypt.checkpw(password_bytes, hashed_bytes)
 
 
@@ -78,16 +79,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 # JWT Token Functions
 # ============================================
 
+
 def create_access_token(user_id: int, email: str) -> str:
     """Create a JWT access token."""
     expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload = {
-        "sub": str(user_id),
-        "email": email,
-        "type": "access",
-        "exp": expire,
-        "iat": datetime.utcnow()
-    }
+    payload = {"sub": str(user_id), "email": email, "type": "access", "exp": expire, "iat": datetime.utcnow()}
     return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
 
@@ -107,7 +103,7 @@ def create_refresh_token(user_id: int, email: str) -> tuple[str, str, datetime]:
         "type": "refresh",
         "jti": token_id,
         "exp": expires_at,
-        "iat": datetime.utcnow()
+        "iat": datetime.utcnow(),
     }
 
     token = jwt.encode(payload, refresh_secret, algorithm=settings.JWT_ALGORITHM)

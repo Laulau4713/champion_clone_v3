@@ -9,8 +9,8 @@ Tests repository layer functions:
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import User, Champion
-from repositories import UserRepository, ChampionRepository
+from models import Champion, User
+from repositories import ChampionRepository, UserRepository
 from services.auth import hash_password
 
 
@@ -22,11 +22,7 @@ class TestUserRepository:
         """Should create a new user in database."""
         repo = UserRepository(db_session)
 
-        user = User(
-            email="new@example.com",
-            hashed_password=hash_password("TestPass123$"),
-            full_name="New User"
-        )
+        user = User(email="new@example.com", hashed_password=hash_password("TestPass123$"), full_name="New User")
         created = await repo.create(user)
 
         assert created.id is not None
@@ -83,9 +79,7 @@ class TestUserRepository:
         assert found.is_active is True
 
     @pytest.mark.asyncio
-    async def test_get_by_id_active_returns_none_for_inactive(
-        self, db_session: AsyncSession, inactive_user: User
-    ):
+    async def test_get_by_id_active_returns_none_for_inactive(self, db_session: AsyncSession, inactive_user: User):
         """Should return None for inactive user."""
         repo = UserRepository(db_session)
 
@@ -120,11 +114,7 @@ class TestChampionRepository:
         """Should create a new champion."""
         repo = ChampionRepository(db_session)
 
-        champion = Champion(
-            name="Test Champion",
-            description="A test champion",
-            status="uploaded"
-        )
+        champion = Champion(name="Test Champion", description="A test champion", status="uploaded")
         created = await repo.create(champion)
 
         assert created.id is not None

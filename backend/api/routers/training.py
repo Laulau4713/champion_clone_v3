@@ -11,24 +11,28 @@ Endpoints:
 """
 
 from datetime import datetime
-from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Depends, Request, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 import structlog
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
+from agents import PatternAgent, TrainingAgent
 from config import get_settings
 from database import get_db
-from models import User, Champion, TrainingSession
+from models import Champion, TrainingSession, User
 from schemas import (
-    ScenarioResponse, TrainingScenario,
-    SessionStartRequest, SessionStartResponse,
-    SessionRespondRequest, SessionRespondResponse,
-    SessionEndRequest, SessionSummary, SessionResponse
+    ScenarioResponse,
+    SessionEndRequest,
+    SessionRespondRequest,
+    SessionRespondResponse,
+    SessionResponse,
+    SessionStartRequest,
+    SessionStartResponse,
+    SessionSummary,
+    TrainingScenario,
 )
-from agents import PatternAgent, TrainingAgent
 
 settings = get_settings()
 logger = structlog.get_logger()
@@ -50,7 +54,6 @@ active_sessions: dict[int, dict] = {}
 
 from api.routers.auth import get_current_user
 
-
 # ============================================
 # Rate Limiter (imported from main)
 # ============================================
@@ -63,11 +66,12 @@ from api.routers.auth import get_current_user
 # Scenario Endpoints
 # ============================================
 
+
 @router.get("/scenarios/{champion_id}", response_model=ScenarioResponse)
 async def generate_scenarios(
     champion_id: int,
     count: int = Query(3, ge=1, le=5, description="Number of scenarios to generate"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Generate training scenarios based on champion's patterns.
@@ -82,23 +86,15 @@ async def generate_scenarios(
         raise HTTPException(status_code=404, detail="Champion not found")
 
     if not champion.patterns_json:
-        raise HTTPException(
-            status_code=400,
-            detail="Champion not analyzed yet. Run POST /analyze/{champion_id} first."
-        )
+        raise HTTPException(status_code=400, detail="Champion not analyzed yet. Run POST /analyze/{champion_id} first.")
 
     logger.info("generating_scenarios", champion_id=champion_id, count=count)
 
     try:
-        scenarios = await pattern_extractor.generate_scenarios(
-            champion.patterns_json,
-            count=count
-        )
+        scenarios = await pattern_extractor.generate_scenarios(champion.patterns_json, count=count)
 
         return ScenarioResponse(
-            champion_id=champion.id,
-            champion_name=champion.name,
-            scenarios=[TrainingScenario(**s) for s in scenarios]
+            champion_id=champion.id, champion_name=champion.name, scenarios=[TrainingScenario(**s) for s in scenarios]
         )
 
     except Exception as e:
@@ -110,12 +106,13 @@ async def generate_scenarios(
 # Training Session Endpoints
 # ============================================
 
+
 @router.post("/training/start", response_model=SessionStartResponse)
 async def start_training_session(
     request: Request,
     body: SessionStartRequest = Depends(),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     Start a new training session.
@@ -131,10 +128,7 @@ async def start_training_session(
         raise HTTPException(status_code=404, detail="Champion not found")
 
     if not champion.patterns_json:
-        raise HTTPException(
-            status_code=400,
-            detail="Champion not analyzed. Run POST /analyze/{champion_id} first."
-        )
+        raise HTTPException(status_code=400, detail="Champion not analyzed. Run POST /analyze/{champion_id} first.")
 
     # Generate scenarios if needed
     scenarios = await pattern_extractor.generate_scenarios(champion.patterns_json, count=3)
@@ -148,10 +142,7 @@ async def start_training_session(
 
     try:
         # Start the training bot session
-        session_data = await training_bot.start_session(
-            scenario=scenario,
-            patterns=champion.patterns_json
-        )
+        session_data = await training_bot.start_session(scenario=scenario, patterns=champion.patterns_json)
 
         # Create session record
         session = TrainingSession(
@@ -162,10 +153,10 @@ async def start_training_session(
                 {
                     "role": "champion",
                     "content": session_data["first_message"],
-                    "timestamp": datetime.utcnow().isoformat()
+                    "timestamp": datetime.utcnow().isoformat(),
                 }
             ],
-            status="active"
+            status="active",
         )
         db.add(session)
         await db.commit()
@@ -174,7 +165,7 @@ async def start_training_session(
         active_sessions[session.id] = {
             "system_prompt": session_data["system_prompt"],
             "patterns": champion.patterns_json,
-            "scenario": scenario
+            "scenario": scenario,
         }
 
         return SessionStartResponse(
@@ -182,7 +173,7 @@ async def start_training_session(
             champion_name=champion.name,
             scenario=TrainingScenario(**scenario),
             first_message=session_data["first_message"],
-            tips=session_data["tips"]
+            tips=session_data["tips"],
         )
 
     except Exception as e:
@@ -195,7 +186,7 @@ async def respond_in_session(
     request: Request,
     body: SessionRespondRequest = Depends(),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     Continue a training session with a user response.
@@ -227,10 +218,10 @@ async def respond_in_session(
             "system_prompt": training_bot.SYSTEM_PROMPT.format(
                 scenario=session.scenario,
                 patterns=session.champion.patterns_json,
-                difficulty=session.scenario.get("difficulty", "medium").upper()
+                difficulty=session.scenario.get("difficulty", "medium").upper(),
             ),
             "patterns": session.champion.patterns_json,
-            "scenario": session.scenario
+            "scenario": session.scenario,
         }
         active_sessions[session.id] = session_context
 
@@ -241,7 +232,7 @@ async def respond_in_session(
         prospect_response = await training_bot.get_prospect_response(
             user_message=body.user_response,
             conversation_history=session.messages,
-            system_prompt=session_context["system_prompt"]
+            system_prompt=session_context["system_prompt"],
         )
 
         # Evaluate user's response
@@ -249,7 +240,7 @@ async def respond_in_session(
             user_response=body.user_response,
             patterns=session_context["patterns"],
             scenario=session_context["scenario"],
-            conversation_history=session.messages
+            conversation_history=session.messages,
         )
 
         # Update session messages
@@ -260,19 +251,14 @@ async def respond_in_session(
                 "content": body.user_response,
                 "timestamp": now,
                 "feedback": evaluation["feedback"],
-                "score": evaluation["score"]
+                "score": evaluation["score"],
             },
-            {
-                "role": "champion",
-                "content": prospect_response,
-                "timestamp": now
-            }
+            {"role": "champion", "content": prospect_response, "timestamp": now},
         ]
 
         # Check if session should complete
         session_complete = await training_bot.check_session_complete(
-            messages=session.messages,
-            scenario=session_context["scenario"]
+            messages=session.messages, scenario=session_context["scenario"]
         )
 
         if session_complete:
@@ -281,9 +267,7 @@ async def respond_in_session(
 
             # Generate summary
             summary = await training_bot.generate_session_summary(
-                messages=session.messages,
-                patterns=session_context["patterns"],
-                scenario=session_context["scenario"]
+                messages=session.messages, patterns=session_context["patterns"], scenario=session_context["scenario"]
             )
             session.overall_score = summary["overall_score"]
             session.feedback_summary = summary["feedback_summary"]
@@ -298,7 +282,7 @@ async def respond_in_session(
             feedback=evaluation["feedback"],
             score=evaluation["score"],
             suggestions=evaluation["suggestions"],
-            session_complete=session_complete
+            session_complete=session_complete,
         )
 
     except Exception as e:
@@ -311,7 +295,7 @@ async def end_training_session(
     request: Request,
     body: SessionEndRequest = Depends(),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     End a training session early and get summary.
@@ -337,9 +321,7 @@ async def end_training_session(
     try:
         # Generate summary
         summary = await training_bot.generate_session_summary(
-            messages=session.messages,
-            patterns=patterns,
-            scenario=scenario
+            messages=session.messages, patterns=patterns, scenario=scenario
         )
 
         # Update session
@@ -363,7 +345,7 @@ async def end_training_session(
             feedback_summary=summary["feedback_summary"],
             strengths=summary["strengths"],
             areas_for_improvement=summary["areas_for_improvement"],
-            duration_seconds=duration
+            duration_seconds=duration,
         )
 
     except Exception as e:
@@ -373,10 +355,10 @@ async def end_training_session(
 
 @router.get("/training/sessions", response_model=list[SessionResponse])
 async def list_sessions(
-    user_id: Optional[str] = Query(None, description="Filter by user"),
-    champion_id: Optional[int] = Query(None, description="Filter by champion"),
-    status: Optional[str] = Query(None, description="Filter by status"),
-    db: AsyncSession = Depends(get_db)
+    user_id: str | None = Query(None, description="Filter by user"),
+    champion_id: int | None = Query(None, description="Filter by champion"),
+    status: str | None = Query(None, description="Filter by status"),
+    db: AsyncSession = Depends(get_db),
 ):
     """List training sessions with optional filters."""
     query = select(TrainingSession).order_by(TrainingSession.started_at.desc())
@@ -395,14 +377,9 @@ async def list_sessions(
 
 
 @router.get("/training/sessions/{session_id}", response_model=SessionResponse)
-async def get_session(
-    session_id: int,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_session(session_id: int, db: AsyncSession = Depends(get_db)):
     """Get a specific session's details."""
-    result = await db.execute(
-        select(TrainingSession).where(TrainingSession.id == session_id)
-    )
+    result = await db.execute(select(TrainingSession).where(TrainingSession.id == session_id))
     session = result.scalar_one_or_none()
 
     if not session:
@@ -416,45 +393,50 @@ async def get_session(
 # ============================================
 
 from pydantic import BaseModel
+
 from services.training_service_v2 import TrainingServiceV2
 from services.voice_service import voice_service
 
 
 class VoiceSessionStartRequest(BaseModel):
     """Request to start a voice training session."""
+
     skill_slug: str
-    sector_slug: Optional[str] = None
+    sector_slug: str | None = None
 
 
 class VoiceMessageRequest(BaseModel):
     """Request to send a message in voice training."""
-    audio_base64: Optional[str] = None
-    text: Optional[str] = None
+
+    audio_base64: str | None = None
+    text: str | None = None
 
 
 class ProspectResponseSchemaV2(BaseModel):
     """Response from the prospect in voice training V2."""
+
     text: str
-    audio_base64: Optional[str] = None
+    audio_base64: str | None = None
     mood: str  # hostile, aggressive, skeptical, neutral, interested, ready_to_buy
     jauge: int  # -1 if hidden (medium/expert levels)
     jauge_delta: int  # 0 if hidden
-    behavioral_cue: Optional[str] = None  # (soupir), (prend des notes), etc.
+    behavioral_cue: str | None = None  # (soupir), (prend des notes), etc.
     is_event: bool = False  # True if this is a situational event
-    event_type: Optional[str] = None
-    feedback: Optional[dict] = None
+    event_type: str | None = None
+    feedback: dict | None = None
     conversion_possible: bool = False
 
 
 # Keep old schema for backwards compatibility
 class ProspectResponseSchema(BaseModel):
     """Response from the prospect in voice training (legacy)."""
+
     text: str
-    audio_base64: Optional[str] = None
+    audio_base64: str | None = None
     emotion: str
     should_interrupt: bool
-    interruption_reason: Optional[str] = None
-    feedback: Optional[dict] = None
+    interruption_reason: str | None = None
+    feedback: dict | None = None
 
 
 # Free trial constants
@@ -470,7 +452,7 @@ def is_premium_user(user: User) -> bool:
 async def start_voice_training_session(
     request: VoiceSessionStartRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Start a new voice training session (V2 with emotional jauge).
@@ -495,17 +477,15 @@ async def start_voice_training_session(
                     "code": "TRIAL_EXPIRED",
                     "message": "Votre essai gratuit est termin\u00e9. Passez \u00e0 Premium pour continuer.",
                     "sessions_used": current_user.trial_sessions_used,
-                    "max_sessions": FREE_TRIAL_MAX_SESSIONS
-                }
+                    "max_sessions": FREE_TRIAL_MAX_SESSIONS,
+                },
             )
 
     service = TrainingServiceV2(db)
 
     try:
         session = await service.create_session(
-            user=current_user,
-            skill_slug=request.skill_slug,
-            sector_slug=request.sector_slug
+            user=current_user, skill_slug=request.skill_slug, sector_slug=request.sector_slug
         )
 
         # Increment trial counter for free users
@@ -526,7 +506,7 @@ async def send_voice_message(
     session_id: int,
     request: VoiceMessageRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Send a message (audio or text) and receive prospect response (V2).
@@ -549,10 +529,7 @@ async def send_voice_message(
 
     try:
         response = await service.process_user_message(
-            session_id=session_id,
-            user=current_user,
-            audio_base64=request.audio_base64,
-            text=request.text
+            session_id=session_id, user=current_user, audio_base64=request.audio_base64, text=request.text
         )
         return response.to_dict()
     except ValueError as e:
@@ -564,9 +541,7 @@ async def send_voice_message(
 
 @router.post("/voice/session/{session_id}/end")
 async def end_voice_training_session(
-    session_id: int,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
     End the voice training session and get final evaluation (V2).
@@ -583,10 +558,7 @@ async def end_voice_training_session(
     service = TrainingServiceV2(db)
 
     try:
-        result = await service.end_session(
-            session_id=session_id,
-            user=current_user
-        )
+        result = await service.end_session(session_id=session_id, user=current_user)
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -597,9 +569,7 @@ async def end_voice_training_session(
 
 @router.get("/voice/session/{session_id}")
 async def get_voice_session(
-    session_id: int,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
     Get details of a voice training session (V2).
@@ -620,24 +590,17 @@ async def get_voice_session(
 
 
 @router.get("/voice/config")
-async def get_voice_config(
-    current_user: User = Depends(get_current_user)
-):
+async def get_voice_config(current_user: User = Depends(get_current_user)):
     """
     Check voice service configuration status.
 
     Returns which services are available (ElevenLabs, Whisper).
     """
-    return {
-        "status": "ok",
-        "services": voice_service.is_configured()
-    }
+    return {"status": "ok", "services": voice_service.is_configured()}
 
 
 @router.get("/voice/voices")
-async def list_available_voices(
-    current_user: User = Depends(get_current_user)
-):
+async def list_available_voices(current_user: User = Depends(get_current_user)):
     """List available ElevenLabs voices."""
     if not voice_service.is_configured().get("elevenlabs"):
         raise HTTPException(status_code=503, detail="ElevenLabs not configured")
@@ -650,9 +613,7 @@ async def list_available_voices(
 
 
 @router.get("/voice/quota")
-async def check_voice_quota(
-    current_user: User = Depends(get_current_user)
-):
+async def check_voice_quota(current_user: User = Depends(get_current_user)):
     """Check ElevenLabs character quota."""
     if not voice_service.is_configured().get("elevenlabs"):
         raise HTTPException(status_code=503, detail="ElevenLabs not configured")

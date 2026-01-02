@@ -109,10 +109,10 @@ export const authAPI = {
 export const healthCheck = () => api.get('/health');
 
 // Champions
-export const getChampions = () => 
+export const getChampions = () =>
   api.get<{ champions: Champion[] }>('/champions');
 
-export const getChampion = (id: number) => 
+export const getChampion = (id: number) =>
   api.get<Champion>(`/champions/${id}`);
 
 export const uploadChampion = async (formData: FormData): Promise<UploadResponse> => {
@@ -127,7 +127,7 @@ export const analyzeChampion = async (id: number): Promise<AnalyzeResponse> => {
   return response.data;
 };
 
-export const deleteChampion = (id: number) => 
+export const deleteChampion = (id: number) =>
   api.delete(`/champions/${id}`);
 
 // Scenarios
@@ -163,7 +163,7 @@ export const endTraining = async (sessionId: number): Promise<SessionSummary> =>
   return response.data;
 };
 
-export const getTrainingSessions = () => 
+export const getTrainingSessions = () =>
   api.get('/training/sessions');
 
 // Orchestration (advanced)

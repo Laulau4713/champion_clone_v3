@@ -13,16 +13,17 @@ The content directory must contain:
   - quiz.json
 """
 
-import sys
-import json
 import asyncio
+import json
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sqlalchemy import select
+
 from database import AsyncSessionLocal as async_session_maker
-from models import Skill, DifficultyLevel, Sector, Course, Quiz
+from models import Course, DifficultyLevel, Quiz, Sector, Skill
 
 
 async def import_skills(content_dir: Path):
@@ -32,16 +33,14 @@ async def import_skills(content_dir: Path):
         print(f"  ⚠️  File not found: {file_path}")
         return 0
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
 
     count = 0
     async with async_session_maker() as db:
         for skill_data in data.get("skills", []):
             # Check if already exists
-            existing = await db.scalar(
-                select(Skill).where(Skill.slug == skill_data.get("id", skill_data.get("slug")))
-            )
+            existing = await db.scalar(select(Skill).where(Skill.slug == skill_data.get("id", skill_data.get("slug"))))
 
             if existing:
                 print(f"  ⏭️  Skill exists: {skill_data.get('id', skill_data.get('slug'))}")
@@ -62,7 +61,7 @@ async def import_skills(content_dir: Path):
                 scenarios_required=skill_data.get("scenarios_required", 3),
                 prospect_instructions=skill_data.get("prospect_instructions", ""),
                 emotional_focus=skill_data.get("emotional_focus", []),
-                common_mistakes=skill_data.get("common_mistakes", [])
+                common_mistakes=skill_data.get("common_mistakes", []),
             )
             db.add(skill)
             count += 1
@@ -80,7 +79,7 @@ async def import_difficulty_levels(content_dir: Path):
         print(f"  ⚠️  File not found: {file_path}")
         return 0
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
 
     count = 0
@@ -90,9 +89,7 @@ async def import_difficulty_levels(content_dir: Path):
             # Handle both V1 (level) and V2 (level_id) format
             level_key = level_data.get("level_id", level_data.get("level"))
 
-            existing = await db.scalar(
-                select(DifficultyLevel).where(DifficultyLevel.level == level_key)
-            )
+            existing = await db.scalar(select(DifficultyLevel).where(DifficultyLevel.level == level_key))
 
             # Handle both V1 (days_range) and V2 (days) format
             days_range = level_data.get("days", level_data.get("days_range", [1, 30]))
@@ -109,7 +106,9 @@ async def import_difficulty_levels(content_dir: Path):
                 existing.days_range_start = days_range[0] if isinstance(days_range, list) else 1
                 existing.days_range_end = days_range[1] if isinstance(days_range, list) else 30
                 existing.ai_behavior = level_data.get("ai_behavior", {})
-                existing.prospect_personality = level_data.get("prospect_baseline", level_data.get("prospect_personality", {}))
+                existing.prospect_personality = level_data.get(
+                    "prospect_baseline", level_data.get("prospect_personality", {})
+                )
                 existing.conversation_dynamics = level_data.get("conversation_dynamics", {})
                 existing.feedback_settings = level_data.get("feedback_settings", {})
                 existing.interruption_phrases = interruption_phrases
@@ -134,7 +133,9 @@ async def import_difficulty_levels(content_dir: Path):
                     days_range_start=days_range[0] if isinstance(days_range, list) else 1,
                     days_range_end=days_range[1] if isinstance(days_range, list) else 30,
                     ai_behavior=level_data.get("ai_behavior", {}),
-                    prospect_personality=level_data.get("prospect_baseline", level_data.get("prospect_personality", {})),
+                    prospect_personality=level_data.get(
+                        "prospect_baseline", level_data.get("prospect_personality", {})
+                    ),
                     conversation_dynamics=level_data.get("conversation_dynamics", {}),
                     feedback_settings=level_data.get("feedback_settings", {}),
                     interruption_phrases=interruption_phrases,
@@ -146,7 +147,7 @@ async def import_difficulty_levels(content_dir: Path):
                     conversion_triggers=level_data.get("conversion_triggers", {}),
                     memory_coherence=level_data.get("memory_coherence", {}),
                     hints_system=level_data.get("hints_system", {}),
-                    scoring=level_data.get("scoring", {})
+                    scoring=level_data.get("scoring", {}),
                 )
                 db.add(level)
                 count += 1
@@ -166,15 +167,13 @@ async def import_sectors(content_dir: Path):
         print(f"  ⚠️  File not found: {file_path}")
         return 0
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
 
     count = 0
     async with async_session_maker() as db:
         for sector_data in data.get("sectors", []):
-            existing = await db.scalar(
-                select(Sector).where(Sector.slug == sector_data["slug"])
-            )
+            existing = await db.scalar(select(Sector).where(Sector.slug == sector_data["slug"]))
 
             if existing:
                 print(f"  ⏭️  Sector exists: {sector_data['slug']}")
@@ -188,7 +187,7 @@ async def import_sectors(content_dir: Path):
                 vocabulary=sector_data.get("vocabulary", []),
                 prospect_personas=sector_data.get("prospect_personas", []),
                 typical_objections=sector_data.get("typical_objections", []),
-                agent_context_prompt=sector_data.get("agent_context_prompt", "")
+                agent_context_prompt=sector_data.get("agent_context_prompt", ""),
             )
             db.add(sector)
             count += 1
@@ -206,15 +205,13 @@ async def import_cours(content_dir: Path):
         print(f"  ⚠️  File not found: {file_path}")
         return 0
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
 
     count = 0
     async with async_session_maker() as db:
         for course_data in data.get("cours", []):
-            existing = await db.scalar(
-                select(Course).where(Course.day == course_data["day"])
-            )
+            existing = await db.scalar(select(Course).where(Course.day == course_data["day"]))
 
             if existing:
                 print(f"  ⏭️  Course exists: day {course_data['day']}")
@@ -223,9 +220,7 @@ async def import_cours(content_dir: Path):
             # Get skill_id if provided
             skill_id = None
             if course_data.get("skill_id"):
-                skill = await db.scalar(
-                    select(Skill).where(Skill.slug == course_data["skill_id"])
-                )
+                skill = await db.scalar(select(Skill).where(Skill.slug == course_data["skill_id"]))
                 skill_id = skill.id if skill else None
 
             course = Course(
@@ -238,7 +233,7 @@ async def import_cours(content_dir: Path):
                 key_points=course_data.get("key_points", []),
                 common_mistakes=course_data.get("common_mistakes", []),
                 emotional_tips=course_data.get("emotional_tips", []),
-                takeaways=course_data.get("takeaways", [])
+                takeaways=course_data.get("takeaways", []),
             )
             db.add(course)
             count += 1
@@ -256,33 +251,26 @@ async def import_quiz(content_dir: Path):
         print(f"  ⚠️  File not found: {file_path}")
         return 0
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
 
     count = 0
     async with async_session_maker() as db:
         for quiz_data in data.get("quiz", []):
             # Get skill
-            skill = await db.scalar(
-                select(Skill).where(Skill.slug == quiz_data["skill_id"])
-            )
+            skill = await db.scalar(select(Skill).where(Skill.slug == quiz_data["skill_id"]))
 
             if not skill:
                 print(f"  ⚠️  Skill not found: {quiz_data['skill_id']}")
                 continue
 
-            existing = await db.scalar(
-                select(Quiz).where(Quiz.skill_id == skill.id)
-            )
+            existing = await db.scalar(select(Quiz).where(Quiz.skill_id == skill.id))
 
             if existing:
                 print(f"  ⏭️  Quiz exists: {quiz_data['skill_id']}")
                 continue
 
-            quiz = Quiz(
-                skill_id=skill.id,
-                questions=quiz_data["questions"]
-            )
+            quiz = Quiz(skill_id=skill.id, questions=quiz_data["questions"])
             db.add(quiz)
             count += 1
             print(f"  ✅ Quiz added: {quiz_data['skill_id']}")
@@ -303,7 +291,7 @@ async def verify_import():
         quiz = await db.scalar(select(func.count(Quiz.id)))
         levels = await db.scalar(select(func.count(DifficultyLevel.id)))
 
-        print(f"\n📊 VERIFICATION:")
+        print("\n📊 VERIFICATION:")
         print(f"   Skills: {skills}")
         print(f"   Sectors: {sectors}")
         print(f"   Cours: {cours}")

@@ -2,9 +2,10 @@
 Tests for agent functionality.
 """
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 import os
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # Set test environment
 os.environ["ANTHROPIC_API_KEY"] = "test-key"
@@ -21,7 +22,7 @@ class TestBaseAgent:
 
     def test_agent_initialization(self, mock_anthropic):
         """Test agent initializes correctly."""
-        from agents.base_agent import BaseAgent, AgentStatus
+        from agents.base_agent import AgentStatus, BaseAgent
 
         class TestAgent(BaseAgent):
             def get_system_prompt(self):
@@ -77,13 +78,11 @@ class TestOrchestrator:
     @pytest.mark.asyncio
     async def test_route_creates_workflow(self, mock_decision_engine):
         """Test orchestrator creates workflow for task."""
-        from orchestrator.decision_engine import Workflow, WorkflowStep, AgentType
+        from orchestrator.decision_engine import AgentType, Workflow, WorkflowStep
 
         # Mock workflow
         mock_workflow = Workflow(
-            id="test_wf",
-            steps=[WorkflowStep(agent=AgentType.AUDIO, task="Process video")],
-            reasoning="Test reasoning"
+            id="test_wf", steps=[WorkflowStep(agent=AgentType.AUDIO, task="Process video")], reasoning="Test reasoning"
         )
         mock_decision_engine.return_value.analyze = AsyncMock(return_value=mock_workflow)
 
@@ -108,9 +107,11 @@ class TestDecisionEngine:
     async def test_analyze_returns_workflow(self, mock_anthropic):
         """Test decision engine creates workflow."""
         mock_response = MagicMock()
-        mock_response.content = [MagicMock(
-            text='{"reasoning": "Test", "workflow": [{"agent": "audio", "task": "Extract"}], "parallel_groups": [[0]]}'
-        )]
+        mock_response.content = [
+            MagicMock(
+                text='{"reasoning": "Test", "workflow": [{"agent": "audio", "task": "Extract"}], "parallel_groups": [[0]]}'
+            )
+        ]
         mock_anthropic.return_value.messages.create = AsyncMock(return_value=mock_response)
 
         from orchestrator.decision_engine import DecisionEngine
@@ -124,7 +125,7 @@ class TestDecisionEngine:
 
     def test_fallback_workflow(self, mock_anthropic):
         """Test fallback workflow creation."""
-        from orchestrator.decision_engine import DecisionEngine, AgentType
+        from orchestrator.decision_engine import AgentType, DecisionEngine
 
         engine = DecisionEngine()
         workflow = engine._create_fallback_workflow("Upload video test.mp4")
@@ -135,7 +136,7 @@ class TestDecisionEngine:
 
     def test_get_next_steps(self, mock_anthropic):
         """Test getting next executable steps."""
-        from orchestrator.decision_engine import DecisionEngine, Workflow, WorkflowStep, AgentType
+        from orchestrator.decision_engine import AgentType, DecisionEngine, Workflow, WorkflowStep
 
         engine = DecisionEngine()
         workflow = Workflow(
@@ -144,7 +145,7 @@ class TestDecisionEngine:
                 WorkflowStep(agent=AgentType.AUDIO, task="Step 1"),
                 WorkflowStep(agent=AgentType.PATTERN, task="Step 2", depends_on=["step_0"]),
             ],
-            reasoning="Test"
+            reasoning="Test",
         )
 
         # No steps completed - step 0 is ready
@@ -163,12 +164,7 @@ class TestMemory:
         """Test SessionState serialization."""
         from memory.schemas import SessionState
 
-        session = SessionState(
-            session_id="test123",
-            user_id="user1",
-            champion_id=1,
-            scenario={"context": "Test"}
-        )
+        session = SessionState(session_id="test123", user_id="user1", champion_id=1, scenario={"context": "Test"})
 
         data = session.to_dict()
         assert data["session_id"] == "test123"
@@ -184,11 +180,7 @@ class TestMemory:
         from memory.schemas import PatternMemory
 
         pattern = PatternMemory(
-            id="p1",
-            champion_id=1,
-            pattern_type="opening",
-            content="Hello, how can I help?",
-            effectiveness_score=8.5
+            id="p1", champion_id=1, pattern_type="opening", content="Hello, how can I help?", effectiveness_score=8.5
         )
 
         data = pattern.to_dict()
@@ -199,11 +191,7 @@ class TestMemory:
         """Test adding conversation turns."""
         from memory.schemas import SessionState
 
-        session = SessionState(
-            session_id="test",
-            user_id="user1",
-            champion_id=1
-        )
+        session = SessionState(session_id="test", user_id="user1", champion_id=1)
 
         session.add_turn("user", "Hello", score=7.0)
         session.add_turn("champion", "Hi there!")

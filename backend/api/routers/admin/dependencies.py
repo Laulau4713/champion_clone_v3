@@ -2,11 +2,11 @@
 Admin dependencies.
 """
 
-from fastapi import Depends, HTTPException
 import structlog
+from fastapi import Depends, HTTPException
 
-from models import User
 from api.routers.auth import get_current_user
+from models import User
 
 logger = structlog.get_logger()
 

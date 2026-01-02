@@ -10,10 +10,10 @@ Handles:
 
 import os
 import subprocess
-import tempfile
 from pathlib import Path
-from celery import shared_task
+
 import structlog
+from celery import shared_task
 
 logger = structlog.get_logger()
 
@@ -24,6 +24,7 @@ AUDIO_DIR = Path(os.getenv("AUDIO_DIR", "./audio"))
 # =============================================================================
 # AUDIO TRANSCRIPTION (Whisper)
 # =============================================================================
+
 
 @shared_task(
     bind=True,
@@ -79,6 +80,7 @@ def transcribe_audio(self, audio_path: str, language: str = "fr"):
 # TTS GENERATION (ElevenLabs)
 # =============================================================================
 
+
 @shared_task(
     bind=True,
     autoretry_for=(Exception,),
@@ -123,6 +125,7 @@ def generate_tts(self, text: str, voice_id: str = None, output_filename: str = N
         # Save to file
         if not output_filename:
             import uuid
+
             output_filename = f"tts_{uuid.uuid4().hex[:8]}.mp3"
 
         output_path = AUDIO_DIR / output_filename
@@ -143,6 +146,7 @@ def generate_tts(self, text: str, voice_id: str = None, output_filename: str = N
 # =============================================================================
 # AUDIO EXTRACTION FROM VIDEO (FFmpeg)
 # =============================================================================
+
 
 @shared_task(
     bind=True,
@@ -175,11 +179,15 @@ def extract_audio_from_video(self, video_path: str, output_format: str = "mp3"):
         # FFmpeg command
         cmd = [
             "ffmpeg",
-            "-i", str(video_path),
+            "-i",
+            str(video_path),
             "-vn",  # No video
-            "-acodec", "libmp3lame" if output_format == "mp3" else "pcm_s16le",
-            "-ar", "16000",  # 16kHz for Whisper
-            "-ac", "1",  # Mono
+            "-acodec",
+            "libmp3lame" if output_format == "mp3" else "pcm_s16le",
+            "-ar",
+            "16000",  # 16kHz for Whisper
+            "-ac",
+            "1",  # Mono
             "-y",  # Overwrite
             str(audio_path),
         ]
@@ -222,9 +230,12 @@ def get_audio_duration(audio_path: str) -> float:
     try:
         cmd = [
             "ffprobe",
-            "-v", "error",
-            "-show_entries", "format=duration",
-            "-of", "default=noprint_wrappers=1:nokey=1",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
             audio_path,
         ]
         result = subprocess.run(cmd, capture_output=True, text=True)

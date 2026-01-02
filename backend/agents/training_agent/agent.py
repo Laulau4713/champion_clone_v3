@@ -4,13 +4,12 @@ Training Agent - Autonomous agent for training sessions.
 
 import os
 import uuid
-from typing import Optional
-from datetime import datetime
 
 from agents.base_agent import BaseAgent, ToolResult
-from .tools import TrainingTools
+from memory.schemas import SessionState
+
 from .memory import TrainingAgentMemory
-from memory.schemas import SessionState, ConversationTurn
+from .tools import TrainingTools
 
 
 class TrainingAgent(BaseAgent):
@@ -69,10 +68,7 @@ RÈGLES:
 Choisis les outils appropriés pour accomplir la tâche."""
 
     def __init__(self):
-        super().__init__(
-            name="Training Agent",
-            model=os.getenv("CLAUDE_SONNET_MODEL", "claude-sonnet-4-20250514")
-        )
+        super().__init__(name="Training Agent", model=os.getenv("CLAUDE_SONNET_MODEL", "claude-sonnet-4-20250514"))
 
         self.tools_impl = TrainingTools()
         self.memory = TrainingAgentMemory()
@@ -88,25 +84,13 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "champion_id": {
-                            "type": "integer",
-                            "description": "Champion ID"
-                        },
-                        "user_id": {
-                            "type": "string",
-                            "description": "User ID"
-                        },
-                        "scenario": {
-                            "type": "object",
-                            "description": "Training scenario"
-                        },
-                        "patterns": {
-                            "type": "object",
-                            "description": "Champion patterns"
-                        }
+                        "champion_id": {"type": "integer", "description": "Champion ID"},
+                        "user_id": {"type": "string", "description": "User ID"},
+                        "scenario": {"type": "object", "description": "Training scenario"},
+                        "patterns": {"type": "object", "description": "Champion patterns"},
                     },
-                    "required": ["champion_id", "scenario", "patterns"]
-                }
+                    "required": ["champion_id", "scenario", "patterns"],
+                },
             },
             {
                 "name": "process_response",
@@ -114,45 +98,29 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "session_id": {
-                            "type": "string",
-                            "description": "Session ID"
-                        },
-                        "user_response": {
-                            "type": "string",
-                            "description": "User's response"
-                        }
+                        "session_id": {"type": "string", "description": "Session ID"},
+                        "user_response": {"type": "string", "description": "User's response"},
                     },
-                    "required": ["session_id", "user_response"]
-                }
+                    "required": ["session_id", "user_response"],
+                },
             },
             {
                 "name": "end_session",
                 "description": "End session and generate summary",
                 "input_schema": {
                     "type": "object",
-                    "properties": {
-                        "session_id": {
-                            "type": "string",
-                            "description": "Session ID"
-                        }
-                    },
-                    "required": ["session_id"]
-                }
+                    "properties": {"session_id": {"type": "string", "description": "Session ID"}},
+                    "required": ["session_id"],
+                },
             },
             {
                 "name": "get_session",
                 "description": "Get current session state",
                 "input_schema": {
                     "type": "object",
-                    "properties": {
-                        "session_id": {
-                            "type": "string",
-                            "description": "Session ID"
-                        }
-                    },
-                    "required": ["session_id"]
-                }
+                    "properties": {"session_id": {"type": "string", "description": "Session ID"}},
+                    "required": ["session_id"],
+                },
             },
             {
                 "name": "generate_tips",
@@ -160,31 +128,20 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "scenario": {
-                            "type": "object",
-                            "description": "Training scenario"
-                        },
-                        "patterns": {
-                            "type": "object",
-                            "description": "Champion patterns"
-                        }
+                        "scenario": {"type": "object", "description": "Training scenario"},
+                        "patterns": {"type": "object", "description": "Champion patterns"},
                     },
-                    "required": ["scenario", "patterns"]
-                }
+                    "required": ["scenario", "patterns"],
+                },
             },
             {
                 "name": "list_active_sessions",
                 "description": "List all active training sessions",
                 "input_schema": {
                     "type": "object",
-                    "properties": {
-                        "user_id": {
-                            "type": "string",
-                            "description": "Filter by user ID"
-                        }
-                    }
-                }
-            }
+                    "properties": {"user_id": {"type": "string", "description": "Filter by user ID"}},
+                },
+            },
         ]
 
     async def execute_tool(self, name: str, input_data: dict) -> ToolResult:
@@ -195,19 +152,16 @@ Choisis les outils appropriés pour accomplir la tâche."""
                     champion_id=input_data["champion_id"],
                     user_id=input_data.get("user_id", "anonymous"),
                     scenario=input_data["scenario"],
-                    patterns=input_data["patterns"]
+                    patterns=input_data["patterns"],
                 )
 
             elif name == "process_response":
                 result = await self._process_response(
-                    session_id=input_data["session_id"],
-                    user_response=input_data["user_response"]
+                    session_id=input_data["session_id"], user_response=input_data["user_response"]
                 )
 
             elif name == "end_session":
-                result = await self._end_session(
-                    session_id=input_data["session_id"]
-                )
+                result = await self._end_session(session_id=input_data["session_id"])
 
             elif name == "get_session":
                 session = await self.memory.get_session(input_data["session_id"])
@@ -218,58 +172,31 @@ Choisis les outils appropriés pour accomplir la tâche."""
 
             elif name == "generate_tips":
                 tips = await self.tools_impl.generate_tips(
-                    scenario=input_data["scenario"],
-                    patterns=input_data["patterns"]
+                    scenario=input_data["scenario"], patterns=input_data["patterns"]
                 )
                 result = {"success": True, "tips": tips}
 
             elif name == "list_active_sessions":
-                sessions = await self.memory.get_active_sessions(
-                    user_id=input_data.get("user_id")
-                )
-                result = {
-                    "success": True,
-                    "sessions": [s.to_dict() for s in sessions]
-                }
+                sessions = await self.memory.get_active_sessions(user_id=input_data.get("user_id"))
+                result = {"success": True, "sessions": [s.to_dict() for s in sessions]}
 
             else:
-                return ToolResult(
-                    tool_name=name,
-                    success=False,
-                    output=None,
-                    error=f"Unknown tool: {name}"
-                )
+                return ToolResult(tool_name=name, success=False, output=None, error=f"Unknown tool: {name}")
 
             return ToolResult(
-                tool_name=name,
-                success=result.get("success", True),
-                output=result,
-                error=result.get("error")
+                tool_name=name, success=result.get("success", True), output=result, error=result.get("error")
             )
 
         except Exception as e:
-            return ToolResult(
-                tool_name=name,
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return ToolResult(tool_name=name, success=False, output=None, error=str(e))
 
-    async def _start_session(
-        self,
-        champion_id: int,
-        user_id: str,
-        scenario: dict,
-        patterns: dict
-    ) -> dict:
+    async def _start_session(self, champion_id: int, user_id: str, scenario: dict, patterns: dict) -> dict:
         """Start a new training session."""
         session_id = str(uuid.uuid4())[:8]
 
         # Build system prompt for prospect
         system_prompt = self.tools_impl.PROSPECT_SYSTEM_PROMPT.format(
-            scenario=str(scenario),
-            patterns=str(patterns),
-            difficulty=scenario.get("difficulty", "medium").upper()
+            scenario=str(scenario), patterns=str(patterns), difficulty=scenario.get("difficulty", "medium").upper()
         )
 
         # Get first prospect message
@@ -278,7 +205,7 @@ Choisis les outils appropriés pour accomplir la tâche."""
             conversation_history=[],
             scenario=scenario,
             patterns=patterns,
-            system_prompt=system_prompt
+            system_prompt=system_prompt,
         )
 
         if not first_response.get("success"):
@@ -294,30 +221,18 @@ Choisis les outils appropriés pour accomplir la tâche."""
             champion_id=champion_id,
             scenario=scenario,
             tips=tips,
-            system_prompt=system_prompt
+            system_prompt=system_prompt,
         )
 
         # Add first message
-        session.add_turn(
-            role="champion",
-            content=first_response["response"]
-        )
+        session.add_turn(role="champion", content=first_response["response"])
 
         # Store in Redis
         await self.memory.create_session(session)
 
-        return {
-            "success": True,
-            "session_id": session_id,
-            "first_message": first_response["response"],
-            "tips": tips
-        }
+        return {"success": True, "session_id": session_id, "first_message": first_response["response"], "tips": tips}
 
-    async def _process_response(
-        self,
-        session_id: str,
-        user_response: str
-    ) -> dict:
+    async def _process_response(self, session_id: str, user_response: str) -> dict:
         """Process user response in session."""
         # Get session
         session = await self.memory.get_session(session_id)
@@ -335,21 +250,17 @@ Choisis les outils appropriés pour accomplir la tâche."""
             user_response=user_response,
             patterns=session.scenario.get("patterns", {}),
             scenario=session.scenario,
-            conversation_history=conversation
+            conversation_history=conversation,
         )
 
         # Add user message with feedback
         session.add_turn(
-            role="user",
-            content=user_response,
-            feedback=evaluation.get("feedback"),
-            score=evaluation.get("score")
+            role="user", content=user_response, feedback=evaluation.get("feedback"), score=evaluation.get("score")
         )
 
         # Check if session should end
         is_complete = self.tools_impl.check_session_complete(
-            [t.to_dict() for t in session.conversation],
-            session.scenario
+            [t.to_dict() for t in session.conversation], session.scenario
         )
 
         if is_complete:
@@ -362,7 +273,7 @@ Choisis les outils appropriés pour accomplir la tâche."""
                 "score": evaluation.get("score"),
                 "suggestions": evaluation.get("suggestions", []),
                 "session_complete": True,
-                "prospect_response": None
+                "prospect_response": None,
             }
 
         # Get prospect response
@@ -371,14 +282,11 @@ Choisis les outils appropriés pour accomplir la tâche."""
             conversation_history=conversation,
             scenario=session.scenario,
             patterns=session.scenario.get("patterns", {}),
-            system_prompt=session.system_prompt
+            system_prompt=session.system_prompt,
         )
 
         # Add prospect message
-        session.add_turn(
-            role="champion",
-            content=prospect.get("response", "...")
-        )
+        session.add_turn(role="champion", content=prospect.get("response", "..."))
 
         # Update session
         await self.memory.update_session(session)
@@ -389,7 +297,7 @@ Choisis les outils appropriés pour accomplir la tâche."""
             "feedback": evaluation.get("feedback"),
             "score": evaluation.get("score"),
             "suggestions": evaluation.get("suggestions", []),
-            "session_complete": False
+            "session_complete": False,
         }
 
     async def _end_session(self, session_id: str) -> dict:
@@ -401,9 +309,7 @@ Choisis les outils appropriés pour accomplir la tâche."""
         # Generate summary
         conversation = [t.to_dict() for t in session.conversation]
         summary = await self.tools_impl.generate_session_summary(
-            conversation=conversation,
-            patterns=session.scenario.get("patterns", {}),
-            scenario=session.scenario
+            conversation=conversation, patterns=session.scenario.get("patterns", {}), scenario=session.scenario
         )
 
         # Update session
@@ -414,7 +320,7 @@ Choisis les outils appropriés pour accomplir la tâche."""
             "success": True,
             "session_id": session_id,
             "total_exchanges": len([m for m in conversation if m.get("role") == "user"]),
-            **summary
+            **summary,
         }
 
     # ============================================
@@ -435,9 +341,7 @@ Choisis les outils appropriés pour accomplir la tâche."""
             Dict with session_id, first_message, tips, system_prompt
         """
         system_prompt = self.tools_impl.PROSPECT_SYSTEM_PROMPT.format(
-            scenario=str(scenario),
-            patterns=str(patterns),
-            difficulty=scenario.get("difficulty", "medium").upper()
+            scenario=str(scenario), patterns=str(patterns), difficulty=scenario.get("difficulty", "medium").upper()
         )
 
         # Get first prospect message
@@ -446,7 +350,7 @@ Choisis les outils appropriés pour accomplir la tâche."""
             conversation_history=[],
             scenario=scenario,
             patterns=patterns,
-            system_prompt=system_prompt
+            system_prompt=system_prompt,
         )
 
         if not first_response.get("success"):
@@ -455,18 +359,9 @@ Choisis les outils appropriés pour accomplir la tâche."""
         # Generate tips
         tips = await self.tools_impl.generate_tips(scenario, patterns)
 
-        return {
-            "first_message": first_response["response"],
-            "tips": tips,
-            "system_prompt": system_prompt
-        }
+        return {"first_message": first_response["response"], "tips": tips, "system_prompt": system_prompt}
 
-    async def get_prospect_response(
-        self,
-        user_message: str,
-        conversation_history: list,
-        system_prompt: str
-    ) -> str:
+    async def get_prospect_response(self, user_message: str, conversation_history: list, system_prompt: str) -> str:
         """
         Get prospect's response to user message.
 
@@ -485,18 +380,14 @@ Choisis les outils appropriés pour accomplir la tâche."""
             conversation_history=conversation_history,
             scenario={},
             patterns={},
-            system_prompt=system_prompt
+            system_prompt=system_prompt,
         )
         if result.get("success"):
             return result.get("response", "...")
         raise ValueError(result.get("error", "Failed to generate response"))
 
     async def evaluate_response(
-        self,
-        user_response: str,
-        patterns: dict,
-        scenario: dict,
-        conversation_history: list
+        self, user_response: str, patterns: dict, scenario: dict, conversation_history: list
     ) -> dict:
         """
         Evaluate user's response.
@@ -513,15 +404,12 @@ Choisis les outils appropriés pour accomplir la tâche."""
             Dict with score, feedback, suggestions
         """
         result = await self.tools_impl.evaluate_response(
-            user_response=user_response,
-            patterns=patterns,
-            scenario=scenario,
-            conversation_history=conversation_history
+            user_response=user_response, patterns=patterns, scenario=scenario, conversation_history=conversation_history
         )
         return {
             "score": result.get("score", 5),
             "feedback": result.get("feedback", ""),
-            "suggestions": result.get("suggestions", [])
+            "suggestions": result.get("suggestions", []),
         }
 
     async def check_session_complete(self, messages: list, scenario: dict) -> bool:
@@ -539,12 +427,7 @@ Choisis les outils appropriés pour accomplir la tâche."""
         """
         return self.tools_impl.check_session_complete(messages, scenario)
 
-    async def generate_session_summary(
-        self,
-        messages: list,
-        patterns: dict,
-        scenario: dict
-    ) -> dict:
+    async def generate_session_summary(self, messages: list, patterns: dict, scenario: dict) -> dict:
         """
         Generate summary for completed session.
 
@@ -559,13 +442,11 @@ Choisis les outils appropriés pour accomplir la tâche."""
             Dict with overall_score, feedback_summary, strengths, areas_for_improvement
         """
         result = await self.tools_impl.generate_session_summary(
-            conversation=messages,
-            patterns=patterns,
-            scenario=scenario
+            conversation=messages, patterns=patterns, scenario=scenario
         )
         return {
             "overall_score": result.get("overall_score", 5),
             "feedback_summary": result.get("feedback_summary", ""),
             "strengths": result.get("strengths", []),
-            "areas_for_improvement": result.get("areas_for_improvement", [])
+            "areas_for_improvement": result.get("areas_for_improvement", []),
         }

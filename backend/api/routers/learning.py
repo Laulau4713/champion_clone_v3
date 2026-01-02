@@ -8,19 +8,17 @@ Endpoints pour le parcours pédagogique.
 """
 
 from datetime import date, datetime
-from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
-from pydantic import BaseModel
-import structlog
+from typing import Optional
 
-from database import get_db
-from models import (
-    User, Skill, Sector, Course, Quiz, DifficultyLevel,
-    UserProgress, UserSkillProgress, DailySession
-)
+import structlog
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.routers.auth import get_current_user
+from database import get_db
+from models import Course, DailySession, DifficultyLevel, Quiz, Sector, Skill, User, UserProgress, UserSkillProgress
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/learning", tags=["Learning"])
@@ -29,6 +27,7 @@ router = APIRouter(prefix="/learning", tags=["Learning"])
 # ═══════════════════════════════════════════════════════════════
 # SCHEMAS
 # ═══════════════════════════════════════════════════════════════
+
 
 class SkillResponse(BaseModel):
     id: int
@@ -45,28 +44,28 @@ class SkillResponse(BaseModel):
 
 
 class SkillDetailResponse(SkillResponse):
-    learning_objectives: Optional[list] = None
-    key_concepts: Optional[list] = None
-    evaluation_criteria: Optional[list] = None
-    emotional_focus: Optional[list] = None
-    common_mistakes: Optional[list] = None
+    learning_objectives: list | None = None
+    key_concepts: list | None = None
+    evaluation_criteria: list | None = None
+    emotional_focus: list | None = None
+    common_mistakes: list | None = None
 
 
 class SectorResponse(BaseModel):
     id: int
     slug: str
     name: str
-    description: Optional[str] = None
-    icon: Optional[str] = None
+    description: str | None = None
+    icon: str | None = None
 
     class Config:
         from_attributes = True
 
 
 class SectorDetailResponse(SectorResponse):
-    vocabulary: Optional[list] = None
-    prospect_personas: Optional[list] = None
-    typical_objections: Optional[list] = None
+    vocabulary: list | None = None
+    prospect_personas: list | None = None
+    typical_objections: list | None = None
 
 
 class CourseResponse(BaseModel):
@@ -74,23 +73,23 @@ class CourseResponse(BaseModel):
     day: int  # Day number in the training program
     level: str
     title: str
-    objective: Optional[str] = None
+    objective: str | None = None
     duration_minutes: int
-    skill_id: Optional[int] = None
-    skill_slug: Optional[str] = None  # Added for frontend convenience
+    skill_id: int | None = None
+    skill_slug: str | None = None  # Added for frontend convenience
 
     class Config:
         from_attributes = True
 
 
 class CourseDetailResponse(CourseResponse):
-    key_points: Optional[list] = None
-    common_mistakes: Optional[list] = None
-    emotional_tips: Optional[list] = None
-    takeaways: Optional[list] = None
-    stat_cle: Optional[str] = None
-    intro: Optional[str] = None
-    full_content: Optional[str] = None
+    key_points: list | None = None
+    common_mistakes: list | None = None
+    emotional_tips: list | None = None
+    takeaways: list | None = None
+    stat_cle: str | None = None
+    intro: str | None = None
+    full_content: str | None = None
 
 
 class QuizQuestionResponse(BaseModel):
@@ -118,7 +117,7 @@ class QuizResultResponse(BaseModel):
 class UserProgressResponse(BaseModel):
     current_level: str
     current_day: int  # Current day in the training program
-    sector_slug: Optional[str] = None
+    sector_slug: str | None = None
     started_at: datetime
     total_training_minutes: int
     total_scenarios_completed: int
@@ -152,7 +151,7 @@ class DailySessionResponse(BaseModel):
     scripts_listened: int
     training_minutes: int
     scenarios_attempted: int
-    average_score: Optional[float] = None
+    average_score: float | None = None
     is_complete: bool
 
     class Config:
@@ -163,7 +162,7 @@ class StartSessionResponse(BaseModel):
     session_id: int
     day: int
     course: CourseDetailResponse
-    skill: Optional[SkillResponse] = None
+    skill: SkillResponse | None = None
 
 
 class SelectSectorRequest(BaseModel):
@@ -174,11 +173,9 @@ class SelectSectorRequest(BaseModel):
 # ENDPOINTS - CONTENU (Public)
 # ═══════════════════════════════════════════════════════════════
 
+
 @router.get("/skills", response_model=list[SkillResponse])
-async def get_skills(
-    level: Optional[str] = None,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_skills(level: str | None = None, db: AsyncSession = Depends(get_db)):
     """Liste tous les skills, optionnellement filtrés par niveau."""
     query = select(Skill).order_by(Skill.order)
     if level:
@@ -189,10 +186,7 @@ async def get_skills(
 
 
 @router.get("/skills/{slug}", response_model=SkillDetailResponse)
-async def get_skill(
-    slug: str,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_skill(slug: str, db: AsyncSession = Depends(get_db)):
     """Détail d'un skill."""
     skill = await db.scalar(select(Skill).where(Skill.slug == slug))
     if not skill:
@@ -208,10 +202,7 @@ async def get_sectors(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/sectors/{slug}", response_model=SectorDetailResponse)
-async def get_sector(
-    slug: str,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_sector(slug: str, db: AsyncSession = Depends(get_db)):
     """Détail d'un secteur."""
     sector = await db.scalar(select(Sector).where(Sector.slug == slug))
     if not sector:
@@ -220,14 +211,13 @@ async def get_sector(
 
 
 @router.get("/courses", response_model=list[CourseResponse])
-async def get_courses(
-    level: Optional[str] = None,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_courses(level: str | None = None, db: AsyncSession = Depends(get_db)):
     """Liste tous les cours."""
-    query = select(Course, Skill.slug.label("skill_slug")).outerjoin(
-        Skill, Course.skill_id == Skill.id
-    ).order_by(Course.day)
+    query = (
+        select(Course, Skill.slug.label("skill_slug"))
+        .outerjoin(Skill, Course.skill_id == Skill.id)
+        .order_by(Course.day)
+    )
     if level:
         query = query.where(Course.level == level)
 
@@ -235,29 +225,28 @@ async def get_courses(
     courses = []
     for row in result:
         course = row[0]
-        courses.append({
-            "id": course.id,
-            "day": course.day,
-            "level": course.level,
-            "title": course.title,
-            "objective": course.objective,
-            "duration_minutes": course.duration_minutes,
-            "skill_id": course.skill_id,
-            "skill_slug": row[1]  # skill_slug from join
-        })
+        courses.append(
+            {
+                "id": course.id,
+                "day": course.day,
+                "level": course.level,
+                "title": course.title,
+                "objective": course.objective,
+                "duration_minutes": course.duration_minutes,
+                "skill_id": course.skill_id,
+                "skill_slug": row[1],  # skill_slug from join
+            }
+        )
     return courses
 
 
 @router.get("/courses/{order}", response_model=CourseDetailResponse)
-async def get_course_by_order(
-    order: int,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_course_by_order(order: int, db: AsyncSession = Depends(get_db)):
     """Récupère un cours par son ordre dans la progression."""
     result = await db.execute(
-        select(Course, Skill.slug.label("skill_slug")).outerjoin(
-            Skill, Course.skill_id == Skill.id
-        ).where(Course.day == order)
+        select(Course, Skill.slug.label("skill_slug"))
+        .outerjoin(Skill, Course.skill_id == Skill.id)
+        .where(Course.day == order)
     )
     row = result.first()
     if not row:
@@ -279,16 +268,13 @@ async def get_course_by_order(
         "takeaways": course.takeaways,
         "stat_cle": course.stat_cle,
         "intro": course.intro,
-        "full_content": course.full_content
+        "full_content": course.full_content,
     }
 
 
 # Keep old endpoint for backward compatibility
 @router.get("/courses/day/{day}", response_model=CourseDetailResponse, include_in_schema=False)
-async def get_course_by_day_legacy(
-    day: int,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_course_by_day_legacy(day: int, db: AsyncSession = Depends(get_db)):
     """Legacy endpoint - use /courses/{order} instead."""
     return await get_course_by_order(day, db)
 
@@ -303,7 +289,7 @@ async def get_difficulty_levels(db: AsyncSession = Depends(get_db)):
             "level": l.level,
             "name": l.name,
             "description": l.description,
-            "days_range": [l.days_range_start, l.days_range_end]
+            "days_range": [l.days_range_start, l.days_range_end],
         }
         for l in levels
     ]
@@ -313,15 +299,11 @@ async def get_difficulty_levels(db: AsyncSession = Depends(get_db)):
 # ENDPOINTS - PROGRESSION UTILISATEUR (Auth required)
 # ═══════════════════════════════════════════════════════════════
 
+
 @router.get("/progress", response_model=UserProgressResponse)
-async def get_user_progress(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def get_user_progress(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """Récupère la progression de l'utilisateur."""
-    progress = await db.scalar(
-        select(UserProgress).where(UserProgress.user_id == current_user.id)
-    )
+    progress = await db.scalar(select(UserProgress).where(UserProgress.user_id == current_user.id))
 
     if not progress:
         # Créer une progression initiale
@@ -333,8 +315,7 @@ async def get_user_progress(
     # Compter les skills validés
     validated_count = await db.scalar(
         select(func.count(UserSkillProgress.id)).where(
-            UserSkillProgress.user_progress_id == progress.id,
-            UserSkillProgress.is_validated == True
+            UserSkillProgress.user_progress_id == progress.id, UserSkillProgress.is_validated == True
         )
     )
 
@@ -355,19 +336,14 @@ async def get_user_progress(
         "total_scenarios_completed": progress.total_scenarios_completed,
         "average_score": progress.average_score,
         "skills_validated": validated_count or 0,
-        "skills_total": total_skills or 13
+        "skills_total": total_skills or 13,
     }
 
 
 @router.get("/progress/skills", response_model=list[SkillProgressResponse])
-async def get_skills_progress(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def get_skills_progress(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """Récupère la progression par skill."""
-    progress = await db.scalar(
-        select(UserProgress).where(UserProgress.user_id == current_user.id)
-    )
+    progress = await db.scalar(select(UserProgress).where(UserProgress.user_id == current_user.id))
 
     if not progress:
         return []
@@ -380,42 +356,37 @@ async def get_skills_progress(
     for skill in skills:
         skill_progress = await db.scalar(
             select(UserSkillProgress).where(
-                UserSkillProgress.user_progress_id == progress.id,
-                UserSkillProgress.skill_id == skill.id
+                UserSkillProgress.user_progress_id == progress.id, UserSkillProgress.skill_id == skill.id
             )
         )
 
-        result.append({
-            "skill_slug": skill.slug,
-            "skill_name": skill.name,
-            "scenarios_completed": skill_progress.scenarios_completed if skill_progress else 0,
-            "scenarios_passed": skill_progress.scenarios_passed if skill_progress else 0,
-            "scenarios_required": skill.scenarios_required,
-            "best_score": skill_progress.best_score if skill_progress else 0,
-            "average_score": skill_progress.average_score if skill_progress else 0,
-            "quiz_passed": skill_progress.quiz_passed if skill_progress else False,
-            "is_validated": skill_progress.is_validated if skill_progress else False
-        })
+        result.append(
+            {
+                "skill_slug": skill.slug,
+                "skill_name": skill.name,
+                "scenarios_completed": skill_progress.scenarios_completed if skill_progress else 0,
+                "scenarios_passed": skill_progress.scenarios_passed if skill_progress else 0,
+                "scenarios_required": skill.scenarios_required,
+                "best_score": skill_progress.best_score if skill_progress else 0,
+                "average_score": skill_progress.average_score if skill_progress else 0,
+                "quiz_passed": skill_progress.quiz_passed if skill_progress else False,
+                "is_validated": skill_progress.is_validated if skill_progress else False,
+            }
+        )
 
     return result
 
 
 @router.post("/progress/select-sector")
 async def select_sector(
-    request: SelectSectorRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    request: SelectSectorRequest, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """Sélectionne un secteur pour le niveau expert."""
-    sector = await db.scalar(
-        select(Sector).where(Sector.slug == request.sector_slug)
-    )
+    sector = await db.scalar(select(Sector).where(Sector.slug == request.sector_slug))
     if not sector:
         raise HTTPException(status_code=404, detail="Sector not found")
 
-    progress = await db.scalar(
-        select(UserProgress).where(UserProgress.user_id == current_user.id)
-    )
+    progress = await db.scalar(select(UserProgress).where(UserProgress.user_id == current_user.id))
 
     if not progress:
         progress = UserProgress(user_id=current_user.id)
@@ -432,16 +403,12 @@ async def select_sector(
 # ENDPOINTS - SESSION QUOTIDIENNE
 # ═══════════════════════════════════════════════════════════════
 
+
 @router.post("/session/start", response_model=StartSessionResponse)
-async def start_daily_session(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def start_daily_session(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """Démarre la session quotidienne."""
     # Récupérer ou créer la progression
-    progress = await db.scalar(
-        select(UserProgress).where(UserProgress.user_id == current_user.id)
-    )
+    progress = await db.scalar(select(UserProgress).where(UserProgress.user_id == current_user.id))
 
     if not progress:
         progress = UserProgress(user_id=current_user.id)
@@ -452,25 +419,17 @@ async def start_daily_session(
     # Vérifier s'il y a déjà une session aujourd'hui
     today = date.today()
     session = await db.scalar(
-        select(DailySession).where(
-            DailySession.user_progress_id == progress.id,
-            func.date(DailySession.date) == today
-        )
+        select(DailySession).where(DailySession.user_progress_id == progress.id, func.date(DailySession.date) == today)
     )
 
     if not session:
-        session = DailySession(
-            user_progress_id=progress.id,
-            date=datetime.utcnow()
-        )
+        session = DailySession(user_progress_id=progress.id, date=datetime.utcnow())
         db.add(session)
         await db.commit()
         await db.refresh(session)
 
     # Récupérer le cours du jour
-    course = await db.scalar(
-        select(Course).where(Course.day == progress.current_day)
-    )
+    course = await db.scalar(select(Course).where(Course.day == progress.current_day))
 
     if not course:
         raise HTTPException(status_code=404, detail="No course for this day")
@@ -480,19 +439,12 @@ async def start_daily_session(
 
     logger.info("session_started", user_id=current_user.id, day=progress.current_day)
 
-    return {
-        "session_id": session.id,
-        "day": progress.current_day,
-        "course": course,
-        "skill": skill
-    }
+    return {"session_id": session.id, "day": progress.current_day, "course": course, "skill": skill}
 
 
 @router.post("/session/{session_id}/complete-course")
 async def complete_course_reading(
-    session_id: int,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """Marque le cours comme lu."""
     session = await db.get(DailySession, session_id)
@@ -508,9 +460,7 @@ async def complete_course_reading(
 
 @router.post("/session/{session_id}/listen-script")
 async def listen_script(
-    session_id: int,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """Incrémente le compteur de scripts écoutés."""
     session = await db.get(DailySession, session_id)
@@ -524,24 +474,16 @@ async def listen_script(
 
 
 @router.get("/session/today", response_model=Optional[DailySessionResponse])
-async def get_today_session(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
+async def get_today_session(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """Récupère la session du jour si elle existe."""
-    progress = await db.scalar(
-        select(UserProgress).where(UserProgress.user_id == current_user.id)
-    )
+    progress = await db.scalar(select(UserProgress).where(UserProgress.user_id == current_user.id))
 
     if not progress:
         return None
 
     today = date.today()
     session = await db.scalar(
-        select(DailySession).where(
-            DailySession.user_progress_id == progress.id,
-            func.date(DailySession.date) == today
-        )
+        select(DailySession).where(DailySession.user_progress_id == progress.id, func.date(DailySession.date) == today)
     )
 
     return session
@@ -551,11 +493,9 @@ async def get_today_session(
 # ENDPOINTS - QUIZ
 # ═══════════════════════════════════════════════════════════════
 
+
 @router.get("/quiz/{skill_slug}", response_model=QuizResponse)
-async def get_quiz(
-    skill_slug: str,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_quiz(skill_slug: str, db: AsyncSession = Depends(get_db)):
     """Récupère le quiz d'un skill (sans les réponses)."""
     skill = await db.scalar(select(Skill).where(Skill.slug == skill_slug))
     if not skill:
@@ -566,10 +506,7 @@ async def get_quiz(
         raise HTTPException(status_code=404, detail="Quiz not found")
 
     # Retourner sans les réponses correctes
-    questions = [
-        {"question": q["question"], "options": q["options"]}
-        for q in quiz.questions
-    ]
+    questions = [{"question": q["question"], "options": q["options"]} for q in quiz.questions]
 
     return {"skill_id": skill.id, "questions": questions}
 
@@ -579,7 +516,7 @@ async def submit_quiz(
     skill_slug: str,
     submission: QuizSubmission,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Soumet les réponses au quiz."""
     skill = await db.scalar(select(Skill).where(Skill.slug == skill_slug))
@@ -593,40 +530,36 @@ async def submit_quiz(
     # Vérifier les réponses
     questions = quiz.questions
     if len(submission.answers) != len(questions):
-        raise HTTPException(
-            status_code=400,
-            detail=f"Expected {len(questions)} answers, got {len(submission.answers)}"
-        )
+        raise HTTPException(status_code=400, detail=f"Expected {len(questions)} answers, got {len(submission.answers)}")
 
     correct_count = 0
     details = []
 
-    for i, (question, answer) in enumerate(zip(questions, submission.answers)):
+    for i, (question, answer) in enumerate(zip(questions, submission.answers, strict=False)):
         is_correct = answer.upper() == question["correct"].upper()
         if is_correct:
             correct_count += 1
 
-        details.append({
-            "question_index": i,
-            "your_answer": answer,
-            "correct_answer": question["correct"],
-            "is_correct": is_correct,
-            "explanation": question.get("explanation", "")
-        })
+        details.append(
+            {
+                "question_index": i,
+                "your_answer": answer,
+                "correct_answer": question["correct"],
+                "is_correct": is_correct,
+                "explanation": question.get("explanation", ""),
+            }
+        )
 
     score = (correct_count / len(questions)) * 100
     passed = score >= 80  # 80% pour passer
 
     # Mettre à jour la progression
-    progress = await db.scalar(
-        select(UserProgress).where(UserProgress.user_id == current_user.id)
-    )
+    progress = await db.scalar(select(UserProgress).where(UserProgress.user_id == current_user.id))
 
     if progress:
         skill_progress = await db.scalar(
             select(UserSkillProgress).where(
-                UserSkillProgress.user_progress_id == progress.id,
-                UserSkillProgress.skill_id == skill.id
+                UserSkillProgress.user_progress_id == progress.id, UserSkillProgress.skill_id == skill.id
             )
         )
 
@@ -639,7 +572,7 @@ async def submit_quiz(
                 scenarios_completed=0,
                 scenarios_passed=0,
                 best_score=0.0,
-                average_score=0.0
+                average_score=0.0,
             )
             db.add(skill_progress)
 
@@ -657,18 +590,12 @@ async def submit_quiz(
 
         await db.commit()
 
-    logger.info(
-        "quiz_submitted",
-        user_id=current_user.id,
-        skill=skill_slug,
-        score=score,
-        passed=passed
-    )
+    logger.info("quiz_submitted", user_id=current_user.id, skill=skill_slug, score=score, passed=passed)
 
     return {
         "score": score,
         "passed": passed,
         "correct_count": correct_count,
         "total_questions": len(questions),
-        "details": details
+        "details": details,
     }

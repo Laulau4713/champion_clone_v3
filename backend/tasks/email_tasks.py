@@ -10,11 +10,11 @@ Handles:
 
 import os
 import smtplib
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime, timedelta
-from celery import shared_task
+from email.mime.text import MIMEText
+
 import structlog
+from celery import shared_task
 
 logger = structlog.get_logger()
 
@@ -30,6 +30,7 @@ SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
 # =============================================================================
 # BASE EMAIL SENDING
 # =============================================================================
+
 
 @shared_task(
     bind=True,
@@ -88,6 +89,7 @@ def send_email(self, to: str, subject: str, html_body: str, text_body: str = Non
 # WELCOME EMAIL
 # =============================================================================
 
+
 @shared_task(bind=True)
 def send_welcome_email(self, user_email: str, user_name: str):
     """Send welcome email to new user."""
@@ -141,6 +143,7 @@ def send_welcome_email(self, user_email: str, user_name: str):
 # =============================================================================
 # INACTIVE USER REMINDERS
 # =============================================================================
+
 
 @shared_task(bind=True)
 def send_inactive_user_reminders(self, days_inactive: int = 7):
@@ -206,6 +209,7 @@ def send_inactive_reminder(self, user_email: str, user_name: str, days: int = 7)
 # =============================================================================
 # ACHIEVEMENT UNLOCKED
 # =============================================================================
+
 
 @shared_task(bind=True)
 def send_achievement_email(self, user_email: str, user_name: str, achievement_name: str, xp_earned: int):

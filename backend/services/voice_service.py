@@ -5,11 +5,12 @@ Gère la synthèse vocale et la reconnaissance vocale pour les sessions
 d'entraînement avec voix.
 """
 
-import httpx
 import base64
-from typing import Optional, AsyncGenerator
-from pathlib import Path
 import hashlib
+from collections.abc import AsyncGenerator
+from pathlib import Path
+
+import httpx
 import structlog
 
 from config import get_settings
@@ -84,7 +85,7 @@ class VoiceService:
         personality: str = "neutral",
         use_cache: bool = True,
         stability: float = 0.5,
-        similarity_boost: float = 0.75
+        similarity_boost: float = 0.75,
     ) -> tuple[bytes, str]:
         """
         Convertit du texte en audio via ElevenLabs.
@@ -116,26 +117,16 @@ class VoiceService:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
                 f"{self.ELEVENLABS_BASE_URL}/text-to-speech/{voice_id}",
-                headers={
-                    "xi-api-key": self.elevenlabs_key,
-                    "Content-Type": "application/json"
-                },
+                headers={"xi-api-key": self.elevenlabs_key, "Content-Type": "application/json"},
                 json={
                     "text": text,
                     "model_id": settings.ELEVENLABS_MODEL,
-                    "voice_settings": {
-                        "stability": stability,
-                        "similarity_boost": similarity_boost
-                    }
-                }
+                    "voice_settings": {"stability": stability, "similarity_boost": similarity_boost},
+                },
             )
 
             if response.status_code != 200:
-                logger.error(
-                    "elevenlabs_tts_error",
-                    status=response.status_code,
-                    response=response.text[:200]
-                )
+                logger.error("elevenlabs_tts_error", status=response.status_code, response=response.text[:200])
                 raise Exception(f"ElevenLabs error: {response.status_code} - {response.text}")
 
             audio_bytes = response.content
@@ -147,11 +138,7 @@ class VoiceService:
 
         return audio_bytes, cache_key
 
-    async def text_to_speech_stream(
-        self,
-        text: str,
-        personality: str = "neutral"
-    ) -> AsyncGenerator[bytes, None]:
+    async def text_to_speech_stream(self, text: str, personality: str = "neutral") -> AsyncGenerator[bytes, None]:
         """
         Stream audio via ElevenLabs (pour réponse plus rapide).
         Yields chunks d'audio.
@@ -161,38 +148,30 @@ class VoiceService:
 
         voice_id = self._get_voice_id(personality)
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            async with client.stream(
+        async with (
+            httpx.AsyncClient(timeout=60.0) as client,
+            client.stream(
                 "POST",
                 f"{self.ELEVENLABS_BASE_URL}/text-to-speech/{voice_id}/stream",
-                headers={
-                    "xi-api-key": self.elevenlabs_key,
-                    "Content-Type": "application/json"
-                },
+                headers={"xi-api-key": self.elevenlabs_key, "Content-Type": "application/json"},
                 json={
                     "text": text,
                     "model_id": settings.ELEVENLABS_MODEL,
-                    "voice_settings": {
-                        "stability": 0.5,
-                        "similarity_boost": 0.75
-                    }
-                }
-            ) as response:
-                if response.status_code != 200:
-                    raise Exception(f"ElevenLabs stream error: {response.status_code}")
+                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
+                },
+            ) as response,
+        ):
+            if response.status_code != 200:
+                raise Exception(f"ElevenLabs stream error: {response.status_code}")
 
-                async for chunk in response.aiter_bytes():
-                    yield chunk
+            async for chunk in response.aiter_bytes():
+                yield chunk
 
     # ═══════════════════════════════════════════════════════════════
     # STT - SPEECH TO TEXT (Whisper API)
     # ═══════════════════════════════════════════════════════════════
 
-    async def speech_to_text(
-        self,
-        audio_bytes: bytes,
-        language: str = "fr"
-    ) -> dict:
+    async def speech_to_text(self, audio_bytes: bytes, language: str = "fr") -> dict:
         """
         Convertit de l'audio en texte via Whisper API.
 
@@ -216,41 +195,27 @@ class VoiceService:
             files = {
                 "file": ("audio.webm", audio_bytes, "audio/webm"),
             }
-            data = {
-                "model": "whisper-1",
-                "language": language,
-                "response_format": "verbose_json"
-            }
+            data = {"model": "whisper-1", "language": language, "response_format": "verbose_json"}
 
             response = await client.post(
                 f"{self.OPENAI_BASE_URL}/audio/transcriptions",
-                headers={
-                    "Authorization": f"Bearer {self.openai_key}"
-                },
+                headers={"Authorization": f"Bearer {self.openai_key}"},
                 files=files,
-                data=data
+                data=data,
             )
 
             if response.status_code != 200:
-                logger.error(
-                    "whisper_stt_error",
-                    status=response.status_code,
-                    response=response.text[:200]
-                )
+                logger.error("whisper_stt_error", status=response.status_code, response=response.text[:200])
                 raise Exception(f"Whisper error: {response.status_code} - {response.text}")
 
             result = response.json()
 
-            logger.info(
-                "stt_completed",
-                text_length=len(result.get("text", "")),
-                duration=result.get("duration", 0)
-            )
+            logger.info("stt_completed", text_length=len(result.get("text", "")), duration=result.get("duration", 0))
 
             return {
                 "text": result.get("text", ""),
                 "duration": result.get("duration", 0),
-                "language": result.get("language", language)
+                "language": result.get("language", language),
             }
 
     # ═══════════════════════════════════════════════════════════════
@@ -272,16 +237,13 @@ class VoiceService:
 
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                f"{self.ELEVENLABS_BASE_URL}/voices",
-                headers={"xi-api-key": self.elevenlabs_key}
+                f"{self.ELEVENLABS_BASE_URL}/voices", headers={"xi-api-key": self.elevenlabs_key}
             )
 
             # Fallback to configured voices if API fails (permission issue)
             if response.status_code != 200:
                 logger.warning(
-                    "elevenlabs_voices_fallback",
-                    status=response.status_code,
-                    reason="Using configured voices"
+                    "elevenlabs_voices_fallback", status=response.status_code, reason="Using configured voices"
                 )
                 return self._get_configured_voices()
 
@@ -291,7 +253,7 @@ class VoiceService:
                     "voice_id": v["voice_id"],
                     "name": v["name"],
                     "category": v.get("category", ""),
-                    "labels": v.get("labels", {})
+                    "labels": v.get("labels", {}),
                 }
                 for v in data.get("voices", [])
             ]
@@ -300,26 +262,32 @@ class VoiceService:
         """Retourne les voix configurées dans .env."""
         voices = []
         if settings.ELEVENLABS_VOICE_FRIENDLY:
-            voices.append({
-                "voice_id": settings.ELEVENLABS_VOICE_FRIENDLY,
-                "name": "Friendly (Rachel)",
-                "category": "configured",
-                "labels": {"level": "beginner"}
-            })
+            voices.append(
+                {
+                    "voice_id": settings.ELEVENLABS_VOICE_FRIENDLY,
+                    "name": "Friendly (Rachel)",
+                    "category": "configured",
+                    "labels": {"level": "beginner"},
+                }
+            )
         if settings.ELEVENLABS_VOICE_NEUTRAL:
-            voices.append({
-                "voice_id": settings.ELEVENLABS_VOICE_NEUTRAL,
-                "name": "Neutral",
-                "category": "configured",
-                "labels": {"level": "intermediate"}
-            })
+            voices.append(
+                {
+                    "voice_id": settings.ELEVENLABS_VOICE_NEUTRAL,
+                    "name": "Neutral",
+                    "category": "configured",
+                    "labels": {"level": "intermediate"},
+                }
+            )
         if settings.ELEVENLABS_VOICE_AGGRESSIVE:
-            voices.append({
-                "voice_id": settings.ELEVENLABS_VOICE_AGGRESSIVE,
-                "name": "Aggressive (Senior)",
-                "category": "configured",
-                "labels": {"level": "expert"}
-            })
+            voices.append(
+                {
+                    "voice_id": settings.ELEVENLABS_VOICE_AGGRESSIVE,
+                    "name": "Aggressive (Senior)",
+                    "category": "configured",
+                    "labels": {"level": "expert"},
+                }
+            )
         return voices
 
     async def check_elevenlabs_quota(self) -> dict:
@@ -329,16 +297,13 @@ class VoiceService:
 
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                f"{self.ELEVENLABS_BASE_URL}/user/subscription",
-                headers={"xi-api-key": self.elevenlabs_key}
+                f"{self.ELEVENLABS_BASE_URL}/user/subscription", headers={"xi-api-key": self.elevenlabs_key}
             )
 
             # Fallback if API fails (permission issue)
             if response.status_code != 200:
                 logger.warning(
-                    "elevenlabs_quota_fallback",
-                    status=response.status_code,
-                    reason="Quota check unavailable"
+                    "elevenlabs_quota_fallback", status=response.status_code, reason="Quota check unavailable"
                 )
                 return {
                     "character_count": -1,
@@ -346,7 +311,7 @@ class VoiceService:
                     "remaining": -1,
                     "tier": "unknown",
                     "status": "unavailable",
-                    "message": "Quota API requires elevated permissions"
+                    "message": "Quota API requires elevated permissions",
                 }
 
             data = response.json()
@@ -355,7 +320,7 @@ class VoiceService:
                 "character_limit": data.get("character_limit", 0),
                 "remaining": data.get("character_limit", 0) - data.get("character_count", 0),
                 "tier": data.get("tier", "unknown"),
-                "status": "available"
+                "status": "available",
             }
 
     def is_configured(self) -> dict:
@@ -365,7 +330,7 @@ class VoiceService:
             "whisper": bool(self.openai_key),
             "voice_friendly": bool(settings.ELEVENLABS_VOICE_FRIENDLY),
             "voice_neutral": bool(settings.ELEVENLABS_VOICE_NEUTRAL),
-            "voice_aggressive": bool(settings.ELEVENLABS_VOICE_AGGRESSIVE)
+            "voice_aggressive": bool(settings.ELEVENLABS_VOICE_AGGRESSIVE),
         }
 
 

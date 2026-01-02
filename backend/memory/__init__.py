@@ -7,15 +7,9 @@ Provides different memory backends:
 - PersistentMemory: Long-term storage with PostgreSQL
 """
 
-from .vector_store import VectorMemory
+from .schemas import ConversationTurn, MemoryEntry, PatternMemory, SessionState, VoiceProfile
 from .session_store import SessionMemory
-from .schemas import (
-    MemoryEntry,
-    PatternMemory,
-    VoiceProfile,
-    SessionState,
-    ConversationTurn
-)
+from .vector_store import VectorMemory
 
 __all__ = [
     "VectorMemory",
@@ -24,5 +18,5 @@ __all__ = [
     "PatternMemory",
     "VoiceProfile",
     "SessionState",
-    "ConversationTurn"
+    "ConversationTurn",
 ]

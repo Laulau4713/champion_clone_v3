@@ -1,17 +1,19 @@
 """Tests d'integration pour les endpoints /learning."""
-import pytest
-import pytest_asyncio
+
 import json
 from pathlib import Path
+
+import pytest
+import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import Skill, Sector, Course, Quiz, DifficultyLevel
-
+from models import Course, DifficultyLevel, Quiz, Sector, Skill
 
 # ===================================================================
 # FIXTURES
 # ===================================================================
+
 
 @pytest_asyncio.fixture(scope="function")
 async def learning_content(db_session: AsyncSession):
@@ -21,7 +23,7 @@ async def learning_content(db_session: AsyncSession):
     # Import skills
     skills_path = content_dir / "skills.json"
     if skills_path.exists():
-        with open(skills_path, "r", encoding="utf-8") as f:
+        with open(skills_path, encoding="utf-8") as f:
             data = json.load(f)
 
         for skill_data in data.get("skills", [])[:5]:  # Only first 5 for tests
@@ -40,14 +42,14 @@ async def learning_content(db_session: AsyncSession):
                 scenarios_required=skill_data.get("scenarios_required", 3),
                 prospect_instructions=skill_data.get("prospect_instructions", ""),
                 emotional_focus=skill_data.get("emotional_focus", []),
-                common_mistakes=skill_data.get("common_mistakes", [])
+                common_mistakes=skill_data.get("common_mistakes", []),
             )
             db_session.add(skill)
 
     # Import sectors
     sectors_path = content_dir / "sectors.json"
     if sectors_path.exists():
-        with open(sectors_path, "r", encoding="utf-8") as f:
+        with open(sectors_path, encoding="utf-8") as f:
             data = json.load(f)
 
         for sector_data in data.get("sectors", [])[:3]:  # Only first 3 for tests
@@ -59,14 +61,14 @@ async def learning_content(db_session: AsyncSession):
                 vocabulary=sector_data.get("vocabulary", []),
                 prospect_personas=sector_data.get("prospect_personas", []),
                 typical_objections=sector_data.get("typical_objections", []),
-                agent_context_prompt=sector_data.get("agent_context_prompt", "")
+                agent_context_prompt=sector_data.get("agent_context_prompt", ""),
             )
             db_session.add(sector)
 
     # Import difficulty levels (handles both V1 'level' and V2 'level_id' format)
     levels_path = content_dir / "difficulty_levels.json"
     if levels_path.exists():
-        with open(levels_path, "r", encoding="utf-8") as f:
+        with open(levels_path, encoding="utf-8") as f:
             data = json.load(f)
 
         for level_data in data.get("difficulty_levels", []):
@@ -93,14 +95,14 @@ async def learning_content(db_session: AsyncSession):
                 conversion_triggers=level_data.get("conversion_triggers", {}),
                 memory_coherence=level_data.get("memory_coherence", {}),
                 hints_system=level_data.get("hints_system", {}),
-                scoring=level_data.get("scoring", {})
+                scoring=level_data.get("scoring", {}),
             )
             db_session.add(level)
 
     # Import cours
     cours_path = content_dir / "cours.json"
     if cours_path.exists():
-        with open(cours_path, "r", encoding="utf-8") as f:
+        with open(cours_path, encoding="utf-8") as f:
             data = json.load(f)
 
         for idx, course_data in enumerate(data.get("cours", [])[:5], start=1):  # Only first 5 for tests
@@ -114,7 +116,7 @@ async def learning_content(db_session: AsyncSession):
                 key_points=course_data.get("key_points", []),
                 common_mistakes=course_data.get("common_mistakes", []),
                 emotional_tips=course_data.get("emotional_tips", []),
-                takeaways=course_data.get("takeaways", [])
+                takeaways=course_data.get("takeaways", []),
             )
             db_session.add(course)
 
@@ -123,19 +125,15 @@ async def learning_content(db_session: AsyncSession):
     # Now add quiz (after skills are committed)
     quiz_path = content_dir / "quiz.json"
     if quiz_path.exists():
-        with open(quiz_path, "r", encoding="utf-8") as f:
+        with open(quiz_path, encoding="utf-8") as f:
             data = json.load(f)
 
         for quiz_data in data.get("quiz", [])[:3]:  # Only first 3 for tests
             from sqlalchemy import select
-            skill = await db_session.scalar(
-                select(Skill).where(Skill.slug == quiz_data["skill_id"])
-            )
+
+            skill = await db_session.scalar(select(Skill).where(Skill.slug == quiz_data["skill_id"]))
             if skill:
-                quiz = Quiz(
-                    skill_id=skill.id,
-                    questions=quiz_data["questions"]
-                )
+                quiz = Quiz(skill_id=skill.id, questions=quiz_data["questions"])
                 db_session.add(quiz)
 
         await db_session.commit()
@@ -146,6 +144,7 @@ async def learning_content(db_session: AsyncSession):
 # ===================================================================
 # TESTS ENDPOINTS PUBLICS
 # ===================================================================
+
 
 class TestLearningEndpointsPublic:
     """Tests des endpoints publics (sans auth)."""
@@ -292,6 +291,7 @@ class TestLearningEndpointsPublic:
 # TESTS ENDPOINTS AUTHENTIFIES
 # ===================================================================
 
+
 class TestLearningEndpointsAuth:
     """Tests des endpoints authentifies."""
 
@@ -302,12 +302,7 @@ class TestLearningEndpointsAuth:
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_get_progress_authenticated(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_get_progress_authenticated(self, client: AsyncClient, auth_headers: dict, learning_content):
         """GET /learning/progress avec auth retourne la progression."""
         response = await client.get("/learning/progress", headers=auth_headers)
 
@@ -319,12 +314,7 @@ class TestLearningEndpointsAuth:
         assert "skills_total" in progress
 
     @pytest.mark.asyncio
-    async def test_get_skills_progress(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_get_skills_progress(self, client: AsyncClient, auth_headers: dict, learning_content):
         """GET /learning/progress/skills retourne la progression par skill."""
         response = await client.get("/learning/progress/skills", headers=auth_headers)
 
@@ -333,12 +323,7 @@ class TestLearningEndpointsAuth:
         assert isinstance(skills, list)
 
     @pytest.mark.asyncio
-    async def test_select_sector(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_select_sector(self, client: AsyncClient, auth_headers: dict, learning_content):
         """POST /learning/progress/select-sector selectionne un secteur."""
         # Get first sector
         sectors_response = await client.get("/learning/sectors")
@@ -347,41 +332,24 @@ class TestLearningEndpointsAuth:
             pytest.skip("No sectors in database")
 
         response = await client.post(
-            "/learning/progress/select-sector",
-            json={"sector_slug": sectors[0]["slug"]},
-            headers=auth_headers
+            "/learning/progress/select-sector", json={"sector_slug": sectors[0]["slug"]}, headers=auth_headers
         )
 
         assert response.status_code == 200
         assert "sector" in response.json()
 
     @pytest.mark.asyncio
-    async def test_select_sector_not_found(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_select_sector_not_found(self, client: AsyncClient, auth_headers: dict, learning_content):
         """POST /learning/progress/select-sector avec secteur inexistant."""
         response = await client.post(
-            "/learning/progress/select-sector",
-            json={"sector_slug": "unknown_sector"},
-            headers=auth_headers
+            "/learning/progress/select-sector", json={"sector_slug": "unknown_sector"}, headers=auth_headers
         )
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_start_session(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_start_session(self, client: AsyncClient, auth_headers: dict, learning_content):
         """POST /learning/session/start demarre une session."""
-        response = await client.post(
-            "/learning/session/start",
-            headers=auth_headers
-        )
+        response = await client.post("/learning/session/start", headers=auth_headers)
 
         assert response.status_code == 200
         session = response.json()
@@ -390,73 +358,38 @@ class TestLearningEndpointsAuth:
         assert "course" in session
 
     @pytest.mark.asyncio
-    async def test_complete_course(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_complete_course(self, client: AsyncClient, auth_headers: dict, learning_content):
         """POST /learning/session/{id}/complete-course marque le cours lu."""
         # D'abord demarrer une session
-        start_response = await client.post(
-            "/learning/session/start",
-            headers=auth_headers
-        )
+        start_response = await client.post("/learning/session/start", headers=auth_headers)
         session_id = start_response.json()["session_id"]
 
         # Marquer le cours comme lu
-        response = await client.post(
-            f"/learning/session/{session_id}/complete-course",
-            headers=auth_headers
-        )
+        response = await client.post(f"/learning/session/{session_id}/complete-course", headers=auth_headers)
 
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_complete_course_not_found(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_complete_course_not_found(self, client: AsyncClient, auth_headers: dict, learning_content):
         """POST /learning/session/{id}/complete-course avec session inexistante."""
-        response = await client.post(
-            "/learning/session/9999/complete-course",
-            headers=auth_headers
-        )
+        response = await client.post("/learning/session/9999/complete-course", headers=auth_headers)
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_listen_script(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_listen_script(self, client: AsyncClient, auth_headers: dict, learning_content):
         """POST /learning/session/{id}/listen-script incremente le compteur."""
         # D'abord demarrer une session
-        start_response = await client.post(
-            "/learning/session/start",
-            headers=auth_headers
-        )
+        start_response = await client.post("/learning/session/start", headers=auth_headers)
         session_id = start_response.json()["session_id"]
 
         # Ecouter un script
-        response = await client.post(
-            f"/learning/session/{session_id}/listen-script",
-            headers=auth_headers
-        )
+        response = await client.post(f"/learning/session/{session_id}/listen-script", headers=auth_headers)
 
         assert response.status_code == 200
         assert response.json()["scripts_listened"] == 1
 
     @pytest.mark.asyncio
-    async def test_submit_quiz(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_submit_quiz(self, client: AsyncClient, auth_headers: dict, learning_content):
         """POST /learning/quiz/{slug}/submit soumet le quiz."""
         # Get first skill with quiz
         skills_response = await client.get("/learning/skills")
@@ -471,9 +404,7 @@ class TestLearningEndpointsAuth:
                 # Submit with answers
                 answers = ["A"] * num_questions  # All A's
                 response = await client.post(
-                    f"/learning/quiz/{skill['slug']}/submit",
-                    json={"answers": answers},
-                    headers=auth_headers
+                    f"/learning/quiz/{skill['slug']}/submit", json={"answers": answers}, headers=auth_headers
                 )
 
                 assert response.status_code == 200
@@ -487,12 +418,7 @@ class TestLearningEndpointsAuth:
             pytest.skip("No quizzes in database")
 
     @pytest.mark.asyncio
-    async def test_submit_quiz_wrong_count(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_submit_quiz_wrong_count(self, client: AsyncClient, auth_headers: dict, learning_content):
         """POST /learning/quiz/{slug}/submit avec mauvais nombre de reponses."""
         # Get first skill with quiz
         skills_response = await client.get("/learning/skills")
@@ -504,7 +430,7 @@ class TestLearningEndpointsAuth:
                 response = await client.post(
                     f"/learning/quiz/{skill['slug']}/submit",
                     json={"answers": ["A", "B"]},  # Wrong number
-                    headers=auth_headers
+                    headers=auth_headers,
                 )
 
                 assert response.status_code == 400
@@ -513,12 +439,7 @@ class TestLearningEndpointsAuth:
             pytest.skip("No quizzes in database")
 
     @pytest.mark.asyncio
-    async def test_get_today_session(
-        self,
-        client: AsyncClient,
-        auth_headers: dict,
-        learning_content
-    ):
+    async def test_get_today_session(self, client: AsyncClient, auth_headers: dict, learning_content):
         """GET /learning/session/today retourne la session du jour."""
         # D'abord creer une session
         await client.post("/learning/session/start", headers=auth_headers)
@@ -531,6 +452,7 @@ class TestLearningEndpointsAuth:
 # ===================================================================
 # TESTS SECURITE
 # ===================================================================
+
 
 class TestLearningEndpointsSecurity:
     """Tests de securite des endpoints."""
@@ -550,10 +472,7 @@ class TestLearningEndpointsSecurity:
     @pytest.mark.asyncio
     async def test_select_sector_requires_auth(self, client: AsyncClient, learning_content):
         """POST /learning/progress/select-sector necessite authentification."""
-        response = await client.post(
-            "/learning/progress/select-sector",
-            json={"sector_slug": "immo"}
-        )
+        response = await client.post("/learning/progress/select-sector", json={"sector_slug": "immo"})
         assert response.status_code == 401
 
     @pytest.mark.asyncio
@@ -577,17 +496,11 @@ class TestLearningEndpointsSecurity:
     @pytest.mark.asyncio
     async def test_quiz_submit_requires_auth(self, client: AsyncClient, learning_content):
         """POST /learning/quiz/{slug}/submit necessite authentification."""
-        response = await client.post(
-            "/learning/quiz/ecoute_active/submit",
-            json={"answers": ["A"]}
-        )
+        response = await client.post("/learning/quiz/ecoute_active/submit", json={"answers": ["A"]})
         assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_invalid_token(self, client: AsyncClient, learning_content):
         """Token invalide retourne 401."""
-        response = await client.get(
-            "/learning/progress",
-            headers={"Authorization": "Bearer invalid_token_here"}
-        )
+        response = await client.get("/learning/progress", headers={"Authorization": "Bearer invalid_token_here"})
         assert response.status_code == 401

@@ -3,11 +3,11 @@ Audio Agent - Autonomous agent for audio/video processing.
 """
 
 import os
-from typing import Optional
 
 from agents.base_agent import BaseAgent, ToolResult
-from .tools import AudioTools
+
 from .memory import VoiceMemory
+from .tools import AudioTools
 
 
 class AudioAgent(BaseAgent):
@@ -61,10 +61,7 @@ RÈGLES:
 Choisis les outils appropriés pour accomplir la tâche demandée."""
 
     def __init__(self):
-        super().__init__(
-            name="Audio Agent",
-            model=os.getenv("CLAUDE_SONNET_MODEL", "claude-sonnet-4-20250514")
-        )
+        super().__init__(name="Audio Agent", model=os.getenv("CLAUDE_SONNET_MODEL", "claude-sonnet-4-20250514"))
 
         self.tools_impl = AudioTools()
         self.memory = VoiceMemory()
@@ -80,24 +77,21 @@ Choisis les outils appropriés pour accomplir la tâche demandée."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "video_path": {
-                            "type": "string",
-                            "description": "Path to the video file"
-                        },
+                        "video_path": {"type": "string", "description": "Path to the video file"},
                         "output_format": {
                             "type": "string",
                             "enum": ["mp3", "wav"],
                             "default": "mp3",
-                            "description": "Output audio format"
+                            "description": "Output audio format",
                         },
                         "sample_rate": {
                             "type": "integer",
                             "default": 16000,
-                            "description": "Sample rate in Hz (16000 recommended for Whisper)"
-                        }
+                            "description": "Sample rate in Hz (16000 recommended for Whisper)",
+                        },
                     },
-                    "required": ["video_path"]
-                }
+                    "required": ["video_path"],
+                },
             },
             {
                 "name": "transcribe",
@@ -105,22 +99,12 @@ Choisis les outils appropriés pour accomplir la tâche demandée."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "audio_path": {
-                            "type": "string",
-                            "description": "Path to the audio file"
-                        },
-                        "language": {
-                            "type": "string",
-                            "default": "fr",
-                            "description": "Language code (fr, en, etc.)"
-                        },
-                        "prompt": {
-                            "type": "string",
-                            "description": "Optional context prompt to improve transcription"
-                        }
+                        "audio_path": {"type": "string", "description": "Path to the audio file"},
+                        "language": {"type": "string", "default": "fr", "description": "Language code (fr, en, etc.)"},
+                        "prompt": {"type": "string", "description": "Optional context prompt to improve transcription"},
                     },
-                    "required": ["audio_path"]
-                }
+                    "required": ["audio_path"],
+                },
             },
             {
                 "name": "clone_voice",
@@ -128,22 +112,16 @@ Choisis les outils appropriés pour accomplir la tâche demandée."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "name": {
-                            "type": "string",
-                            "description": "Name for the cloned voice"
-                        },
+                        "name": {"type": "string", "description": "Name for the cloned voice"},
                         "audio_samples": {
                             "type": "array",
                             "items": {"type": "string"},
-                            "description": "List of audio file paths for cloning"
+                            "description": "List of audio file paths for cloning",
                         },
-                        "description": {
-                            "type": "string",
-                            "description": "Description of the voice"
-                        }
+                        "description": {"type": "string", "description": "Description of the voice"},
                     },
-                    "required": ["name", "audio_samples"]
-                }
+                    "required": ["name", "audio_samples"],
+                },
             },
             {
                 "name": "text_to_speech",
@@ -151,35 +129,21 @@ Choisis les outils appropriés pour accomplir la tâche demandée."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "text": {
-                            "type": "string",
-                            "description": "Text to convert to speech"
-                        },
-                        "voice_id": {
-                            "type": "string",
-                            "description": "ElevenLabs voice ID"
-                        },
-                        "output_path": {
-                            "type": "string",
-                            "description": "Optional output file path"
-                        }
+                        "text": {"type": "string", "description": "Text to convert to speech"},
+                        "voice_id": {"type": "string", "description": "ElevenLabs voice ID"},
+                        "output_path": {"type": "string", "description": "Optional output file path"},
                     },
-                    "required": ["text", "voice_id"]
-                }
+                    "required": ["text", "voice_id"],
+                },
             },
             {
                 "name": "analyze_audio",
                 "description": "Analyze audio file characteristics",
                 "input_schema": {
                     "type": "object",
-                    "properties": {
-                        "audio_path": {
-                            "type": "string",
-                            "description": "Path to the audio file"
-                        }
-                    },
-                    "required": ["audio_path"]
-                }
+                    "properties": {"audio_path": {"type": "string", "description": "Path to the audio file"}},
+                    "required": ["audio_path"],
+                },
             },
             {
                 "name": "store_voice_profile",
@@ -187,27 +151,18 @@ Choisis les outils appropriés pour accomplir la tâche demandée."""
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "champion_id": {
-                            "type": "integer",
-                            "description": "Champion ID"
-                        },
-                        "name": {
-                            "type": "string",
-                            "description": "Voice profile name"
-                        },
+                        "champion_id": {"type": "integer", "description": "Champion ID"},
+                        "name": {"type": "string", "description": "Voice profile name"},
                         "audio_samples": {
                             "type": "array",
                             "items": {"type": "string"},
-                            "description": "Audio sample paths"
+                            "description": "Audio sample paths",
                         },
-                        "elevenlabs_voice_id": {
-                            "type": "string",
-                            "description": "ElevenLabs voice ID if available"
-                        }
+                        "elevenlabs_voice_id": {"type": "string", "description": "ElevenLabs voice ID if available"},
                     },
-                    "required": ["champion_id", "name"]
-                }
-            }
+                    "required": ["champion_id", "name"],
+                },
+            },
         ]
 
     async def execute_tool(self, name: str, input_data: dict) -> ToolResult:
@@ -217,37 +172,34 @@ Choisis les outils appropriés pour accomplir la tâche demandée."""
                 result = await self.tools_impl.extract_audio(
                     video_path=input_data["video_path"],
                     output_format=input_data.get("output_format", "mp3"),
-                    sample_rate=input_data.get("sample_rate", 16000)
+                    sample_rate=input_data.get("sample_rate", 16000),
                 )
 
             elif name == "transcribe":
                 result = await self.tools_impl.transcribe(
                     audio_path=input_data["audio_path"],
                     language=input_data.get("language", "fr"),
-                    prompt=input_data.get("prompt")
+                    prompt=input_data.get("prompt"),
                 )
 
             elif name == "clone_voice":
                 result = await self.tools_impl.clone_voice(
                     name=input_data["name"],
                     audio_samples=input_data["audio_samples"],
-                    description=input_data.get("description")
+                    description=input_data.get("description"),
                 )
 
             elif name == "text_to_speech":
                 result = await self.tools_impl.text_to_speech(
-                    text=input_data["text"],
-                    voice_id=input_data["voice_id"],
-                    output_path=input_data.get("output_path")
+                    text=input_data["text"], voice_id=input_data["voice_id"], output_path=input_data.get("output_path")
                 )
 
             elif name == "analyze_audio":
-                result = await self.tools_impl.analyze_audio(
-                    audio_path=input_data["audio_path"]
-                )
+                result = await self.tools_impl.analyze_audio(audio_path=input_data["audio_path"])
 
             elif name == "store_voice_profile":
                 import uuid
+
                 profile_id = str(uuid.uuid4())[:8]
                 success = await self.memory.store(
                     key=profile_id,
@@ -255,30 +207,17 @@ Choisis les outils appropriés pour accomplir la tâche demandée."""
                         "champion_id": input_data["champion_id"],
                         "name": input_data["name"],
                         "audio_samples": input_data.get("audio_samples", []),
-                        "elevenlabs_voice_id": input_data.get("elevenlabs_voice_id")
-                    }
+                        "elevenlabs_voice_id": input_data.get("elevenlabs_voice_id"),
+                    },
                 )
                 result = {"success": success, "profile_id": profile_id}
 
             else:
-                return ToolResult(
-                    tool_name=name,
-                    success=False,
-                    output=None,
-                    error=f"Unknown tool: {name}"
-                )
+                return ToolResult(tool_name=name, success=False, output=None, error=f"Unknown tool: {name}")
 
             return ToolResult(
-                tool_name=name,
-                success=result.get("success", True),
-                output=result,
-                error=result.get("error")
+                tool_name=name, success=result.get("success", True), output=result, error=result.get("error")
             )
 
         except Exception as e:
-            return ToolResult(
-                tool_name=name,
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return ToolResult(tool_name=name, success=False, output=None, error=str(e))

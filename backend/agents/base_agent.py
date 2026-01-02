@@ -7,23 +7,23 @@ Each agent is an autonomous unit capable of:
 - Remembering: Storing and retrieving from memory
 """
 
-import os
 import json
-import asyncio
+import os
 from abc import ABC, abstractmethod
-from typing import Any, Optional
-from datetime import datetime
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
+from typing import Any
 
-from anthropic import AsyncAnthropic
 import structlog
+from anthropic import AsyncAnthropic
 
 logger = structlog.get_logger()
 
 
 class AgentStatus(Enum):
     """Agent execution status."""
+
     IDLE = "idle"
     THINKING = "thinking"
     ACTING = "acting"
@@ -35,31 +35,34 @@ class AgentStatus(Enum):
 @dataclass
 class AgentMessage:
     """Message in agent's context."""
+
     role: str  # "user", "assistant", "tool_result"
     content: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    tool_use_id: Optional[str] = None
+    tool_use_id: str | None = None
     metadata: dict = field(default_factory=dict)
 
 
 @dataclass
 class ToolResult:
     """Result from tool execution."""
+
     tool_name: str
     success: bool
     output: Any
-    error: Optional[str] = None
+    error: str | None = None
     execution_time_ms: float = 0
 
 
 @dataclass
 class ThinkResult:
     """Result from agent thinking."""
+
     action_needed: bool
-    action: Optional[dict] = None  # {"tool": "...", "input": {...}}
-    response: Optional[str] = None
-    reasoning: Optional[str] = None
-    tool_use_id: Optional[str] = None
+    action: dict | None = None  # {"tool": "...", "input": {...}}
+    response: str | None = None
+    reasoning: str | None = None
+    tool_use_id: str | None = None
 
 
 class BaseAgent(ABC):
@@ -110,7 +113,7 @@ class BaseAgent(ABC):
         """Return the list of tools available to this agent."""
         pass
 
-    async def think(self, task: str, context: Optional[dict] = None) -> ThinkResult:
+    async def think(self, task: str, context: dict | None = None) -> ThinkResult:
         """
         Analyze a task and decide what action to take.
 
@@ -125,10 +128,12 @@ class BaseAgent(ABC):
         self._iteration_count = 0
 
         # Add task to context
-        self._add_to_context(AgentMessage(
-            role="user",
-            content=self._format_task(task, context),
-        ))
+        self._add_to_context(
+            AgentMessage(
+                role="user",
+                content=self._format_task(task, context),
+            )
+        )
 
         logger.info("agent_thinking", agent=self.name, task=task[:100])
 
@@ -146,11 +151,7 @@ class BaseAgent(ABC):
         except Exception as e:
             logger.error("agent_think_error", agent=self.name, error=str(e))
             self.status = AgentStatus.ERROR
-            return ThinkResult(
-                action_needed=False,
-                response=None,
-                reasoning=f"Error during thinking: {str(e)}"
-            )
+            return ThinkResult(action_needed=False, response=None, reasoning=f"Error during thinking: {str(e)}")
 
     async def act(self, action: dict) -> ToolResult:
         """
@@ -177,25 +178,16 @@ class BaseAgent(ABC):
             result.execution_time_ms = execution_time
 
             logger.info(
-                "agent_action_complete",
-                agent=self.name,
-                tool=tool_name,
-                success=result.success,
-                time_ms=execution_time
+                "agent_action_complete", agent=self.name, tool=tool_name, success=result.success, time_ms=execution_time
             )
 
             return result
 
         except Exception as e:
             logger.error("agent_action_error", agent=self.name, tool=tool_name, error=str(e))
-            return ToolResult(
-                tool_name=tool_name,
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return ToolResult(tool_name=tool_name, success=False, output=None, error=str(e))
 
-    async def run(self, task: str, context: Optional[dict] = None) -> dict:
+    async def run(self, task: str, context: dict | None = None) -> dict:
         """
         Run the full think-act loop until completion.
 
@@ -219,7 +211,9 @@ class BaseAgent(ABC):
             self._iteration_count += 1
 
             # Think phase
-            think_result = await self.think(task if self._iteration_count == 1 else "Continue based on previous result", context)
+            think_result = await self.think(
+                task if self._iteration_count == 1 else "Continue based on previous result", context
+            )
             trace.append({"phase": "think", "result": think_result.__dict__})
 
             if not think_result.action_needed:
@@ -233,16 +227,20 @@ class BaseAgent(ABC):
             trace.append({"phase": "act", "result": action_result.__dict__})
 
             # Add tool result to context for next iteration
-            self._add_to_context(AgentMessage(
-                role="tool_result",
-                content=json.dumps({
-                    "tool": action_result.tool_name,
-                    "success": action_result.success,
-                    "output": action_result.output,
-                    "error": action_result.error
-                }),
-                tool_use_id=think_result.tool_use_id
-            ))
+            self._add_to_context(
+                AgentMessage(
+                    role="tool_result",
+                    content=json.dumps(
+                        {
+                            "tool": action_result.tool_name,
+                            "success": action_result.success,
+                            "output": action_result.output,
+                            "error": action_result.error,
+                        }
+                    ),
+                    tool_use_id=think_result.tool_use_id,
+                )
+            )
 
             if not action_result.success:
                 # Tool failed, let agent handle it in next think
@@ -258,10 +256,10 @@ class BaseAgent(ABC):
             "result": final_result,
             "iterations": self._iteration_count,
             "status": self.status.value,
-            "trace": trace
+            "trace": trace,
         }
 
-    async def remember(self, key: str, value: Any, metadata: Optional[dict] = None) -> bool:
+    async def remember(self, key: str, value: Any, metadata: dict | None = None) -> bool:
         """
         Store something in agent's memory.
 
@@ -315,7 +313,7 @@ class BaseAgent(ABC):
         # Trim context if too long
         if len(self.context) > self.max_context_messages:
             # Keep first message (usually the task) and recent messages
-            self.context = [self.context[0]] + self.context[-(self.max_context_messages - 1):]
+            self.context = [self.context[0]] + self.context[-(self.max_context_messages - 1) :]
 
     def _get_messages_for_api(self) -> list[dict]:
         """Convert context to API message format."""
@@ -323,23 +321,20 @@ class BaseAgent(ABC):
 
         for msg in self.context:
             if msg.role == "tool_result":
-                messages.append({
-                    "role": "user",
-                    "content": [{
-                        "type": "tool_result",
-                        "tool_use_id": msg.tool_use_id or "unknown",
-                        "content": msg.content
-                    }]
-                })
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "tool_result", "tool_use_id": msg.tool_use_id or "unknown", "content": msg.content}
+                        ],
+                    }
+                )
             else:
-                messages.append({
-                    "role": msg.role,
-                    "content": msg.content
-                })
+                messages.append({"role": msg.role, "content": msg.content})
 
         return messages
 
-    def _format_task(self, task: str, context: Optional[dict] = None) -> str:
+    def _format_task(self, task: str, context: dict | None = None) -> str:
         """Format task with optional context."""
         if context:
             context_str = json.dumps(context, ensure_ascii=False, indent=2)
@@ -353,12 +348,9 @@ class BaseAgent(ABC):
             if block.type == "tool_use":
                 return ThinkResult(
                     action_needed=True,
-                    action={
-                        "tool": block.name,
-                        "input": block.input
-                    },
+                    action={"tool": block.name, "input": block.input},
                     tool_use_id=block.id,
-                    reasoning=None
+                    reasoning=None,
                 )
 
         # Text response (no tool use)
@@ -368,16 +360,9 @@ class BaseAgent(ABC):
                 text_content += block.text
 
         # Add assistant response to context
-        self._add_to_context(AgentMessage(
-            role="assistant",
-            content=text_content
-        ))
+        self._add_to_context(AgentMessage(role="assistant", content=text_content))
 
-        return ThinkResult(
-            action_needed=False,
-            response=text_content,
-            reasoning=None
-        )
+        return ThinkResult(action_needed=False, response=text_content, reasoning=None)
 
     def reset(self) -> None:
         """Reset agent state."""
@@ -393,5 +378,5 @@ class BaseAgent(ABC):
             "model": self.model,
             "status": self.status.value,
             "context_length": len(self.context),
-            "iteration": self._iteration_count
+            "iteration": self._iteration_count,
         }

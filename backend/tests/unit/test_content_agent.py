@@ -1,7 +1,9 @@
 """Tests pour ContentAgent."""
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+
 import json
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from agents.content_agent.agent import ContentAgent
 
@@ -29,7 +31,7 @@ class TestContentAgent:
         skill.description = "Capacite a ecouter le prospect"
         skill.evaluation_criteria = [
             {"name": "Signaux d'ecoute", "weight": 20, "description": "Test"},
-            {"name": "Retention", "weight": 25, "description": "Test"}
+            {"name": "Retention", "weight": 25, "description": "Test"},
         ]
         skill.prospect_instructions = "Tu es un prospect curieux"
         return skill
@@ -162,10 +164,7 @@ class TestContentAgent:
     @pytest.mark.asyncio
     async def test_personalize_difficulty_excellent_student(self, agent):
         """Personnaliser pour eleve excellent -> plus dur."""
-        base = {
-            "prospect": {"mood": "neutral", "personality": "neutral"},
-            "difficulty_score": 50
-        }
+        base = {"prospect": {"mood": "neutral", "personality": "neutral"}, "difficulty_score": 50}
         stats = {"average_score": 90}
 
         result = await agent.personalize_difficulty(base, stats)
@@ -176,10 +175,7 @@ class TestContentAgent:
     @pytest.mark.asyncio
     async def test_personalize_difficulty_struggling_student(self, agent):
         """Personnaliser pour eleve en difficulte -> plus facile."""
-        base = {
-            "prospect": {"mood": "neutral", "personality": "neutral"},
-            "difficulty_score": 50
-        }
+        base = {"prospect": {"mood": "neutral", "personality": "neutral"}, "difficulty_score": 50}
         stats = {"average_score": 40}
 
         result = await agent.personalize_difficulty(base, stats)
@@ -190,10 +186,7 @@ class TestContentAgent:
     @pytest.mark.asyncio
     async def test_personalize_difficulty_average_student(self, agent):
         """Personnaliser pour eleve moyen -> pas de changement."""
-        base = {
-            "prospect": {"mood": "neutral", "personality": "neutral"},
-            "difficulty_score": 50
-        }
+        base = {"prospect": {"mood": "neutral", "personality": "neutral"}, "difficulty_score": 50}
         stats = {"average_score": 70}
 
         result = await agent.personalize_difficulty(base, stats)
@@ -204,10 +197,7 @@ class TestContentAgent:
     @pytest.mark.asyncio
     async def test_personalize_difficulty_clamps_max(self, agent):
         """Score de difficulte ne depasse pas 100."""
-        base = {
-            "prospect": {"mood": "neutral", "personality": "neutral"},
-            "difficulty_score": 95
-        }
+        base = {"prospect": {"mood": "neutral", "personality": "neutral"}, "difficulty_score": 95}
         stats = {"average_score": 95}
 
         result = await agent.personalize_difficulty(base, stats)
@@ -217,10 +207,7 @@ class TestContentAgent:
     @pytest.mark.asyncio
     async def test_personalize_difficulty_clamps_min(self, agent):
         """Score de difficulte ne descend pas sous 20."""
-        base = {
-            "prospect": {"mood": "neutral", "personality": "neutral"},
-            "difficulty_score": 25
-        }
+        base = {"prospect": {"mood": "neutral", "personality": "neutral"}, "difficulty_score": 25}
         stats = {"average_score": 30}
 
         result = await agent.personalize_difficulty(base, stats)
@@ -297,16 +284,12 @@ class TestContentAgent:
         assert "prospect" in result
 
     @pytest.mark.asyncio
-    async def test_generate_scenario_with_sector(
-        self, mock_db, mock_skill, mock_sector
-    ):
+    async def test_generate_scenario_with_sector(self, mock_db, mock_skill, mock_sector):
         """Generation de scenario avec secteur."""
         mock_db.scalar = AsyncMock(return_value=None)
 
         agent = ContentAgent(db=mock_db, llm_client=None)
-        result = await agent.generate_scenario(
-            mock_skill, "easy", sector=mock_sector, use_cache=False
-        )
+        result = await agent.generate_scenario(mock_skill, "easy", sector=mock_sector, use_cache=False)
 
         assert "title" in result
 

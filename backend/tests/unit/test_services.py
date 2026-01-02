@@ -7,21 +7,22 @@ Tests auth service functions:
 - JWT token creation and verification
 """
 
-import pytest
-from datetime import datetime, timedelta
-from jose import jwt, JWTError
+from datetime import datetime
 
+import pytest
+from jose import JWTError
+
+from config import get_settings
 from services.auth import (
-    hash_password,
-    verify_password,
-    validate_password,
     create_access_token,
     create_refresh_token,
-    verify_refresh_token,
-    hash_refresh_token,
     decode_access_token,
+    hash_password,
+    hash_refresh_token,
+    validate_password,
+    verify_password,
+    verify_refresh_token,
 )
-from config import get_settings
 
 settings = get_settings()
 

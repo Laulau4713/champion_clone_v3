@@ -3,10 +3,10 @@ Service de paiement LemonSqueezy.
 DÉSACTIVÉ PAR DÉFAUT - Activer en ajoutant les clés API dans .env
 """
 
-import httpx
-import hmac
 import hashlib
-from typing import Optional
+import hmac
+
+import httpx
 import structlog
 
 from config import get_settings
@@ -32,13 +32,13 @@ class PaymentService:
         if self._initialized:
             return
 
-        self._api_key = getattr(settings, 'lemonsqueezy_api_key', '') or ''
-        self._webhook_secret = getattr(settings, 'lemonsqueezy_webhook_secret', '') or ''
-        self._store_id = getattr(settings, 'lemonsqueezy_store_id', '') or ''
+        self._api_key = getattr(settings, "lemonsqueezy_api_key", "") or ""
+        self._webhook_secret = getattr(settings, "lemonsqueezy_webhook_secret", "") or ""
+        self._store_id = getattr(settings, "lemonsqueezy_store_id", "") or ""
         self._variants = {
-            "starter": getattr(settings, 'lemonsqueezy_variant_starter', '') or '',
-            "pro": getattr(settings, 'lemonsqueezy_variant_pro', '') or '',
-            "enterprise": getattr(settings, 'lemonsqueezy_variant_enterprise', '') or '',
+            "starter": getattr(settings, "lemonsqueezy_variant_starter", "") or "",
+            "pro": getattr(settings, "lemonsqueezy_variant_pro", "") or "",
+            "enterprise": getattr(settings, "lemonsqueezy_variant_enterprise", "") or "",
         }
         self._initialized = True
 
@@ -66,12 +66,7 @@ class PaymentService:
         """Vérifie si le paiement est configuré."""
         return bool(self.api_key)
 
-    async def create_checkout(
-        self,
-        user_id: int,
-        user_email: str,
-        plan: str = "pro"
-    ) -> Optional[dict]:
+    async def create_checkout(self, user_id: int, user_email: str, plan: str = "pro") -> dict | None:
         """
         Crée une session de checkout LemonSqueezy.
 
@@ -99,49 +94,24 @@ class PaymentService:
                     json={
                         "data": {
                             "type": "checkouts",
-                            "attributes": {
-                                "checkout_data": {
-                                    "email": user_email,
-                                    "custom": {
-                                        "user_id": str(user_id)
-                                    }
-                                }
-                            },
+                            "attributes": {"checkout_data": {"email": user_email, "custom": {"user_id": str(user_id)}}},
                             "relationships": {
-                                "store": {
-                                    "data": {
-                                        "type": "stores",
-                                        "id": self.store_id
-                                    }
-                                },
-                                "variant": {
-                                    "data": {
-                                        "type": "variants",
-                                        "id": variant_id
-                                    }
-                                }
-                            }
+                                "store": {"data": {"type": "stores", "id": self.store_id}},
+                                "variant": {"data": {"type": "variants", "id": variant_id}},
+                            },
                         }
                     },
-                    timeout=30.0
+                    timeout=30.0,
                 )
 
                 if response.status_code != 201:
-                    logger.error(
-                        "lemonsqueezy_checkout_error",
-                        status=response.status_code,
-                        response=response.text
-                    )
+                    logger.error("lemonsqueezy_checkout_error", status=response.status_code, response=response.text)
                     return None
 
                 data = response.json()
                 checkout_url = data["data"]["attributes"]["url"]
 
-                logger.info(
-                    "checkout_created",
-                    user_id=user_id,
-                    plan=plan
-                )
+                logger.info("checkout_created", user_id=user_id, plan=plan)
 
                 return {"checkout_url": checkout_url}
 
@@ -149,7 +119,7 @@ class PaymentService:
             logger.error("checkout_error", error=str(e))
             return None
 
-    async def get_subscription(self, subscription_id: str) -> Optional[dict]:
+    async def get_subscription(self, subscription_id: str) -> dict | None:
         """Récupère les infos d'un abonnement."""
         if not self.is_enabled():
             return None
@@ -162,15 +132,11 @@ class PaymentService:
                         "Authorization": f"Bearer {self.api_key}",
                         "Accept": "application/vnd.api+json",
                     },
-                    timeout=30.0
+                    timeout=30.0,
                 )
 
                 if response.status_code != 200:
-                    logger.error(
-                        "get_subscription_error",
-                        subscription_id=subscription_id,
-                        status=response.status_code
-                    )
+                    logger.error("get_subscription_error", subscription_id=subscription_id, status=response.status_code)
                     return None
 
                 return response.json()["data"]
@@ -192,7 +158,7 @@ class PaymentService:
                         "Authorization": f"Bearer {self.api_key}",
                         "Accept": "application/vnd.api+json",
                     },
-                    timeout=30.0
+                    timeout=30.0,
                 )
 
                 success = response.status_code == 200
@@ -201,9 +167,7 @@ class PaymentService:
                     logger.info("subscription_cancelled", subscription_id=subscription_id)
                 else:
                     logger.error(
-                        "cancel_subscription_error",
-                        subscription_id=subscription_id,
-                        status=response.status_code
+                        "cancel_subscription_error", subscription_id=subscription_id, status=response.status_code
                     )
 
                 return success
@@ -219,11 +183,7 @@ class PaymentService:
             return False
 
         try:
-            expected = hmac.new(
-                self.webhook_secret.encode(),
-                payload,
-                hashlib.sha256
-            ).hexdigest()
+            expected = hmac.new(self.webhook_secret.encode(), payload, hashlib.sha256).hexdigest()
 
             return hmac.compare_digest(expected, signature)
         except Exception as e:

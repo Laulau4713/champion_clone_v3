@@ -2,10 +2,8 @@
 Training Agent Memory - Session state with Redis.
 """
 
-from typing import Optional
-
-from memory.session_store import TrainingSessionMemory
 from memory.schemas import SessionState
+from memory.session_store import TrainingSessionMemory
 
 
 class TrainingAgentMemory:
@@ -18,11 +16,11 @@ class TrainingAgentMemory:
     def __init__(self):
         self.session_memory = TrainingSessionMemory()
 
-    async def store(self, key: str, value: dict, metadata: Optional[dict] = None) -> bool:
+    async def store(self, key: str, value: dict, metadata: dict | None = None) -> bool:
         """Store session data."""
         return await self.session_memory.store(key, value)
 
-    async def retrieve(self, key: str, limit: int = 1) -> Optional[dict]:
+    async def retrieve(self, key: str, limit: int = 1) -> dict | None:
         """Retrieve session data."""
         return await self.session_memory.retrieve(key)
 
@@ -30,7 +28,7 @@ class TrainingAgentMemory:
         """Create new training session."""
         return await self.session_memory.create_session(session_state)
 
-    async def get_session(self, session_id: str) -> Optional[SessionState]:
+    async def get_session(self, session_id: str) -> SessionState | None:
         """Get session by ID."""
         return await self.session_memory.get_session(session_id)
 
@@ -39,27 +37,18 @@ class TrainingAgentMemory:
         return await self.session_memory.update_session(session_state)
 
     async def add_turn(
-        self,
-        session_id: str,
-        role: str,
-        content: str,
-        feedback: Optional[str] = None,
-        score: Optional[float] = None
+        self, session_id: str, role: str, content: str, feedback: str | None = None, score: float | None = None
     ) -> bool:
         """Add conversation turn to session."""
         return await self.session_memory.add_conversation_turn(
-            session_id=session_id,
-            role=role,
-            content=content,
-            feedback=feedback,
-            score=score
+            session_id=session_id, role=role, content=content, feedback=feedback, score=score
         )
 
-    async def complete_session(self, session_id: str) -> Optional[SessionState]:
+    async def complete_session(self, session_id: str) -> SessionState | None:
         """Mark session as completed."""
         return await self.session_memory.complete_session(session_id)
 
-    async def get_active_sessions(self, user_id: Optional[str] = None) -> list[SessionState]:
+    async def get_active_sessions(self, user_id: str | None = None) -> list[SessionState]:
         """Get active sessions."""
         return await self.session_memory.get_active_sessions(user_id)
 
