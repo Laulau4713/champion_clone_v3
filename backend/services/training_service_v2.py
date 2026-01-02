@@ -540,8 +540,18 @@ OBJECTIONS CACHÉES (ne les révèle que si le commercial pose les bonnes questi
 """
 
         # Résumé des actions du commercial
-        positive_summary = ", ".join(patterns.get("positive", [])[:3]) or "Aucune"
-        negative_summary = ", ".join(patterns.get("negative", [])[:3]) or "Aucune"
+        positive_summary = (
+            ", ".join(
+                [p.get("pattern", str(p)) if isinstance(p, dict) else str(p) for p in patterns.get("positive", [])[:3]]
+            )
+            or "Aucune"
+        )
+        negative_summary = (
+            ", ".join(
+                [n.get("pattern", str(n)) if isinstance(n, dict) else str(n) for n in patterns.get("negative", [])[:3]]
+            )
+            or "Aucune"
+        )
 
         system_prompt = f"""Tu es {prospect.get("name", "un prospect")}, {prospect.get("role", "professionnel")} chez {prospect.get("company", "une entreprise")}.
 
@@ -825,15 +835,35 @@ Analyse et complète cette évaluation en JSON (garde le score proche de {base_s
         )
 
         content = response.content[0].text
-        if content.strip().startswith("{"):
-            result = json.loads(content)
+
+        # Extraire le JSON même si Claude ajoute du texte autour
+        json_str = content.strip()
+        if not json_str.startswith("{"):
+            # Chercher le premier { et le dernier }
+            start = json_str.find("{")
+            end = json_str.rfind("}") + 1
+            if start != -1 and end > start:
+                json_str = json_str[start:end]
+
+        try:
+            result = json.loads(json_str)
             result["final_jauge"] = session.current_gauge
             result["jauge_progression"] = session.current_gauge - session.starting_gauge
             result["converted"] = session.converted
             result["passed"] = result.get("overall_score", base_score) >= skill.pass_threshold
             return result
-
-        raise ExternalServiceError("claude", "Claude did not return valid JSON")
+        except json.JSONDecodeError as e:
+            logger.warning("claude_json_parse_error", error=str(e), content=content[:200])
+            # Fallback avec score de base
+            return {
+                "overall_score": base_score,
+                "final_jauge": session.current_gauge,
+                "jauge_progression": session.current_gauge - session.starting_gauge,
+                "converted": session.converted,
+                "passed": base_score >= skill.pass_threshold,
+                "conseil_principal": self._get_main_advice(session, base_score),
+                "analyse_detaillee": "Évaluation automatique basée sur la progression de la jauge.",
+            }
 
     def _get_main_advice(self, session: VoiceTrainingSession, score: float) -> str:
         """Retourne un conseil principal basé sur la session."""
