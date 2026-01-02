@@ -71,7 +71,7 @@ class SectorDetailResponse(SectorResponse):
 
 class CourseResponse(BaseModel):
     id: int
-    order: int  # Changed from 'day' - progression order
+    day: int  # Day number in the training program
     level: str
     title: str
     objective: Optional[str] = None
@@ -117,7 +117,7 @@ class QuizResultResponse(BaseModel):
 
 class UserProgressResponse(BaseModel):
     current_level: str
-    current_course: int  # Changed from current_day
+    current_day: int  # Current day in the training program
     sector_slug: Optional[str] = None
     started_at: datetime
     total_training_minutes: int
@@ -237,7 +237,7 @@ async def get_courses(
         course = row[0]
         courses.append({
             "id": course.id,
-            "order": course.day,  # Map day to order
+            "day": course.day,
             "level": course.level,
             "title": course.title,
             "objective": course.objective,
@@ -266,7 +266,7 @@ async def get_course_by_order(
     course = row[0]
     return {
         "id": course.id,
-        "order": course.day,
+        "day": course.day,
         "level": course.level,
         "title": course.title,
         "objective": course.objective,
@@ -348,7 +348,7 @@ async def get_user_progress(
 
     return {
         "current_level": progress.current_level,
-        "current_course": progress.current_day,  # Renamed from current_day
+        "current_day": progress.current_day,
         "sector_slug": sector_slug,
         "started_at": progress.started_at,
         "total_training_minutes": progress.total_training_minutes,

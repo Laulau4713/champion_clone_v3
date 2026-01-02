@@ -103,9 +103,9 @@ async def learning_content(db_session: AsyncSession):
         with open(cours_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        for course_data in data.get("cours", [])[:5]:  # Only first 5 for tests
+        for idx, course_data in enumerate(data.get("cours", [])[:5], start=1):  # Only first 5 for tests
             course = Course(
-                day=course_data["day"],
+                day=course_data.get("day", course_data.get("order", idx)),
                 level=course_data["level"],
                 skill_id=None,  # Simplified for tests
                 title=course_data["title"],
