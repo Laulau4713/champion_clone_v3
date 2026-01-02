@@ -1,0 +1,62 @@
+# =============================================================================
+# Champion Clone Backend - CI Dependencies (lightweight)
+# =============================================================================
+# Excludes heavy ML dependencies (torch, whisper) for faster CI runs
+
+# FastAPI & Server
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+python-multipart==0.0.9
+gunicorn==21.2.0
+
+# Database
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+asyncpg==0.29.0
+aiosqlite==0.19.0
+alembic==1.13.1
+
+# Validation & Settings
+pydantic==2.6.1
+email-validator==2.1.0
+pydantic-settings==2.1.0
+python-dotenv==1.0.1
+
+# AI Services (API only, no local models)
+anthropic>=0.40.0
+openai>=1.12.0
+groq>=0.4.0
+
+# Audio/Video Processing (lightweight)
+ffmpeg-python==0.2.0
+
+# Security
+slowapi==0.1.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Async Task Queue
+celery[redis]==5.3.6
+redis==5.0.1
+kombu==5.3.4
+
+# Utilities
+aiofiles==23.2.1
+structlog==24.1.0
+httpx==0.28.1
+orjson==3.9.15
+
+# Monitoring
+prometheus-client==0.19.0
+
+# Testing
+pytest==8.0.0
+pytest-asyncio==0.23.0
+pytest-cov==4.1.0
+
+# Development Tools
+pre-commit==3.6.0
+ruff==0.1.9
+
+# ElevenLabs (optional)
+elevenlabs>=0.2.26
