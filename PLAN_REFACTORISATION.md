@@ -2123,6 +2123,74 @@ class VoiceService:
         return await self.stt.transcribe(audio)
 ```
 
+### Chatterbox Turbo - Optimisation latence
+
+Pour réduire la latence TTS, utiliser **Chatterbox Turbo** au lieu du modèle standard :
+
+```
+Chatterbox Standard vs Turbo :
+
+Standard (chatterbox)
+├── Paramètres : ~1B
+├── Backbone : LLaMA
+├── Inference : 10 étapes CFM
+├── Latence : 1-2 secondes
+└── VRAM : ~8GB
+
+Turbo (chatterbox-turbo)
+├── Paramètres : 350M
+├── Backbone : GPT-2 (plus rapide)
+├── Inference : 1 seule étape (distillé)
+├── Latence : 500ms - 1s (réel)
+├── VRAM : ~4GB
+└── Time-to-first-sound : sub-150ms (théorique)
+```
+
+**Configuration Turbo :**
+
+```python
+# backend/services/tts/chatterbox.py
+
+class ChatterboxTTS:
+    def __init__(self, base_url: str, use_turbo: bool = True):
+        self.model = "chatterbox-turbo" if use_turbo else "chatterbox"
+        # Version ONNX pour encore plus de vitesse
+        self.use_onnx = True  # chatterbox-turbo-ONNX
+
+    async def synthesize(self, text: str, voice: str) -> bytes:
+        # Streaming natif pour latence minimale
+        async for chunk in self._stream_generate(text, voice):
+            yield chunk
+```
+
+**Streaming pour latence perçue :**
+
+```
+Sans streaming :
+[Génération complète 2s] → [Playback]
+
+Avec streaming Turbo :
+[Chunk 1] → [Playback début]
+[Chunk 2] → [Continue playback]
+...
+
+→ Time-to-first-sound : ~200-500ms au lieu de 2s
+```
+
+**Docker Turbo :**
+
+```yaml
+# docker-compose.vastai.yml - TTS optimisé
+tts:
+  image: ghcr.io/resemble-ai/chatterbox-turbo:latest
+  environment:
+    - MODEL=turbo
+    - USE_ONNX=true
+    - STREAMING=true
+  ports:
+    - "8001:8001"
+```
+
 ### Configuration .env
 
 ```bash
