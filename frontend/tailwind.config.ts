@@ -86,7 +86,10 @@ const config: Config = {
   			'fade-in-up': 'fadeInUp 0.5s ease-out',
   			'slide-in': 'slideIn 0.3s ease-out',
   			'pulse-slow': 'pulse 3s ease-in-out infinite',
-  			'gradient': 'gradient 8s ease infinite'
+  			'gradient': 'gradient 8s ease infinite',
+  			'shimmer': 'shimmer 2s infinite',
+  			'float': 'float 3s ease-in-out infinite',
+  			'bounce-subtle': 'bounceSubtle 2s ease-in-out infinite',
   		},
   		keyframes: {
   			fadeIn: {
@@ -121,6 +124,27 @@ const config: Config = {
   				},
   				'50%': {
   					backgroundPosition: '100% 50%'
+  				}
+  			},
+  			shimmer: {
+  				'100%': {
+  					transform: 'translateX(100%)'
+  				}
+  			},
+  			float: {
+  				'0%, 100%': {
+  					transform: 'translateY(0)'
+  				},
+  				'50%': {
+  					transform: 'translateY(-5px)'
+  				}
+  			},
+  			bounceSubtle: {
+  				'0%, 100%': {
+  					transform: 'translateY(0)'
+  				},
+  				'50%': {
+  					transform: 'translateY(-3px)'
   				}
   			}
   		}

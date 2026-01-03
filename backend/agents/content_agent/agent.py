@@ -311,6 +311,18 @@ class ContentAgent:
             },
             "context": "Premier appel de découverte suite à une demande sur le site. Marie a téléchargé un livre blanc sur l'automatisation marketing.",
             "opening_message": opening,
+            "solution": {
+                "product_name": "MarketAuto Pro",
+                "value_proposition": "Automatisez 80% de vos tâches marketing répétitives et gagnez 20h par semaine",
+                "key_benefits": [
+                    "Libère 20+ heures par semaine pour votre équipe",
+                    "Augmente le volume de leads qualifiés de 40%",
+                    "Interface intuitive, prise en main en 2 jours",
+                ],
+                "pricing_hint": "À partir de 199€/mois - ROI positif dès le 2ème mois",
+                "differentiator": "Seule solution avec IA intégrée qui s'adapte à votre secteur",
+            },
+            "product_pitch": "Marie, d'après ce que vous me décrivez, votre équipe passe beaucoup de temps sur des tâches répétitives. MarketAuto Pro automatise tout ça : emailing, segmentation, reporting. Concrètement, avec une équipe de 3 personnes comme la vôtre, vous récupéreriez entre 15 et 20 heures par semaine. Et le meilleur ? Nos clients voient un ROI positif dès le deuxième mois.",
             "key_moments": [
                 "Découverte des besoins réels",
                 "Gestion de l'objection budget",

@@ -1,0 +1,153 @@
+{
+  "template_id": "situations_difficiles_resiliation",
+  "skill_slug": "situations_difficiles",
+  "name": "Situations difficiles - Demande de résiliation",
+  "description": "Gérez une demande de résiliation et tentez de retenir le client.",
+
+  "product": {
+    "name": "MarketFlow",
+    "tagline": "Marketing automation pour PME",
+    "context": {
+      "service": "Plateforme de marketing automation",
+      "subscription": "499€/mois, engagement annuel (reste 4 mois)",
+      "usage": "Faible depuis 3 mois (connecté 2 fois/mois)"
+    }
+  },
+
+  "retention_methodology": {
+    "framework": "Comprendre avant de convaincre",
+    "steps": {
+      "listen": "Comprendre la vraie raison (pas celle annoncée)",
+      "validate": "Valider le droit de partir, pas de pression",
+      "diagnose": "Identifier si c'est récupérable",
+      "propose": "Offrir une solution adaptée si pertinent",
+      "accept": "Accepter gracieusement si c'est vraiment fini"
+    },
+    "common_reasons": {
+      "announced": ["Trop cher", "On n'utilise pas", "Pas le temps"],
+      "real": ["Pas vu la valeur", "Onboarding raté", "Changement de priorités", "Champion parti"]
+    },
+    "retention_tools": [
+      "Pause d'abonnement (3 mois)",
+      "Downgrade vers formule moins chère",
+      "Session de formation/réactivation offerte",
+      "Extension de l'engagement contre remise",
+      "Changement d'interlocuteur/CSM"
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Céline Dubois",
+      "role": "Responsable Marketing",
+      "company": "TechStartup",
+      "company_size": "35 employés, SaaS B2B",
+      "sector": "Tech / SaaS",
+      "personality": "frustrated_churner",
+      "psychology": {
+        "type": "expressif",
+        "communication_style": "Directe mais pas agressive, déçue plus qu'en colère",
+        "churn_reason_announced": "On n'utilise pas assez, c'est trop cher pour ce qu'on en fait",
+        "churn_reason_real": "L'onboarding était bâclé, elle n'a jamais vraiment maîtrisé l'outil"
+      },
+      "usage_history": {
+        "first_3_months": "Très active, campagnes lancées",
+        "last_3_months": "2 connexions/mois, pas de nouvelle campagne",
+        "trigger": "Son manager lui a demandé de justifier les 499€/mois"
+      },
+      "saveable": true,
+      "what_would_save_her": "Une vraie formation, voir des résultats rapides, accompagnement"
+    }
+  },
+
+  "retention_scenarios": [
+    {
+      "context": "Comprendre la vraie raison",
+      "good_approach": "Je comprends. Avant de procéder, j'aimerais comprendre ce qui s'est passé. Au début vous étiez active sur la plateforme, et depuis 3 mois c'est calme. Qu'est-ce qui a changé ?",
+      "bad_approach": "Vous êtes sûre ? Vous avez 4 mois d'engagement restants...",
+      "why": "Creuser la vraie raison, pas menacer avec l'engagement"
+    },
+    {
+      "context": "La cliente révèle le vrai problème",
+      "prospect_says": "Honnêtement ? Je n'ai jamais vraiment maîtrisé l'outil. L'onboarding était trop rapide, et après je n'ai pas osé demander de l'aide.",
+      "good_response": "Je suis content que vous me le disiez. C'est notre faute si l'onboarding n'était pas à la hauteur. Et si on reprenait de zéro avec une formation personnalisée ? Je vous propose 3 sessions d'1h avec notre CSM senior, offert.",
+      "bad_response": "Ah, vous auriez dû nous appeler !",
+      "why": "Proposer une solution, pas culpabiliser"
+    },
+    {
+      "context": "Proposition de rétention",
+      "good_approach": "Voilà ce que je propose : on fait une pause de 2 mois sur l'abonnement, pendant lesquels on vous forme. À la fin, si vous voyez de la valeur, on reprend. Sinon, on résilie sans frais.",
+      "bad_approach": "On peut faire 20% de remise ?",
+      "why": "Répondre au vrai problème (valeur) pas au symptôme (prix)"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "La cliente appelle pour demander la résiliation. Elle est polie mais déterminée.",
+      "prospect_first_response": "Bonjour, c'est Céline Dubois de TechStartup. Je vous appelle pour résilier notre abonnement MarketFlow. On n'utilise pas assez la plateforme pour justifier 499€ par mois."
+    },
+    "objectives": [
+      "Comprendre la vraie raison de la résiliation",
+      "Identifier si le client est sauvable",
+      "Proposer une solution adaptée au vrai problème",
+      "Respecter la décision si c'est définitif",
+      "Préserver la relation pour l'avenir"
+    ],
+    "success_criteria": [
+      "Découvrir la vraie raison (pas l'annoncée)",
+      "Proposer une solution qui répond au vrai problème",
+      "Soit sauver le client, soit partir en bons termes",
+      "Obtenir un feedback utile dans tous les cas"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "determination": "Pas totalement décidée, ouverte aux solutions",
+        "reason": "Problème résoluble (formation, accompagnement)"
+      },
+      "medium": {
+        "determination": "Décidée mais peut être retournée avec la bonne offre",
+        "reason": "Mix de problèmes (valeur + prix + temps)"
+      },
+      "expert": {
+        "determination": "Totalement décidée, veut juste la procédure",
+        "reason": "Problème non résoluble (changement stratégique, budget coupé)"
+      }
+    }
+  },
+
+  "retention_offers": {
+    "if_usage_problem": {
+      "offer": "Formation personnalisée + pause 2 mois",
+      "commitment": "Reprise à la fin si valeur prouvée"
+    },
+    "if_price_problem": {
+      "offer": "Downgrade vers formule Starter à 199€/mois",
+      "commitment": "6 mois pour prouver la valeur, upgrade ensuite"
+    },
+    "if_time_problem": {
+      "offer": "Service managé (on gère pour vous) 3 mois",
+      "commitment": "On vous montre les résultats, vous reprenez en main"
+    },
+    "if_definitely_leaving": {
+      "offer": "Résiliation propre, pas de forcing",
+      "ask": "Feedback honnête + recommandation possible ?"
+    }
+  },
+
+  "techniques_to_practice": [
+    "Écouter avant de proposer",
+    "Creuser la vraie raison",
+    "Ne pas utiliser l'engagement comme menace",
+    "Proposer des solutions au vrai problème",
+    "Savoir accepter un départ gracieusement",
+    "Demander un feedback même si le client part"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok, on essaye votre proposition", "non merci, on résilie quand même", "je vais y réfléchir"],
+    "min_exchanges": 8,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

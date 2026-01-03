@@ -1,0 +1,106 @@
+{
+  "template_id": "cold_calling_2",
+  "skill_slug": "cold_calling",
+  "name": "Objection rapide - DG pressé",
+  "description": "Vous avez le décideur en ligne mais il veut raccrocher vite. Gérez l'objection et captez son attention.",
+
+  "product": {
+    "name": "SimpleCRM Pro",
+    "tagline": "Le CRM pensé pour les PME françaises",
+    "how_it_works": {
+      "summary": "CRM cloud simple avec devis/factures intégrés",
+      "key_features": ["Pipeline visuel", "Devis en 2 clics", "App mobile"]
+    },
+    "pricing": {
+      "entry_price": "29€/utilisateur/mois",
+      "free_trial": "30 jours gratuits"
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Antoine Lefevre",
+      "role": "Directeur Commercial",
+      "company": "TechServices Plus",
+      "company_size": "45 employés",
+      "sector": "Services IT",
+      "personality": "impatient",
+      "current_situation": "15 commerciaux sans outil commun, pipe dans Excel partagé",
+      "pain_points": [
+        "Visibilité zéro sur le pipe global",
+        "Prévisions de ventes impossibles",
+        "Commerciaux qui font chacun à leur sauce"
+      ],
+      "hidden_need": "Son boss lui met la pression sur les prévisions"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Je n'ai pas le temps, rappelez plus tard",
+      "type": "timing",
+      "hidden": "Veut voir si vous valez le coup"
+    },
+    {
+      "objection": "On a déjà un CRM",
+      "type": "incumbent",
+      "hidden": "Personne ne l'utilise vraiment"
+    },
+    {
+      "objection": "Combien ça coûte?",
+      "type": "price",
+      "hidden": "Cherche une raison de raccrocher"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Le prospect décroche mais est pressé. Vous avez 15 secondes pour le garder.",
+      "prospect_first_response": "Oui, Antoine Lefevre, je suis en réunion dans 2 minutes, c'est quoi?"
+    },
+    "objectives": [
+      "Gérer l'objection de timing",
+      "Placer une accroche qui retient l'attention",
+      "Obtenir un rappel programmé ou poursuivre"
+    ],
+    "success_criteria": [
+      "Conversation prolongée au-delà de 2 minutes",
+      "OU rappel fixé avec heure précise",
+      "Information qualifiante obtenue"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "patience_level": "Pressé mais poli, donne une chance",
+        "cooperation_level": "high"
+      },
+      "medium": {
+        "patience_level": "Très direct, veut du concret immédiat",
+        "cooperation_level": "medium"
+      },
+      "expert": {
+        "patience_level": "Prêt à raccrocher à la première hésitation",
+        "cooperation_level": "low"
+      }
+    }
+  },
+
+  "key_moments": [
+    {
+      "trigger": "Objection timing",
+      "good_response": "Proposer un créneau précis et montrer la valeur",
+      "bad_response": "Insister ou réciter son pitch"
+    },
+    {
+      "trigger": "Question prix",
+      "good_response": "Reporter au RDV et parler valeur",
+      "bad_response": "Donner le prix sans contexte"
+    }
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "je dois y aller", "rappelez-moi"],
+    "min_exchanges": 4,
+    "max_exchanges": 10,
+    "auto_end_enabled": true
+  }
+}

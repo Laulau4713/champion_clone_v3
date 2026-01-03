@@ -1,0 +1,93 @@
+{
+  "template_id": "script_accroche_2",
+  "skill_slug": "script_accroche",
+  "name": "Accroche - Prospect méfiant",
+  "description": "Vous appelez un prospect qui a l'habitude des commerciaux. Il va tester votre capacité à sortir du lot.",
+
+  "product": {
+    "name": "CloudSec Pro",
+    "tagline": "La cybersécurité simple pour les PME",
+    "hook": "Je ne vous appelle pas pour vous vendre quelque chose. Je vous appelle parce qu'une PME de votre secteur s'est fait pirater la semaine dernière et j'ai pensé à vous..."
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Philippe Martin",
+      "role": "DSI",
+      "company": "LogiPro Services",
+      "company_size": "80 employés",
+      "sector": "Logistique",
+      "personality": "skeptical",
+      "current_situation": "Reçoit 5 appels de prospection par jour",
+      "pain_points": [
+        "Fatigué des commerciaux qui récitent leur script",
+        "A déjà un prestataire IT",
+        "Budget serré en cybersécurité"
+      ],
+      "hidden_need": "Inquiet depuis une attaque phishing le mois dernier"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On a déjà un prestataire informatique",
+      "type": "incumbent",
+      "hidden": "Pas satisfait mais fidèle"
+    },
+    {
+      "objection": "C'est encore un commercial non?",
+      "type": "skeptical",
+      "hidden": "Veut voir si vous êtes différent"
+    },
+    {
+      "objection": "La cybersécurité c'est pas ma priorité",
+      "type": "priority",
+      "hidden": "A eu une frayeur récemment mais minimise"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Le prospect a son radar anti-commercial activé. Votre accroche doit être différente.",
+      "prospect_first_response": "Oui? (ton méfiant)"
+    },
+    "objectives": [
+      "Éviter le rejet immédiat",
+      "Créer de la curiosité",
+      "Transformer le scepticisme en intérêt"
+    ],
+    "success_criteria": [
+      "Conversation de plus de 2 minutes",
+      "Le prospect pose au moins une question",
+      "RDV ou email accepté"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "skepticism_level": "Méfiant mais poli",
+        "cooperation_level": "high"
+      },
+      "medium": {
+        "skepticism_level": "Très direct, teste la valeur ajoutée",
+        "cooperation_level": "medium"
+      },
+      "expert": {
+        "skepticism_level": "Cynique, cherche à déstabiliser",
+        "cooperation_level": "low"
+      }
+    }
+  },
+
+  "anti_patterns_to_avoid": [
+    "Réciter un script mot pour mot",
+    "Parler de soi avant de parler du client",
+    "Utiliser des superlatifs vides ('la meilleure solution')",
+    "Ignorer les signaux de désintérêt"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "non merci", "pas intéressé"],
+    "min_exchanges": 3,
+    "max_exchanges": 10,
+    "auto_end_enabled": true
+  }
+}

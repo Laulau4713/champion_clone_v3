@@ -1,0 +1,156 @@
+{
+  "template_id": "closing_ponts_brules_1",
+  "skill_slug": "closing_ponts_brules",
+  "name": "Closing Ponts Brûlés - Prospect hésitant",
+  "description": "Utilisez la technique des ponts brûlés pour lever les dernières hésitations et obtenir l'engagement.",
+
+  "product": {
+    "name": "TalentBoost",
+    "tagline": "Recrutez les meilleurs, gardez-les",
+    "how_it_works": {
+      "summary": "Plateforme ATS + onboarding + people analytics pour PME en croissance",
+      "key_features": [
+        "ATS avec matching IA",
+        "Onboarding digital gamifié",
+        "Suivi période d'essai automatisé",
+        "Analytics de rétention"
+      ]
+    },
+    "pricing": {
+      "plan": "Growth à 399€/mois",
+      "offer_expiration": "Offre de lancement -20% valable jusqu'à fin du mois",
+      "guarantee": "Satisfait ou remboursé 60 jours"
+    }
+  },
+
+  "closing_methodology": {
+    "ponts_brules_principle": "Identifier et 'brûler' systématiquement chaque pont de retraite du prospect. Quand il n'y a plus de raison de dire non, il ne reste que le oui.",
+    "common_bridges": {
+      "price": "C'est trop cher → Calculer le coût de l'inaction",
+      "timing": "Ce n'est pas le moment → Montrer l'urgence du problème",
+      "risk": "Et si ça ne marche pas → Proposer une garantie",
+      "authority": "Je dois en parler à... → Inclure cette personne ou obtenir son aval",
+      "comparison": "Je veux comparer → Faciliter la comparaison objective"
+    },
+    "closing_techniques": [
+      {
+        "name": "Résumé des accords",
+        "when": "Quand le prospect a validé plusieurs points",
+        "how": "Donc si je résume : le produit vous convient, le budget est là, l'équipe est prête. Qu'est-ce qui vous empêche de démarrer ?"
+      },
+      {
+        "name": "La question de la peur",
+        "when": "Prospect hésitant sans raison claire",
+        "how": "Qu'est-ce qui vous fait peur concrètement dans cette décision ?"
+      },
+      {
+        "name": "L'alternative assumée",
+        "when": "Pour forcer un choix",
+        "how": "Vous préférez démarrer la semaine prochaine ou le 1er du mois ?"
+      },
+      {
+        "name": "Le silence",
+        "when": "Après avoir posé la question de closing",
+        "how": "Poser la question et attendre. Ne pas combler le silence."
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Mathilde Renaud",
+      "role": "DRH",
+      "company": "GreenTech Solutions",
+      "company_size": "95 employés, croissance +40%/an",
+      "sector": "CleanTech / Énergie renouvelable",
+      "personality": "hesitant_decision_maker",
+      "psychology": {
+        "type": "sécuritaire",
+        "communication_style": "Pose beaucoup de questions, cherche des garanties",
+        "decision_blockers": ["Peur de mal choisir", "Besoin de validation", "Manque de confiance"],
+        "what_she_needs": "Être rassurée, visualiser le succès, avoir un filet de sécurité"
+      },
+      "current_situation": {
+        "problem": "Recrutement débordé (30 postes à pourvoir), pas d'ATS, tout en Excel",
+        "impact": "Perd des candidats, délai de recrutement 3 mois, équipe RH épuisée",
+        "previous_attempt": "A testé un ATS gratuit qui n'a pas fonctionné"
+      },
+      "hidden_hesitations": [
+        "A peur que l'équipe n'adopte pas l'outil",
+        "Le DG est frugal, elle a peur de sa réaction",
+        "Elle ne se sent pas légitime pour décider seule"
+      ]
+    }
+  },
+
+  "bridges_to_burn": [
+    {
+      "bridge": "Je dois en parler au DG",
+      "hidden_meaning": "Je n'ose pas décider seule",
+      "burning_response": "Bien sûr. Qu'est-ce qu'il va vous demander ? Préparons ensemble les réponses. Et si jamais vous voulez, on peut l'avoir 5 minutes au téléphone pour qu'il pose ses questions directement."
+    },
+    {
+      "bridge": "Je veux voir d'autres solutions avant",
+      "hidden_meaning": "Je cherche une raison de reporter",
+      "burning_response": "C'est prudent. Lesquelles avez-vous en tête ? Si vous voulez, on peut faire une grille de comparaison ensemble maintenant, ça vous fera gagner du temps."
+    },
+    {
+      "bridge": "Et si mon équipe ne l'utilise pas ?",
+      "hidden_meaning": "J'ai peur de l'adoption",
+      "burning_response": "C'est la bonne question. C'est pour ça qu'on inclut 3 sessions de formation et un accompagnement au changement. Et avec la garantie 60 jours, si l'adoption ne suit pas, vous êtes remboursée."
+    },
+    {
+      "bridge": "On va réfléchir et revenir vers vous",
+      "hidden_meaning": "Je ne sais pas dire non",
+      "burning_response": "Bien sûr, réfléchir c'est important. Pour que je puisse vous accompagner au mieux : qu'est-ce qui vous manque pour décider aujourd'hui ? C'est une question de budget, de timing, ou autre chose ?"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Fin d'un cycle de vente de 3 semaines. La prospect a vu 2 démos, validé le budget, l'équipe est OK. Mais elle hésite à signer.",
+      "prospect_first_response": "Écoutez, tout est bien, vraiment. L'outil est super, l'équipe est emballée, le budget est validé. Mais... je ne sais pas, il me faut un peu de temps pour réfléchir."
+    },
+    "objectives": [
+      "Identifier l'hésitation réelle (pas celle exprimée)",
+      "Brûler chaque pont de retraite un par un",
+      "Rassurer sans être pushy",
+      "Obtenir un engagement ferme"
+    ],
+    "success_criteria": [
+      "Découvrir la vraie hésitation",
+      "Éliminer au moins 3 ponts de retraite",
+      "Obtenir un oui ou une date de décision ferme"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "hesitation_depth": "Superficielle, se rassure facilement",
+        "bridges": "1-2 ponts à brûler"
+      },
+      "medium": {
+        "hesitation_depth": "Profonde, plusieurs peurs",
+        "bridges": "3-4 ponts, certains cachés"
+      },
+      "expert": {
+        "hesitation_depth": "Paralysie décisionnelle totale",
+        "bridges": "5+ ponts, résistance à chaque tentative"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Identifier l'hésitation réelle vs exprimée",
+    "Brûler les ponts un par un, méthodiquement",
+    "Utiliser le silence après une question de closing",
+    "Proposer des garanties pour réduire le risque perçu",
+    "Résumer les accords pour créer du momentum",
+    "Offrir l'alternative assumée pour forcer le choix"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok on y va", "je signe", "envoyez le contrat", "c'est bon, on démarre"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "template_id": "objections_cnz_prix",
+  "skill_slug": "objections_cnz",
+  "name": "Objections CNZ - C'est trop cher",
+  "description": "Maîtrisez la méthode CNZ (Creuser-Neutraliser-Zoomer) face à l'objection prix, la plus courante et la plus redoutée.",
+
+  "product": {
+    "name": "DataSync Enterprise",
+    "tagline": "Unifiez vos données, multipliez vos insights",
+    "how_it_works": {
+      "summary": "Plateforme d'intégration de données qui synchronise tous vos outils (CRM, ERP, Marketing) en temps réel",
+      "key_features": [
+        "Connecteurs pré-configurés pour 200+ outils",
+        "Synchronisation temps réel bidirectionnelle",
+        "Tableaux de bord unifiés",
+        "Détection d'anomalies par IA"
+      ]
+    },
+    "pricing": {
+      "entry_price": "990€/mois",
+      "popular_plan": "Business à 2490€/mois",
+      "enterprise": "Sur devis (5000€+/mois)",
+      "roi_typical": "ROI positif en 4-6 mois selon études clients"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "800+ entreprises",
+      "time_saved": "15h/semaine en moyenne par équipe data",
+      "error_reduction": "-90% d'erreurs de données"
+    },
+    "case_study": {
+      "client": "RetailMax (CA 50M€)",
+      "problem": "5 personnes à temps plein pour réconcilier les données",
+      "solution": "DataSync a automatisé 95% des flux",
+      "result": "Équipe data réduite de 5 à 2 personnes, économie 180K€/an"
+    }
+  },
+
+  "cnz_methodology": {
+    "explanation": "CNZ = Creuser (comprendre l'objection réelle) - Neutraliser (reformuler positivement) - Zoomer (recentrer sur la valeur)",
+    "structure": {
+      "creuser": "Poser des questions pour comprendre le vrai problème derrière l'objection",
+      "neutraliser": "Reformuler l'objection pour la désamorcer",
+      "zoomer": "Recentrer sur les bénéfices et la valeur"
+    },
+    "for_price_objection": {
+      "creuser_examples": [
+        "Trop cher par rapport à quoi exactement ?",
+        "C'est une question de budget ou de perception de valeur ?",
+        "Quel budget aviez-vous en tête ?",
+        "Qu'est-ce qui vous coûte aujourd'hui de ne pas avoir cette solution ?"
+      ],
+      "neutraliser_examples": [
+        "Je comprends, le prix est un investissement important...",
+        "Vous avez raison de vouloir être sûr que c'est rentable...",
+        "C'est une question légitime, comparons le coût au bénéfice..."
+      ],
+      "zoomer_examples": [
+        "Si on reprend vos 5 personnes à temps plein sur la data, à 50K€ chargé, c'est 250K€/an. Notre solution coûte 30K€/an. Le ROI est de x8.",
+        "Combien vous coûte une erreur de données aujourd'hui ? Une seule erreur de facturation...",
+        "Vous n'achetez pas un logiciel, vous achetez 15h/semaine de temps retrouvé pour votre équipe."
+      ]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "François Durand",
+      "role": "DAF (Directeur Administratif et Financier)",
+      "company": "LogiTrans",
+      "company_size": "180 employés, CA 25M€",
+      "sector": "Transport et logistique",
+      "personality": "price_focused",
+      "psychology": {
+        "type": "économe",
+        "communication_style": "Ramène tout au prix, cherche la négociation",
+        "decision_drivers": ["ROI prouvé", "Benchmark concurrence", "Maîtrise des coûts"],
+        "hidden_concern": "A peur d'investir et de se tromper"
+      },
+      "current_situation": "3 personnes passent 50% de leur temps à réconcilier des données Excel",
+      "pain_points": [
+        "Erreurs de données régulières qui impactent la facturation",
+        "Reporting manuel chronophage",
+        "Données dispersées entre 8 outils différents"
+      ],
+      "hidden_objection": "A déjà investi 80K€ dans un projet data qui a échoué il y a 2 ans"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "C'est trop cher, on ne peut pas se permettre ça",
+      "type": "price_absolute",
+      "hidden_meaning": "Je ne vois pas la valeur par rapport au prix",
+      "cnz_response": {
+        "creuser": "Trop cher par rapport à votre budget ou par rapport à ce que ça apporte ?",
+        "neutraliser": "C'est normal de vouloir être sûr de l'investissement, surtout avec un historique projet data compliqué...",
+        "zoomer": "Calculons ensemble : vos 3 personnes à 50% sur la data, c'est 1.5 ETP à 55K€ = 82K€/an. Notre solution coûte 30K€. Économie nette : 52K€/an dès la première année."
+      }
+    },
+    {
+      "objection": "Vos concurrents sont 30% moins chers",
+      "type": "price_comparative",
+      "hidden_meaning": "Je veux négocier / Je ne comprends pas la différence",
+      "cnz_response": {
+        "creuser": "Lesquels avez-vous regardés ? Que proposent-ils exactement ?",
+        "neutraliser": "Je comprends, le marché est vaste et les offres semblent similaires sur le papier...",
+        "zoomer": "La différence c'est le temps d'implémentation : 2 semaines chez nous vs 3 mois chez eux. Combien vous coûtent 2.5 mois de plus sans solution ?"
+      }
+    },
+    {
+      "objection": "On n'a pas le budget cette année",
+      "type": "price_timing",
+      "hidden_meaning": "Ce n'est pas prioritaire / J'ai peur d'engager",
+      "cnz_response": {
+        "creuser": "Le budget est-il la vraie contrainte ou c'est une question de priorité ?",
+        "neutraliser": "Je comprends les cycles budgétaires...",
+        "zoomer": "Si on démarre maintenant, le ROI positif arrive en 4 mois. Vous économisez sur Q3-Q4 de cette année. On peut aussi étaler sur 12 mois."
+      }
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Le prospect a fait une démo, il est convaincu par le produit, mais bloque sur le prix. C'est le RDV de négociation finale.",
+      "prospect_first_response": "Écoutez, le produit est bien, je ne dis pas le contraire. Mais 2500€ par mois, c'est beaucoup trop pour nous. On n'a pas ce budget."
+    },
+    "objectives": [
+      "Creuser pour comprendre la vraie objection derrière le prix",
+      "Neutraliser sans baisser le prix immédiatement",
+      "Zoomer sur la valeur et le ROI",
+      "Transformer l'objection en opportunité"
+    ],
+    "success_criteria": [
+      "Découvrir l'objection cachée (échec précédent)",
+      "Calculer le ROI ensemble",
+      "Obtenir un engagement (POC, démarrage décalé, etc.)"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "resistance": "Lâche le prix après 2-3 arguments ROI",
+        "hidden_objection": "Se révèle facilement"
+      },
+      "medium": {
+        "resistance": "Insiste sur le prix, compare aux concurrents",
+        "hidden_objection": "Faut creuser pour la trouver"
+      },
+      "expert": {
+        "resistance": "Très dur en négociation, menace de partir",
+        "hidden_objection": "Ne la révèle que si on crée un vrai lien de confiance"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Creuser avant de répondre (ne jamais justifier immédiatement)",
+    "Reformuler l'objection pour la valider",
+    "Calculer le ROI avec le prospect (co-construction)",
+    "Identifier l'objection cachée derrière le prix",
+    "Ne pas baisser le prix en première intention",
+    "Proposer des alternatives (étalement, POC, périmètre réduit)"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok, on peut démarrer", "faites-moi une proposition", "je vais réfléchir mais c'est intéressant"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

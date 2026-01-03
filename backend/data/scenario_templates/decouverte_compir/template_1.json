@@ -1,0 +1,184 @@
+{
+  "template_id": "decouverte_compir_1",
+  "skill_slug": "decouverte_compir",
+  "name": "Découverte COMPIR - Directeur Commercial PME",
+  "description": "Premier RDV de qualification avec un directeur commercial réservé. Pratiquez la méthode COMPIR pour découvrir les besoins profonds.",
+
+  "product": {
+    "name": "SalesForce Starter",
+    "tagline": "Le CRM qui s'adapte à votre croissance",
+    "how_it_works": {
+      "summary": "CRM cloud complet pour équipes commerciales de 5 à 50 personnes",
+      "key_features": [
+        "Pipeline visuel drag-and-drop",
+        "Automatisation des relances",
+        "Rapports et prévisions de vente",
+        "Intégration email et calendrier"
+      ]
+    },
+    "pricing": {
+      "entry_price": "25€/utilisateur/mois",
+      "popular_plan": "Professional à 75€/utilisateur/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "3500+ PME en France",
+      "average_growth": "+27% de CA après 1 an"
+    },
+    "testimonials": [
+      {
+        "name": "Laurent Petit",
+        "company": "TechVision (25 commerciaux)",
+        "quote": "On a enfin une vue claire sur notre pipe. Fini les surprises de fin de mois."
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Stéphane Moreau",
+      "role": "Directeur Commercial",
+      "company": "Négoce Plus",
+      "company_size": "85 employés dont 12 commerciaux",
+      "sector": "Distribution B2B",
+      "personality": "reserved",
+      "psychology": {
+        "type": "analytique",
+        "communication_style": "Aime les chiffres et les faits, méfiant envers les discours commerciaux",
+        "decision_speed": "Lent, besoin de preuves",
+        "priority": "ROI mesurable"
+      },
+      "current_situation": "Utilise Excel + emails pour suivre les ventes. Les commerciaux ont chacun leur méthode.",
+      "pain_points": [
+        "Aucune visibilité sur le pipeline global",
+        "Les prévisions de vente sont toujours fausses",
+        "Difficile de savoir qui relancer",
+        "Perte de deals par manque de suivi"
+      ],
+      "hidden_need": "Veut reprendre le contrôle sur son équipe sans passer pour un fllic",
+      "goals": [
+        "Atteindre 115% des objectifs cette année",
+        "Réduire le cycle de vente de 20%"
+      ]
+    }
+  },
+
+  "compir_elements": {
+    "contexte": {
+      "question_cle": "Comment est organisée votre équipe commerciale aujourd'hui?",
+      "infos_a_decouvrir": [
+        "Taille de l'équipe",
+        "Répartition géographique/sectorielle",
+        "Outils actuels",
+        "Process de vente"
+      ]
+    },
+    "objectifs": {
+      "question_cle": "Quels sont vos objectifs commerciaux pour cette année?",
+      "infos_a_decouvrir": [
+        "Objectifs chiffrés",
+        "Croissance attendue",
+        "Nouveaux marchés visés"
+      ]
+    },
+    "moyens": {
+      "question_cle": "Quels outils utilisez-vous actuellement pour piloter l'activité?",
+      "infos_a_decouvrir": [
+        "CRM actuel ou Excel",
+        "Outils de prospection",
+        "Reporting existant"
+      ]
+    },
+    "problemes": {
+      "question_cle": "Qu'est-ce qui vous empêche d'atteindre ces objectifs?",
+      "infos_a_decouvrir": [
+        "Douleurs quotidiennes",
+        "Frustrations",
+        "Échecs passés"
+      ]
+    },
+    "implications": {
+      "question_cle": "Quel impact ces problèmes ont sur votre activité?",
+      "infos_a_decouvrir": [
+        "Coût de l'inaction",
+        "Deals perdus",
+        "Temps gaspillé"
+      ]
+    },
+    "resultats": {
+      "question_cle": "À quoi ressemblerait la situation idéale?",
+      "infos_a_decouvrir": [
+        "Vision du succès",
+        "Critères de décision",
+        "Timeline souhaitée"
+      ]
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On a déjà essayé un CRM, ça n'a pas marché",
+      "type": "experience_negative",
+      "hidden": "Peur de revivre le même échec et de perdre la face devant la direction"
+    },
+    {
+      "objection": "Les commerciaux ne voudront jamais l'utiliser",
+      "type": "adoption",
+      "hidden": "Il n'a pas réussi à imposer le dernier outil"
+    },
+    {
+      "objection": "Ce n'est pas le bon moment, on est en pleine saison",
+      "type": "timing",
+      "hidden": "Il a peur du changement"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Premier RDV téléphonique suite à un webinar auquel le prospect s'est inscrit. Il a accepté le RDV mais reste prudent.",
+      "prospect_first_response": "Bonjour, oui on avait RDV. J'ai 30 minutes, pas plus."
+    },
+    "objectives": [
+      "Découvrir le contexte complet avec COMPIR",
+      "Identifier au moins 3 pain points clairs",
+      "Faire verbaliser les implications des problèmes",
+      "Obtenir un accord pour une démo personnalisée"
+    ],
+    "success_criteria": [
+      "COMPIR complété (6 dimensions explorées)",
+      "Le prospect a verbalisé ses problèmes",
+      "Démo planifiée avec les bons interlocuteurs"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "openness": "Assez bavard, répond aux questions",
+        "objections": "Peu d'objections, plutôt coopératif"
+      },
+      "medium": {
+        "openness": "Réponses courtes, il faut creuser",
+        "objections": "Teste le vendeur avec des objections"
+      },
+      "expert": {
+        "openness": "Très fermé, méfiant, responses monosyllabiques",
+        "objections": "Cherche à déstabiliser, compare aux concurrents"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Questions ouvertes (Quoi, Comment, Pourquoi)",
+    "Reformulation pour valider la compréhension",
+    "Silence après les questions (laisser répondre)",
+    "Creuser avec 'Pouvez-vous m'en dire plus?'",
+    "Quantifier les problèmes ('Combien ça vous coûte?')"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "merci pour cet échange", "on se rappelle"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

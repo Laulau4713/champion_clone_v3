@@ -1,0 +1,158 @@
+{
+  "template_id": "qualification_columbo_1",
+  "skill_slug": "qualification_columbo",
+  "name": "Columbo - Le prospect pressé",
+  "description": "Utilisez la technique Columbo pour qualifier un prospect qui n'a que 15 minutes et veut aller droit au prix.",
+
+  "product": {
+    "name": "CloudData Analytics",
+    "tagline": "Transformez vos données en décisions",
+    "how_it_works": {
+      "summary": "Plateforme BI self-service connectée à toutes vos sources de données",
+      "key_features": [
+        "Connexion à 200+ sources de données",
+        "Tableaux de bord drag-and-drop",
+        "Alertes intelligentes par IA",
+        "Partage sécurisé en un clic"
+      ]
+    },
+    "pricing": {
+      "entry_price": "49€/utilisateur/mois",
+      "popular_plan": "Pro à 99€/utilisateur/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "2000+ entreprises",
+      "time_saved": "80% de temps gagné sur le reporting"
+    },
+    "testimonials": [
+      {
+        "name": "Sophie Bernard",
+        "company": "RetailPlus",
+        "quote": "On produit nos rapports en 10 minutes au lieu de 2 jours."
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Nicolas Garnier",
+      "role": "Directeur Financier",
+      "company": "FastGrow",
+      "company_size": "90 employés, forte croissance",
+      "sector": "E-commerce",
+      "personality": "rushed_direct",
+      "psychology": {
+        "type": "driver",
+        "communication_style": "Impatient, veut des réponses rapides, coupe la parole",
+        "decision_speed": "Décide vite si convaincu",
+        "priority": "ROI et gain de temps"
+      },
+      "current_situation": "Noyé dans Excel. Passe 2 jours par semaine à faire du reporting manuel.",
+      "pain_points": [
+        "Le reporting prend trop de temps",
+        "Les données sont toujours en retard",
+        "Le CEO veut des dashboards temps réel",
+        "Erreurs fréquentes dans les consolidations"
+      ],
+      "hidden_need": "Il a promis au CEO des dashboards automatiques mais ne sait pas comment faire"
+    }
+  },
+
+  "columbo_technique": {
+    "principle": "Poser des questions apparemment naïves qui révèlent les vrais enjeux",
+    "key_phrases": [
+      "Juste une petite question...",
+      "Je me demandais...",
+      "Ah, c'est intéressant, et du coup...",
+      "Pardonnez ma curiosité, mais...",
+      "Une dernière chose...",
+      "Si je comprends bien..."
+    ],
+    "questions_types": [
+      {
+        "type": "Fausse naïveté",
+        "example": "Pardonnez-moi, mais pourquoi le CEO a besoin de ces dashboards maintenant?"
+      },
+      {
+        "type": "Retour sur un point",
+        "example": "Ah, vous disiez tout à l'heure que ça prenait 2 jours... C'est chaque semaine?"
+      },
+      {
+        "type": "Implication cachée",
+        "example": "Et quand vous n'avez pas les chiffres à temps, ça donne quoi?"
+      },
+      {
+        "type": "Question finale",
+        "example": "Une dernière chose... Si vous aviez ça demain, qu'est-ce qui changerait?"
+      }
+    ]
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Donnez-moi juste le prix, je n'ai pas le temps",
+      "type": "time_pressure",
+      "hidden": "Il veut un prix pour son benchmark mais n'a pas fait le travail de qualification"
+    },
+    {
+      "objection": "On compare avec Power BI et Tableau",
+      "type": "competition",
+      "hidden": "Son équipe IT pousse Power BI"
+    },
+    {
+      "objection": "On en reparle dans 3 mois",
+      "type": "timing",
+      "hidden": "Il ne sait pas comment convaincre le CEO d'investir"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Il vous a accordé 15 minutes entre deux réunions. Il veut un prix pour un benchmark.",
+      "prospect_first_response": "Bonjour, écoutez j'ai 15 minutes max. Vous pouvez me donner une idée de prix rapidement?"
+    },
+    "objectives": [
+      "Ralentir le prospect sans le braquer",
+      "Utiliser la technique Columbo pour creuser",
+      "Transformer le 'benchmark prix' en vraie qualification",
+      "Obtenir un RDV plus long pour une démo"
+    ],
+    "success_criteria": [
+      "Au moins 3 questions Columbo réussies",
+      "Besoin réel identifié au-delà du prix",
+      "RDV démo planifié"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "patience": "Se laisse embarquer dans la discussion",
+        "time": "Finit par avoir plus de temps"
+      },
+      "medium": {
+        "patience": "Impatient mais répond aux bonnes questions",
+        "time": "Reste sur ses 15 minutes"
+      },
+      "expert": {
+        "patience": "Très impatient, menace de raccrocher",
+        "time": "Coupe à 10 minutes"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Technique Columbo (fausse naïveté)",
+    "Ralentir sans braquer",
+    "Transformer une objection en question",
+    "Créer de la curiosité",
+    "Obtenir un engagement malgré la pression temps"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["je dois y aller", "on se rappelle", "merci au revoir"],
+    "min_exchanges": 6,
+    "max_exchanges": 15,
+    "auto_end_enabled": true
+  }
+}

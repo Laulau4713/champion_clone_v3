@@ -1,0 +1,122 @@
+{
+  "template_id": "cold_calling_1",
+  "skill_slug": "cold_calling",
+  "name": "Barrage Secrétaire - PME Tech",
+  "description": "Passer le barrage d'une assistante de direction pour joindre le DG.",
+
+  "product": {
+    "name": "CloudSec Pro",
+    "tagline": "La cybersécurité simple pour les PME",
+    "how_it_works": {
+      "summary": "Solution de sécurité cloud tout-en-un",
+      "key_features": ["Protection endpoint", "Backup cloud", "Formation phishing"]
+    },
+    "pricing": {
+      "entry_price": "8€/poste/mois",
+      "popular_plan": "Pro à 15€/poste/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "1200+ PME",
+      "attacks_blocked": "50 000+ menaces/mois"
+    },
+    "testimonials": [
+      {
+        "name": "Marc Dubois",
+        "company": "InnoTech",
+        "quote": "On a bloqué une attaque ransomware"
+      }
+    ]
+  },
+
+  "prospect": {
+    "gatekeeper": {
+      "name": "Nathalie",
+      "role": "Assistante de direction",
+      "personality": "protective",
+      "resistance_level": "medium",
+      "typical_responses": [
+        "M. Martin est en réunion",
+        "De la part de qui?",
+        "C'est à quel sujet?",
+        "Envoyez un email, il vous rappellera",
+        "On a déjà un prestataire informatique"
+      ]
+    },
+    "decision_maker": {
+      "name": "Philippe Martin",
+      "role": "Directeur Général",
+      "company": "LogiPro",
+      "company_size": "35 employés",
+      "sector": "Logistique",
+      "personality": "busy",
+      "current_situation": "Utilise un antivirus grand public, pas de backup formalisé",
+      "pain_points": [
+        "A eu une frayeur avec un email de phishing le mois dernier",
+        "Données clients sensibles (contrats transporteurs)",
+        "Pas d'équipe IT, c'est lui qui gère 'l'informatique'"
+      ],
+      "hidden_need": "Veut se protéger mais ne veut pas perdre de temps à gérer ça"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Il est en réunion toute la journée",
+      "type": "availability",
+      "hidden": "Standard pour filtrer les commerciaux"
+    },
+    {
+      "objection": "Envoyez un email",
+      "type": "brush_off",
+      "hidden": "L'email finira à la poubelle"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Vous appelez pour la première fois, vous avez trouvé le contact sur LinkedIn",
+      "gatekeeper_first_response": "LogiPro, bonjour?"
+    },
+    "objectives": [
+      "Passer le barrage de l'assistante",
+      "Obtenir le décideur en ligne OU un créneau de rappel",
+      "Si décideur en ligne: qualifier l'opportunité"
+    ],
+    "success_criteria": [
+      "RDV téléphonique fixé",
+      "OU décideur qualifié avec intérêt confirmé",
+      "ET relation préservée avec l'assistante"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "gatekeeper_resistance": "low",
+        "dm_availability": "Après 2-3 tentatives, l'assistante passe l'appel"
+      },
+      "medium": {
+        "gatekeeper_resistance": "medium",
+        "dm_availability": "Il faut une vraie raison pour être passé"
+      },
+      "expert": {
+        "gatekeeper_resistance": "high",
+        "dm_availability": "L'assistante protège farouchement, il faut être créatif"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Ton assuré et professionnel",
+    "Utiliser le prénom du décideur",
+    "Créer de l'urgence sans mentir",
+    "Valoriser le rôle du gatekeeper"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "bonne journée", "je vous laisse"],
+    "min_exchanges": 5,
+    "max_exchanges": 15,
+    "auto_end_enabled": true
+  }
+}

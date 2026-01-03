@@ -1,0 +1,108 @@
+{
+  "template_id": "cold_calling_3",
+  "skill_slug": "cold_calling",
+  "name": "Appel réussi - Prospect réceptif",
+  "description": "Le prospect est disponible et à l'écoute. Profitez-en pour qualifier et closer un RDV.",
+
+  "product": {
+    "name": "MarketAuto Pro",
+    "tagline": "Automatisez 80% de vos tâches marketing",
+    "how_it_works": {
+      "summary": "Solution SaaS d'automation marketing tout-en-un",
+      "key_features": ["Emails automatiques", "Scoring leads", "Analytics"]
+    },
+    "pricing": {
+      "entry_price": "49€/mois",
+      "popular_plan": "Pro à 149€/mois",
+      "free_trial": "14 jours"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients_count": "2000+ entreprises",
+      "avg_result": "+80% de leads qualifiés"
+    },
+    "case_study": {
+      "client": "AgenceWeb42",
+      "result": "+120% de leads en 3 mois"
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Marie Dubois",
+      "role": "Responsable Marketing",
+      "company": "InnoStart",
+      "company_size": "28 employés",
+      "sector": "SaaS B2B",
+      "personality": "curious",
+      "current_situation": "Vient de lever des fonds, doit accélérer l'acquisition",
+      "pain_points": [
+        "Équipe marketing de 2 personnes débordée",
+        "Trop de tâches manuelles",
+        "Difficile de prouver le ROI marketing"
+      ],
+      "hidden_need": "Veut montrer des résultats rapides aux investisseurs"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On utilise déjà Mailchimp",
+      "type": "incumbent",
+      "hidden": "Pas satisfaite mais c'est déjà en place"
+    },
+    {
+      "objection": "C'est quoi la différence avec HubSpot?",
+      "type": "competition",
+      "hidden": "A regardé HubSpot mais trouve ça cher"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "La prospect a vu votre post LinkedIn sur l'automation marketing. Elle est curieuse.",
+      "prospect_first_response": "Bonjour, oui c'est Marie Dubois. Vous êtes de MarketAuto c'est ça? J'ai vu votre publication hier."
+    },
+    "objectives": [
+      "Qualifier la situation actuelle (outils, équipe, budget)",
+      "Identifier les pain points prioritaires",
+      "Closer un RDV de démonstration",
+      "Identifier les autres décideurs si applicable"
+    ],
+    "success_criteria": [
+      "RDV démo planifié avec date et heure",
+      "Au moins 2 pain points identifiés",
+      "Budget approximatif ou process de décision compris"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "receptivity": "Très ouverte, pose des questions",
+        "cooperation_level": "high"
+      },
+      "medium": {
+        "receptivity": "Intéressée mais veut comparer",
+        "cooperation_level": "medium"
+      },
+      "expert": {
+        "receptivity": "Curieuse mais teste votre expertise",
+        "cooperation_level": "low"
+      }
+    }
+  },
+
+  "qualification_questions": [
+    "Quels outils utilisez-vous actuellement?",
+    "Combien de leads générez-vous par mois?",
+    "Qui d'autre serait impliqué dans la décision?",
+    "Quel est votre délai pour mettre en place une solution?"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "merci, à bientôt", "on se voit la semaine prochaine"],
+    "min_exchanges": 6,
+    "max_exchanges": 15,
+    "auto_end_enabled": true
+  }
+}

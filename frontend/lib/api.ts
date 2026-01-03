@@ -21,6 +21,7 @@ import type {
   VoiceSessionSummary,
   VoiceConfig,
   UserProgress,
+  SessionReport,
 } from '@/types';
 
 const api = axios.create({
@@ -213,9 +214,8 @@ export const voiceAPI = {
 
   // Session management
   startSession: (data: {
-    level: DifficultyLevel;
-    champion_id?: number;
-    scenario_id?: string;
+    skill_slug: string;
+    sector_slug?: string;
   }) => api.post<VoiceSessionStartResponse>('/voice/session/start', data),
 
   sendMessage: (sessionId: number, data: {
@@ -231,6 +231,10 @@ export const voiceAPI = {
 
   getSession: (sessionId: number) =>
     api.get(`/voice/session/${sessionId}`),
+
+  // Report (Phase 3)
+  getSessionReport: (sessionId: number) =>
+    api.get<SessionReport>(`/voice/session/${sessionId}/report`),
 
   // Audio
   textToSpeech: (text: string, voiceId?: string) =>

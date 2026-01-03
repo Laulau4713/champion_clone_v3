@@ -76,19 +76,19 @@ lsof -i:3002  # Frontend
 ### Admin (accès complet + panel admin)
 ```
 Email:    admin@champion-test.com
-Password: Admin123
+Password: Admin123!
 ```
 
 ### Premium (accès complet sans admin)
 ```
 Email:    premium@champion-test.com
-Password: Premium123
+Password: Premium123!
 ```
 
 ### Essai gratuit (accès limité, 0 sessions utilisées)
 ```
 Email:    trial@champion-test.com
-Password: Trial123
+Password: Trial123!
 ```
 
 ---
@@ -100,10 +100,15 @@ Password: Trial123
 # Health check
 curl http://localhost:8000/health
 
-# Login (récupérer token)
-curl -X POST http://localhost:8000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@champion-test.com","password":"Admin123"}'
+# Login (récupérer token) - utiliser Python car le ! pose problème avec curl/bash
+python3 -c "
+import requests
+r = requests.post('http://localhost:8000/auth/login', json={
+    'email': 'admin@champion-test.com',
+    'password': 'Admin123!'
+})
+print(r.json())
+"
 ```
 
 ### Reset sessions trial
@@ -140,7 +145,12 @@ npm run build
 
 ### "Port already in use"
 ```bash
+# Méthode standard
 lsof -ti:PORT | xargs kill -9
+
+# Si processus root (nécessite sudo)
+sudo fuser -k 8000/tcp
+sudo fuser -k 3002/tcp
 ```
 
 ### Frontend affiche que du HTML
@@ -154,5 +164,47 @@ Token expiré. Se reconnecter via /login.
 cd /home/laurent/champion-clone-dev/backend
 rm champion_clone.db
 python main.py  # Recréera la DB
-# Puis recréer les comptes de test
+# Puis recréer les comptes de test (voir ci-dessous)
+```
+
+### Recréer/reset les comptes de test
+```bash
+cd /home/laurent/champion-clone-dev/backend
+source venv/bin/activate
+python3 << 'EOF'
+import asyncio
+from database import AsyncSessionLocal
+from models import User
+from sqlalchemy import select
+from services.auth import hash_password
+
+async def reset_accounts():
+    async with AsyncSessionLocal() as db:
+        accounts = [
+            ('admin@champion-test.com', 'Admin123!', 'pro', 'admin'),
+            ('premium@champion-test.com', 'Premium123!', 'pro', 'user'),
+            ('trial@champion-test.com', 'Trial123!', 'free', 'user'),
+        ]
+        for email, pwd, plan, role in accounts:
+            result = await db.execute(select(User).where(User.email == email))
+            user = result.scalar_one_or_none()
+            if user:
+                user.hashed_password = hash_password(pwd)
+                print(f"✓ Updated: {email}")
+            else:
+                new_user = User(
+                    email=email,
+                    hashed_password=hash_password(pwd),
+                    full_name=email.split('@')[0].title(),
+                    subscription_plan=plan,
+                    role=role,
+                    is_active=True
+                )
+                db.add(new_user)
+                print(f"✓ Created: {email}")
+        await db.commit()
+        print("Done!")
+
+asyncio.run(reset_accounts())
+EOF
 ```

@@ -1,0 +1,164 @@
+{
+  "template_id": "objections_cnz_timing",
+  "skill_slug": "objections_cnz",
+  "name": "Objections CNZ - Ce n'est pas le bon moment",
+  "description": "Maîtrisez la méthode CNZ face à l'objection timing, souvent un prétexte pour éviter une décision.",
+
+  "product": {
+    "name": "SecureFlow",
+    "tagline": "La cybersécurité proactive pour PME",
+    "how_it_works": {
+      "summary": "Solution de sécurité endpoint + backup + formation anti-phishing tout-en-un",
+      "key_features": [
+        "Protection ransomware temps réel",
+        "Backup cloud chiffré automatique",
+        "Simulation phishing pour former les équipes",
+        "SOC externalisé 24/7"
+      ]
+    },
+    "pricing": {
+      "entry_price": "12€/poste/mois",
+      "popular_plan": "Pro à 22€/poste/mois avec SOC",
+      "implementation": "Gratuite, opérationnel en 48h"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "2000+ PME protégées",
+      "attacks_blocked": "15000+ attaques bloquées/mois",
+      "recovery_time": "Récupération données en 2h max vs 3 semaines sans protection"
+    },
+    "urgency_data": {
+      "stat_1": "60% des PME victimes de cyberattaque ferment dans les 6 mois",
+      "stat_2": "Le coût moyen d'une attaque ransomware : 150K€ pour une PME",
+      "stat_3": "Les attaques ont augmenté de 300% en 2 ans"
+    }
+  },
+
+  "cnz_methodology": {
+    "for_timing_objection": {
+      "creuser_examples": [
+        "Qu'est-ce qui fait que ce n'est pas le bon moment exactement ?",
+        "Qu'est-ce qui changerait dans 3 mois ?",
+        "Quelles sont les priorités actuelles ?",
+        "Y a-t-il un événement particulier que vous attendez ?"
+      ],
+      "neutraliser_examples": [
+        "Je comprends, vous avez beaucoup de projets en cours...",
+        "C'est vrai que Q4 est souvent chargé...",
+        "Reporter peut sembler plus simple..."
+      ],
+      "zoomer_examples": [
+        "Le problème c'est que les attaquants n'attendent pas. 60% des PME attaquées ferment dans les 6 mois.",
+        "Une attaque pendant votre pic d'activité serait catastrophique. On peut être opérationnel en 48h sans perturber.",
+        "Si on attend 3 mois, ce sont 3 mois où vous êtes exposés. Une seule attaque coûte 150K€ en moyenne."
+      ]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Stéphane Leroux",
+      "role": "DSI",
+      "company": "MediLab",
+      "company_size": "120 employés, 45 postes informatiques",
+      "sector": "Laboratoire d'analyses médicales",
+      "personality": "procrastinator",
+      "psychology": {
+        "type": "sécuritaire",
+        "communication_style": "Évite les décisions, reporte toujours",
+        "decision_drivers": ["Ne pas prendre de risques", "Avoir le temps de bien faire"],
+        "hidden_concern": "A peur de mal choisir et d'être blâmé"
+      },
+      "current_situation": "Antivirus basique, pas de backup formalisé, données patients sensibles",
+      "pain_points": [
+        "Réglementation HDS de plus en plus stricte",
+        "Un collègue a cliqué sur un phishing le mois dernier (pas de dégâts mais frayeur)",
+        "Backup sur disque externe une fois par semaine seulement"
+      ],
+      "hidden_objection": "A eu des problèmes avec le dernier prestataire IT, ne veut pas revivre ça"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On est en pleine période de rush, ce n'est vraiment pas le moment",
+      "type": "timing_busy",
+      "hidden_meaning": "Je n'ai pas envie de gérer un projet de plus",
+      "cnz_response": {
+        "creuser": "Je comprends le rush. Qu'est-ce qui vous prend le plus de temps en ce moment ?",
+        "neutraliser": "Justement, c'est pendant les périodes chargées qu'on est le plus vulnérable et le moins vigilant...",
+        "zoomer": "Notre implémentation prend 2h de votre temps, pas plus. On gère tout. Et si une attaque arrive pendant votre rush, là vous perdez des semaines."
+      }
+    },
+    {
+      "objection": "On va voir ça en janvier avec les nouveaux budgets",
+      "type": "timing_budget",
+      "hidden_meaning": "Je repousse la décision",
+      "cnz_response": {
+        "creuser": "Qu'est-ce qui vous empêche de lancer maintenant et de budgétiser en janvier ?",
+        "neutraliser": "Les cycles budgétaires, je comprends...",
+        "zoomer": "Entre maintenant et janvier, c'est 3 mois d'exposition. On peut démarrer avec le premier mois offert, le temps que les budgets soient validés."
+      }
+    },
+    {
+      "objection": "On a d'autres priorités IT en ce moment",
+      "type": "timing_priorities",
+      "hidden_meaning": "La sécurité n'est pas assez prioritaire",
+      "cnz_response": {
+        "creuser": "Quelles sont ces priorités ? Comment la sécurité s'inscrit dans votre roadmap ?",
+        "neutraliser": "C'est vrai que la sécurité passe souvent après les projets visibles...",
+        "zoomer": "Le problème c'est qu'une attaque impacte toutes vos autres priorités. Un ransomware stoppe tout pendant 3 semaines. Vos projets sont en suspens."
+      }
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Le prospect a été contacté après qu'un labo concurrent ait été victime d'un ransomware (article de presse). Il est conscient du risque mais repousse.",
+      "prospect_first_response": "Oui j'ai vu pour le labo Pasteur... c'est inquiétant. Mais là on est débordés avec l'accréditation COFRAC, ce n'est vraiment pas le moment d'ajouter un projet."
+    },
+    "objectives": [
+      "Creuser pour comprendre la vraie raison du report",
+      "Neutraliser la peur du changement",
+      "Créer l'urgence sans faire peur",
+      "Proposer une approche qui ne perturbe pas"
+    ],
+    "success_criteria": [
+      "Faire réaliser le coût de l'inaction",
+      "Découvrir l'objection cachée (mauvaise expérience)",
+      "Obtenir un démarrage rapide ou une date ferme"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "resistance": "Accepte après avoir compris l'urgence",
+        "urgency_awareness": "Réceptif aux arguments risque"
+      },
+      "medium": {
+        "resistance": "Continue à reporter, trouve des excuses",
+        "urgency_awareness": "Minimise le risque 'ça n'arrive qu'aux autres'"
+      },
+      "expert": {
+        "resistance": "Impossible à bouger, rationalise le report",
+        "urgency_awareness": "Nie le risque ou l'accepte fataliste"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Creuser la vraie raison du timing",
+    "Quantifier le coût du retard",
+    "Créer l'urgence avec des faits (pas de la peur)",
+    "Proposer une implémentation non perturbante",
+    "Transformer 'plus tard' en date précise",
+    "Offrir quelque chose pour débloquer (mois offert, POC)"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok, on peut commencer rapidement", "envoyez-moi un devis, on va débloquer", "je valide avec la direction cette semaine"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

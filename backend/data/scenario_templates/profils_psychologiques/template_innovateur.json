@@ -1,0 +1,161 @@
+{
+  "template_id": "profils_psy_innovateur",
+  "skill_slug": "profils_psychologiques",
+  "name": "Profil Innovateur - L'early adopter",
+  "description": "Adaptez votre discours à un prospect passionné par l'innovation, qui veut être le premier à adopter les nouvelles technologies.",
+
+  "product": {
+    "name": "AIAssist Pro",
+    "tagline": "L'IA qui réinvente votre métier",
+    "how_it_works": {
+      "summary": "Suite d'agents IA pour automatiser les tâches répétitives et augmenter la productivité",
+      "key_features": [
+        "Agents IA entraînés sur vos données",
+        "Automatisation des emails et documents",
+        "Analyse prédictive par machine learning",
+        "Intégration API avec tous vos outils"
+      ]
+    },
+    "pricing": {
+      "entry_price": "200€/mois (5 users)",
+      "popular_plan": "Scale à 800€/mois (users illimités)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "500+ entreprises innovantes",
+      "early_adopters": "Premiers clients : Doctolib, Alan, Qonto",
+      "automation": "70% des tâches automatisables"
+    },
+    "testimonials": [
+      {
+        "name": "Thomas Girard, CTO",
+        "company": "TechStartup (80 employés)",
+        "quote": "On a 6 mois d'avance sur nos concurrents grâce à AIAssist. Game changer."
+      }
+    ]
+  },
+
+  "profil_psychologique": {
+    "type": "innovateur",
+    "nom_complet": "L'Innovateur (I de SÉDAIÉ)",
+    "caracteristiques": {
+      "besoin_principal": "Être à la pointe, avoir un avantage compétitif",
+      "peur_principale": "Être dépassé, rater une opportunité",
+      "comportement_achat": "Rapide si la techno est excitante, curieux",
+      "question_cle": "Qu'est-ce que ça a de vraiment nouveau?",
+      "signaux": ["Pose des questions techniques", "Parle de ses autres outils innovants", "Lit les blogs tech"]
+    },
+    "ce_qui_le_convainc": [
+      "Nouveauté et différenciation",
+      "Technologie de pointe",
+      "Roadmap produit ambitieuse",
+      "Être parmi les premiers utilisateurs",
+      "Cas d'usage innovants"
+    ],
+    "ce_qui_le_fait_fuir": [
+      "Solution traditionnelle",
+      "Manque d'ambition technique",
+      "Équipe non tech-savvy",
+      "Stagnation du produit",
+      "Technologie datée"
+    ],
+    "adaptation_discours": {
+      "ton": "Enthousiaste, technique, visionnaire",
+      "mots_cles": ["innovation", "IA", "futur", "disruption", "avance", "beta", "roadmap"],
+      "structure": "Parler techno et vision avant les features",
+      "eviter": ["Être trop classique", "Se concentrer sur les basics", "Manquer de passion tech"]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Julien Lemaire",
+      "role": "Directeur de l'Innovation",
+      "company": "AssurTech",
+      "company_size": "500 employés, groupe d'assurance en transformation",
+      "sector": "Assurance",
+      "personality": "innovateur",
+      "psychology": {
+        "type": "innovateur",
+        "communication_style": "Enthousiaste, technique, parle vite, beaucoup d'idées",
+        "decision_speed": "Rapide si excité par la techno",
+        "priority": "Faire de son entreprise un leader de l'innovation assurance"
+      },
+      "current_situation": "A lancé plusieurs POCs IA, cherche la prochaine grande innovation",
+      "pain_points": [
+        "Les POCs ne passent pas à l'échelle",
+        "Difficile de convaincre le COMEX traditionnel",
+        "Besoin de quick wins pour prouver la valeur de l'IA",
+        "Équipe innovation petite (5 personnes)"
+      ],
+      "hidden_need": "Veut prouver que son poste est indispensable avec un succès visible"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On a déjà testé l'IA générative, c'était décevant",
+      "type": "past_experience",
+      "response_approach": "Expliquer ce qui différencie vraiment votre approche"
+    },
+    {
+      "objection": "Qu'est-ce que vous avez que OpenAI n'a pas?",
+      "type": "competition_tech",
+      "response_approach": "Spécialisation métier et intégration vs API générique"
+    },
+    {
+      "objection": "Le COMEX ne comprend pas l'IA",
+      "type": "internal_sell",
+      "response_approach": "Proposer d'aider à construire le business case"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Il vous a contacté après avoir vu votre démo à VivaTech. Très enthousiaste mais aussi très exigeant techniquement.",
+      "prospect_first_response": "Salut! J'ai adoré votre démo à VivaTech. Le truc avec les agents autonomes, c'est vraiment vous qui avez développé ça? Comment ça marche sous le capot?"
+    },
+    "objectives": [
+      "Impressionner techniquement",
+      "Montrer la vision produit",
+      "Identifier un cas d'usage quick win",
+      "Positionner un POC innovant"
+    ],
+    "success_criteria": [
+      "Crédibilité technique établie",
+      "Enthousiasme du prospect maintenu",
+      "POC ou démo technique avancée planifié"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "technical_depth": "Questions standards sur l'IA",
+        "skepticism": "Enthousiaste, facile à convaincre"
+      },
+      "medium": {
+        "technical_depth": "Questions pointues, compare aux concurrents",
+        "skepticism": "A déjà testé des solutions concurrentes"
+      },
+      "expert": {
+        "technical_depth": "Expert IA lui-même, challenge tout",
+        "skepticism": "Très exigeant, a eu des échecs"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Parler le langage tech",
+    "Montrer la vision long terme",
+    "Différencier par l'innovation",
+    "Proposer un POC excitant",
+    "Créer de l'exclusivité (beta, early access)"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["trop cool", "on fait un POC", "envoie-moi la doc technique"],
+    "min_exchanges": 8,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

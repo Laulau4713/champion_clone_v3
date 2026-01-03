@@ -1,0 +1,172 @@
+{
+  "template_id": "argumentation_bac_1",
+  "skill_slug": "argumentation_bac",
+  "name": "Argumentation BAC - Solution RH devant un sceptique",
+  "description": "Structurez votre argumentation Bénéfices-Avantages-Caractéristiques face à un prospect sceptique qui challenge chaque point.",
+
+  "product": {
+    "name": "HRFlow",
+    "tagline": "La gestion RH nouvelle génération",
+    "how_it_works": {
+      "summary": "SIRH complet avec IA pour le recrutement, la formation et la gestion des talents",
+      "key_features": [
+        "ATS avec matching IA (caractéristique)",
+        "Onboarding digital automatisé (caractéristique)",
+        "People Analytics temps réel (caractéristique)",
+        "Mobile-first (caractéristique)"
+      ]
+    },
+    "pricing": {
+      "entry_price": "5€/employé/mois",
+      "popular_plan": "Pro à 10€/employé/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "1200+ entreprises",
+      "time_saved": "40% de temps gagné sur le recrutement",
+      "retention": "+15% de rétention des talents"
+    },
+    "testimonials": [
+      {
+        "name": "Christine Lemaire, DRH",
+        "company": "TechServices (400 employés)",
+        "quote": "On recrute 2x plus vite avec une meilleure qualité. Le matching IA fait vraiment la différence."
+      }
+    ]
+  },
+
+  "bac_methodology": {
+    "explanation": "BAC = Bénéfices > Avantages > Caractéristiques. On part du client (B), pas du produit (C).",
+    "structure": {
+      "benefice": "Ce que le client gagne concrètement (résultat business)",
+      "avantage": "Ce que le produit permet de faire de mieux",
+      "caracteristique": "La fonctionnalité technique qui permet ça"
+    },
+    "examples": [
+      {
+        "caracteristique": "Notre ATS utilise le matching par IA",
+        "avantage": "Ce qui vous permet de présélectionner automatiquement les meilleurs profils",
+        "benefice": "Vous recrutez 2x plus vite et réduisez le turnover de 15%"
+      },
+      {
+        "caracteristique": "L'onboarding est 100% digital et personnalisable",
+        "avantage": "Les nouveaux sont opérationnels dès J1, sans paperasse",
+        "benefice": "Vous réduisez de 50% le temps d'intégration et améliorez la rétention"
+      },
+      {
+        "caracteristique": "Les People Analytics sont en temps réel",
+        "avantage": "Vous détectez les risques de départ avant qu'il soit trop tard",
+        "benefice": "Vous économisez 20K€ par départ évité"
+      }
+    ],
+    "common_mistakes": [
+      "Commencer par les caractéristiques (technique avant le besoin)",
+      "Confondre avantage et bénéfice (le bénéfice est chiffrable)",
+      "Ne pas lier au contexte spécifique du prospect"
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Olivier Marchand",
+      "role": "Directeur Général",
+      "company": "IndustrieService",
+      "company_size": "250 employés, multi-sites",
+      "sector": "Services industriels",
+      "personality": "skeptical_analytical",
+      "psychology": {
+        "type": "analytique",
+        "communication_style": "Challenge chaque affirmation, demande des preuves",
+        "decision_speed": "Lent, veut comprendre en détail",
+        "priority": "ROI prouvable, pas de bullshit"
+      },
+      "current_situation": "RH en sous-effectif, recrutement laborieux, beaucoup de turnover",
+      "pain_points": [
+        "Turnover de 25% qui coûte une fortune",
+        "4 mois en moyenne pour recruter un profil",
+        "La DRH est débordée par l'admin",
+        "Aucune visibilité sur les risques RH"
+      ],
+      "hidden_need": "Veut des preuves avant de croire aux promesses"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Les autres aussi promettent ça, qu'est-ce qui prouve que c'est vrai?",
+      "type": "proof_needed",
+      "bac_response": {
+        "benefice": "Nos clients mesurent en moyenne +15% de rétention dans les 6 mois",
+        "avantage": "Parce qu'on détecte les signaux faibles de désengagement",
+        "caracteristique": "Grâce à notre algorithme de prédiction du turnover"
+      }
+    },
+    {
+      "objection": "On a déjà essayé un SIRH, personne ne l'utilisait",
+      "type": "adoption",
+      "bac_response": {
+        "benefice": "95% d'adoption chez nos clients en 3 mois",
+        "avantage": "Parce que l'interface est pensée mobile-first",
+        "caracteristique": "Application native iOS/Android, 2 clics max"
+      }
+    },
+    {
+      "objection": "C'est trop cher pour ce que c'est",
+      "type": "price",
+      "bac_response": {
+        "benefice": "ROI positif dès le 3ème mois en moyenne",
+        "avantage": "Parce que vous économisez sur le temps recrutement et le turnover",
+        "caracteristique": "Automatisation de 80% des tâches admin RH"
+      }
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Il a accepté une démo mais reste très sceptique. 'J'ai 30 minutes, allez droit au but.'",
+      "prospect_first_response": "Bon, on a beaucoup de RH qui nous contactent. Qu'est-ce que vous avez de différent? Et pas de bullshit marketing s'il vous plaît."
+    },
+    "objectives": [
+      "Structurer chaque argument en BAC",
+      "Répondre aux objections avec la méthode BAC",
+      "Prouver chaque bénéfice annoncé",
+      "Obtenir un engagement malgré le scepticisme"
+    ],
+    "success_criteria": [
+      "Au moins 3 arguments BAC bien structurés",
+      "Objections traitées avec preuves",
+      "Engagement pour une démo détaillée ou POC"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "skepticism": "Sceptique mais ouvert aux preuves",
+        "challenge": "Questions standards"
+      },
+      "medium": {
+        "skepticism": "Challenge tout, demande des références",
+        "challenge": "Compare aux concurrents"
+      },
+      "expert": {
+        "skepticism": "Très agressif, cherche la faille",
+        "challenge": "Remet en question les chiffres"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Structurer en Bénéfice → Avantage → Caractéristique",
+    "Chiffrer les bénéfices",
+    "Lier aux enjeux spécifiques du prospect",
+    "Avoir des preuves pour chaque affirmation",
+    "Ne pas survendre, rester factuel"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["intéressant, montrez-moi une démo", "je reste sceptique mais...", "envoyez-moi des références"],
+    "min_exchanges": 8,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

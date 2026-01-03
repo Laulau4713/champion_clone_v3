@@ -1,0 +1,116 @@
+{
+  "template_id": "ecoute_active_2",
+  "skill_slug": "ecoute_active",
+  "name": "Découverte - Prospect réservé",
+  "description": "Le prospect répond par oui/non. Votre défi est de poser les bonnes questions et créer un climat de confiance pour qu'il s'ouvre.",
+
+  "product": {
+    "name": "CloudSec Pro",
+    "tagline": "La cybersécurité simple pour les PME",
+    "how_it_works": {
+      "summary": "Solution de sécurité cloud tout-en-un",
+      "key_features": ["Protection endpoint", "Backup cloud", "Formation phishing"]
+    },
+    "pricing": {
+      "entry_price": "8€/poste/mois"
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Catherine Leroy",
+      "role": "DAF",
+      "company": "ComptaPlus",
+      "company_size": "25 employés",
+      "sector": "Cabinet comptable",
+      "personality": "reserved",
+      "current_situation": "Données clients très sensibles, antivirus basique, pas de backup formalisé",
+      "pain_points": [
+        "Inquiète pour la sécurité des données clients",
+        "Obligation de conformité qui arrive",
+        "Budget IT limité"
+      ],
+      "hidden_need": "Son confrère s'est fait pirater, elle est terrifiée mais ne veut pas le montrer",
+      "talking_style": "Réponses courtes, attend qu'on lui pose les questions, observe beaucoup"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On verra plus tard",
+      "type": "timing",
+      "hidden": "A besoin d'être rassurée sur l'urgence"
+    },
+    {
+      "objection": "C'est notre prestataire IT qui gère",
+      "type": "delegation",
+      "hidden": "Ne fait pas confiance au prestataire mais ne sait pas quoi faire"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "La prospect est fermée au départ. Il faut créer la confiance avant d'avoir des vraies réponses.",
+      "prospect_first_response": "Bonjour. Oui, asseyez-vous. Vous vouliez me parler de cybersécurité c'est ça?"
+    },
+    "objectives": [
+      "Faire s'ouvrir un prospect réservé",
+      "Utiliser les silences à bon escient",
+      "Poser des questions ouvertes qui engagent",
+      "Détecter les signaux non-verbaux (pauses, hésitations)"
+    ],
+    "success_criteria": [
+      "Le prospect passe de réponses courtes à des explications",
+      "Au moins un pain point profond découvert",
+      "Création d'un lien de confiance visible",
+      "Le prospect pose des questions à son tour"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "openness_threshold": "S'ouvre après 2-3 bonnes questions",
+        "cooperation_level": "high"
+      },
+      "medium": {
+        "openness_threshold": "Reste fermée longtemps, il faut persévérer",
+        "cooperation_level": "medium"
+      },
+      "expert": {
+        "openness_threshold": "Très méfiante, faut vraiment gagner sa confiance",
+        "cooperation_level": "low"
+      }
+    }
+  },
+
+  "opening_techniques": [
+    {
+      "name": "Question ouverte contextuelle",
+      "example": "Comment gérez-vous la sécurité des données clients aujourd'hui?"
+    },
+    {
+      "name": "Silence stratégique",
+      "example": "Attendre 3 secondes après une réponse courte"
+    },
+    {
+      "name": "Partage d'expérience similaire",
+      "example": "Un cabinet comme le vôtre nous disait récemment..."
+    },
+    {
+      "name": "Question sur les émotions",
+      "example": "Qu'est-ce qui vous inquiète le plus à ce sujet?"
+    }
+  ],
+
+  "indicators_of_opening": [
+    "Réponses qui s'allongent",
+    "Le prospect pose des questions",
+    "Partage d'anecdotes personnelles",
+    "Changement de posture (moins sur la défensive)"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "on en reparle", "merci de votre visite"],
+    "min_exchanges": 8,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "product_id": "saas_marketing_1",
+  "name": "MarketAuto Pro",
+  "tagline": "Automatisez 80% de vos tâches marketing",
+  "category": "SaaS B2B",
+
+  "how_it_works": {
+    "summary": "Solution SaaS d'automation marketing tout-en-un. Centralise emails, landing pages, scoring leads et analytics dans une seule plateforme.",
+    "key_features": [
+      "Emails automatiques personnalisés",
+      "Scoring leads par IA",
+      "Landing pages no-code",
+      "Analytics et attribution",
+      "Workflows automatisés"
+    ],
+    "technical_requirements": "Navigateur web, connexion API CRM possible",
+    "implementation_time": "2-5 jours selon complexité"
+  },
+
+  "integrations": [
+    "Salesforce",
+    "HubSpot",
+    "Pipedrive",
+    "Zapier",
+    "API REST",
+    "Google Analytics",
+    "LinkedIn Ads"
+  ],
+
+  "support": {
+    "onboarding": "Formation 2h incluse",
+    "support": "Chat + Email 9h-18h",
+    "documentation": "Base de connaissances complète",
+    "csm": "Customer Success Manager dédié (plan Pro)"
+  },
+
+  "pricing": {
+    "model": "par_utilisateur",
+    "entry_price": "49€/mois",
+    "popular_plan": "Pro à 149€/mois",
+    "enterprise": "Sur devis",
+    "engagement": "Mensuel ou annuel (-20%)",
+    "free_trial": "14 jours sans CB"
+  },
+
+  "proof": {
+    "testimonials": [
+      {
+        "name": "Sophie Martin",
+        "role": "Directrice Marketing",
+        "company": "TechCorp (150 employés)",
+        "quote": "On a doublé nos leads qualifiés en 3 mois",
+        "result": "+120% de leads, -40% de temps admin"
+      },
+      {
+        "name": "Marc Leblanc",
+        "role": "CMO",
+        "company": "StartupFlow (45 employés)",
+        "quote": "Enfin un outil simple qui fait tout ce dont on a besoin",
+        "result": "ROI positif en 6 semaines"
+      }
+    ],
+    "case_studies": [
+      {
+        "client": "LogiStart",
+        "sector": "E-commerce",
+        "problem": "Équipe marketing de 2 personnes débordée",
+        "solution": "Automatisation des emails et nurturing",
+        "results": {
+          "leads": "+85%",
+          "time_saved": "15h/semaine",
+          "roi_months": 2
+        }
+      }
+    ],
+    "stats": {
+      "clients_count": "2000+ entreprises",
+      "satisfaction": "4.8/5 sur G2",
+      "nps": "72",
+      "uptime": "99.9%"
+    },
+    "notable_clients": ["BlaBlaCar", "Doctolib", "ManoMano", "Qonto"]
+  },
+
+  "competition": {
+    "main_competitors": [
+      {
+        "name": "HubSpot",
+        "positioning": "Leader établi, très complet",
+        "strengths": ["Écosystème complet", "Brand recognition"],
+        "weaknesses": ["Prix élevé", "Complexe à configurer", "Support US"],
+        "price_comparison": "2-3x plus cher à fonctionnalités égales"
+      },
+      {
+        "name": "Brevo (ex-Sendinblue)",
+        "positioning": "Alternative française accessible",
+        "strengths": ["Prix attractif", "Made in France"],
+        "weaknesses": ["Moins de fonctionnalités avancées", "Pas de CRM natif"],
+        "price_comparison": "Similaire mais moins de features"
+      }
+    ],
+    "our_differentiator": "Seule solution qui combine automation marketing ET IA prédictive à un prix PME. Setup en 2 jours vs 2 semaines chez les concurrents.",
+    "switch_cost": {
+      "migration_time": "1-2 jours",
+      "data_import": "Import automatique depuis HubSpot, Mailchimp, etc.",
+      "training_needed": "2h de formation suffisent",
+      "risk": "Migration assistée gratuite, on récupère vos données"
+    }
+  }
+}

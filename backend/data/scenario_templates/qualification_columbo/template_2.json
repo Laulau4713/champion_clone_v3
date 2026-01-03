@@ -1,0 +1,163 @@
+{
+  "template_id": "qualification_columbo_2",
+  "skill_slug": "qualification_columbo",
+  "name": "Columbo - Le prospect méfiant",
+  "description": "Utilisez la technique Columbo pour percer les défenses d'un prospect qui a été échaudé par des commerciaux.",
+
+  "product": {
+    "name": "TeamSync Pro",
+    "tagline": "La collaboration qui booste la productivité",
+    "how_it_works": {
+      "summary": "Suite collaborative complète : messagerie, visio, gestion de projets, et partage de documents",
+      "key_features": [
+        "Messagerie instantanée et canaux thématiques",
+        "Visioconférence HD jusqu'à 500 participants",
+        "Gestion de projets avec Kanban et Gantt",
+        "Stockage sécurisé 1To par utilisateur"
+      ]
+    },
+    "pricing": {
+      "entry_price": "8€/utilisateur/mois",
+      "popular_plan": "Business à 15€/utilisateur/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "5000+ entreprises",
+      "adoption_rate": "95% d'adoption en moyenne"
+    },
+    "testimonials": [
+      {
+        "name": "Anne Lefebvre",
+        "company": "DigitalAgency (80 personnes)",
+        "quote": "Enfin un outil que tout le monde utilise vraiment!"
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Mathieu Blanc",
+      "role": "Directeur Général",
+      "company": "ConseilPlus",
+      "company_size": "45 consultants, full remote",
+      "sector": "Conseil en stratégie",
+      "personality": "suspicious",
+      "psychology": {
+        "type": "analytique",
+        "communication_style": "Méfiant, attend des preuves, a été déçu par le passé",
+        "decision_speed": "Très lent, échaudé par de mauvaises expériences",
+        "priority": "Ne pas refaire la même erreur"
+      },
+      "current_situation": "Utilise Slack + Zoom + Trello + Dropbox. Chaque outil coûte cher et rien n'est intégré.",
+      "pain_points": [
+        "Les outils actuels coûtent 25€/personne en cumulé",
+        "Rien n'est intégré, les équipes perdent du temps",
+        "Le dernier changement d'outil a été un désastre (résistance au changement)",
+        "Les consultants sont difficiles à faire changer"
+      ],
+      "hidden_need": "Il veut réduire les coûts mais a peur de l'échec",
+      "bad_experience": {
+        "what_happened": "Migration vers Teams il y a 2 ans, abandon après 3 mois",
+        "why_failed": "Mauvaise conduite du changement, outil trop complexe",
+        "consequence": "Il ne fait plus confiance aux commerciaux IT"
+      }
+    }
+  },
+
+  "columbo_technique": {
+    "principle": "Désarmer la méfiance par la curiosité sincère et les questions détournées",
+    "key_phrases": [
+      "C'est intéressant que vous disiez ça...",
+      "Ah, et comment ça s'est passé la dernière fois?",
+      "Je me pose une question...",
+      "Si je peux me permettre...",
+      "J'essaie de comprendre...",
+      "Juste pour être sûr de bien saisir..."
+    ],
+    "questions_types": [
+      {
+        "type": "Explorer l'échec passé",
+        "example": "Vous mentionnez une mauvaise expérience... Qu'est-ce qui n'a pas marché exactement?"
+      },
+      {
+        "type": "Comprendre les vraies peurs",
+        "example": "Si vous deviez refaire un projet similaire, qu'est-ce qui vous inquiéterait le plus?"
+      },
+      {
+        "type": "Retourner l'objection",
+        "example": "Vous dites que les consultants résistent... Et vous, qu'est-ce qui vous convaincrait?"
+      },
+      {
+        "type": "Créer du contraste",
+        "example": "Une dernière chose... Si cette fois ça marchait, qu'est-ce que ça changerait pour vous?"
+      }
+    ]
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On a déjà essayé, ça n'a pas marché",
+      "type": "past_failure",
+      "hidden": "Il a peur de revivre le même échec"
+    },
+    {
+      "objection": "Les consultants n'accepteront jamais de changer",
+      "type": "adoption",
+      "hidden": "Il n'a pas su conduire le changement la dernière fois"
+    },
+    {
+      "objection": "Tous les commerciaux promettent la même chose",
+      "type": "trust",
+      "hidden": "Il a été déçu et ne fait plus confiance"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Il a accepté un appel suite à une recommandation, mais reste très sceptique.",
+      "prospect_first_response": "Bonjour. Pierre m'a dit de vous appeler mais je vous préviens, je ne suis pas vraiment convaincu. On a déjà tout essayé."
+    },
+    "objectives": [
+      "Comprendre l'échec passé en détail",
+      "Identifier les vraies peurs sous-jacentes",
+      "Créer de la confiance par l'écoute",
+      "Proposer une approche différente de la dernière fois"
+    ],
+    "success_criteria": [
+      "Échec passé compris en profondeur",
+      "Vraies objections identifiées",
+      "Ouverture pour une démo ou POC"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "openness": "Finit par s'ouvrir si on l'écoute",
+        "trust": "La recommandation aide"
+      },
+      "medium": {
+        "openness": "Reste sur ses gardes longtemps",
+        "trust": "Teste le vendeur plusieurs fois"
+      },
+      "expert": {
+        "openness": "Très fermé, presque hostile",
+        "trust": "Remet en question chaque argument"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Questions Columbo pour explorer les échecs",
+    "Écoute empathique sans minimiser",
+    "Ne pas contredire frontalement",
+    "Valider les peurs avant de rassurer",
+    "Proposer une approche sur-mesure"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["bon, on verra", "merci d'avoir appelé", "je réfléchis"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

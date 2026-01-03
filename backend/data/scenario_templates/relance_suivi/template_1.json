@@ -1,0 +1,164 @@
+{
+  "template_id": "relance_suivi_1",
+  "skill_slug": "relance_suivi",
+  "name": "Relance - Le prospect qui ghost",
+  "description": "Relancez efficacement un prospect qui ne répond plus après une bonne démo.",
+
+  "product": {
+    "name": "DocuSign Pro",
+    "tagline": "Signature électronique sécurisée",
+    "how_it_works": {
+      "summary": "Solution de signature électronique légale avec workflow de validation",
+      "key_features": [
+        "Signature électronique certifiée eIDAS",
+        "Workflow de validation multi-niveaux",
+        "Intégration CRM et ERP",
+        "Archivage légal 10 ans"
+      ]
+    },
+    "pricing": {
+      "plan": "Business à 25€/utilisateur/mois",
+      "trial": "Essai 30 jours disponible"
+    }
+  },
+
+  "relance_methodology": {
+    "principles": [
+      "Ne jamais accuser ou culpabiliser le prospect",
+      "Apporter de la valeur à chaque relance",
+      "Varier les canaux (email, téléphone, LinkedIn)",
+      "Fixer une date de fin (dernière relance)",
+      "Toujours laisser une porte de sortie honorable"
+    ],
+    "value_adds": [
+      "Nouvelle étude de cas pertinente",
+      "Article/contenu lié à leur problématique",
+      "Nouvelle fonctionnalité ou promotion",
+      "Information marché (concurrent, réglementation)",
+      "Mise en relation avec un pair"
+    ],
+    "relance_sequence": [
+      {
+        "timing": "J+3 après silence",
+        "canal": "Email court",
+        "message_type": "Vérification - Avez-vous reçu mon email ?"
+      },
+      {
+        "timing": "J+7",
+        "canal": "Appel téléphonique",
+        "message_type": "Prise de nouvelles + valeur ajoutée"
+      },
+      {
+        "timing": "J+14",
+        "canal": "LinkedIn",
+        "message_type": "Contenu pertinent + question ouverte"
+      },
+      {
+        "timing": "J+21",
+        "canal": "Email ou téléphone",
+        "message_type": "Dernière relance - porte de sortie"
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Thomas Girard",
+      "role": "Directeur Juridique",
+      "company": "ConseilPlus",
+      "company_size": "60 employés, cabinet de conseil",
+      "sector": "Conseil juridique",
+      "personality": "busy_ghoster",
+      "psychology": {
+        "type": "analytique",
+        "communication_style": "Poli mais débordé, oublie de répondre",
+        "ghost_reasons": ["Trop occupé", "Priorités changées", "En attente d'une décision interne"],
+        "how_to_reengage": "Valeur ajoutée concrète, pas de pression"
+      },
+      "history": {
+        "first_contact": "Il y a 4 semaines, appel de qualification",
+        "demo": "Il y a 3 semaines, démo très positive",
+        "last_exchange": "Il y a 2 semaines, email 'je reviens vers vous la semaine prochaine'",
+        "silence": "Aucune réponse depuis 2 semaines malgré 2 relances email"
+      },
+      "hidden_situation": [
+        "Le DG a mis le projet en pause pour Q1",
+        "Il a eu une urgence client majeure",
+        "Il n'ose pas dire que c'est reporté"
+      ]
+    }
+  },
+
+  "relance_scenarios": [
+    {
+      "context": "Première relance téléphonique après 2 emails sans réponse",
+      "good_opening": "Bonjour Thomas, c'est [Nom] de DocuSign. Je ne vous dérange pas ? J'essayais de vous joindre par email, je me suis dit qu'un coup de fil serait plus simple. Comment allez-vous ?",
+      "bad_opening": "Bonjour, je n'ai pas eu de réponse à mes emails, je voulais savoir où vous en étiez...",
+      "why": "Ne pas commencer par le reproche, s'intéresser à lui d'abord"
+    },
+    {
+      "context": "Le prospect décroche mais est évasif",
+      "prospect_says": "Ah oui, désolé, je n'ai pas eu le temps de revenir vers vous, c'est un peu compliqué en ce moment...",
+      "good_response": "Je comprends totalement, vous devez gérer beaucoup de choses. Est-ce que le projet signature électronique est toujours d'actualité, même si c'est pour plus tard ?",
+      "bad_response": "Vous aviez dit la semaine prochaine pourtant...",
+      "why": "Valider si le projet existe encore, sans pression"
+    },
+    {
+      "context": "Le projet est reporté",
+      "prospect_says": "En fait, le DG a décalé les investissements IT sur Q2...",
+      "good_response": "D'accord, ça arrive. Q2 c'est dans 3 mois. Qu'est-ce qui pourrait changer d'ici là qui ferait que le projet avance ?",
+      "bad_response": "Ah, dommage. Bon, je vous recontacte en avril alors.",
+      "why": "Creuser pour comprendre, garder le lien, potentiellement qualifier pour Q2"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Vous appelez Thomas après 2 semaines de silence. Il avait été très enthousiaste à la démo.",
+      "prospect_first_response": "(décroche) Allô ? Ah, bonjour... oui, DocuSign... écoutez, je suis vraiment désolé, je n'ai pas eu le temps de revenir vers vous, c'est la folie ici..."
+    },
+    "objectives": [
+      "Comprendre la vraie raison du silence",
+      "Ne pas mettre de pression tout en gardant le lien",
+      "Qualifier : projet mort, reporté, ou toujours vivant ?",
+      "Si reporté : fixer une date de recontact ferme",
+      "Si mort : obtenir un feedback et une recommandation"
+    ],
+    "success_criteria": [
+      "Obtenir une réponse honnête sur la situation",
+      "Si projet vivant : relancer le cycle de vente",
+      "Si projet reporté : RDV ferme calendrier pour Q2",
+      "Si projet mort : comprendre pourquoi et demander une reco"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "situation": "Juste débordé, le projet est toujours là",
+        "openness": "Honnête sur la situation"
+      },
+      "medium": {
+        "situation": "Projet reporté, n'ose pas le dire",
+        "openness": "Évasif, faut creuser"
+      },
+      "expert": {
+        "situation": "Projet mort ou parti au concurrent",
+        "openness": "Évite la conversation, cherche à raccrocher"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Ouvrir sans reproche ni pression",
+    "Valider rapidement si le projet existe encore",
+    "Proposer une porte de sortie honorable",
+    "Fixer une date précise pour la suite",
+    "Apporter de la valeur même si le timing est mauvais",
+    "Demander une recommandation si le projet est mort"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["on se rappelle le", "je vous envoie un créneau", "c'est mort pour nous désolé"],
+    "min_exchanges": 6,
+    "max_exchanges": 15,
+    "auto_end_enabled": true
+  }
+}

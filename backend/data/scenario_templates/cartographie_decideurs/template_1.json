@@ -1,0 +1,194 @@
+{
+  "template_id": "cartographie_decideurs_1",
+  "skill_slug": "cartographie_decideurs",
+  "name": "Cartographie - Projet multi-décideurs ETI",
+  "description": "Identifier tous les acteurs d'un projet IT dans une ETI avec des jeux de pouvoir complexes.",
+
+  "product": {
+    "name": "DataVault Enterprise",
+    "tagline": "La plateforme de données unifiée",
+    "how_it_works": {
+      "summary": "Data platform centralisant toutes les données de l'entreprise avec gouvernance et analytics intégrés",
+      "key_features": [
+        "Data warehouse cloud unifié",
+        "ETL automatisé et no-code",
+        "Catalogue de données avec lignage",
+        "Analytics self-service"
+      ]
+    },
+    "pricing": {
+      "entry_price": "À partir de 3K€/mois",
+      "popular_plan": "Enterprise à 8K€/mois (données illimitées)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "150+ ETI et grands comptes",
+      "implementation": "Déploiement en 6 semaines en moyenne"
+    },
+    "testimonials": [
+      {
+        "name": "Antoine Mercier",
+        "company": "IndustrieGroup (800 employés)",
+        "quote": "Enfin une vision à 360° de nos données. Le COMEX adore les dashboards."
+      }
+    ]
+  },
+
+  "prospect": {
+    "contact_principal": {
+      "name": "Marie Leroy",
+      "role": "Responsable Data",
+      "company": "TechDistrib",
+      "company_size": "450 employés, 12 sites",
+      "sector": "Distribution spécialisée",
+      "personality": "collaborative",
+      "psychology": {
+        "type": "analytique",
+        "communication_style": "Structurée, aime présenter le contexte complet",
+        "decision_speed": "Dépend du consensus",
+        "priority": "Faire avancer le projet sans se mettre à dos les autres"
+      }
+    },
+    "organigramme_projet": {
+      "sponsor": {
+        "name": "Philippe Durand",
+        "role": "Directeur Général",
+        "involvement": "Sponsor budgétaire, veut des KPIs",
+        "style": "Pressé, veut des résultats rapides",
+        "access": "Difficile à joindre directement"
+      },
+      "decideur_technique": {
+        "name": "Thomas Petit",
+        "role": "DSI",
+        "involvement": "Valide la technique, a son mot à dire sur le choix",
+        "style": "Prudent, préfère les solutions éprouvées",
+        "hidden_agenda": "Veut garder le contrôle sur la donnée"
+      },
+      "decideur_metier": {
+        "name": "Émilie Rousseau",
+        "role": "Directrice Marketing",
+        "involvement": "Principal utilisateur, budget partagé avec DSI",
+        "style": "Impatiente, veut des résultats visibles",
+        "hidden_agenda": "Veut s'affranchir de la DSI pour ses analytics"
+      },
+      "influenceur": {
+        "name": "Julien Martin",
+        "role": "Responsable BI actuel",
+        "involvement": "Expert technique, peut bloquer ou accélérer",
+        "style": "Territorial, a peur d'être remplacé",
+        "hidden_agenda": "Craint pour son poste si l'outil est trop simple"
+      },
+      "acheteur": {
+        "name": "Claire Bonnet",
+        "role": "Responsable Achats IT",
+        "involvement": "Négocie le contrat, peut bloquer sur les conditions",
+        "style": "Focalisée sur le prix et les conditions",
+        "hidden_agenda": "Cherche à prouver sa valeur en négociant dur"
+      }
+    }
+  },
+
+  "cartographie_elements": {
+    "roles_a_identifier": [
+      {
+        "role": "Champion interne",
+        "question": "Qui pousse vraiment ce projet en interne?",
+        "why_important": "C'est lui qui fera avancer le projet quand vous n'êtes pas là"
+      },
+      {
+        "role": "Décideur final",
+        "question": "Qui signe le bon de commande?",
+        "why_important": "Sans lui, pas de deal"
+      },
+      {
+        "role": "Bloqueur potentiel",
+        "question": "Qui pourrait s'opposer à ce projet?",
+        "why_important": "Mieux vaut l'anticiper et le neutraliser"
+      },
+      {
+        "role": "Utilisateur clé",
+        "question": "Qui utilisera le plus la solution?",
+        "why_important": "Son avis comptera pour l'adoption"
+      },
+      {
+        "role": "Gardien du budget",
+        "question": "Qui contrôle les cordons de la bourse?",
+        "why_important": "Il peut accélérer ou bloquer l'arbitrage"
+      }
+    ],
+    "questions_cles": [
+      "Qui d'autre est impliqué dans cette décision?",
+      "Comment se passe habituellement ce type de décision chez vous?",
+      "Qui devrait participer à la démo pour que le projet avance?",
+      "Y a-t-il des personnes qui pourraient avoir des réserves?",
+      "Qui a le plus à gagner si ce projet réussit?"
+    ]
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Le DSI n'est pas encore au courant",
+      "type": "process",
+      "hidden": "Elle évite de le mettre dans la boucle trop tôt"
+    },
+    {
+      "objection": "Il faudra passer par les achats",
+      "type": "process",
+      "hidden": "Les achats vont tout ralentir"
+    },
+    {
+      "objection": "Le responsable BI actuel doit valider",
+      "type": "influencer",
+      "hidden": "Il risque de bloquer par peur de son poste"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Deuxième RDV avec Marie après une première démo. Elle doit vous aider à comprendre le circuit de décision.",
+      "prospect_first_response": "Rebonjour! Alors, la démo a bien plu. Maintenant il faut qu'on parle de la suite... C'est un peu compliqué chez nous."
+    },
+    "objectives": [
+      "Cartographier tous les acteurs impliqués",
+      "Identifier le champion et les bloqueurs",
+      "Comprendre le processus de décision",
+      "Positionner des RDV avec les décideurs clés"
+    ],
+    "success_criteria": [
+      "Organigramme projet complet (5+ personnes)",
+      "Champion identifié",
+      "Accès aux décideurs clés obtenu"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "transparency": "Marie partage ouvertement l'organigramme",
+        "access": "Elle peut organiser les RDV"
+      },
+      "medium": {
+        "transparency": "Partage par bribes, il faut creuser",
+        "access": "Accès au DG difficile"
+      },
+      "expert": {
+        "transparency": "Situation politique cachée",
+        "access": "Bloqueurs non identifiés au départ"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Questions sur le processus de décision",
+    "Identifier les agendas cachés",
+    "Proposer d'aider le champion",
+    "Anticiper les bloqueurs",
+    "Multi-threading (accès à plusieurs personnes)"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["je vous rappelle", "on organise ça", "merci pour votre aide"],
+    "min_exchanges": 10,
+    "max_exchanges": 22,
+    "auto_end_enabled": true
+  }
+}

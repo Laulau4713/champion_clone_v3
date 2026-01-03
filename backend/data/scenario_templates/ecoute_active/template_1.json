@@ -1,0 +1,109 @@
+{
+  "template_id": "ecoute_active_1",
+  "skill_slug": "ecoute_active",
+  "name": "Découverte - Prospect bavard",
+  "description": "Le prospect aime parler. Votre défi est d'écouter activement, reformuler, et guider vers les informations clés.",
+
+  "product": {
+    "name": "SimpleCRM Pro",
+    "tagline": "Le CRM pensé pour les PME françaises",
+    "how_it_works": {
+      "summary": "CRM cloud avec devis/factures intégrés",
+      "key_features": ["Pipeline visuel", "Devis en 2 clics", "App mobile"]
+    },
+    "pricing": {
+      "entry_price": "29€/utilisateur/mois"
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Jean-Michel Dupont",
+      "role": "Directeur Commercial",
+      "company": "BatiServices",
+      "company_size": "55 employés",
+      "sector": "BTP / Services",
+      "personality": "talkative",
+      "current_situation": "Gère 8 commerciaux terrain, pipe dans Excel, beaucoup de pertes",
+      "pain_points": [
+        "Commerciaux qui oublient de remonter les infos",
+        "Devis qui traînent et opportunités perdues",
+        "Pas de suivi des relances clients"
+      ],
+      "hidden_need": "A perdu un gros contrat par manque de suivi, ça l'a marqué",
+      "talking_style": "Donne beaucoup de contexte, fait des digressions, aime raconter des anecdotes"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Mes commerciaux sont sur le terrain, ils n'ont pas le temps de saisir",
+      "type": "adoption",
+      "hidden": "A peur qu'ils refusent d'utiliser l'outil"
+    },
+    {
+      "objection": "On a déjà essayé un CRM, ça n'a pas marché",
+      "type": "past_failure",
+      "hidden": "Le précédent était trop complexe"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "RDV découverte. Le prospect aime parler et donner du contexte. Votre job est d'écouter et reformuler.",
+      "prospect_first_response": "Ah bonjour! Asseyez-vous. Alors, je vous explique... On a 8 commerciaux sur le terrain, enfin 7 maintenant parce que Maurice est parti le mois dernier, bref..."
+    },
+    "objectives": [
+      "Pratiquer l'écoute active (pas d'interruption)",
+      "Reformuler les points clés pour valider la compréhension",
+      "Recentrer poliment quand le prospect digresse",
+      "Identifier les vrais pain points derrière les anecdotes"
+    ],
+    "success_criteria": [
+      "Au moins 3 reformulations réussies",
+      "Pain points identifiés malgré les digressions",
+      "Prospect qui dit 'exactement!' ou 'c'est ça!'",
+      "Aucune interruption brutale"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "digression_level": "Quelques anecdotes mais revient au sujet",
+        "cooperation_level": "high"
+      },
+      "medium": {
+        "digression_level": "Digressions fréquentes, il faut recentrer",
+        "cooperation_level": "medium"
+      },
+      "expert": {
+        "digression_level": "Part dans tous les sens, teste votre patience",
+        "cooperation_level": "low"
+      }
+    }
+  },
+
+  "listening_techniques": [
+    {
+      "name": "Reformulation",
+      "example": "Si je comprends bien, le problème c'est que..."
+    },
+    {
+      "name": "Écho",
+      "example": "Vous avez perdu un contrat important..."
+    },
+    {
+      "name": "Question de clarification",
+      "example": "Quand vous dites 'ça traîne', c'est combien de temps en moyenne?"
+    },
+    {
+      "name": "Synthèse",
+      "example": "Donc si je résume: visibilité pipe, devis trop lents, et suivi relances. J'ai bien compris?"
+    }
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "on se rappelle", "merci pour cet échange"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

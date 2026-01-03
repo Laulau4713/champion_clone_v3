@@ -1,0 +1,166 @@
+{
+  "template_id": "closing_ponts_brules_2",
+  "skill_slug": "closing_ponts_brules",
+  "name": "Closing Ponts Brûlés - Comité de décision",
+  "description": "Closez face à un comité de décision où plusieurs personnes doivent être convaincues simultanément.",
+
+  "product": {
+    "name": "SupplyChain360",
+    "tagline": "Visibilité totale sur votre supply chain",
+    "how_it_works": {
+      "summary": "Plateforme SaaS de gestion de la supply chain avec traçabilité temps réel et prévisions IA",
+      "key_features": [
+        "Traçabilité fournisseurs Tier 1 à 3",
+        "Alertes risques temps réel",
+        "Prévisions demand planning par IA",
+        "Reporting ESG automatisé"
+      ]
+    },
+    "pricing": {
+      "plan": "Enterprise à 3500€/mois",
+      "implementation": "12 semaines, incluse",
+      "roi": "ROI positif en 8 mois selon études"
+    }
+  },
+
+  "closing_methodology": {
+    "committee_dynamics": {
+      "identify_roles": [
+        "Champion (qui pousse le projet)",
+        "Décideur économique (budget)",
+        "Décideur technique (faisabilité)",
+        "Bloqueur potentiel (qui a des doutes)",
+        "Utilisateur final (qui va l'utiliser)"
+      ],
+      "strategy": "S'assurer que chaque personne a son pont brûlé. Un seul pont non brûlé = deal bloqué."
+    },
+    "committee_closing_techniques": [
+      {
+        "name": "Le tour de table inversé",
+        "how": "Commencer par demander aux moins enthousiastes leur position, pour identifier les blocages"
+      },
+      {
+        "name": "Le résumé par personne",
+        "how": "Pour vous M. X, c'est validé côté budget. Pour vous Mme Y, c'est OK côté technique. Pour vous..."
+      },
+      {
+        "name": "L'objection dernière chance",
+        "how": "Y a-t-il quelque chose qui vous empêcherait de démarrer si tout le monde est d'accord ?"
+      },
+      {
+        "name": "La projection commune",
+        "how": "Imaginons qu'on démarre le 1er mars, comment vous voyez les premiers mois ?"
+      }
+    ]
+  },
+
+  "prospect": {
+    "committee_members": [
+      {
+        "name": "Philippe Dumont",
+        "role": "Directeur Supply Chain (Champion)",
+        "position": "Très favorable, pousse le projet depuis 6 mois",
+        "concerns": "Veut être sûr que l'implémentation ne perturbe pas les opérations",
+        "bridge_to_burn": "Crainte de la charge projet"
+      },
+      {
+        "name": "Isabelle Mercier",
+        "role": "DAF (Décideur économique)",
+        "position": "Favorable si ROI prouvé",
+        "concerns": "3500€/mois c'est un investissement, veut des garanties",
+        "bridge_to_burn": "Risque financier"
+      },
+      {
+        "name": "Julien Legrand",
+        "role": "DSI (Décideur technique)",
+        "position": "Neutre à réticent",
+        "concerns": "Intégration avec l'ERP existant, charge sur son équipe",
+        "bridge_to_burn": "Complexité technique et ressources IT"
+      },
+      {
+        "name": "Sophie Martin",
+        "role": "Responsable Achats (Utilisateur)",
+        "position": "Favorable, attend l'outil",
+        "concerns": "Formation de son équipe",
+        "bridge_to_burn": "Adoption par les équipes terrain"
+      }
+    ],
+    "company": {
+      "name": "AgroDistri",
+      "size": "350 employés, CA 120M€",
+      "sector": "Agroalimentaire / Distribution"
+    },
+    "decision_context": {
+      "urgency": "Nouvelle réglementation traçabilité en septembre, ils doivent être prêts",
+      "competition": "Ont vu un concurrent mais préfèrent SupplyChain360",
+      "internal_politics": "Le DSI a un historique de projets ratés, il est frileux"
+    }
+  },
+
+  "bridges_to_burn_per_person": {
+    "philippe_supply_chain": {
+      "bridge": "L'implémentation va perturber nos opérations",
+      "response": "On travaille en parallèle de vos opérations. Pendant 12 semaines, on paramètre tout sans toucher à vos flux. La bascule se fait un dimanche, testée le lundi. Zéro perturbation."
+    },
+    "isabelle_daf": {
+      "bridge": "3500€/mois c'est beaucoup, si ça ne marche pas...",
+      "response": "Avec la réglementation de septembre, le risque c'est de ne rien faire. Coût d'une non-conformité : 50K€ d'amende + perte de clients. Le ROI calculé ensemble montre 8 mois. Et on a une clause de sortie à 6 mois si les KPIs ne sont pas atteints."
+    },
+    "julien_dsi": {
+      "bridge": "Mon équipe est déjà surchargée, on n'a pas les ressources",
+      "response": "On gère 90% de l'implémentation. Votre équipe est mobilisée 10h total sur 12 semaines : 2h pour les accès ERP, 4h pour les tests, 4h pour la formation. On a un chef de projet dédié qui coordonne."
+    },
+    "sophie_achats": {
+      "bridge": "Mon équipe va-t-elle vraiment l'utiliser ?",
+      "response": "On a un taux d'adoption de 92% chez nos clients. Pourquoi ? Interface intuitive, formation terrain en 2h, et surtout : ça leur simplifie vraiment la vie. On peut faire une session avec 2-3 personnes de votre équipe pour qu'elles valident avant de signer."
+    }
+  },
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Réunion finale avec le comité de décision (4 personnes). Chacun a été vu individuellement avant. C'est le moment de conclure.",
+      "prospect_first_response": "Philippe (Supply Chain) : Bon, on est tous là pour décider. Globalement on est favorables, mais chacun a peut-être encore des questions. Isabelle, tu veux commencer ?"
+    },
+    "objectives": [
+      "S'adresser à chaque membre du comité",
+      "Identifier et brûler le pont de chacun",
+      "Créer un consensus progressif",
+      "Obtenir l'engagement collectif"
+    ],
+    "success_criteria": [
+      "Chaque membre a exprimé et résolu sa préoccupation",
+      "Le bloqueur potentiel (DSI) est rassuré",
+      "Décision prise en séance"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "committee": "Globalement aligné, 1 doute mineur",
+        "dynamics": "Le champion a déjà convaincu les autres"
+      },
+      "medium": {
+        "committee": "2 membres avec des ponts sérieux",
+        "dynamics": "Le DSI est sceptique, la DAF prudente"
+      },
+      "expert": {
+        "committee": "3+ membres avec des ponts différents",
+        "dynamics": "Conflits internes, le DSI bloque activement"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Gérer un groupe avec des intérêts divergents",
+    "S'adresser à chaque personne individuellement",
+    "Transformer le bloqueur en allié",
+    "Créer du consensus progressif",
+    "Résumer les accords pour valider en temps réel",
+    "Utiliser le champion pour faire levier"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["on est tous d'accord", "c'est validé", "on peut lancer", "philippe, lance le projet"],
+    "min_exchanges": 12,
+    "max_exchanges": 30,
+    "auto_end_enabled": true
+  }
+}

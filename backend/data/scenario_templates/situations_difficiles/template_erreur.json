@@ -1,0 +1,164 @@
+{
+  "template_id": "situations_difficiles_erreur",
+  "skill_slug": "situations_difficiles",
+  "name": "Situations difficiles - Annoncer une erreur de notre côté",
+  "description": "Apprenez à annoncer proactivement une erreur à un client avant qu'il ne la découvre.",
+
+  "product": {
+    "name": "FacturPro",
+    "tagline": "La facturation automatisée",
+    "context": {
+      "service": "Solution de facturation automatique",
+      "error": "Bug qui a envoyé des factures en double à 15 clients du prospect",
+      "discovery": "Vous l'avez découvert avant le client"
+    }
+  },
+
+  "proactive_error_methodology": {
+    "principle": "Mieux vaut annoncer soi-même qu'attendre que le client découvre",
+    "framework": {
+      "own_it": "Prendre la responsabilité totalement",
+      "explain_simply": "Expliquer ce qui s'est passé sans jargon",
+      "show_impact": "Être transparent sur les conséquences",
+      "fix_it": "Dire ce qui est fait pour corriger",
+      "prevent_it": "Expliquer comment on évite la récurrence"
+    },
+    "timing": "Appeler dès que l'erreur est confirmée, pas après avoir tout analysé",
+    "tone": "Factuel, responsable, orienté solution"
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Nathalie Perrin",
+      "role": "DAF",
+      "company": "ConsultExpert",
+      "company_size": "60 employés, cabinet de conseil",
+      "sector": "Conseil RH",
+      "personality": "professional_demanding",
+      "psychology": {
+        "type": "sécuritaire",
+        "communication_style": "Exigeante sur la qualité, apprécie la transparence",
+        "reaction_to_errors": "Accepte les erreurs si on est honnête et proactif",
+        "what_she_needs": "Comprendre, être rassurée, voir la solution"
+      },
+      "relationship": {
+        "client_since": "10 mois",
+        "satisfaction_before": "Très bonne, jamais de problème",
+        "strategic_importance": "Client référence, fait des recos"
+      }
+    }
+  },
+
+  "error_details": {
+    "what_happened": "Un bug dans la mise à jour de nuit a envoyé les factures de novembre en double",
+    "when_discovered": "Ce matin à 7h par l'équipe support",
+    "clients_impacted": "15 clients de ConsultExpert ont reçu des factures en double",
+    "financial_impact": "Aucune double facturation réelle (juste la notification email)",
+    "reputational_impact": "Les clients de ConsultExpert peuvent penser qu'ils sont désorganisés"
+  },
+
+  "conversation_phases": [
+    {
+      "phase": "Annonce de l'appel",
+      "your_goal": "Introduire que c'est un appel important sans alarmer",
+      "key_phrases": [
+        "Nathalie, je vous appelle parce que j'ai quelque chose d'important à vous dire.",
+        "Je préfère vous en informer moi-même plutôt que vous le découvriez autrement."
+      ]
+    },
+    {
+      "phase": "Explication de l'erreur",
+      "your_goal": "Être clair, factuel, prendre la responsabilité",
+      "key_phrases": [
+        "Cette nuit, un bug dans notre système a envoyé les factures de novembre en double à 15 de vos clients.",
+        "C'est entièrement notre faute, pas d'erreur de votre côté.",
+        "Les clients ont reçu deux fois le même email de facture."
+      ]
+    },
+    {
+      "phase": "Impact et correction",
+      "your_goal": "Rassurer sur les conséquences et montrer la solution",
+      "key_phrases": [
+        "Aucune double facturation financière - c'est uniquement l'email qui est parti deux fois.",
+        "On a déjà corrigé le bug, ça ne peut plus arriver.",
+        "On peut envoyer un email d'excuse à vos clients, ou vous préférez le faire vous-même ?"
+      ]
+    },
+    {
+      "phase": "Prévention future",
+      "your_goal": "Montrer les mesures pour éviter la récurrence",
+      "key_phrases": [
+        "On a ajouté un contrôle anti-doublon avant chaque envoi.",
+        "Les mises à jour de nuit passent maintenant par un environnement de test.",
+        "Je vous envoie le rapport d'incident par email."
+      ]
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Vous découvrez un bug ce matin à 7h. Vous décidez d'appeler le client immédiatement plutôt qu'attendre qu'il découvre le problème.",
+      "your_opening": "Bonjour Nathalie, c'est [Nom] de FacturPro. Je sais qu'il est tôt, mais je devais vous appeler. Est-ce que vous avez 5 minutes ?",
+      "prospect_first_response": "(surprise) Oh, bonjour... oui, je suis là, qu'est-ce qui se passe ?"
+    },
+    "objectives": [
+      "Annoncer l'erreur de manière claire et responsable",
+      "Expliquer l'impact réel (ni minimiser ni dramatiser)",
+      "Rassurer sur la correction",
+      "Proposer des solutions pour gérer les clients impactés",
+      "Préserver la confiance"
+    ],
+    "success_criteria": [
+      "Le client comprend ce qui s'est passé",
+      "Il apprécie la transparence proactive",
+      "Une solution pour ses clients est acceptée",
+      "La relation reste solide"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "reaction": "Apprécie la transparence, comprend que ça arrive",
+        "demands": "Veut juste être informée et voir la correction"
+      },
+      "medium": {
+        "reaction": "Inquiète pour sa réputation auprès de ses clients",
+        "demands": "Veut un email d'excuse et des garanties"
+      },
+      "expert": {
+        "reaction": "Très mécontente malgré la proactivité",
+        "demands": "Veut des compensations et des garanties fortes"
+      }
+    }
+  },
+
+  "solution_options": {
+    "email_excuse": {
+      "option_1": "On envoie un email d'excuse en votre nom",
+      "option_2": "On vous prépare un template que vous envoyez vous-même",
+      "option_3": "Pas d'email, juste gérer si les clients posent des questions"
+    },
+    "compensation": {
+      "immediate": "1 mois offert",
+      "guarantee": "SLA renforcé sur les envois"
+    },
+    "documentation": {
+      "incident_report": "Rapport détaillé par email",
+      "prevention_measures": "Liste des mesures prises"
+    }
+  },
+
+  "techniques_to_practice": [
+    "Appeler proactivement (pas attendre)",
+    "Prendre la responsabilité sans excuses excessives",
+    "Être factuel sur l'impact",
+    "Proposer des solutions concrètes",
+    "Montrer les mesures de prévention",
+    "Suivre après résolution"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok, envoyez-moi le rapport", "merci de m'avoir prévenue", "on gère, merci"],
+    "min_exchanges": 6,
+    "max_exchanges": 15,
+    "auto_end_enabled": true
+  }
+}

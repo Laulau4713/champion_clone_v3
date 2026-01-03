@@ -178,3 +178,134 @@
 .focus-ring {
   @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-background;
 }
+
+/* ===== UI POLISH UTILITIES ===== */
+
+/* Subtle hover lift for interactive elements */
+.hover-lift {
+  @apply transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg;
+}
+
+/* Glow effect on hover */
+.hover-glow {
+  @apply transition-shadow duration-300;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+/* Active nav link indicator */
+.nav-link-active {
+  @apply relative;
+}
+.nav-link-active::after {
+  content: '';
+  @apply absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary-500;
+}
+
+/* Shimmer loading effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(217 33% 17% / 0.5) 0%,
+    hsl(217 33% 25% / 0.5) 50%,
+    hsl(217 33% 17% / 0.5) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Pulse glow for emphasis */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Smooth entrance animations */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.4s ease-out forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Scale animation */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out forwards;
+}
+
+/* Staggered animations helper */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* Better skeleton loading */
+.skeleton {
+  @apply bg-slate-700/50 rounded animate-pulse;
+}
+
+/* Interactive card enhancement */
+.card-interactive {
+  @apply transition-all duration-300;
+}
+.card-interactive:hover {
+  @apply border-primary-500/30 shadow-xl shadow-primary-500/5 -translate-y-1;
+}
+
+/* Subtle text highlight */
+.text-highlight {
+  @apply relative inline-block;
+}
+.text-highlight::after {
+  content: '';
+  @apply absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full;
+}
+
+/* Better focus visible state */
+.focus-visible-ring:focus-visible {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-slate-900;
+}
+
+/* Smooth page transition base */
+.page-transition {
+  @apply transition-opacity duration-300 ease-out;
+}

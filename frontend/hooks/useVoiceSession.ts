@@ -40,6 +40,13 @@ export interface UseVoiceSessionOptions {
   onSessionEnded?: (evaluation: SessionEnded["evaluation"]) => void;
 }
 
+// Phase 2: Info de fin automatique de conversation
+export interface AutoEndInfo {
+  endType: "mutual_goodbye" | "prospect_ending" | "user_ending";
+  redirectUrl: string | null;
+  timestamp: Date;
+}
+
 export interface UseVoiceSessionReturn {
   // State
   isConnected: boolean;
@@ -57,6 +64,9 @@ export interface UseVoiceSessionReturn {
   activeEvent: ActiveEvent | null;
   dismissReversal: () => void;
   dismissEvent: () => void;
+
+  // Phase 2: Fin automatique de conversation
+  autoEndInfo: AutoEndInfo | null;
 
   // Actions
   connect: () => void;
@@ -85,6 +95,9 @@ export function useVoiceSession({
   // V2 Mechanics state
   const [activeReversal, setActiveReversal] = useState<ActiveReversal | null>(null);
   const [activeEvent, setActiveEvent] = useState<ActiveEvent | null>(null);
+
+  // Phase 2: Fin automatique de conversation
+  const [autoEndInfo, setAutoEndInfo] = useState<AutoEndInfo | null>(null);
 
   // WebSocket ref
   const wsRef = useRef<VoiceWebSocket | null>(null);
@@ -140,6 +153,16 @@ export function useVoiceSession({
     setCurrentMood(response.mood);
     setConversionPossible(response.conversion_possible);
     setFeedback(response.feedback || null);
+
+    // Phase 2: Détection fin de conversation automatique
+    if (response.session_ended && response.end_type) {
+      console.log("[useVoiceSession] Session auto-ended:", response.end_type);
+      setAutoEndInfo({
+        endType: response.end_type,
+        redirectUrl: response.redirect_url || null,
+        timestamp: new Date(),
+      });
+    }
   }, []);
 
   // Handle jauge update
@@ -319,6 +342,9 @@ export function useVoiceSession({
     activeEvent,
     dismissReversal,
     dismissEvent,
+
+    // Phase 2: Fin automatique de conversation
+    autoEndInfo,
 
     // Actions
     connect,

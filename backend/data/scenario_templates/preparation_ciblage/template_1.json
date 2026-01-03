@@ -1,0 +1,102 @@
+{
+  "template_id": "preparation_ciblage_1",
+  "skill_slug": "preparation_ciblage",
+  "name": "Premier contact - PME Tech",
+  "description": "Vous préparez un premier contact avec une PME du secteur tech. L'objectif est de qualifier le prospect et d'obtenir un RDV.",
+
+  "product": {
+    "name": "MarketAuto Pro",
+    "tagline": "Automatisez 80% de vos tâches marketing",
+    "how_it_works": {
+      "summary": "Solution SaaS d'automation marketing tout-en-un",
+      "key_features": ["Emails automatiques", "Scoring leads par IA", "Analytics avancés"]
+    },
+    "pricing": {
+      "entry_price": "49€/mois",
+      "popular_plan": "Pro à 149€/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients_count": "2000+ entreprises",
+      "satisfaction": "4.8/5"
+    },
+    "testimonials": [
+      {
+        "name": "Sophie Martin",
+        "company": "TechCorp",
+        "quote": "On a doublé nos leads en 3 mois"
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Thomas Mercier",
+      "role": "Directeur Marketing",
+      "company": "WebAgency Plus",
+      "company_size": "25 employés",
+      "sector": "Agence digitale",
+      "personality": "curious",
+      "current_situation": "Utilise Mailchimp et des outils séparés, perd du temps",
+      "pain_points": [
+        "Trop d'outils différents non connectés",
+        "Pas de vision globale sur les performances",
+        "Équipe marketing débordée"
+      ],
+      "hidden_need": "Veut impressionner sa direction avec des résultats mesurables"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On utilise déjà Mailchimp",
+      "type": "incumbent",
+      "hidden": "Peur de la migration et de perdre les données"
+    },
+    {
+      "objection": "Je n'ai pas le temps de changer d'outil",
+      "type": "timing",
+      "hidden": "A peur que l'équipe ne suive pas"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Vous avez trouvé ce prospect via LinkedIn. Il a publié récemment sur la difficulté de mesurer le ROI marketing.",
+      "prospect_first_response": "Bonjour, Thomas Mercier à l'appareil. C'est à quel sujet?"
+    },
+    "objectives": [
+      "Qualifier le prospect (taille équipe, outils actuels, budget)",
+      "Identifier au moins 2 pain points",
+      "Proposer un RDV de découverte"
+    ],
+    "success_criteria": [
+      "RDV planifié",
+      "Pain points identifiés",
+      "Budget approximatif découvert"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "dm_availability": "Disponible et curieux",
+        "cooperation_level": "high"
+      },
+      "medium": {
+        "dm_availability": "Occupé mais pas fermé",
+        "cooperation_level": "medium"
+      },
+      "expert": {
+        "dm_availability": "Très méfiant, a déjà été déçu par des commerciaux",
+        "cooperation_level": "low"
+      }
+    }
+  },
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "merci, bonne journée", "je vous laisse"],
+    "min_exchanges": 5,
+    "max_exchanges": 12,
+    "auto_end_enabled": true
+  }
+}

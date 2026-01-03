@@ -1,0 +1,154 @@
+{
+  "template_id": "negociation_1",
+  "skill_slug": "negociation",
+  "name": "Négociation - Demande de remise agressive",
+  "description": "Gérez une négociation de prix face à un acheteur professionnel qui demande 30% de remise.",
+
+  "product": {
+    "name": "ProcessFlow",
+    "tagline": "Automatisez vos processus métier",
+    "how_it_works": {
+      "summary": "Plateforme low-code de création de workflows et d'automatisation des processus métier",
+      "key_features": [
+        "Designer de workflow drag & drop",
+        "Connecteurs ERP, CRM, comptabilité",
+        "Formulaires dynamiques",
+        "Reporting et KPIs automatisés"
+      ]
+    },
+    "pricing": {
+      "list_price": "890€/mois (offre SMB)",
+      "suggested_discounts": {
+        "annual_commitment": "10%",
+        "3_year_commitment": "20%",
+        "max_discount": "25% avec justification exceptionnelle"
+      },
+      "margin_floor": "Ne jamais descendre sous 650€/mois"
+    }
+  },
+
+  "negotiation_methodology": {
+    "principles": [
+      "Toute remise doit avoir une contrepartie",
+      "Ne jamais donner un chiffre en premier",
+      "Silence après une demande de remise = pression",
+      "Créer de la valeur plutôt que baisser le prix",
+      "Garder des cartouches pour la fin"
+    ],
+    "trade_offs": {
+      "discount_vs_commitment": "Remise contre engagement long terme",
+      "discount_vs_volume": "Remise contre utilisateurs supplémentaires",
+      "discount_vs_payment": "Remise contre paiement upfront",
+      "discount_vs_features": "Réduire le périmètre au lieu du prix",
+      "discount_vs_reference": "Remise contre case study / témoignage"
+    },
+    "tactics_to_counter": {
+      "good_cop_bad_cop": "S'adresser uniquement au décideur final",
+      "false_deadline": "Ne pas se précipiter, vérifier la vraie urgence",
+      "competitor_bluff": "Demander des preuves, comparer vraiment",
+      "salami": "Refuser le saucissonnage, négocier le package complet",
+      "silence": "Laisser le silence, ne pas combler"
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Caroline Vasseur",
+      "role": "Directrice des Achats",
+      "company": "IndustrieTech",
+      "company_size": "450 employés, CA 80M€",
+      "sector": "Industrie manufacturière",
+      "personality": "tough_negotiator",
+      "psychology": {
+        "type": "dominant",
+        "communication_style": "Directe, transactionnelle, cherche la faille",
+        "negotiation_style": "Aggressive d'emblée, demande 30% pour obtenir 15%",
+        "decision_drivers": ["Économies mesurables", "Victoire dans la négo", "Terms favorables"]
+      },
+      "buying_context": {
+        "budget_available": "Oui, le budget est là",
+        "decision_validated": "Le projet est validé en interne",
+        "competition": "Prétend avoir une offre concurrente 25% moins chère",
+        "urgency": "Doit décider cette semaine (vrai ou bluff ?)"
+      },
+      "hidden_cards": [
+        "Le concurrent n'a pas toutes les features qu'ils veulent",
+        "Le DG veut cette solution précisément (recommandation)",
+        "Ils ont un budget de 1000€/mois en réalité"
+      ]
+    }
+  },
+
+  "negotiation_scenarios": [
+    {
+      "tactic": "Demande de remise frontale",
+      "prospect_says": "Votre solution est intéressante mais il nous faut 30% de remise pour rentrer dans notre budget.",
+      "bad_response": "On peut faire 15%...",
+      "good_response": "30%, c'est significatif. Qu'est-ce qui justifie ce niveau de remise pour vous ?",
+      "why": "Creuser avant de donner, comprendre le vrai enjeu"
+    },
+    {
+      "tactic": "Concurrent moins cher",
+      "prospect_says": "Votre concurrent X nous propose la même chose à 600€.",
+      "bad_response": "On peut s'aligner...",
+      "good_response": "Vraiment la même chose ? Comparons les fonctionnalités. Ont-ils le module X et Y ?",
+      "why": "Challenger le bluff, la comparaison n'est jamais identique"
+    },
+    {
+      "tactic": "Deadline artificielle",
+      "prospect_says": "Il me faut votre meilleure offre d'ici demain 18h, sinon on signe avec l'autre.",
+      "bad_response": "OK, je reviens avec notre maximum...",
+      "good_response": "Si le timing est serré, concentrons-nous sur les vrais enjeux. Qu'est-ce qui bloque vraiment ?",
+      "why": "Ne pas céder à la pression artificielle"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Le projet est validé, le prospect a vu la démo et veut la solution. C'est la réunion de négociation finale avec la direction des achats.",
+      "prospect_first_response": "Bon, on a bien aimé votre solution. Le DG est pour. Maintenant parlons prix : 890€ c'est trop cher. Il nous faut 30% de remise. C'est non négociable de notre côté."
+    },
+    "objectives": [
+      "Résister à la pression sur le prix",
+      "Obtenir des contreparties pour toute remise",
+      "Découvrir les cartes cachées (budget réel, concurrent bluff)",
+      "Conclure avec une remise raisonnable (<20%)"
+    ],
+    "success_criteria": [
+      "Ne pas céder plus de 20%",
+      "Obtenir une contrepartie (engagement, volume, paiement)",
+      "Maintenir la relation tout en étant ferme",
+      "Signer le deal"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "aggression": "Demande 20%, accepte 10% avec contrepartie",
+        "bluffs": "Peu de bluffs, négociation rationnelle"
+      },
+      "medium": {
+        "aggression": "Demande 30%, insiste lourdement",
+        "bluffs": "Utilise le concurrent, le timing"
+      },
+      "expert": {
+        "aggression": "Demande 40%, menace de partir",
+        "bluffs": "Tactiques multiples, good cop/bad cop"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Silence stratégique après une demande de remise",
+    "Toujours demander une contrepartie",
+    "Ne jamais donner un chiffre en premier",
+    "Décortiquer les demandes (salami inversé)",
+    "Créer de la valeur alternative (formation, support, features)",
+    "Garder une marge de manœuvre pour le closing"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok on signe à ce prix", "deal", "faites-moi le contrat"],
+    "min_exchanges": 10,
+    "max_exchanges": 25,
+    "auto_end_enabled": true
+  }
+}

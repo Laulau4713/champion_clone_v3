@@ -1,0 +1,163 @@
+{
+  "template_id": "profils_psy_securitaire",
+  "skill_slug": "profils_psychologiques",
+  "name": "Profil Sécuritaire - Le prudent",
+  "description": "Adaptez votre discours à un prospect qui a besoin d'être rassuré sur tous les risques avant de s'engager.",
+
+  "product": {
+    "name": "BackupCloud Pro",
+    "tagline": "Vos données en sécurité, garanties",
+    "how_it_works": {
+      "summary": "Solution de backup cloud avec triple réplication et garantie de récupération",
+      "key_features": [
+        "Triple réplication géographique",
+        "Chiffrement AES-256 de bout en bout",
+        "Tests de restauration automatiques",
+        "SLA 99.999% avec pénalités"
+      ]
+    },
+    "pricing": {
+      "entry_price": "0.02€/Go/mois",
+      "popular_plan": "Business à 500€/mois (5To inclus)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "3000+ entreprises",
+      "uptime": "99.999% depuis 8 ans",
+      "zero_data_loss": "0 perte de données en 10 ans"
+    },
+    "certifications": ["ISO 27001", "SOC 2 Type II", "HDS (Hébergeur de Données de Santé)"],
+    "testimonials": [
+      {
+        "name": "Dr. Alain Mercier",
+        "company": "Clinique Saint-Louis",
+        "quote": "Après le ransomware de 2022, on a tout récupéré en 2h. BackupCloud nous a sauvés."
+      }
+    ]
+  },
+
+  "profil_psychologique": {
+    "type": "securitaire",
+    "nom_complet": "Le Sécuritaire (S de SÉDAIÉ)",
+    "caracteristiques": {
+      "besoin_principal": "Être rassuré, éviter les risques",
+      "peur_principale": "Faire une erreur, perdre quelque chose",
+      "comportement_achat": "Lent, demande beaucoup de garanties",
+      "question_cle": "Que se passe-t-il si...?",
+      "signaux": ["Beaucoup de questions sur les risques", "Demande des références", "Hésite longtemps"]
+    },
+    "ce_qui_le_rassure": [
+      "Garanties écrites",
+      "Témoignages de clients similaires",
+      "Certifications et labels",
+      "Clauses de sortie claires",
+      "Support réactif",
+      "Période d'essai"
+    ],
+    "ce_qui_le_fait_fuir": [
+      "Pression à décider vite",
+      "Manque de transparence",
+      "Nouveauté non éprouvée",
+      "Clauses cachées",
+      "Vendeur trop sûr de lui"
+    ],
+    "adaptation_discours": {
+      "ton": "Calme, rassurant, factuel",
+      "mots_cles": ["garanti", "sécurisé", "testé", "prouvé", "sans risque", "réversible"],
+      "preuves_a_fournir": ["Certifications", "Témoignages", "Études de cas", "Garanties contractuelles"],
+      "eviter": ["Urgence artificielle", "Promesses non prouvées", "Nouveauté mise en avant"]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Patrick Dumont",
+      "role": "Responsable Informatique",
+      "company": "NotairePlus",
+      "company_size": "35 collaborateurs, 4 études",
+      "sector": "Offices notariaux",
+      "personality": "securitaire",
+      "psychology": {
+        "type": "securitaire",
+        "communication_style": "Pose beaucoup de questions, veut des preuves",
+        "decision_speed": "Très lent, demande à réfléchir",
+        "priority": "Ne pas prendre de risque, protéger les données clients"
+      },
+      "current_situation": "Backup sur disques durs externes, pas testé depuis 2 ans",
+      "pain_points": [
+        "Inquiet depuis l'attaque d'un confrère",
+        "Ne sait pas si ses backups fonctionnent vraiment",
+        "Données clients sensibles (actes notariés)",
+        "La CNIL demande des preuves de conformité"
+      ],
+      "hidden_need": "Veut se couvrir personnellement en cas de problème"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Et si votre entreprise ferme, je perds mes données?",
+      "type": "survival_risk",
+      "response_approach": "Expliquer l'escrow, les clauses de réversibilité"
+    },
+    {
+      "objection": "Comment je suis sûr que ça marche vraiment?",
+      "type": "proof_needed",
+      "response_approach": "Proposer un test de restauration gratuit"
+    },
+    {
+      "objection": "Je préfère garder mes données chez moi",
+      "type": "control",
+      "response_approach": "Expliquer que le cloud est plus sûr que le local"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Il vous contacte après avoir lu un article sur les cyberattaques contre les notaires. Très prudent.",
+      "prospect_first_response": "Bonjour. On m'a recommandé de vous appeler, mais je vous préviens, je veux comprendre exactement comment ça fonctionne avant de décider quoi que ce soit."
+    },
+    "objectives": [
+      "Identifier ses peurs spécifiques",
+      "Rassurer avec des preuves concrètes",
+      "Ne pas le brusquer",
+      "Obtenir un test pilote ou une démo technique"
+    ],
+    "success_criteria": [
+      "Principales peurs adressées",
+      "Au moins 3 preuves fournies",
+      "Test ou démo planifié"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "anxiety_level": "Modéré, se laisse rassurer",
+        "questions": "Questions standards sur la sécurité"
+      },
+      "medium": {
+        "anxiety_level": "Élevé, demande beaucoup de détails",
+        "questions": "Questions pointues, cherche la faille"
+      },
+      "expert": {
+        "anxiety_level": "Paranoïaque, rien ne le rassure",
+        "questions": "Scénarios catastrophe en boucle"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Écouter les peurs sans minimiser",
+    "Fournir des preuves tangibles",
+    "Utiliser des témoignages rassurants",
+    "Proposer des garanties et périodes d'essai",
+    "Laisser du temps sans pression"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["je vais réfléchir", "envoyez-moi la documentation", "merci pour ces explications"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

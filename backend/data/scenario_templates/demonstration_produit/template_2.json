@@ -1,0 +1,198 @@
+{
+  "template_id": "demonstration_produit_2",
+  "skill_slug": "demonstration_produit",
+  "name": "Démo produit - Audience technique",
+  "description": "Réalisez une démonstration technique face à des experts qui vont challenger la robustesse de la solution.",
+
+  "product": {
+    "name": "APIGateway Pro",
+    "tagline": "La passerelle API qui scale avec vous",
+    "how_it_works": {
+      "summary": "API Management platform avec gateway, portail développeur et analytics temps réel",
+      "key_features": [
+        "Rate limiting et throttling intelligent",
+        "Authentification OAuth2/OIDC/API Keys",
+        "Transformation de payloads à la volée",
+        "Analytics et monitoring temps réel",
+        "Portail développeur self-service"
+      ]
+    },
+    "pricing": {
+      "entry_price": "500€/mois (jusqu'à 10M appels)",
+      "popular_plan": "Scale à 2000€/mois (100M appels)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "200+ entreprises tech",
+      "uptime": "99.999% SLA",
+      "throughput": "100K requêtes/seconde testées"
+    },
+    "technical_specs": {
+      "latency": "<10ms p99",
+      "deployment": "Kubernetes, Docker, Cloud-native",
+      "compliance": "SOC2, ISO27001, GDPR"
+    },
+    "testimonials": [
+      {
+        "name": "Maxime Durand, CTO",
+        "company": "FinTech Labs (API-first)",
+        "quote": "On gère 50M d'appels/jour sans un seul incident. La stabilité est bluffante."
+      }
+    ]
+  },
+
+  "demo_methodology": {
+    "structure_technique": {
+      "architecture": "5 min - Vue d'ensemble de l'architecture",
+      "demo_live": "20 min - Démo technique avec code/console",
+      "deep_dive": "10 min - Zoom sur les points techniques critiques",
+      "qa": "10 min - Questions techniques approfondies"
+    },
+    "principes_demo_technique": [
+      "Montrer du vrai code, pas que des slides",
+      "Utiliser la console/CLI autant que l'UI",
+      "Préparer des scénarios de test réalistes",
+      "Avoir des réponses sur la scalabilité",
+      "Connaître les limitations honnêtement"
+    ],
+    "questions_techniques_frequentes": [
+      "Comment ça scale horizontalement?",
+      "Quelle est la latence ajoutée?",
+      "Comment gérez-vous les pannes?",
+      "Peut-on déployer on-premise?",
+      "Quelle est la courbe d'apprentissage?"
+    ]
+  },
+
+  "prospect": {
+    "team": {
+      "lead": {
+        "name": "Nicolas Blanc",
+        "role": "CTO",
+        "focus": "Architecture globale, scalabilité, coûts",
+        "personality": "analytique",
+        "key_concerns": ["Lock-in vendor", "Coût à l'échelle", "Résilience"]
+      },
+      "engineer": {
+        "name": "Julie Petit",
+        "role": "Lead Developer",
+        "focus": "DX, intégration, maintenance",
+        "personality": "technique",
+        "key_concerns": ["Complexité", "Documentation", "Support"]
+      }
+    },
+    "company": {
+      "name": "HealthTech",
+      "size": "80 développeurs",
+      "sector": "Santé connectée",
+      "context": "Startup en forte croissance, APIs au coeur du produit"
+    },
+    "current_situation": "Gateway maison qui ne tient plus la charge, incidents récurrents",
+    "pain_points": [
+      "Leur gateway custom plante sous la charge",
+      "Pas de rate limiting efficace (abus d'APIs)",
+      "Monitoring bricolé, alertes peu fiables",
+      "L'équipe passe du temps à maintenir l'infra"
+    ],
+    "technical_requirements": [
+      "Support WebSocket",
+      "Déploiement Kubernetes",
+      "Latence <15ms",
+      "Intégration avec leur stack observabilité"
+    ]
+  },
+
+  "demo_scenarios": {
+    "scenario_1": {
+      "name": "Déploiement d'une API",
+      "duration": "7 min",
+      "story": "Créer et déployer une nouvelle API avec authentification en live",
+      "show": "CLI + Console, de la spec OpenAPI au déploiement",
+      "wow_moment": "API live et testable en 3 minutes",
+      "question_probable": "On peut automatiser ça en CI/CD?"
+    },
+    "scenario_2": {
+      "name": "Rate limiting et protection",
+      "duration": "7 min",
+      "story": "Configurer le rate limiting et simuler une attaque",
+      "show": "Dashboard temps réel, les requêtes bloquées",
+      "wow_moment": "Visualisation en temps réel de l'attaque bloquée",
+      "question_probable": "On peut whitelister certains clients?"
+    },
+    "scenario_3": {
+      "name": "Observabilité et debugging",
+      "duration": "6 min",
+      "story": "Une requête échoue, debug en temps réel",
+      "show": "Traces distribuées, logs, métriques",
+      "wow_moment": "Trouver la cause d'une erreur en 30 secondes",
+      "question_probable": "Ça s'intègre avec Datadog/Grafana?"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Notre gateway actuelle fait ça, pourquoi changer?",
+      "type": "status_quo",
+      "demo_response": "Comparer les fonctionnalités avancées (transformation, analytics)"
+    },
+    {
+      "objection": "Comment on migre sans coupure de service?",
+      "type": "migration",
+      "demo_response": "Montrer le mode shadow et le basculement progressif"
+    },
+    {
+      "objection": "Et si votre service tombe?",
+      "type": "reliability",
+      "demo_response": "Architecture multi-région, SLA 99.999%, mode dégradé"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Démo technique avec le CTO et le lead dev. Ils veulent voir du concret, pas du marketing.",
+      "prospect_first_response": "[CTO] Bonjour. On a lu votre doc, ça a l'air bien sur le papier. Maintenant montrez-nous si ça tient la route techniquement. Julie a préparé des questions."
+    },
+    "objectives": [
+      "Démontrer la robustesse technique",
+      "Répondre aux questions pointues avec assurance",
+      "Montrer que vous maîtrisez le produit en profondeur",
+      "Convaincre les deux profils (CTO + Dev)"
+    ],
+    "success_criteria": [
+      "Questions techniques satisfaites",
+      "Aucune limitation cachée révélée",
+      "Engagement pour un POC technique"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "technical_level": "Questions standards, curieux",
+        "attitude": "Ouverts à la nouveauté"
+      },
+      "medium": {
+        "technical_level": "Questions pointues sur les edge cases",
+        "attitude": "Sceptiques mais professionnels"
+      },
+      "expert": {
+        "technical_level": "Experts du domaine, cherchent les failles",
+        "attitude": "Défensifs, attachés à leur solution actuelle"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Démontrer avec du code réel",
+    "Répondre aux questions techniques avec précision",
+    "Admettre les limitations honnêtement",
+    "Montrer la documentation et le support",
+    "Proposer un POC technique ciblé"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["impressionnant", "on fait un POC", "envoyez-nous la doc technique"],
+    "min_exchanges": 10,
+    "max_exchanges": 22,
+    "auto_end_enabled": true
+  }
+}

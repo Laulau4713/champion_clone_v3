@@ -1,0 +1,162 @@
+{
+  "template_id": "profils_psy_expressif",
+  "skill_slug": "profils_psychologiques",
+  "name": "Profil Expressif - Le communicant",
+  "description": "Adaptez votre discours à un prospect qui aime briller, être reconnu et valoriser son image.",
+
+  "product": {
+    "name": "EventPro 360",
+    "tagline": "Des événements qui marquent les esprits",
+    "how_it_works": {
+      "summary": "Plateforme complète d'organisation d'événements corporate avec gestion invités, live streaming et analytics",
+      "key_features": [
+        "Gestion invitations et inscriptions",
+        "App mobile événementielle personnalisée",
+        "Live streaming et replay",
+        "Analytics engagement en temps réel"
+      ]
+    },
+    "pricing": {
+      "entry_price": "500€/événement",
+      "popular_plan": "Abonnement 2000€/mois (événements illimités)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "400+ entreprises",
+      "events": "5000+ événements organisés",
+      "satisfaction": "98% de taux de satisfaction"
+    },
+    "notable_events": ["Keynote Apple France", "Gala L'Oréal", "Convention Salesforce"],
+    "testimonials": [
+      {
+        "name": "Stéphanie Bauer, Dir. Com",
+        "company": "LuxuryBrands (2000 employés)",
+        "quote": "Notre gala annuel est devenu LA référence du secteur grâce à EventPro."
+      }
+    ]
+  },
+
+  "profil_psychologique": {
+    "type": "expressif",
+    "nom_complet": "L'Expressif (É final de SÉDAIÉ)",
+    "caracteristiques": {
+      "besoin_principal": "Briller, être reconnu, impressionner",
+      "peur_principale": "Passer inaperçu, être banal",
+      "comportement_achat": "Impulsif si ça valorise son image, sensible au prestige",
+      "question_cle": "Comment ça va me faire briller?",
+      "signaux": ["Parle de ses succès", "Name-dropping", "Sensible à l'image de marque"]
+    },
+    "ce_qui_le_convainc": [
+      "Références prestigieuses",
+      "Impact visuel et 'wow effect'",
+      "Reconnaissance de ses pairs",
+      "Personnalisation haut de gamme",
+      "Exclusivité"
+    ],
+    "ce_qui_le_fait_fuir": [
+      "Solution basique ou commodity",
+      "Manque de prestige",
+      "Pas de différenciation visible",
+      "Traitement standard",
+      "Références peu impressionnantes"
+    ],
+    "adaptation_discours": {
+      "ton": "Enthousiaste, valorisant, ambitieux",
+      "mots_cles": ["exceptionnel", "unique", "prestige", "succès", "impact", "reconnaissance"],
+      "structure": "Valoriser le prospect et montrer comment la solution amplifie sa réussite",
+      "eviter": ["Être trop modeste", "Références moyennes", "Approche standardisée"]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Alexandra Petit",
+      "role": "Directrice de la Communication",
+      "company": "FinanceGroup",
+      "company_size": "800 employés, groupe financier",
+      "sector": "Finance/Banque",
+      "personality": "expressif",
+      "psychology": {
+        "type": "expressif",
+        "communication_style": "Enthousiaste, parle d'elle et de ses succès, aime les compliments",
+        "decision_speed": "Rapide si impressionnée, émotionnelle",
+        "priority": "Organiser L'ÉVÉNEMENT dont tout le monde parlera"
+      },
+      "current_situation": "Organise 20 événements/an avec des agences différentes, qualité inégale",
+      "pain_points": [
+        "Le dernier gala était 'correct' mais pas mémorable",
+        "Le CEO veut des événements plus impactants",
+        "Difficile de mesurer le ROI des événements",
+        "Concurrence avec les autres DirCom du secteur"
+      ],
+      "hidden_need": "Veut être reconnue comme LA meilleure DirCom du secteur financier"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Je travaille déjà avec des agences très réputées",
+      "type": "competition",
+      "response_approach": "Montrer la complémentarité, les références encore plus prestigieuses"
+    },
+    {
+      "objection": "C'est trop tech pour nos événements chics",
+      "type": "fit",
+      "response_approach": "Montrer des exemples luxe, le côté invisible et élégant"
+    },
+    {
+      "objection": "Mon budget est déjà alloué aux agences",
+      "type": "budget",
+      "response_approach": "ROI et réduction de dépendance aux agences"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Elle vous a contacté après avoir vu votre travail au gala d'un concurrent. Elle veut faire mieux.",
+      "prospect_first_response": "Bonjour! J'ai entendu parler de vous par Claire de chez BankPlus. Son gala était incroyable. Comment vous faites pour créer ce genre d'effet 'wow'?"
+    },
+    "objectives": [
+      "Valoriser la prospect et son ambition",
+      "Montrer des références prestigieuses",
+      "Créer de l'exclusivité",
+      "Proposer une collaboration sur son prochain grand événement"
+    ],
+    "success_criteria": [
+      "Prospect se sent valorisée et comprise",
+      "Vision d'un événement exceptionnel partagée",
+      "Brief pour son prochain événement obtenu"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "ego": "Facile à valoriser, réceptive",
+        "expectations": "Attentes élevées mais réalistes"
+      },
+      "medium": {
+        "ego": "Exigeante, veut être traitée en VIP",
+        "expectations": "Veut surpasser tous les concurrents"
+      },
+      "expert": {
+        "ego": "Très difficile à impressionner",
+        "expectations": "Attentes démesurées, compare à tout"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Valoriser le prospect sincèrement",
+    "Name-dropping stratégique",
+    "Créer de l'exclusivité",
+    "Parler impact et reconnaissance",
+    "Visualiser le succès futur"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["j'adore l'idée", "on se voit pour en parler", "envoyez-moi des exemples"],
+    "min_exchanges": 8,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

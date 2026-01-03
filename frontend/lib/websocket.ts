@@ -42,6 +42,10 @@ export interface ProspectResponse {
     tips: string[];
   };
   conversion_possible: boolean;
+  // Phase 2: Détection fin de conversation
+  session_ended?: boolean;
+  end_type?: "mutual_goodbye" | "prospect_ending" | "user_ending" | null;
+  redirect_url?: string | null;
   timestamp: string;
 }
 
@@ -69,6 +73,9 @@ export interface SessionEnded {
     conseil_principal: string;
     passed: boolean;
   };
+  // Phase 2: Détection fin de conversation
+  end_type?: "mutual_goodbye" | "prospect_ending" | "user_ending" | null;
+  redirect_url?: string | null;
   timestamp: string;
 }
 

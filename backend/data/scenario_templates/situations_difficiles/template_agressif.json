@@ -1,0 +1,165 @@
+{
+  "template_id": "situations_difficiles_agressif",
+  "skill_slug": "situations_difficiles",
+  "name": "Situations difficiles - Client agressif en colère",
+  "description": "Gérez un client très mécontent qui exprime sa colère de manière agressive.",
+
+  "product": {
+    "name": "CloudBackup Pro",
+    "tagline": "Vos données, protégées et accessibles",
+    "context": {
+      "service": "Solution de backup cloud pour PME",
+      "incident": "Restauration de données qui a pris 8h au lieu de 2h promises",
+      "impact_client": "Équipe bloquée pendant une demi-journée, perte de productivité"
+    }
+  },
+
+  "crisis_methodology": {
+    "framework": "LARA - Listen, Acknowledge, Respond, Act",
+    "steps": {
+      "listen": "Laisser le client exprimer sa frustration sans interrompre",
+      "acknowledge": "Valider les émotions, reconnaître le problème",
+      "respond": "Expliquer ce qui s'est passé sans excuses excessives",
+      "act": "Proposer une solution concrète immédiate"
+    },
+    "dont_do": [
+      "Interrompre le client",
+      "Se justifier immédiatement",
+      "Blâmer d'autres équipes ou le client",
+      "Promettre l'impossible",
+      "Être défensif ou contre-attaquer",
+      "Minimiser le problème"
+    ],
+    "do": [
+      "Rester calme quoi qu'il arrive",
+      "Utiliser le prénom du client",
+      "Reformuler ce que vous comprenez",
+      "S'excuser sincèrement une fois",
+      "Proposer une solution, pas juste des excuses",
+      "Suivre après la résolution"
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Patrick Morin",
+      "role": "Directeur de Production",
+      "company": "FabriqueXL",
+      "company_size": "180 employés, industrie",
+      "sector": "Fabrication industrielle",
+      "personality": "angry_assertive",
+      "psychology": {
+        "type": "dominant",
+        "communication_style": "Explosif quand en colère, cherche des responsables",
+        "underlying_emotion": "Stressé car responsable devant sa direction",
+        "what_he_needs": "Être entendu, solution immédiate, garantie que ça ne se reproduira pas"
+      },
+      "incident_context": {
+        "what_happened": "La restauration a pris 8h au lieu de 2h, équipe de 20 personnes bloquée",
+        "financial_impact": "Demi-journée perdue = ~15K€ de productivité",
+        "reputation_impact": "Il a dû expliquer le retard à son DG",
+        "emotional_state": "Furieux, se sent trahi"
+      }
+    }
+  },
+
+  "conversation_phases": [
+    {
+      "phase": "Explosion initiale",
+      "client_behavior": "Crie, accuse, menace de résilier",
+      "your_goal": "Écouter sans interrompre, laisser la pression baisser",
+      "key_phrases": [
+        "Je vous écoute, Patrick.",
+        "Je comprends votre frustration.",
+        "Vous avez raison d'être en colère."
+      ]
+    },
+    {
+      "phase": "Reconnaissance",
+      "client_behavior": "Attend une réponse, encore énervé",
+      "your_goal": "Reformuler et valider, montrer qu'on a compris",
+      "key_phrases": [
+        "Si je comprends bien, votre équipe a été bloquée 8 heures au lieu de 2, et vous avez dû vous expliquer auprès de votre direction.",
+        "C'est inacceptable, je suis d'accord avec vous.",
+        "Je suis vraiment désolé pour ce qui s'est passé."
+      ]
+    },
+    {
+      "phase": "Explication",
+      "client_behavior": "Veut savoir ce qui s'est passé",
+      "your_goal": "Expliquer sans se justifier excessivement",
+      "key_phrases": [
+        "Voilà ce qui s'est passé : [explication factuelle].",
+        "Ce n'est pas une excuse, c'est ce qui explique le délai.",
+        "Ça n'aurait pas dû arriver, et on va s'assurer que ça ne se reproduise pas."
+      ]
+    },
+    {
+      "phase": "Solution",
+      "client_behavior": "Attend de savoir ce qu'on va faire",
+      "your_goal": "Proposer une solution concrète et immédiate",
+      "key_phrases": [
+        "Voilà ce que je vous propose pour compenser.",
+        "Je m'engage personnellement à [action].",
+        "Je vous recontacte demain à 10h pour faire le point."
+      ]
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Le client vous appelle directement. Il est furieux. La restauration de ses données a pris 8h alors que le SLA promet 2h.",
+      "prospect_first_response": "(voix élevée, très en colère) Allô ? C'est Patrick Morin de FabriqueXL. Non mais c'est QUOI ce bordel ?! On a été bloqués HUIT HEURES à cause de votre restauration à la con ! HUIT HEURES ! Mon équipe de 20 personnes les bras croisés ! J'ai dû m'expliquer devant le DG ! Vous vous foutez de nous ou quoi ?!"
+    },
+    "objectives": [
+      "Laisser le client exprimer sa colère",
+      "Reconnaître le problème sans être défensif",
+      "Garder son calme malgré l'agressivité",
+      "Proposer une solution de compensation",
+      "Préserver la relation client"
+    ],
+    "success_criteria": [
+      "Le client se calme progressivement",
+      "Il se sent écouté et compris",
+      "Une solution concrète est acceptée",
+      "La relation est préservée (pas de résiliation)"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "aggression_level": "Fort mais rationnel, se calme avec l'écoute",
+        "resolution": "Accepte une compensation raisonnable"
+      },
+      "medium": {
+        "aggression_level": "Très agressif, relance même quand on écoute",
+        "resolution": "Veut plus que ce qu'on peut offrir"
+      },
+      "expert": {
+        "aggression_level": "Insultant, menace de poursuites",
+        "resolution": "Veut du sang, refuse les premières propositions"
+      }
+    }
+  },
+
+  "compensation_options": {
+    "immediate": "2 mois offerts sur l'abonnement",
+    "process": "Audit gratuit de leur configuration pour éviter récurrence",
+    "relationship": "Appel avec le directeur technique pour expliquer les mesures",
+    "guarantee": "SLA renforcé avec pénalités pour les 6 prochains mois"
+  },
+
+  "techniques_to_practice": [
+    "Rester calme face à l'agressivité",
+    "Écouter sans interrompre (même si c'est dur)",
+    "Reformuler pour valider",
+    "S'excuser une fois, sincèrement, sans en faire trop",
+    "Proposer une solution concrète rapidement",
+    "Ne jamais blâmer quelqu'un d'autre"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok, on fait comme ça", "bon, je me calme", "merci d'avoir pris ça au sérieux"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

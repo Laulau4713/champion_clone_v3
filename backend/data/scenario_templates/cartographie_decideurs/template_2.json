@@ -1,0 +1,189 @@
+{
+  "template_id": "cartographie_decideurs_2",
+  "skill_slug": "cartographie_decideurs",
+  "name": "Cartographie - Groupe familial en transition",
+  "description": "Naviguer dans la politique d'un groupe familial où les décisions mêlent business et relations personnelles.",
+
+  "product": {
+    "name": "SuccessionPro",
+    "tagline": "Accompagner les transitions d'entreprises familiales",
+    "how_it_works": {
+      "summary": "Cabinet de conseil spécialisé dans la transmission et la gouvernance des entreprises familiales",
+      "key_features": [
+        "Audit de gouvernance familiale",
+        "Accompagnement transmission",
+        "Médiation intergénérationnelle",
+        "Formation des successeurs"
+      ]
+    },
+    "pricing": {
+      "entry_price": "Mission d'audit à 15K€",
+      "popular_plan": "Accompagnement 12 mois à 80K€"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "120+ groupes familiaux accompagnés",
+      "success_rate": "94% de transmissions réussies"
+    },
+    "testimonials": [
+      {
+        "name": "Henri Dubois",
+        "company": "Groupe Dubois (3ème génération)",
+        "quote": "Ils ont su réconcilier mes fils autour du projet d'entreprise."
+      }
+    ]
+  },
+
+  "prospect": {
+    "contact_principal": {
+      "name": "Vincent Moreau",
+      "role": "Directeur Général (fils du fondateur)",
+      "company": "Groupe Moreau Industries",
+      "company_size": "350 employés, 60M€ CA",
+      "sector": "Industrie métallurgique",
+      "personality": "caught_in_middle",
+      "psychology": {
+        "type": "expressif",
+        "communication_style": "Ouvert mais prudent sur les sujets familiaux",
+        "decision_speed": "Bloqué par la dynamique familiale",
+        "priority": "Moderniser sans froisser son père"
+      }
+    },
+    "organigramme_familial": {
+      "patriarche": {
+        "name": "Robert Moreau",
+        "role": "Président (fondateur, 72 ans)",
+        "involvement": "A le dernier mot sur tout, même s'il dit être en retrait",
+        "style": "Autoritaire, nostalgique, méfiant envers les consultants",
+        "hidden_agenda": "A du mal à lâcher le contrôle"
+      },
+      "mere": {
+        "name": "Françoise Moreau",
+        "role": "Administratrice (épouse du fondateur)",
+        "involvement": "Influence majeure en coulisses, garde la paix familiale",
+        "style": "Conciliatrice, protège l'harmonie familiale",
+        "hidden_agenda": "Veut que ses fils s'entendent"
+      },
+      "frere": {
+        "name": "Pierre Moreau",
+        "role": "Directeur Commercial (autre fils)",
+        "involvement": "En compétition avec Vincent pour la succession",
+        "style": "Ambitieux, frustré de ne pas être DG",
+        "hidden_agenda": "Pense que le poste de DG lui revient"
+      },
+      "daf_externe": {
+        "name": "Marc Dupuis",
+        "role": "DAF (non-familial)",
+        "involvement": "Conseiller de confiance du père, influence les décisions",
+        "style": "Conservateur, loyal au fondateur",
+        "hidden_agenda": "Craint de perdre son influence après la transition"
+      },
+      "belle_soeur": {
+        "name": "Sylvie Moreau",
+        "role": "DRH (épouse de Pierre)",
+        "involvement": "Partie prenante via le clan de Pierre",
+        "style": "Territoriale, défend les intérêts de son mari",
+        "hidden_agenda": "Veut que Pierre devienne DG"
+      }
+    }
+  },
+
+  "cartographie_elements": {
+    "dynamiques_a_comprendre": [
+      {
+        "dynamique": "Rivalité fraternelle",
+        "question": "Comment se répartissent les responsabilités entre vous et votre frère?",
+        "why_important": "La compétition peut bloquer toute décision"
+      },
+      {
+        "dynamique": "Retrait du fondateur",
+        "question": "Quel est le rôle de votre père au quotidien aujourd'hui?",
+        "why_important": "Le fondateur garde souvent le pouvoir réel"
+      },
+      {
+        "dynamique": "Conseil de famille",
+        "question": "Comment prenez-vous les décisions stratégiques en famille?",
+        "why_important": "Identifier le vrai lieu de décision"
+      },
+      {
+        "dynamique": "Actionnariat",
+        "question": "Comment est structuré le capital du groupe?",
+        "why_important": "Le pouvoir suit souvent l'actionnariat"
+      }
+    ],
+    "questions_cles": [
+      "Qui d'autre dans la famille devrait être impliqué dans cette réflexion?",
+      "Comment votre père réagirait-il à ce type de projet?",
+      "Y a-t-il des sujets sensibles que je devrais connaître?",
+      "Comment se prennent les grandes décisions dans votre groupe?",
+      "Qui pourrait avoir des réserves sur ce projet?"
+    ]
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Mon père n'est pas prêt à en discuter",
+      "type": "family_dynamics",
+      "hidden": "Le père bloque toute discussion sur la succession"
+    },
+    {
+      "objection": "C'est compliqué avec mon frère en ce moment",
+      "type": "rivalry",
+      "hidden": "Conflit ouvert entre les deux fils"
+    },
+    {
+      "objection": "On a déjà un conseiller de confiance (le DAF)",
+      "type": "influencer",
+      "hidden": "Le DAF protège sa position"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Vincent vous a contacté après une conférence. Il veut moderniser la gouvernance mais marche sur des oeufs.",
+      "prospect_first_response": "Merci d'avoir pris le temps. Écoutez, c'est une situation... particulière. Mon père est encore très présent, et avec mon frère, c'est pas simple."
+    },
+    "objectives": [
+      "Cartographier les acteurs familiaux et leurs enjeux",
+      "Comprendre les dynamiques de pouvoir",
+      "Identifier le vrai décideur (souvent le patriarche)",
+      "Trouver un angle pour impliquer toute la famille"
+    ],
+    "success_criteria": [
+      "Arbre décisionnel familial compris",
+      "Points de tension identifiés",
+      "Stratégie d'approche du patriarche définie"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "openness": "Vincent partage les tensions familiales",
+        "patriarch_access": "Le père est ouvert à la discussion"
+      },
+      "medium": {
+        "openness": "Évoque les tensions sans détailler",
+        "patriarch_access": "Difficile mais possible"
+      },
+      "expert": {
+        "openness": "Minimise les conflits",
+        "patriarch_access": "Le père refuse de rencontrer des consultants"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Questions délicates sur la famille",
+    "Écoute des non-dits",
+    "Neutralité vis-à-vis des clans",
+    "Reformulation des enjeux émotionnels",
+    "Proposer une approche respectueuse du patriarche"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["j'en parle à mon père", "on se recontacte", "merci pour votre écoute"],
+    "min_exchanges": 10,
+    "max_exchanges": 22,
+    "auto_end_enabled": true
+  }
+}

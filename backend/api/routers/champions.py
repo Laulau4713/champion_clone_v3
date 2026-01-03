@@ -55,7 +55,7 @@ def validate_video_file(file_bytes: bytes) -> bool:
 # Dependencies (imported from auth router)
 # ============================================
 
-from api.routers.auth import get_current_user
+from api.routers.auth import get_current_user, require_enterprise_access
 
 # ============================================
 # Endpoints
@@ -69,7 +69,7 @@ async def upload_champion_video(
     description: str | None = Form(None, description="Optional description"),
     video: UploadFile = File(..., description="Video file (MP4/MOV). Max 500 MB."),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_enterprise_access),
 ):
     """
     Upload a champion's video for analysis.
@@ -157,7 +157,7 @@ async def analyze_champion(
     champion_id: int,
     body: AnalyzeRequest = None,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_enterprise_access),
 ):
     """
     Analyze a champion's video to extract sales patterns.
@@ -260,9 +260,11 @@ async def analyze_champion(
 
 @router.get("/champions", response_model=list[ChampionListResponse])
 async def list_champions(
-    status: str | None = Query(None, description="Filter by status"), db: AsyncSession = Depends(get_db)
+    status: str | None = Query(None, description="Filter by status"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_enterprise_access),
 ):
-    """List all champions."""
+    """List all champions. Requires Enterprise plan."""
     query = select(Champion).order_by(Champion.created_at.desc())
 
     if status:
@@ -275,8 +277,12 @@ async def list_champions(
 
 
 @router.get("/champions/{champion_id}", response_model=ChampionResponse)
-async def get_champion(champion_id: int, db: AsyncSession = Depends(get_db)):
-    """Get a specific champion's details."""
+async def get_champion(
+    champion_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_enterprise_access),
+):
+    """Get a specific champion's details. Requires Enterprise plan."""
     result = await db.execute(select(Champion).where(Champion.id == champion_id))
     champion = result.scalar_one_or_none()
 
@@ -299,7 +305,7 @@ async def get_champion(champion_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.delete("/champions/{champion_id}")
 async def delete_champion(
-    champion_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
+    champion_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(require_enterprise_access)
 ):
     """Delete a champion and associated files."""
     result = await db.execute(select(Champion).where(Champion.id == champion_id))

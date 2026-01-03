@@ -1,0 +1,100 @@
+{
+  "product_id": "cybersec_pme_1",
+  "name": "CloudSec Pro",
+  "tagline": "La cybersécurité simple pour les PME",
+  "category": "Cybersécurité",
+
+  "how_it_works": {
+    "summary": "Solution de sécurité cloud tout-en-un: antivirus, firewall, backup automatique, formation équipe. Installation en 30 minutes, géré depuis un tableau de bord unique.",
+    "key_features": [
+      "Protection endpoint pour tous les postes",
+      "Backup cloud automatique chiffré",
+      "Détection ransomware en temps réel",
+      "Formation phishing pour les employés",
+      "Tableau de bord sécurité centralisé"
+    ],
+    "technical_requirements": "Windows/Mac, 2Go RAM minimum, connexion internet",
+    "implementation_time": "30 minutes à 2 heures selon nombre de postes"
+  },
+
+  "integrations": [
+    "Microsoft 365",
+    "Google Workspace",
+    "Slack",
+    "Active Directory",
+    "Azure AD"
+  ],
+
+  "support": {
+    "onboarding": "Installation assistée gratuite",
+    "support": "Support FR 24/7 par téléphone",
+    "sla": "Réponse en moins d'1h pour incidents critiques",
+    "updates": "Mises à jour automatiques"
+  },
+
+  "pricing": {
+    "model": "par_poste",
+    "entry_price": "8€/poste/mois",
+    "popular_plan": "Pro à 15€/poste/mois (inclut backup)",
+    "minimum": "5 postes",
+    "engagement": "Mensuel sans engagement ou annuel -20%",
+    "free_trial": "14 jours sur 5 postes"
+  },
+
+  "proof": {
+    "testimonials": [
+      {
+        "name": "Marc Dubois",
+        "role": "DG",
+        "company": "InnoTech (45 employés)",
+        "quote": "On a bloqué une attaque ransomware le mois dernier. CloudSec nous a sauvés.",
+        "result": "0 incident en 2 ans, équipe formée au phishing"
+      }
+    ],
+    "case_studies": [
+      {
+        "client": "Cabinet Leroy Avocats",
+        "sector": "Juridique",
+        "problem": "Données clients sensibles, peur du piratage, pas d'équipe IT",
+        "solution": "CloudSec Pro + formation équipe de 12 personnes",
+        "results": {
+          "security_score": "de 35 à 92/100",
+          "incidents": "0 en 18 mois",
+          "time_saved": "2h/semaine (plus de gestion antivirus)"
+        }
+      }
+    ],
+    "stats": {
+      "clients": "1200+ PME en France",
+      "satisfaction": "4.7/5",
+      "attacks_blocked": "50 000+ menaces bloquées/mois",
+      "certifications": ["ISO 27001", "HDS"]
+    },
+    "notable_clients": ["Alan", "Swile", "Payfit", "Spendesk"]
+  },
+
+  "competition": {
+    "main_competitors": [
+      {
+        "name": "Norton Business",
+        "positioning": "Grand public adapté aux entreprises",
+        "strengths": ["Marque connue", "Prix bas"],
+        "weaknesses": ["Pas de support dédié PME", "Pas de backup intégré", "Interface datée"],
+        "price_comparison": "Moins cher mais beaucoup moins complet"
+      },
+      {
+        "name": "CrowdStrike",
+        "positioning": "Leader enterprise",
+        "strengths": ["Technologie top", "Réputation"],
+        "weaknesses": ["Prix prohibitif pour PME", "Complexe à gérer", "Minimum 100 postes"],
+        "price_comparison": "5x plus cher, surdimensionné pour PME"
+      }
+    ],
+    "our_differentiator": "Seule solution tout-en-un (protection + backup + formation) pensée pour les PME sans équipe IT. Prix PME, support enterprise.",
+    "switch_cost": {
+      "migration_time": "30 minutes",
+      "difficulty": "Très simple, on désinstalle l'ancien et on installe le nouveau",
+      "risk": "Aucune interruption de service"
+    }
+  }
+}

@@ -52,7 +52,7 @@ active_sessions: dict[int, dict] = {}
 # Dependencies (imported from auth router)
 # ============================================
 
-from api.routers.auth import get_current_user
+from api.routers.auth import get_current_user, require_enterprise_access
 
 # ============================================
 # Rate Limiter (imported from main)
@@ -72,9 +72,11 @@ async def generate_scenarios(
     champion_id: int,
     count: int = Query(3, ge=1, le=5, description="Number of scenarios to generate"),
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_enterprise_access),
 ):
     """
     Generate training scenarios based on champion's patterns.
+    Requires Enterprise plan.
 
     Returns realistic sales scenarios that challenge users
     to apply the champion's techniques.
@@ -112,10 +114,11 @@ async def start_training_session(
     request: Request,
     body: SessionStartRequest = Depends(),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_enterprise_access),
 ):
     """
-    Start a new training session.
+    Start a new training session (Champion V1).
+    Requires Enterprise plan.
 
     Initializes a conversation where the user practices
     against an AI simulating a prospect, using the champion's patterns.
@@ -186,10 +189,11 @@ async def respond_in_session(
     request: Request,
     body: SessionRespondRequest = Depends(),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_enterprise_access),
 ):
     """
-    Continue a training session with a user response.
+    Continue a training session with a user response (Champion V1).
+    Requires Enterprise plan.
 
     The AI will:
     1. Respond as the prospect
@@ -295,10 +299,11 @@ async def end_training_session(
     request: Request,
     body: SessionEndRequest = Depends(),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_enterprise_access),
 ):
     """
-    End a training session early and get summary.
+    End a training session early and get summary (Champion V1).
+    Requires Enterprise plan.
     """
     # Get session
     result = await db.execute(
@@ -359,8 +364,9 @@ async def list_sessions(
     champion_id: int | None = Query(None, description="Filter by champion"),
     status: str | None = Query(None, description="Filter by status"),
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_enterprise_access),
 ):
-    """List training sessions with optional filters."""
+    """List training sessions with optional filters (Champion V1). Requires Enterprise plan."""
     query = select(TrainingSession).order_by(TrainingSession.started_at.desc())
 
     if user_id:
@@ -377,8 +383,12 @@ async def list_sessions(
 
 
 @router.get("/training/sessions/{session_id}", response_model=SessionResponse)
-async def get_session(session_id: int, db: AsyncSession = Depends(get_db)):
-    """Get a specific session's details."""
+async def get_session(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_enterprise_access),
+):
+    """Get a specific session's details (Champion V1). Requires Enterprise plan."""
     result = await db.execute(select(TrainingSession).where(TrainingSession.id == session_id))
     session = result.scalar_one_or_none()
 
@@ -587,6 +597,29 @@ async def get_voice_session(
         raise HTTPException(status_code=404, detail="Session not found")
 
     return session
+
+
+@router.get("/voice/session/{session_id}/report")
+async def get_voice_session_report(
+    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+):
+    """
+    Get detailed report for a voice training session (Phase 3).
+
+    Returns a structured report for the /training/report/[id] page including:
+    - Header: skill, sector, level, duration
+    - Scores: final_score, gauge progression, conversion status
+    - Patterns: aggregated positive/negative patterns with counts and examples
+    - Messages: annotated conversation with gauge impacts
+    - Tips: personalized improvement advice
+    """
+    service = TrainingServiceV2(db)
+    report = await service.get_session_report(session_id, current_user)
+
+    if not report:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    return report
 
 
 @router.get("/voice/config")

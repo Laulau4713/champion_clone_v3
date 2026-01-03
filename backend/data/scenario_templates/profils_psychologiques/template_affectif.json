@@ -1,0 +1,161 @@
+{
+  "template_id": "profils_psy_affectif",
+  "skill_slug": "profils_psychologiques",
+  "name": "Profil Affectif - Le relationnel",
+  "description": "Adaptez votre discours à un prospect qui privilégie la relation humaine et la confiance avant le produit.",
+
+  "product": {
+    "name": "TeamCare RH",
+    "tagline": "Prenez soin de vos équipes",
+    "how_it_works": {
+      "summary": "Plateforme QVT avec baromètre social, coaching et avantages salariés",
+      "key_features": [
+        "Baromètre social anonyme mensuel",
+        "Accès à des coachs certifiés",
+        "Plateforme avantages (CE dématérialisé)",
+        "Alertes RPS pour les managers"
+      ]
+    },
+    "pricing": {
+      "entry_price": "3€/salarié/mois",
+      "popular_plan": "Premium à 6€/salarié/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "600+ entreprises",
+      "engagement": "+35% d'engagement moyen",
+      "turnover": "-25% de turnover chez nos clients"
+    },
+    "testimonials": [
+      {
+        "name": "Marie-Pierre Gautier, DRH",
+        "company": "CareServices (300 salariés)",
+        "quote": "L'équipe TeamCare est exceptionnelle. Ils nous accompagnent vraiment, pas juste un outil."
+      }
+    ]
+  },
+
+  "profil_psychologique": {
+    "type": "affectif",
+    "nom_complet": "L'Affectif (A de SÉDAIÉ)",
+    "caracteristiques": {
+      "besoin_principal": "Créer une relation de confiance, se sentir compris",
+      "peur_principale": "Être traité comme un numéro, relation froide",
+      "comportement_achat": "Lent, besoin de créer du lien d'abord",
+      "question_cle": "Comment allez-vous m'accompagner?",
+      "signaux": ["Parle de son équipe", "S'intéresse à vous personnellement", "Évite les conflits"]
+    },
+    "ce_qui_le_convainc": [
+      "Relation authentique avec le vendeur",
+      "Intérêt sincère pour ses problèmes",
+      "Accompagnement personnalisé",
+      "Témoignages sur la qualité humaine",
+      "Sentiment d'être compris"
+    ],
+    "ce_qui_le_fait_fuir": [
+      "Approche trop commerciale",
+      "Pression à décider",
+      "Manque d'écoute",
+      "Relation transactionnelle",
+      "Indifférence à son histoire"
+    ],
+    "adaptation_discours": {
+      "ton": "Chaleureux, empathique, patient",
+      "mots_cles": ["ensemble", "accompagnement", "équipe", "confiance", "écoute", "sur-mesure"],
+      "structure": "Prendre le temps de connaître la personne avant de parler produit",
+      "eviter": ["Aller trop vite", "Être trop factuel", "Parler que de soi"]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Sandrine Morel",
+      "role": "Directrice des Ressources Humaines",
+      "company": "Maison Beaumont",
+      "company_size": "150 collaborateurs, entreprise familiale",
+      "sector": "Hôtellerie de luxe",
+      "personality": "affectif",
+      "psychology": {
+        "type": "affectif",
+        "communication_style": "Chaleureuse, parle beaucoup de ses équipes, émotive",
+        "decision_speed": "Lente, besoin de se sentir en confiance",
+        "priority": "Le bien-être de ses équipes et la relation partenaire"
+      },
+      "current_situation": "Pas d'outil QVT, gère tout 'à l'ancienne' avec des entretiens individuels",
+      "pain_points": [
+        "Turnover élevé dans l'hôtellerie (50%/an)",
+        "Difficile de détecter le mal-être à temps",
+        "Les managers ne remontent pas les alertes",
+        "Budget limité pour les avantages salariés"
+      ],
+      "hidden_need": "Se sent seule face aux difficultés RH, cherche un partenaire pas un prestataire"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "J'ai peur que ce soit encore un outil de plus qu'on n'utilisera pas",
+      "type": "adoption",
+      "response_approach": "Parler de l'accompagnement au changement, pas juste de l'outil"
+    },
+    {
+      "objection": "Comment allez-vous comprendre notre culture maison?",
+      "type": "fit",
+      "response_approach": "Proposer une immersion, montrer de l'intérêt sincère"
+    },
+    {
+      "objection": "Je préfère le contact humain aux outils digitaux",
+      "type": "values",
+      "response_approach": "L'outil libère du temps pour plus de contact humain"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Elle vous a contacté après une recommandation d'une consœur DRH. Elle veut d'abord vous connaître.",
+      "prospect_first_response": "Bonjour! Anne-Marie m'a beaucoup parlé de vous. Racontez-moi un peu comment vous travaillez avec vos clients?"
+    },
+    "objectives": [
+      "Créer un lien personnel authentique",
+      "Montrer de l'empathie pour ses challenges",
+      "Parler accompagnement avant produit",
+      "Proposer une première rencontre en personne"
+    ],
+    "success_criteria": [
+      "Lien de confiance établi",
+      "Elle parle ouvertement de ses difficultés",
+      "RDV en personne ou visite de site planifié"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "openness": "S'ouvre facilement si on prend le temps",
+        "trust": "La recommandation aide beaucoup"
+      },
+      "medium": {
+        "openness": "Teste si le vendeur est sincère",
+        "trust": "A été déçue par un prestataire avant"
+      },
+      "expert": {
+        "openness": "Très prudente, a été trahie par un vendeur",
+        "trust": "Méfiante malgré la recommandation"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Créer un lien personnel",
+    "Montrer un intérêt sincère",
+    "Écouter avant de proposer",
+    "Parler accompagnement, pas produit",
+    "Valoriser le côté humain"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["j'aimerais qu'on se rencontre", "merci pour cet échange", "on reste en contact"],
+    "min_exchanges": 10,
+    "max_exchanges": 22,
+    "auto_end_enabled": true
+  }
+}

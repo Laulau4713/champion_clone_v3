@@ -1,0 +1,174 @@
+{
+  "template_id": "negociation_2",
+  "skill_slug": "negociation",
+  "name": "Négociation - Multi-enjeux complexe",
+  "description": "Négociez un deal complexe avec plusieurs leviers : prix, délais, périmètre, conditions de paiement.",
+
+  "product": {
+    "name": "CloudMigrate Pro",
+    "tagline": "Migration cloud clé en main",
+    "how_it_works": {
+      "summary": "Service de migration infrastructure on-premise vers cloud (AWS, Azure, GCP) avec accompagnement",
+      "key_features": [
+        "Audit infrastructure existante",
+        "Plan de migration personnalisé",
+        "Migration données avec zéro downtime",
+        "Formation équipes IT",
+        "Support post-migration 6 mois"
+      ]
+    },
+    "pricing": {
+      "base_project": "150 000€ (pour ~50 serveurs)",
+      "components": {
+        "audit": "15 000€",
+        "migration": "100 000€",
+        "formation": "15 000€",
+        "support_6_months": "20 000€"
+      },
+      "payment_terms": "30% acompte, 40% à mi-parcours, 30% à livraison",
+      "negotiation_levers": {
+        "scope": "Réduire le nombre de serveurs ou phases",
+        "timeline": "Étaler sur 6 mois plutôt que 3",
+        "support": "Réduire à 3 mois, en option",
+        "payment": "Étalement possible sur 12 mois avec +8%"
+      }
+    }
+  },
+
+  "negotiation_methodology": {
+    "complex_deal_framework": {
+      "step_1": "Identifier tous les enjeux (prix, délai, périmètre, conditions)",
+      "step_2": "Prioriser les enjeux pour le prospect (qu'est-ce qui compte le plus ?)",
+      "step_3": "Trouver des trade-offs (je cède sur A si vous cédez sur B)",
+      "step_4": "Ne jamais négocier point par point (package global)",
+      "step_5": "Formaliser l'accord progressivement"
+    },
+    "value_vs_price": {
+      "add_value": "Formation bonus, support étendu, features premium",
+      "justify_value": "Référencer des projets similaires, quantifier le ROI",
+      "reduce_scope": "Moins de serveurs, moins de fonctionnalités, moins de support"
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Marc Bertrand",
+      "role": "DSI",
+      "company": "Groupe Média Plus",
+      "company_size": "600 employés, 80 serveurs on-premise",
+      "sector": "Média et communication",
+      "personality": "analytical_negotiator",
+      "psychology": {
+        "type": "analytique",
+        "communication_style": "Structuré, veut tout comprendre, négocie chaque point",
+        "negotiation_style": "Méthodique, cherche l'optimum global pas juste le prix",
+        "decision_drivers": ["Réduction des risques", "Délais respectés", "Budget maîtrisé"]
+      },
+      "project_context": {
+        "budget_allocated": "130 000€ (vs 150 000€ proposés)",
+        "deadline": "Migration doit être terminée avant juillet (pic d'activité)",
+        "constraints": "Zéro downtime obligatoire, données sensibles (RGPD)",
+        "internal_pressure": "Le DG veut que ce soit fait, la DSI a peur de l'échec"
+      },
+      "hidden_priorities": [
+        "Priorité 1 : Délai (absolument avant juillet)",
+        "Priorité 2 : Zéro risque (support long)",
+        "Priorité 3 : Prix (flexible si les 2 autres sont garantis)"
+      ]
+    }
+  },
+
+  "negotiation_points": [
+    {
+      "point": "Prix global",
+      "prospect_position": "130K€ max",
+      "our_position": "150K€ liste",
+      "trade_off_options": [
+        "Réduire le périmètre à 60 serveurs",
+        "Reporter les 20 serveurs secondaires en phase 2",
+        "Réduire le support de 6 à 3 mois",
+        "Supprimer la formation (ils la font eux-mêmes)"
+      ]
+    },
+    {
+      "point": "Délai",
+      "prospect_position": "Terminé avant fin juin",
+      "our_position": "3-4 mois standard, donc fin juin serré",
+      "trade_off_options": [
+        "Équipe renforcée (+10%) pour tenir le délai",
+        "Migration en 2 phases (critique en juin, reste en septembre)",
+        "Week-ends de migration pour accélérer"
+      ]
+    },
+    {
+      "point": "Paiement",
+      "prospect_position": "50% à la livraison, le reste en 6 mois",
+      "our_position": "30-40-30 standard",
+      "trade_off_options": [
+        "20-30-50 si engagement ferme",
+        "Étalement avec intérêts de 8%",
+        "Leasing via partenaire financier"
+      ]
+    },
+    {
+      "point": "Garanties",
+      "prospect_position": "Garantie zéro downtime ou pénalités",
+      "our_position": "Pas de garantie 100%",
+      "trade_off_options": [
+        "SLA avec compensation si downtime > 2h",
+        "Migration test préalable d'un serveur",
+        "Assurance projet (coût additionnel)"
+      ]
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Le projet est validé mais plusieurs points de négociation restent ouverts. C'est la réunion finale avant signature.",
+      "prospect_first_response": "Marc Bertrand - Bon, on veut avancer avec vous, le projet est validé par le DG. Mais on a plusieurs points à résoudre : le budget c'est 130K€ max, on doit être live fin juin, et on veut des garanties sur le zéro downtime. Comment on fait ?"
+    },
+    "objectives": [
+      "Identifier les vraies priorités du prospect",
+      "Construire un accord global équilibré",
+      "Faire des concessions sur les points secondaires",
+      "Tenir sur les points critiques pour nous",
+      "Formaliser un accord win-win"
+    ],
+    "success_criteria": [
+      "Deal signé",
+      "Marge préservée (>120K€ minimum)",
+      "Délai tenable pour l'équipe",
+      "Risques maîtrisés (pas de garantie impossible)"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "flexibility": "Prospect flexible sur 1-2 points",
+        "style": "Négociation collaborative"
+      },
+      "medium": {
+        "flexibility": "Prospect ferme sur 2 points, flexible sur 1",
+        "style": "Négociation tendue mais fair"
+      },
+      "expert": {
+        "flexibility": "Prospect intransigeant sur tout",
+        "style": "Négociation très difficile, menace d'aller voir ailleurs"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Négocier le package global, pas point par point",
+    "Identifier les vraies priorités vs les demandes tactiques",
+    "Créer des trade-offs (cession sur A contre gain sur B)",
+    "Ne jamais tout céder en une fois (garder des cartouches)",
+    "Formaliser les accords au fur et à mesure",
+    "Savoir dire non tout en préservant la relation"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["on a un deal", "ok pour ces conditions", "préparez le contrat"],
+    "min_exchanges": 12,
+    "max_exchanges": 30,
+    "auto_end_enabled": true
+  }
+}

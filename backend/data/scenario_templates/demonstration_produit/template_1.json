@@ -1,0 +1,180 @@
+{
+  "template_id": "demonstration_produit_1",
+  "skill_slug": "demonstration_produit",
+  "name": "Démo produit - Prospect impatient",
+  "description": "Réalisez une démonstration efficace face à un prospect pressé qui veut voir l'essentiel rapidement.",
+
+  "product": {
+    "name": "ContractFlow",
+    "tagline": "Gérez vos contrats de A à Z",
+    "how_it_works": {
+      "summary": "Solution CLM (Contract Lifecycle Management) pour gérer création, signature et suivi des contrats",
+      "key_features": [
+        "Templates de contrats intelligents",
+        "Workflow de validation configurable",
+        "Signature électronique intégrée",
+        "Alertes échéances automatiques",
+        "Extraction IA des clauses clés"
+      ]
+    },
+    "pricing": {
+      "entry_price": "49€/utilisateur/mois",
+      "popular_plan": "Business à 99€/utilisateur/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "900+ entreprises",
+      "time_saved": "-70% de temps sur le cycle contractuel",
+      "adoption": "92% d'adoption utilisateur"
+    },
+    "testimonials": [
+      {
+        "name": "Valérie Girard, Dir. Juridique",
+        "company": "ConseilGroup (200 employés)",
+        "quote": "On traite 3x plus de contrats avec la même équipe."
+      }
+    ]
+  },
+
+  "demo_methodology": {
+    "structure_ideale": {
+      "intro": "2-3 minutes - Rappel du contexte et des objectifs",
+      "demo_core": "15-20 minutes - Focus sur les 3 cas d'usage prioritaires",
+      "questions": "10 minutes - Réponses et approfondissements",
+      "conclusion": "5 minutes - Prochaines étapes"
+    },
+    "principes_cles": [
+      "Tell-Show-Tell (annoncer, montrer, résumer)",
+      "Focus sur les use cases du prospect, pas toutes les features",
+      "Laisser le prospect interagir si possible",
+      "Anticiper les questions techniques"
+    ],
+    "erreurs_courantes": [
+      "Montrer toutes les fonctionnalités",
+      "Parler plus que montrer",
+      "Ignorer les signaux d'impatience",
+      "Pas assez de lien avec le contexte prospect"
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Laurent Mercier",
+      "role": "Directeur Juridique",
+      "company": "TechSolutions",
+      "company_size": "350 employés",
+      "sector": "Éditeur logiciel",
+      "personality": "impatient",
+      "psychology": {
+        "type": "driver",
+        "communication_style": "Direct, veut voir l'essentiel, coupe si c'est trop long",
+        "decision_speed": "Rapide si convaincu",
+        "priority": "Automatiser les tâches répétitives pour se concentrer sur le stratégique"
+      },
+      "current_situation": "Gère 500+ contrats par an avec Word, Excel et beaucoup de relances manuelles",
+      "pain_points": [
+        "Contrats qui traînent des semaines en validation",
+        "Oubli de renouvellements (pénalités)",
+        "Aucune visibilité sur les engagements en cours",
+        "L'équipe passe plus de temps sur l'admin que sur le conseil"
+      ],
+      "use_cases_prioritaires": [
+        "Génération de NDA en 5 minutes",
+        "Workflow de validation avec le management",
+        "Alertes automatiques 3 mois avant échéance"
+      ]
+    }
+  },
+
+  "demo_scenarios": {
+    "use_case_1": {
+      "name": "Génération NDA",
+      "duration": "5 min",
+      "story": "Un commercial a besoin d'un NDA pour un nouveau prospect. Montrez comment le générer en 2 clics.",
+      "wow_moment": "Le NDA est personnalisé automatiquement avec les infos du prospect",
+      "question_probable": "Et si on veut modifier une clause?"
+    },
+    "use_case_2": {
+      "name": "Workflow validation",
+      "duration": "5 min",
+      "story": "Un contrat de 50K€ nécessite la validation du DG. Montrez le workflow automatique.",
+      "wow_moment": "Le DG reçoit une notification et peut valider en 1 clic sur mobile",
+      "question_probable": "On peut personnaliser les seuils de validation?"
+    },
+    "use_case_3": {
+      "name": "Alertes échéances",
+      "duration": "5 min",
+      "story": "Un contrat fournisseur arrive à échéance dans 3 mois. Montrez l'alerte et le suivi.",
+      "wow_moment": "Le tableau de bord montre tous les contrats à risque avec code couleur",
+      "question_probable": "On peut exporter ça pour le COMEX?"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "C'est joli mais est-ce que ça marche avec notre ERP?",
+      "type": "integration",
+      "demo_response": "Montrer l'API et les connecteurs existants"
+    },
+    {
+      "objection": "Mes collaborateurs ne vont jamais l'utiliser",
+      "type": "adoption",
+      "demo_response": "Montrer la simplicité de l'interface, les 2 clics"
+    },
+    {
+      "objection": "Ça a l'air bien mais on est en pleine saison",
+      "type": "timing",
+      "demo_response": "Proposer un déploiement progressif, commencer par les NDA"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Il vous a accordé 30 minutes. Il a été clair: 'Je veux voir le produit, pas un PowerPoint'.",
+      "prospect_first_response": "Bonjour. J'ai 30 minutes, pas plus. On avait identifié 3 cas d'usage prioritaires la dernière fois. Montrez-moi ça."
+    },
+    "objectives": [
+      "Faire une démo impactante en 30 min max",
+      "Montrer les 3 use cases identifiés",
+      "Créer des 'wow moments'",
+      "Répondre aux questions sans perdre le fil",
+      "Obtenir un accord pour un pilote"
+    ],
+    "success_criteria": [
+      "3 use cases démontrés efficacement",
+      "Questions traitées sans déborder",
+      "Engagement pour pilote ou next steps"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "patience": "Laisse faire la démo, questions à la fin",
+        "technical": "Questions standards"
+      },
+      "medium": {
+        "patience": "Interrompt pour des questions",
+        "technical": "Questions pointues sur l'intégration"
+      },
+      "expert": {
+        "patience": "Très impatient, 'passez au suivant'",
+        "technical": "Challenge technique, compare aux concurrents"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Structure Tell-Show-Tell",
+    "Créer des wow moments",
+    "Gérer le temps efficacement",
+    "Répondre aux interruptions sans perdre le fil",
+    "Conclure avec engagement"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok je suis convaincu", "on fait un pilote", "merci pour la démo"],
+    "min_exchanges": 8,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

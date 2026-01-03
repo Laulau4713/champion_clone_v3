@@ -1,0 +1,184 @@
+{
+  "template_id": "decouverte_compir_2",
+  "skill_slug": "decouverte_compir",
+  "name": "Découverte COMPIR - DRH en transformation",
+  "description": "RDV avec une DRH qui cherche à moderniser ses processus RH. Prospect bavarde mais évasive sur les vrais enjeux.",
+
+  "product": {
+    "name": "TalentFlow RH",
+    "tagline": "La suite RH qui simplifie le quotidien",
+    "how_it_works": {
+      "summary": "SIRH complet couvrant recrutement, onboarding, gestion des temps et formation",
+      "key_features": [
+        "Recrutement avec IA de matching",
+        "Onboarding digital automatisé",
+        "Gestion des congés et absences",
+        "Portail collaborateur self-service"
+      ]
+    },
+    "pricing": {
+      "entry_price": "4€/collaborateur/mois",
+      "popular_plan": "Pro à 8€/collaborateur/mois (toutes fonctionnalités)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "800+ entreprises",
+      "time_saved": "12h/semaine en moyenne pour les RH"
+    },
+    "testimonials": [
+      {
+        "name": "Céline Durand",
+        "company": "MediaGroup (200 salariés)",
+        "quote": "J'ai enfin du temps pour les projets stratégiques au lieu de gérer de la paperasse."
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Isabelle Fontaine",
+      "role": "Directrice des Ressources Humaines",
+      "company": "IndustrieTech",
+      "company_size": "180 salariés",
+      "sector": "Industrie manufacturière",
+      "personality": "talkative_evasive",
+      "psychology": {
+        "type": "relationnel",
+        "communication_style": "Parle beaucoup mais reste en surface, évite les sujets sensibles",
+        "decision_speed": "Consulte beaucoup avant de décider",
+        "priority": "Ne pas créer de vagues, harmonie sociale"
+      },
+      "current_situation": "Mix de fichiers Excel, un vieux logiciel de paie, et beaucoup de papier. Le DG pousse pour moderniser.",
+      "pain_points": [
+        "Noyée dans les tâches administratives",
+        "Erreurs fréquentes sur les congés et RTT",
+        "Onboarding chaotique, mauvaise image employeur",
+        "Le DG veut des indicateurs RH qu'elle ne peut pas produire"
+      ],
+      "hidden_need": "A peur d'être remplacée si elle n'arrive pas à se moderniser",
+      "goals": [
+        "Réduire de 50% le temps sur l'admin",
+        "Améliorer l'expérience collaborateur",
+        "Produire un tableau de bord RH mensuel"
+      ]
+    }
+  },
+
+  "compir_elements": {
+    "contexte": {
+      "question_cle": "Pouvez-vous me présenter l'organisation RH actuelle?",
+      "infos_a_decouvrir": [
+        "Taille de l'équipe RH",
+        "Périmètre couvert",
+        "Historique des outils"
+      ]
+    },
+    "objectifs": {
+      "question_cle": "Quelles sont les priorités RH pour cette année?",
+      "infos_a_decouvrir": [
+        "Projets de transformation",
+        "Attentes de la direction",
+        "Objectifs quantifiés"
+      ]
+    },
+    "moyens": {
+      "question_cle": "Comment gérez-vous les processus RH au quotidien?",
+      "infos_a_decouvrir": [
+        "Outils en place",
+        "Workflows actuels",
+        "Points de friction"
+      ]
+    },
+    "problemes": {
+      "question_cle": "Qu'est-ce qui vous prend le plus de temps au quotidien?",
+      "infos_a_decouvrir": [
+        "Tâches chronophages",
+        "Sources d'erreurs",
+        "Frustrations équipe"
+      ]
+    },
+    "implications": {
+      "question_cle": "Quel impact ça a sur votre capacité à mener vos projets?",
+      "infos_a_decouvrir": [
+        "Projets retardés",
+        "Qualité de service dégradée",
+        "Image employeur"
+      ]
+    },
+    "resultats": {
+      "question_cle": "Si vous aviez une baguette magique, que changeriez-vous?",
+      "infos_a_decouvrir": [
+        "Situation idéale",
+        "Quick wins souhaités",
+        "Vision long terme"
+      ]
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Je dois d'abord en parler au DG",
+      "type": "authority",
+      "hidden": "Elle ne veut pas s'engager seule"
+    },
+    {
+      "objection": "On est en pleine négociation salariale, ce n'est pas le moment",
+      "type": "timing",
+      "hidden": "Elle a peur de la charge de travail supplémentaire"
+    },
+    {
+      "objection": "Les gens ici n'aiment pas le changement",
+      "type": "change_resistance",
+      "hidden": "C'est elle qui a peur du changement"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "RDV obtenu via une recommandation du DG qui a vu une démo à un salon. La DRH a été 'missionnée' pour évaluer.",
+      "prospect_first_response": "Bonjour! Le DG m'a dit que vous aviez des solutions intéressantes. Par contre je vous préviens, on a déjà vu pas mal de choses..."
+    },
+    "objectives": [
+      "Découvrir les vrais enjeux derrière le discours de surface",
+      "Identifier la pression du DG et les peurs de la DRH",
+      "Quantifier les problèmes actuels",
+      "Positionner une démo avec le DG présent"
+    ],
+    "success_criteria": [
+      "Problèmes quantifiés (temps perdu, erreurs, etc.)",
+      "Enjeux business compris (pas juste RH)",
+      "RDV démo avec DG + DRH confirmé"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "openness": "Partage facilement les informations",
+        "dg_pressure": "Le DG est très motivé, elle suit"
+      },
+      "medium": {
+        "openness": "Reste en surface, il faut creuser",
+        "dg_pressure": "Tiraillée entre le DG et ses peurs"
+      },
+      "expert": {
+        "openness": "Très évasive, change de sujet",
+        "dg_pressure": "Résiste activement au projet du DG"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Reformulation pour aller au-delà du discours de surface",
+    "Questions d'implication ('Et concrètement, ça donne quoi?')",
+    "Silence stratégique pour laisser parler",
+    "Quantification ('Combien d'heures par semaine?')",
+    "Relier aux enjeux business ('Quel impact sur le recrutement?')"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "merci beaucoup", "on se recontacte"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

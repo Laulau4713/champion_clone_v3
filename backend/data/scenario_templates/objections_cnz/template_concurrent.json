@@ -1,0 +1,166 @@
+{
+  "template_id": "objections_cnz_concurrent",
+  "skill_slug": "objections_cnz",
+  "name": "Objections CNZ - On a déjà un fournisseur",
+  "description": "Maîtrisez la méthode CNZ face à l'objection concurrent, où le prospect est satisfait de sa solution actuelle.",
+
+  "product": {
+    "name": "FleetOptim",
+    "tagline": "Optimisez votre flotte, réduisez vos coûts",
+    "how_it_works": {
+      "summary": "Solution de gestion de flotte automobile avec télématique, optimisation des trajets et gestion TCO",
+      "key_features": [
+        "Télématique avec géolocalisation temps réel",
+        "Optimisation des tournées par IA",
+        "Gestion carburant et éco-conduite",
+        "Maintenance prédictive",
+        "Reporting TCO automatisé"
+      ]
+    },
+    "pricing": {
+      "entry_price": "29€/véhicule/mois",
+      "popular_plan": "Pro à 49€/véhicule/mois avec IA",
+      "savings_typical": "15-25% d'économie sur le TCO"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "500+ flottes gérées",
+      "vehicles": "25000+ véhicules équipés",
+      "savings": "18% d'économie TCO en moyenne"
+    },
+    "vs_competition": {
+      "masternaut": "2x moins cher, implémentation 3x plus rapide",
+      "tomtom": "IA d'optimisation plus avancée, ROI prouvé 6 mois vs 12",
+      "ocean": "Interface moderne, API ouverte, intégration ERP native"
+    }
+  },
+
+  "cnz_methodology": {
+    "for_competitor_objection": {
+      "creuser_examples": [
+        "Vous travaillez avec qui actuellement ?",
+        "Qu'est-ce qui vous plaît chez eux ? Qu'est-ce qui pourrait être mieux ?",
+        "Depuis combien de temps êtes-vous avec eux ?",
+        "Avez-vous comparé récemment avec ce qui existe sur le marché ?"
+      ],
+      "neutraliser_examples": [
+        "Je comprends la fidélité, changer de prestataire c'est toujours un effort...",
+        "Si ça fonctionne, pourquoi changer, c'est logique...",
+        "Vous avez raison d'être prudent, un changement ça se réfléchit..."
+      ],
+      "zoomer_examples": [
+        "Ce que je vous propose, c'est pas de tout changer, c'est de comparer. Si après analyse vous gagnez 15%, ça vaut le coup d'y réfléchir non ?",
+        "En 4 ans, le marché a évolué. Les solutions d'IA n'existaient pas. Un audit gratuit vous montrerait où vous en êtes.",
+        "Je ne demande pas de signer, juste de regarder ensemble si vous optimisez vraiment ou si vous passez à côté d'économies."
+      ]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Laurent Mercier",
+      "role": "Responsable Logistique",
+      "company": "TransExpress",
+      "company_size": "85 véhicules, 120 employés",
+      "sector": "Transport et livraison",
+      "personality": "loyal_to_incumbent",
+      "psychology": {
+        "type": "sécuritaire",
+        "communication_style": "Défend son fournisseur actuel, résiste au changement",
+        "decision_drivers": ["Stabilité", "Relation de confiance", "Pas d'effort"],
+        "hidden_concern": "A peur du projet de migration et de la courbe d'apprentissage"
+      },
+      "current_situation": "Utilise TomTom Telematics depuis 5 ans",
+      "pain_points": [
+        "Le contrat augmente de 8% chaque année",
+        "L'interface est datée, les conducteurs râlent",
+        "Pas d'IA d'optimisation, les tournées sont manuelles",
+        "Support en anglais uniquement, délais de réponse longs"
+      ],
+      "hidden_objection": "La dernière migration (vers TomTom) a été chaotique, 3 mois de galère"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "On est déjà équipés avec TomTom, ça fonctionne très bien",
+      "type": "competitor_satisfied",
+      "hidden_meaning": "Je n'ai pas envie de changer, trop de travail",
+      "cnz_response": {
+        "creuser": "Ça fonctionne bien sur quels aspects ? Y a-t-il des choses qui pourraient être mieux ?",
+        "neutraliser": "Si ça fonctionne, je comprends qu'on ne veuille pas toucher à ce qui marche...",
+        "zoomer": "Mon but n'est pas de vous faire changer pour changer. C'est de vérifier si vous optimisez vraiment. Un audit gratuit de 30 min vous dirait si vous êtes à 85% ou 100% de votre potentiel."
+      }
+    },
+    {
+      "objection": "On a un contrat de 3 ans, on ne peut pas partir",
+      "type": "competitor_contract",
+      "hidden_meaning": "Je me cache derrière le contrat",
+      "cnz_response": {
+        "creuser": "Il reste combien de temps sur ce contrat ? Quelles sont les conditions de sortie ?",
+        "neutraliser": "Les contrats, ça se gère, surtout si le gain économique est là...",
+        "zoomer": "Souvent les frais de sortie sont inférieurs aux économies. Et on peut préparer la migration pendant les derniers mois du contrat pour être opérationnels le jour J."
+      }
+    },
+    {
+      "objection": "On a une bonne relation avec notre commercial TomTom",
+      "type": "competitor_relationship",
+      "hidden_meaning": "C'est plus confortable de rester",
+      "cnz_response": {
+        "creuser": "Qu'est-ce qui fait cette bonne relation ? C'est la réactivité, le conseil ?",
+        "neutraliser": "Une bonne relation avec son fournisseur, c'est précieux, je comprends...",
+        "zoomer": "Ce que je vous propose, c'est de voir si cette relation vous coûte 15% de plus par véhicule. On peut vous offrir la même qualité relationnelle, avec un account manager dédié, ET des économies."
+      }
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Prospect contacté dans une campagne ciblée sur les flottes TomTom de 50+ véhicules. Il a accepté un appel 'par curiosité' mais n'a pas l'intention de changer.",
+      "prospect_first_response": "Écoutez, je vous ai pris 15 minutes par curiosité parce que votre email était bien fait. Mais on est avec TomTom depuis 5 ans, ça tourne, je ne vois pas pourquoi on changerait."
+    },
+    "objectives": [
+      "Creuser la satisfaction réelle vs la résistance au changement",
+      "Faire émerger les frustrations non exprimées",
+      "Positionner comme alternative sans critiquer le concurrent",
+      "Obtenir un audit ou une comparaison"
+    ],
+    "success_criteria": [
+      "Identifier au moins 2 frustrations avec le fournisseur actuel",
+      "Découvrir l'objection cachée (migration chaotique)",
+      "Obtenir un RDV d'audit ou une démo comparative"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "loyalty": "Fidèle mais ouvert à comparer",
+        "frustrations": "Exprime facilement ce qui ne va pas"
+      },
+      "medium": {
+        "loyalty": "Très fidèle, défend son fournisseur",
+        "frustrations": "Faut creuser pour les faire émerger"
+      },
+      "expert": {
+        "loyalty": "Refuse toute critique de son fournisseur",
+        "frustrations": "Nie tout problème, mur total"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Ne jamais critiquer directement le concurrent",
+    "Poser des questions qui font réfléchir",
+    "Faire émerger les frustrations latentes",
+    "Proposer un audit/comparaison plutôt qu'un remplacement",
+    "Quantifier le coût de la fidélité",
+    "Rassurer sur la migration"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok, on peut faire un audit", "envoyez-moi une comparaison", "je vais en parler en interne"],
+    "min_exchanges": 8,
+    "max_exchanges": 20,
+    "auto_end_enabled": true
+  }
+}

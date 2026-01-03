@@ -1,0 +1,167 @@
+{
+  "template_id": "checklist_bebedc_2",
+  "skill_slug": "checklist_bebedc",
+  "name": "BEBEDC - Projet ERP industriel",
+  "description": "Qualifier un projet ERP complexe avec un Directeur des Opérations pressé qui cache des enjeux politiques internes.",
+
+  "product": {
+    "name": "IndustriaPro ERP",
+    "tagline": "L'ERP conçu pour l'industrie française",
+    "how_it_works": {
+      "summary": "ERP modulaire couvrant production, stocks, achats, qualité et maintenance",
+      "key_features": [
+        "Planification de production (MRP/GPAO)",
+        "Gestion des stocks en temps réel",
+        "Traçabilité lot complète",
+        "Maintenance préventive intégrée"
+      ]
+    },
+    "pricing": {
+      "entry_price": "À partir de 50K€ (licence + déploiement)",
+      "popular_plan": "150K€ en moyenne (PMI 50-200 personnes)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "200+ industriels en France",
+      "implementation_success": "96% de projets livrés dans les temps",
+      "roi_average": "ROI en 18 mois en moyenne"
+    },
+    "testimonials": [
+      {
+        "name": "Michel Berger",
+        "company": "MetalPro (180 salariés)",
+        "quote": "On a réduit nos stocks de 30% tout en améliorant le taux de service."
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Catherine Renaud",
+      "role": "Directrice des Opérations",
+      "company": "PlastiTech",
+      "company_size": "230 salariés, 3 sites de production",
+      "sector": "Plasturgie",
+      "personality": "busy_political",
+      "psychology": {
+        "type": "driver",
+        "communication_style": "Directe, va droit au but, n'aime pas perdre son temps",
+        "decision_speed": "Veut décider vite mais le comité ralentit",
+        "priority": "Résultats opérationnels mesurables"
+      },
+      "current_situation": "ERP obsolète de 15 ans, patchwork de fichiers Excel pour contourner les limites",
+      "pain_points": [
+        "ERP actuel ne tient plus la charge (plantages réguliers)",
+        "Aucune visibilité sur les stocks en temps réel",
+        "Guerre interne entre Production et Commercial",
+        "Le DAF veut contrôler le projet mais n'y connaît rien"
+      ],
+      "hidden_need": "Veut reprendre le pouvoir sur les opérations face au DAF",
+      "political_context": {
+        "allies": ["DG (sponsor)", "Responsable Production"],
+        "opponents": ["DAF (veut piloter le budget)", "DSI (veut imposer son éditeur)"],
+        "stakes": "Le projet est un test pour sa future promotion au COMEX"
+      }
+    }
+  },
+
+  "bebedc_elements": {
+    "besoin": {
+      "question_cle": "Pourquoi changer d'ERP maintenant?",
+      "validation_required": "Événement déclencheur clair",
+      "red_flags": ["On anticipe pour dans 2 ans", "Le DG a vu un article"]
+    },
+    "enjeux": {
+      "question_cle": "Quels sont les enjeux business de ce projet?",
+      "validation_required": "Lien avec stratégie d'entreprise",
+      "red_flags": ["Enjeux uniquement techniques", "Pas de sponsor visible"]
+    },
+    "budget": {
+      "question_cle": "Comment est structuré le budget de ce projet?",
+      "validation_required": "Enveloppe allouée et validée",
+      "red_flags": ["Budget pas encore arbitré", "Dépend de plusieurs services"]
+    },
+    "echeance": {
+      "question_cle": "Quelle est la contrainte de timing?",
+      "validation_required": "Deadline business (pas IT)",
+      "red_flags": ["Pas de date butoir", "Quand on sera prêts"]
+    },
+    "decideurs": {
+      "question_cle": "Comment va s'organiser la décision?",
+      "validation_required": "Processus et acteurs clairs",
+      "red_flags": ["Comité de 10 personnes", "Pas de leader identifié"]
+    },
+    "concurrents": {
+      "question_cle": "Où en êtes-vous dans votre réflexion?",
+      "validation_required": "Position dans le processus d'achat",
+      "red_flags": ["Short-list de 5+", "Appel d'offres public"]
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Le DAF veut un autre éditeur",
+      "type": "internal_politics",
+      "hidden": "Guerre de pouvoir en interne"
+    },
+    {
+      "objection": "On n'a pas encore arbitré le budget",
+      "type": "budget",
+      "hidden": "Le budget est bloqué par les conflits internes"
+    },
+    {
+      "objection": "Le DSI n'est pas convaincu",
+      "type": "authority",
+      "hidden": "Le DSI pousse sa propre solution"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "RDV de qualification après une réponse à un appel d'offres simplifié. Elle a 45 minutes entre deux réunions.",
+      "prospect_first_response": "On y va? J'ai le COPIL dans 45 minutes. Qu'est-ce que vous avez besoin de savoir?"
+    },
+    "objectives": [
+      "Comprendre les enjeux politiques internes",
+      "Valider le budget et le processus de décision",
+      "Identifier les alliés et les opposants",
+      "Positionner une présentation au COMEX"
+    ],
+    "success_criteria": [
+      "Contexte politique compris",
+      "Budget fourchette confirmée",
+      "Accès au DG/sponsor obtenu"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "openness": "Partage le contexte politique",
+        "timeline": "Urgence réelle et assumée"
+      },
+      "medium": {
+        "openness": "Évoque les tensions sans détailler",
+        "timeline": "Timeline floue à cause des arbitrages"
+      },
+      "expert": {
+        "openness": "Cache les enjeux politiques",
+        "timeline": "Projet bloqué sans le dire"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Lire entre les lignes (signaux politiques)",
+    "Questions sur le processus de décision",
+    "Identifier les sponsors et les bloqueurs",
+    "Adapter son discours au profil Driver",
+    "Proposer de l'aide pour convaincre les opposants"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["je file en réunion", "merci, on se rappelle", "au revoir"],
+    "min_exchanges": 8,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

@@ -7,24 +7,24 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
         default:
-          "bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-lg shadow-primary-500/25",
+          "bg-primary-500 text-white hover:bg-primary-600 hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5 active:bg-primary-700 active:translate-y-0 shadow-lg shadow-primary-500/25",
         secondary:
-          "bg-secondary-500 text-white hover:bg-secondary-600 active:bg-secondary-700 shadow-lg shadow-secondary-500/25",
+          "bg-secondary-500 text-white hover:bg-secondary-600 hover:shadow-xl hover:shadow-secondary-500/30 hover:-translate-y-0.5 active:bg-secondary-700 active:translate-y-0 shadow-lg shadow-secondary-500/25",
         destructive:
-          "bg-error-500 text-white hover:bg-error-600 active:bg-error-700",
+          "bg-error-500 text-white hover:bg-error-600 hover:shadow-lg hover:shadow-error-500/30 hover:-translate-y-0.5 active:bg-error-700 active:translate-y-0",
         outline:
-          "border border-slate-600 bg-transparent text-slate-200 hover:bg-slate-800 hover:border-slate-500",
+          "border border-slate-600 bg-transparent text-slate-200 hover:bg-slate-800/80 hover:border-primary-500/50 hover:text-white hover:-translate-y-0.5 active:translate-y-0",
         ghost:
-          "bg-transparent text-slate-200 hover:bg-slate-800",
+          "bg-transparent text-slate-200 hover:bg-slate-800/80 hover:text-white",
         link:
-          "text-primary-400 underline-offset-4 hover:underline",
+          "text-primary-400 underline-offset-4 hover:underline hover:text-primary-300",
         success:
-          "bg-success-500 text-white hover:bg-success-600 active:bg-success-700",
+          "bg-success-500 text-white hover:bg-success-600 hover:shadow-lg hover:shadow-success-500/30 hover:-translate-y-0.5 active:bg-success-700 active:translate-y-0",
       },
       size: {
         default: "h-10 px-4 py-2",

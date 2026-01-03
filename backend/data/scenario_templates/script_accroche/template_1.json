@@ -1,0 +1,88 @@
+{
+  "template_id": "script_accroche_1",
+  "skill_slug": "script_accroche",
+  "name": "Accroche - Prospect occupé",
+  "description": "Vous appelez un prospect identifié. L'objectif est de capter son attention en moins de 30 secondes et d'obtenir du temps pour échanger.",
+
+  "product": {
+    "name": "MarketAuto Pro",
+    "tagline": "Automatisez 80% de vos tâches marketing",
+    "hook": "Je vous appelle car j'ai vu que vous étiez en pleine croissance et je me demandais comment vous gériez l'acquisition de nouveaux clients avec une équipe de seulement 3 personnes..."
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Stéphanie Roux",
+      "role": "CEO",
+      "company": "GrowthLab",
+      "company_size": "18 employés",
+      "sector": "SaaS B2B",
+      "personality": "busy",
+      "current_situation": "Entre deux calls, consulte ses emails",
+      "pain_points": [
+        "Trop de sollicitations commerciales",
+        "Manque de temps",
+        "Équipe marketing sous-dimensionnée"
+      ],
+      "hidden_need": "Cherche des solutions pour scaler sans recruter"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Je n'ai pas le temps là",
+      "type": "timing",
+      "hidden": "Veut voir si vous pouvez être concis"
+    },
+    {
+      "objection": "Envoyez-moi un email",
+      "type": "brush_off",
+      "hidden": "Teste votre répartie"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Vous avez 20 secondes pour capter l'attention. Le prospect est entre deux réunions.",
+      "prospect_first_response": "Oui allô? Qui est à l'appareil?"
+    },
+    "objectives": [
+      "Capter l'attention en moins de 30 secondes",
+      "Obtenir 2 minutes de conversation",
+      "Placer une question d'accroche qui engage"
+    ],
+    "success_criteria": [
+      "Le prospect accepte d'écouter",
+      "Obtention d'un RDV ou d'un rappel programmé",
+      "Aucune agressivité en fin de call"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "prospect_patience": "Écoute 30 secondes avant de juger",
+        "cooperation_level": "high"
+      },
+      "medium": {
+        "prospect_patience": "10 secondes max pour accrocher",
+        "cooperation_level": "medium"
+      },
+      "expert": {
+        "prospect_patience": "Prête à raccrocher immédiatement",
+        "cooperation_level": "low"
+      }
+    }
+  },
+
+  "hooks_to_test": [
+    "Question provocante sur un pain point",
+    "Référence à une actualité de l'entreprise",
+    "Mention d'un concurrent ou pair",
+    "Statistique choquante"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "je raccroche", "envoyez un email"],
+    "min_exchanges": 3,
+    "max_exchanges": 8,
+    "auto_end_enabled": true
+  }
+}

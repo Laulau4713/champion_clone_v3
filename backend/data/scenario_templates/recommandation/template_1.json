@@ -1,0 +1,160 @@
+{
+  "template_id": "recommandation_1",
+  "skill_slug": "recommandation",
+  "name": "Recommandation - Demander des références à un client satisfait",
+  "description": "Apprenez à demander des recommandations à un client satisfait au bon moment et de la bonne manière.",
+
+  "product": {
+    "name": "InvoicePro",
+    "tagline": "La facturation qui travaille pour vous",
+    "how_it_works": {
+      "summary": "Solution de facturation et recouvrement automatisé pour PME",
+      "key_features": [
+        "Facturation automatique récurrente",
+        "Relances automatiques personnalisées",
+        "Intégration comptable",
+        "Analytics DSO temps réel"
+      ]
+    },
+    "referral_program": {
+      "for_referrer": "1 mois offert par client recommandé qui signe",
+      "for_referred": "2 mois offerts sur le premier abonnement"
+    }
+  },
+
+  "referral_methodology": {
+    "when_to_ask": [
+      "Après un succès mesurable (KPI atteint)",
+      "Après un feedback positif spontané",
+      "Lors d'un point de suivi avec des résultats",
+      "Au moment du renouvellement (si satisfait)",
+      "Après une résolution de problème réussie"
+    ],
+    "how_to_ask": {
+      "bad": "Est-ce que vous connaissez des gens à qui on pourrait parler ?",
+      "good": "Qui dans votre réseau a le même problème de [X] que vous aviez avant ?",
+      "better": "Vous connaissez [entreprise spécifique] ? J'aimerais les contacter, pourriez-vous faire une intro ?"
+    },
+    "ask_structure": {
+      "step_1": "Rappeler le succès / la valeur apportée",
+      "step_2": "Demander si on peut en parler autour de lui",
+      "step_3": "Être spécifique (profil, entreprise, secteur)",
+      "step_4": "Faciliter (proposer un email à transférer)",
+      "step_5": "Offrir quelque chose en retour (programme de parrainage)"
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Antoine Moreau",
+      "role": "DAF",
+      "company": "DigitalAgency",
+      "company_size": "45 employés, agence digitale",
+      "sector": "Agence web / Marketing",
+      "personality": "satisfied_client",
+      "psychology": {
+        "type": "affectif",
+        "communication_style": "Chaleureux, aime partager les bons plans",
+        "relationship_quality": "Excellente, vous avez bien travaillé ensemble",
+        "referral_willingness": "Prêt à recommander si on lui facilite la tâche"
+      },
+      "client_history": {
+        "client_since": "8 mois",
+        "results": "DSO passé de 65 à 38 jours, 120K€ de trésorerie récupérée",
+        "last_interaction": "Point de suivi très positif la semaine dernière",
+        "satisfaction_quote": "Franchement, InvoicePro nous a changé la vie côté tréso"
+      },
+      "network": [
+        {
+          "name": "Claire Dupuis",
+          "company": "CreativeStudio",
+          "role": "DG",
+          "relationship": "Amie proche, même cercle de dirigeants"
+        },
+        {
+          "name": "Julien Petit",
+          "company": "DevShop",
+          "role": "Cofondateur",
+          "relationship": "Ancien collègue"
+        },
+        {
+          "name": "Marie Lefebvre",
+          "company": "MediaGroup",
+          "role": "CFO",
+          "relationship": "Rencontrée en networking"
+        }
+      ]
+    }
+  },
+
+  "referral_scenarios": [
+    {
+      "context": "Introduction du sujet recommandation",
+      "good_approach": "Antoine, au fait, vu les résultats qu'on a eus ensemble - le DSO à 38 jours c'est vraiment top - est-ce que vous en avez parlé à d'autres dirigeants d'agence autour de vous ?",
+      "bad_approach": "Est-ce que vous pourriez me recommander à des gens ?",
+      "why": "Partir du succès, pas de la demande"
+    },
+    {
+      "context": "Demande spécifique",
+      "good_approach": "Vous connaissez Claire Dupuis de CreativeStudio ? J'ai vu que vous êtes connectés sur LinkedIn. Ils ont les mêmes enjeux que vous, vous pensez que je pourrais lui parler ?",
+      "bad_approach": "Vous avez des contacts dans d'autres agences ?",
+      "why": "Être spécifique, faire le travail de ciblage"
+    },
+    {
+      "context": "Faciliter l'introduction",
+      "good_approach": "Ce serait possible de lui faire une intro par email ? Je vous prépare un message que vous n'avez qu'à transférer, ça vous prend 30 secondes.",
+      "bad_approach": "Vous pouvez m'envoyer ses coordonnées ?",
+      "why": "Réduire l'effort pour le client"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Point de suivi trimestriel avec un client très satisfait. Les résultats sont excellents. C'est le moment idéal pour demander des recommandations.",
+      "prospect_first_response": "(enthousiaste) Salut ! Alors ce point trimestriel, les chiffres sont bons non ? On est vraiment contents de votre solution, je le disais encore à mon associé hier."
+    },
+    "objectives": [
+      "Capitaliser sur le feedback positif",
+      "Amener naturellement le sujet des recommandations",
+      "Obtenir des noms spécifiques (pas juste 'oui je vais en parler')",
+      "Proposer de faciliter l'introduction",
+      "Mentionner le programme de parrainage"
+    ],
+    "success_criteria": [
+      "Obtenir au moins 2-3 noms concrets",
+      "Avoir l'accord pour faire une intro",
+      "Créer un email que le client peut transférer",
+      "Le client est content d'avoir aidé (pas forcé)"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "willingness": "Très partant, donne des noms spontanément",
+        "network": "Connaît beaucoup de monde"
+      },
+      "medium": {
+        "willingness": "Partant mais passif, faut lui mâcher le travail",
+        "network": "Connaît quelques personnes"
+      },
+      "expert": {
+        "willingness": "Satisfait mais réticent à recommander (peur de déranger)",
+        "network": "Réseau privé, protège ses contacts"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Choisir le bon moment (après un succès)",
+    "Partir du résultat, pas de la demande",
+    "Être spécifique dans la demande",
+    "Faciliter au maximum (email pré-rédigé)",
+    "Ne pas être pushy (laisser le choix)",
+    "Remercier et valoriser le parrainage"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok je lui envoie un mot", "je vous mets en copie", "je lui en parle cette semaine"],
+    "min_exchanges": 6,
+    "max_exchanges": 15,
+    "auto_end_enabled": true
+  }
+}

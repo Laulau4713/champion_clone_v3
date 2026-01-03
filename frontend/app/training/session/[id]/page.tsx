@@ -17,6 +17,8 @@ import {
   Wifi,
   WifiOff,
   AlertCircle,
+  HelpCircle,
+  Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,9 +37,11 @@ import { AudioRecorder } from "@/components/training/AudioRecorder";
 import { AudioPlayer } from "@/components/training/AudioPlayer";
 import { ReversalAlert, ReversalType } from "@/components/training/ReversalAlert";
 import { EventNotification, EventType } from "@/components/training/EventNotification";
+import { SessionPreparation } from "@/components/training/SessionPreparation";
+import { ConversationEndModal } from "@/components/training/ConversationEndModal";
 import { PremiumModal } from "@/components/ui/premium-modal";
 import { voiceAPI } from "@/lib/api";
-import { useVoiceSession, VoiceMessage } from "@/hooks/useVoiceSession";
+import { useVoiceSession, VoiceMessage, AutoEndInfo } from "@/hooks/useVoiceSession";
 import type { SessionEnded } from "@/lib/websocket";
 import type {
   DifficultyLevel,
@@ -69,6 +73,8 @@ export default function TrainingSessionPage() {
 
   const sessionId = params.id as string;
   const level = (searchParams.get("level") as DifficultyLevel) || "easy";
+  const skillSlug = searchParams.get("skill") || "cold_calling";
+  const sectorSlug = searchParams.get("sector") || undefined;
 
   const [session, setSession] = useState<VoiceSessionStartResponse | null>(null);
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
@@ -82,6 +88,9 @@ export default function TrainingSessionPage() {
   const [inputMode, setInputMode] = useState<"text" | "voice">("text");
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [eventNotification, setEventNotification] = useState<{type: string; message: string} | null>(null);
+  const [httpLoading, setHttpLoading] = useState(false);
+  const [showPreparation, setShowPreparation] = useState(true);
+  const [readyToStart, setReadyToStart] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -123,6 +132,8 @@ export default function TrainingSessionPage() {
     activeEvent,
     dismissReversal,
     dismissEvent,
+    // Phase 2: Fin automatique de conversation
+    autoEndInfo,
     connect,
     disconnect,
     sendMessage: wsSendMessage,
@@ -168,22 +179,36 @@ export default function TrainingSessionPage() {
     setLocalError(null);
 
     try {
-      const response = await voiceAPI.startSession({ level });
+      const response = await voiceAPI.startSession({
+        skill_slug: skillSlug,
+        sector_slug: sectorSlug
+      });
       const data = response.data;
 
       setSession(data);
 
       // Add initial prospect message to local state
+      // Handle opening_message as either string or object {text, audio_base64}
+      const rawOpening = data.opening_message;
+      const openingText = typeof rawOpening === 'object' && rawOpening?.text
+        ? rawOpening.text
+        : (typeof rawOpening === 'string' ? rawOpening : "");
+      const openingAudio = typeof rawOpening === 'object' && rawOpening?.audio_base64
+        ? rawOpening.audio_base64
+        : data.prospect_audio_base64;
+
       const initialMessage: Message = {
         id: crypto.randomUUID(),
         role: "prospect",
-        text: data.prospect_message,
-        audioBase64: data.prospect_audio_base64,
-        mood: data.mood,
-        jauge: data.jauge,
+        text: openingText,
+        audioBase64: openingAudio,
+        mood: data.mood || data.current_mood || "neutral",
+        jauge: data.jauge || data.current_gauge || 50,
         timestamp: new Date(),
       };
-      setLocalMessages([initialMessage]);
+      if (openingText) {
+        setLocalMessages([initialMessage]);
+      }
 
       // Update URL with session ID
       window.history.replaceState(
@@ -207,12 +232,32 @@ export default function TrainingSessionPage() {
     }
   }, [level]);
 
-  // Connect WebSocket when session is ready
+  // Connect WebSocket when session is ready AND user has finished preparation
   useEffect(() => {
-    if (session?.session_id && !isConnected && !isConnecting) {
+    // En mode facile, attendre que l'utilisateur soit prêt
+    // En mode moyen/expert, démarrer dès que la préparation est terminée
+    const canConnect = level === "easy"
+      ? !showPreparation && readyToStart
+      : !showPreparation;
+
+    if (session?.session_id && !isConnected && !isConnecting && canConnect) {
       connect();
     }
-  }, [session?.session_id, isConnected, isConnecting, connect]);
+  }, [session?.session_id, isConnected, isConnecting, connect, showPreparation, readyToStart, level]);
+
+  // Handler for starting the session after preparation
+  const handleStartAfterPreparation = useCallback(() => {
+    setShowPreparation(false);
+    // En mode moyen/expert, démarrer directement
+    if (level !== "easy") {
+      setReadyToStart(true);
+    }
+  }, [level]);
+
+  // Handler pour démarrer vraiment la session (mode facile)
+  const handleReadyToStart = useCallback(() => {
+    setReadyToStart(true);
+  }, []);
 
   // Disconnect WebSocket on unmount
   useEffect(() => {
@@ -235,17 +280,72 @@ export default function TrainingSessionPage() {
     }
   }, [localMessages]);
 
-  // Send message via WebSocket
-  const sendMessage = useCallback((text: string, audioBase64?: string) => {
-    if ((!text.trim() && !audioBase64) || isProspectThinking || !isConnected) return;
+  // Send message via HTTP (fallback when WebSocket not available)
+  const sendMessage = useCallback(async (text: string, audioBase64?: string) => {
+    if ((!text.trim() && !audioBase64) || isProspectThinking) return;
+    if (!session?.session_id) return;
 
     setLocalError(null);
     setHint(null);
     setInputText("");
 
-    // Send via WebSocket (hook will add user message automatically)
-    wsSendMessage(text || "", audioBase64);
-  }, [isProspectThinking, isConnected, wsSendMessage]);
+    // Add user message to local state
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      text: text,
+      timestamp: new Date(),
+    };
+    setLocalMessages(prev => [...prev, userMessage]);
+
+    // If WebSocket connected, use it
+    if (isConnected) {
+      wsSendMessage(text || "", audioBase64);
+      return;
+    }
+
+    // Otherwise use HTTP fallback
+    try {
+      setHttpLoading(true);
+      const response = await voiceAPI.sendMessage(session.session_id, {
+        text: text || undefined,
+        audio_base64: audioBase64,
+      });
+      const data = response.data;
+
+      // Add prospect response
+      const prospectMessage: Message = {
+        id: crypto.randomUUID(),
+        role: "prospect",
+        text: data.text,
+        audioBase64: data.audio_base64,
+        mood: data.mood,
+        jauge: data.jauge,
+        jaugeDelta: data.jauge_delta,
+        behavioralCue: data.behavioral_cue,
+        timestamp: new Date(),
+      };
+      setLocalMessages(prev => [...prev, prospectMessage]);
+      setJaugeDelta(data.jauge_delta);
+
+      // Handle tips from feedback (V2) or hint (V1)
+      const tips = data.feedback?.tips;
+      if (tips && tips.length > 0) {
+        setHint(tips[0]);
+      } else if (data.hint) {
+        setHint(data.hint);
+      }
+
+      if (data.session_complete) {
+        setSessionComplete(true);
+      }
+    } catch (err) {
+      console.error("Error sending message:", err);
+      setLocalError("Erreur lors de l'envoi du message");
+    } finally {
+      setHttpLoading(false);
+    }
+  }, [isProspectThinking, isConnected, wsSendMessage, session?.session_id]);
 
   // End session via WebSocket
   const endSession = useCallback(() => {
@@ -301,6 +401,84 @@ export default function TrainingSessionPage() {
             <Button onClick={startNewSession}>Réessayer</Button>
           </div>
         </motion.div>
+      </div>
+    );
+  }
+
+  // Preparation view - show before starting the session
+  if (session && showPreparation) {
+    const scenarioData = session.scenario || {};
+    const prospectData = scenarioData.prospect || {};
+
+    return (
+      <SessionPreparation
+        scenario={{
+          title: scenarioData.title,
+          context: scenarioData.context,
+          prospect: {
+            name: prospectData.name,
+            role: prospectData.role,
+            company: prospectData.company,
+            personality: prospectData.personality,
+          },
+          opening_message: session.opening_message,
+          pain_points: prospectData.pain_points || [],
+          hidden_need: prospectData.hidden_need,
+          objections: scenarioData.objections || [],
+          solution: scenarioData.solution,
+          product_pitch: scenarioData.product_pitch,
+        }}
+        skillName={session.skill?.name || skillSlug}
+        level={level}
+        onStart={handleStartAfterPreparation}
+        isLoading={isConnecting}
+      />
+    );
+  }
+
+  // Ready screen for easy level - wait for user to click before starting
+  if (level === "easy" && !readyToStart && session) {
+    return (
+      <div className="min-h-screen bg-gradient-dark pt-28 pb-12">
+        <div className="max-w-2xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass rounded-2xl p-8 text-center"
+          >
+            <div className="w-20 h-20 rounded-full bg-primary-500/20 flex items-center justify-center mx-auto mb-6">
+              <MessageSquare className="h-10 w-10 text-primary-400" />
+            </div>
+
+            <h1 className="text-2xl font-bold mb-4">Prêt à commencer ?</h1>
+
+            <p className="text-muted-foreground mb-6">
+              Le prospect va vous appeler. Quand vous êtes prêt, cliquez sur le bouton ci-dessous pour démarrer la conversation.
+            </p>
+
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6 text-left">
+              <p className="text-sm text-muted-foreground mb-2">Rappel :</p>
+              <p className="text-sm">
+                <span className="font-medium">{session.scenario?.prospect?.name}</span>
+                {" - "}
+                {session.scenario?.prospect?.role} chez {session.scenario?.prospect?.company}
+              </p>
+              {session.scenario?.solution && (
+                <p className="text-sm text-primary-300 mt-2">
+                  Votre solution : <span className="font-medium">{session.scenario.solution.product_name}</span>
+                </p>
+              )}
+            </div>
+
+            <Button
+              size="lg"
+              onClick={handleReadyToStart}
+              className="bg-gradient-primary px-8 py-6 text-lg"
+            >
+              Démarrer la conversation
+            </Button>
+          </motion.div>
+        </div>
       </div>
     );
   }
@@ -503,15 +681,101 @@ export default function TrainingSessionPage() {
 
         {/* Main content */}
         <main className="flex-1 pt-20 pb-40 flex">
-          <div className="flex-1 max-w-4xl mx-auto px-4 flex flex-col">
+          {/* Left sidebar - Helper panel for easy and medium levels */}
+          {(level === "easy" || level === "medium") && session?.scenario && (
+            <div className="hidden lg:block fixed left-4 top-24 w-72 max-h-[calc(100vh-120px)] overflow-y-auto">
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-4">
+                <h3 className="font-semibold text-sm flex items-center gap-2 text-primary-400">
+                  <HelpCircle className="h-4 w-4" />
+                  Aide à la vente
+                </h3>
+
+                {/* Prospect */}
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Prospect</p>
+                  <p className="text-sm font-medium">{session.scenario.prospect?.name}</p>
+                  <p className="text-xs text-muted-foreground">{session.scenario.prospect?.role} - {session.scenario.prospect?.company}</p>
+                </div>
+
+                {/* Pain Points */}
+                {session.scenario.prospect?.pain_points && session.scenario.prospect.pain_points.length > 0 && (
+                  <div className="space-y-1">
+                    <p className="text-xs text-orange-400 font-medium">Problèmes</p>
+                    <ul className="text-xs space-y-0.5">
+                      {session.scenario.prospect.pain_points.map((p, i) => (
+                        <li key={i} className="text-muted-foreground">• {p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Solution */}
+                {session.scenario.solution && (
+                  <div className="p-2 rounded-lg bg-primary-500/10 border border-primary-500/20 space-y-1">
+                    <p className="text-xs text-primary-400 font-medium flex items-center gap-1">
+                      <Package className="h-3 w-3" />
+                      {session.scenario.solution.product_name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{session.scenario.solution.value_proposition}</p>
+                    {session.scenario.solution.key_benefits && (
+                      <ul className="text-xs space-y-0.5 mt-1">
+                        {session.scenario.solution.key_benefits.slice(0, 2).map((b, i) => (
+                          <li key={i} className="text-green-300 flex items-start gap-1">
+                            <CheckCircle2 className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {/* Pitch */}
+                {session.scenario.product_pitch && (
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-primary-500/10 to-secondary-500/10 border border-primary-500/20">
+                    <p className="text-xs text-primary-400 font-medium mb-1">Votre pitch</p>
+                    <p className="text-xs italic text-muted-foreground leading-relaxed">
+                      &quot;{session.scenario.product_pitch}&quot;
+                    </p>
+                  </div>
+                )}
+
+                {/* Script - phrases clés (easy mode only) */}
+                {level === "easy" && (
+                  <div className="space-y-2 pt-2 border-t border-white/10">
+                    <p className="text-xs text-yellow-400 font-medium">Phrases clés</p>
+                    <ul className="text-xs space-y-1.5 text-muted-foreground">
+                      <li className="p-1.5 rounded bg-white/5">
+                        &quot;Quels sont vos principaux défis actuellement ?&quot;
+                      </li>
+                      <li className="p-1.5 rounded bg-white/5">
+                        &quot;Comment gérez-vous cela aujourd&apos;hui ?&quot;
+                      </li>
+                      <li className="p-1.5 rounded bg-white/5">
+                        &quot;Qu&apos;est-ce qui serait important pour vous ?&quot;
+                      </li>
+                      <li className="p-1.5 rounded bg-white/5">
+                        &quot;Si je comprends bien, vous cherchez...&quot;
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className={cn(
+            "flex-1 mx-auto px-4 flex flex-col",
+            (level === "easy" || level === "medium") ? "lg:ml-80 lg:mr-72 max-w-3xl" : "max-w-4xl"
+          )}>
             {/* Jauge sidebar for desktop */}
             <div className="hidden lg:block fixed right-8 top-24 w-64">
               <JaugeEmotionnelle
                 value={currentJauge}
                 delta={jaugeDelta}
                 mood={currentMood as MoodState}
-                visible={session?.config.show_jauge ?? true}
-                threshold={session?.config.conversion_threshold ?? 80}
+                visible={session?.config?.show_jauge ?? level === "easy"}
+                threshold={session?.config?.conversion_threshold ?? 75}
               />
 
               {/* Real-time feedback */}
@@ -545,7 +809,7 @@ export default function TrainingSessionPage() {
 
               {/* Hint */}
               <AnimatePresence>
-                {hint && session?.config.hints_enabled && (
+                {hint && (session?.config?.hints_enabled ?? level === "easy") && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -567,8 +831,8 @@ export default function TrainingSessionPage() {
                 value={currentJauge}
                 delta={jaugeDelta}
                 mood={currentMood as MoodState}
-                visible={session?.config.show_jauge ?? true}
-                threshold={session?.config.conversion_threshold ?? 80}
+                visible={session?.config?.show_jauge ?? level === "easy"}
+                threshold={session?.config?.conversion_threshold ?? 75}
               />
             </div>
 
@@ -736,6 +1000,17 @@ export default function TrainingSessionPage() {
         open={showPremiumModal}
         onOpenChange={setShowPremiumModal}
       />
+
+      {/* Phase 2: Modal de fin de conversation automatique */}
+      {autoEndInfo && (
+        <ConversationEndModal
+          isVisible={true}
+          endType={autoEndInfo.endType}
+          redirectUrl={autoEndInfo.redirectUrl}
+          sessionId={session?.session_id || 0}
+          autoRedirectDelay={3000}
+        />
+      )}
     </TooltipProvider>
   );
 }

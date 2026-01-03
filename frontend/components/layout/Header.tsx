@@ -32,11 +32,12 @@ import { authAPI } from "@/lib/api";
 
 // Navigation for authenticated users only
 const authNavLinks = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, premiumOnly: false },
-  { href: "/learn", label: "Apprendre", icon: BookOpen, premiumOnly: false },
-  { href: "/training", label: "Training", icon: Target, premiumOnly: false },
-  { href: "/achievements", label: "Trophées", icon: Trophy, premiumOnly: false },
-  { href: "/upload", label: "Upload", icon: Upload, premiumOnly: true },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, premiumOnly: false, enterpriseOnly: false },
+  { href: "/learn", label: "Apprendre", icon: BookOpen, premiumOnly: false, enterpriseOnly: false },
+  { href: "/training", label: "Training", icon: Target, premiumOnly: false, enterpriseOnly: false },
+  { href: "/achievements", label: "Trophées", icon: Trophy, premiumOnly: false, enterpriseOnly: false },
+  // Champion features - Enterprise only
+  { href: "/upload", label: "Champion", icon: Upload, premiumOnly: false, enterpriseOnly: true },
 ];
 
 export function Header() {
@@ -47,7 +48,14 @@ export function Header() {
 
   // Filter nav links based on user subscription
   const isFreeUser = user?.subscription_plan === "free";
-  const filteredNavLinks = authNavLinks.filter(link => !link.premiumOnly || !isFreeUser);
+  const isEnterpriseUser = user?.subscription_plan === "enterprise";
+  const filteredNavLinks = authNavLinks.filter(link => {
+    // Enterprise-only links (Champion features)
+    if (link.enterpriseOnly && !isEnterpriseUser) return false;
+    // Premium-only links (free users can't access)
+    if (link.premiumOnly && isFreeUser) return false;
+    return true;
+  });
 
   const handleLogout = async () => {
     try {
@@ -92,14 +100,24 @@ export function Header() {
                       key={link.href}
                       href={link.href}
                       className={cn(
-                        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                        "relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 group",
                         isActive
                           ? "bg-primary-500/20 text-primary-400"
                           : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                       )}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className={cn(
+                        "h-4 w-4 transition-transform duration-200",
+                        !isActive && "group-hover:scale-110"
+                      )} />
                       {link.label}
+                      {isActive && (
+                        <motion.div
+                          layoutId="nav-indicator"
+                          className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary-500"
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        />
+                      )}
                     </Link>
                   );
                 })}

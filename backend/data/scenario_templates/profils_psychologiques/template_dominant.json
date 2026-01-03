@@ -1,0 +1,160 @@
+{
+  "template_id": "profils_psy_dominant",
+  "skill_slug": "profils_psychologiques",
+  "name": "Profil Dominant - Le décideur pressé",
+  "description": "Adaptez votre discours à un prospect qui veut contrôler l'entretien et décider rapidement.",
+
+  "product": {
+    "name": "ExecDash",
+    "tagline": "Le tableau de bord du dirigeant",
+    "how_it_works": {
+      "summary": "Dashboard exécutif temps réel connecté à tous les systèmes de l'entreprise",
+      "key_features": [
+        "Vue consolidée finances/ventes/RH",
+        "Alertes proactives par IA",
+        "Comparaison objectifs vs réel",
+        "Accessible mobile en 1 clic"
+      ]
+    },
+    "pricing": {
+      "entry_price": "500€/mois (jusqu'à 5 users)",
+      "popular_plan": "Enterprise à 1500€/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "800+ dirigeants équipés",
+      "time_saved": "2h/jour gagnées en moyenne"
+    },
+    "testimonials": [
+      {
+        "name": "Marc Leblanc, PDG",
+        "company": "TechGroup (500 employés)",
+        "quote": "Je prends mes décisions 3x plus vite. C'est devenu indispensable."
+      }
+    ]
+  },
+
+  "profil_psychologique": {
+    "type": "dominant",
+    "nom_complet": "Le Dominant (D de SÉDAIÉ)",
+    "caracteristiques": {
+      "besoin_principal": "Contrôler, décider, gagner",
+      "peur_principale": "Perdre le contrôle, être manipulé",
+      "comportement_achat": "Rapide si convaincu, impatient",
+      "question_cle": "En quoi c'est mieux que ce que j'ai?",
+      "signaux": ["Coupe la parole", "Pose des questions directes", "Veut aller vite"]
+    },
+    "ce_qui_le_convainc": [
+      "Résultats concrets et rapides",
+      "Avantage compétitif clair",
+      "Respect de son temps",
+      "Réponses directes",
+      "Sentiment de contrôle sur la décision"
+    ],
+    "ce_qui_le_fait_fuir": [
+      "Longueurs et détails inutiles",
+      "Attitude soumise du vendeur",
+      "Incapacité à répondre aux questions",
+      "Processus de décision long",
+      "Manque de confiance du vendeur"
+    ],
+    "adaptation_discours": {
+      "ton": "Direct, confiant, concis",
+      "mots_cles": ["résultats", "rapidement", "décision", "contrôle", "performance", "leader"],
+      "structure": "Aller droit au but, laisser le prospect mener",
+      "eviter": ["Longueurs", "Hésitations", "Trop de politesses"]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "François Marchand",
+      "role": "Président Directeur Général",
+      "company": "IndusGroup",
+      "company_size": "280 employés, 4 filiales",
+      "sector": "Industrie",
+      "personality": "dominant",
+      "psychology": {
+        "type": "dominant",
+        "communication_style": "Direct, impatient, interrompt souvent",
+        "decision_speed": "Décide en 5 minutes si convaincu",
+        "priority": "Avoir l'info qu'il veut, quand il veut"
+      },
+      "current_situation": "Reçoit des tableaux Excel de chaque filiale, consolidés manuellement par son assistante",
+      "pain_points": [
+        "N'a jamais l'info à temps",
+        "Les chiffres sont toujours différents selon les sources",
+        "Doit relancer pour avoir les rapports",
+        "Ne peut pas anticiper les problèmes"
+      ],
+      "hidden_need": "Veut impressionner son conseil d'administration avec des KPIs temps réel"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Je n'ai pas le temps pour une démo de 2h",
+      "type": "time",
+      "response_approach": "Proposer une démo de 15 minutes sur ses 3 KPIs prioritaires"
+    },
+    {
+      "objection": "Mon DSI va me dire que c'est compliqué",
+      "type": "delegation",
+      "response_approach": "Proposer de convaincre le DSI vous-même"
+    },
+    {
+      "objection": "Qu'est-ce qui me garantit que ça marchera?",
+      "type": "results",
+      "response_approach": "Offrir un POC de 30 jours sur un périmètre limité"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Il vous accorde 10 minutes entre deux réunions. Son assistante vous a prévenu: 'Soyez concis'.",
+      "prospect_first_response": "Bon, j'ai 10 minutes. Qu'est-ce que vous avez à me proposer?"
+    },
+    "objectives": [
+      "Capter son attention en 30 secondes",
+      "Aller droit à l'essentiel (résultats)",
+      "Le laisser mener sans perdre le fil",
+      "Obtenir un engagement rapide"
+    ],
+    "success_criteria": [
+      "Pitch en moins de 2 minutes",
+      "Questions traitées sans détour",
+      "Décision ou prochaine étape claire"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "patience": "Écoute si c'est pertinent",
+        "style": "Direct mais poli"
+      },
+      "medium": {
+        "patience": "Interrompt souvent, teste le vendeur",
+        "style": "Challenge les affirmations"
+      },
+      "expert": {
+        "patience": "Très impatient, prêt à raccrocher",
+        "style": "Agressif, cherche la faille"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Pitch en moins de 2 minutes",
+    "Réponses courtes et directes",
+    "Laisser le prospect contrôler sans perdre le cap",
+    "Assumer une posture d'égal à égal",
+    "Conclure rapidement"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok, qu'est-ce qu'on fait", "je vous rappelle", "merci, au revoir"],
+    "min_exchanges": 5,
+    "max_exchanges": 12,
+    "auto_end_enabled": true
+  }
+}

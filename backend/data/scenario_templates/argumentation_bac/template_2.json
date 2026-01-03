@@ -1,0 +1,186 @@
+{
+  "template_id": "argumentation_bac_2",
+  "skill_slug": "argumentation_bac",
+  "name": "Argumentation BAC - SaaS devant un comité",
+  "description": "Présentez votre solution devant un comité avec des profils variés, en adaptant vos arguments BAC à chaque audience.",
+
+  "product": {
+    "name": "SupplyChain360",
+    "tagline": "Maîtrisez votre chaîne d'approvisionnement",
+    "how_it_works": {
+      "summary": "Plateforme de gestion supply chain avec prévision IA, gestion stocks et traçabilité",
+      "key_features": [
+        "Prévision de la demande par IA (caractéristique)",
+        "Gestion des stocks multi-entrepôts (caractéristique)",
+        "Traçabilité lot complète (caractéristique)",
+        "Alertes rupture et surstock (caractéristique)"
+      ]
+    },
+    "pricing": {
+      "entry_price": "1500€/mois",
+      "popular_plan": "Enterprise à 4000€/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "350+ industriels",
+      "stock_reduction": "-25% de stock en moyenne",
+      "service_rate": "+8 points de taux de service"
+    },
+    "testimonials": [
+      {
+        "name": "Pierre Duval, Dir Supply Chain",
+        "company": "AgroDistrib (1200 employés)",
+        "quote": "On a réduit nos stocks de 3M€ tout en améliorant le taux de service."
+      }
+    ]
+  },
+
+  "bac_methodology": {
+    "adaptation_par_audience": {
+      "dg_daf": {
+        "focus": "ROI, réduction des coûts, avantage compétitif",
+        "benefices_cles": ["-25% de stock = trésorerie libérée", "ROI en 8 mois", "+8% de CA via meilleur service"]
+      },
+      "dir_operations": {
+        "focus": "Performance opérationnelle, visibilité, anticipation",
+        "benefices_cles": ["Fin des ruptures de stock", "Prévisions fiables à 95%", "Temps gagné sur la planification"]
+      },
+      "dsi": {
+        "focus": "Intégration, sécurité, maintenance",
+        "benefices_cles": ["Intégration ERP en 2 semaines", "SaaS = pas de maintenance", "API complète"]
+      }
+    },
+    "examples_multi_audience": [
+      {
+        "caracteristique": "Prévision de la demande par IA",
+        "avantage_operations": "Vous anticipez les pics et les creux 3 mois à l'avance",
+        "benefice_dg": "Vous réduisez le stock de 25% tout en maintenant le service"
+      },
+      {
+        "caracteristique": "Alertes automatiques rupture/surstock",
+        "avantage_operations": "Vous êtes alerté avant que le problème arrive",
+        "benefice_daf": "Vous évitez 50K€/an de ventes perdues"
+      }
+    ]
+  },
+
+  "prospect": {
+    "committee": {
+      "context": "Présentation devant 3 personnes aux intérêts différents",
+      "members": [
+        {
+          "name": "Éric Bernard",
+          "role": "Directeur Général",
+          "focus": "ROI, avantage concurrentiel",
+          "personality": "dominant",
+          "key_question": "Quel impact sur le résultat?"
+        },
+        {
+          "name": "Carole Petit",
+          "role": "Directrice Supply Chain",
+          "focus": "Performance opérationnelle, fiabilité",
+          "personality": "analytique",
+          "key_question": "Comment ça marche concrètement?"
+        },
+        {
+          "name": "Antoine Moreau",
+          "role": "DSI",
+          "focus": "Intégration, sécurité, charge IT",
+          "personality": "securitaire",
+          "key_question": "Quel impact sur mes équipes IT?"
+        }
+      ]
+    },
+    "company": {
+      "name": "DistribPlus",
+      "size": "500 employés, 4 entrepôts",
+      "sector": "Distribution alimentaire"
+    },
+    "current_situation": "ERP SAP + Excel pour la supply chain, prévisions manuelles",
+    "pain_points": [
+      "Ruptures récurrentes sur les best-sellers",
+      "Surstock sur les produits à faible rotation",
+      "Aucune visibilité au-delà de 2 semaines",
+      "Le DSI est débordé par les demandes de reporting"
+    ]
+  },
+
+  "possible_objections": [
+    {
+      "objection": "[DG] Quel est le ROI précis?",
+      "type": "roi",
+      "bac_response": {
+        "benefice": "Nos clients libèrent en moyenne 15% de leur stock en trésorerie",
+        "avantage": "Grâce à des prévisions 95% fiables vs 60% en manuel",
+        "caracteristique": "Notre algorithme analyse 50+ variables (météo, promos, tendances)"
+      }
+    },
+    {
+      "objection": "[Dir SC] On a déjà essayé des outils de prévision, ça ne marchait pas",
+      "type": "past_failure",
+      "bac_response": {
+        "benefice": "95% de fiabilité garantie par contrat, sinon on rembourse",
+        "avantage": "Parce qu'on apprend de VOS données historiques",
+        "caracteristique": "6 mois de machine learning sur vos données avant de prédire"
+      }
+    },
+    {
+      "objection": "[DSI] L'intégration SAP va prendre 6 mois",
+      "type": "integration",
+      "bac_response": {
+        "benefice": "Vos équipes IT ne sont pas mobilisées, tout est inclus",
+        "avantage": "On utilise les connecteurs certifiés SAP",
+        "caracteristique": "API REST + connecteur SAP prêt à l'emploi"
+      }
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Présentation de 45 minutes devant le comité de direction. Le DG ouvre la réunion.",
+      "prospect_first_response": "[DG] Bon, vous avez 45 minutes pour nous convaincre. On a vu beaucoup de solutions, alors soyez concrets. Carole et Antoine vont poser des questions techniques."
+    },
+    "objectives": [
+      "Adapter chaque argument à l'audience",
+      "Répondre aux questions de chaque profil",
+      "Gérer les dynamiques du comité",
+      "Obtenir un consensus pour avancer"
+    ],
+    "success_criteria": [
+      "Chaque membre du comité convaincu sur son sujet",
+      "Arguments BAC adaptés à chaque profil",
+      "Décision d'avancer (POC ou démo approfondie)"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "committee_dynamics": "Comité aligné, pas de conflits",
+        "questions": "Questions constructives"
+      },
+      "medium": {
+        "committee_dynamics": "DSI réticent, les autres poussent",
+        "questions": "Questions pointues de chacun"
+      },
+      "expert": {
+        "committee_dynamics": "Conflits internes, DG impatient",
+        "questions": "Attaques sur les faiblesses, concurrents mentionnés"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Adapter le BAC à chaque audience",
+    "Gérer un comité avec des intérêts divergents",
+    "Répondre à plusieurs interlocuteurs",
+    "Créer un consensus progressif",
+    "Conclure avec engagement collectif"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["merci pour cette présentation", "on en rediscute en interne", "proposez-nous un POC"],
+    "min_exchanges": 10,
+    "max_exchanges": 22,
+    "auto_end_enabled": true
+  }
+}

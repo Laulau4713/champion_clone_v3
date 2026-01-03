@@ -1,0 +1,147 @@
+{
+  "template_id": "recommandation_2",
+  "skill_slug": "recommandation",
+  "name": "Recommandation - Demander une introduction à une cible stratégique",
+  "description": "Demandez à un client de vous introduire auprès d'un compte stratégique qu'il connaît.",
+
+  "product": {
+    "name": "ContractFlow",
+    "tagline": "Gestion de contrats nouvelle génération",
+    "how_it_works": {
+      "summary": "CLM (Contract Lifecycle Management) avec IA pour PME et ETI",
+      "key_features": [
+        "Rédaction assistée par IA",
+        "Workflow de validation",
+        "Signature électronique intégrée",
+        "Alertes échéances et renouvellements"
+      ]
+    },
+    "target_account": {
+      "name": "TechCorp",
+      "why_strategic": "Compte de 500 personnes, 3000 contrats/an, dans notre ICP parfait"
+    }
+  },
+
+  "strategic_intro_methodology": {
+    "preparation": {
+      "research": "Identifier le lien entre votre client et la cible",
+      "positioning": "Préparer pourquoi c'est pertinent pour la cible",
+      "ask": "Formuler une demande précise et facile à exécuter",
+      "timing": "Choisir le bon moment (après un succès, relation solide)"
+    },
+    "ask_framework": {
+      "context": "Mentionner pourquoi vous pensez à cette cible",
+      "connection": "Confirmer la relation entre le client et la cible",
+      "value_for_target": "Expliquer ce que la cible gagnerait",
+      "minimal_effort": "Proposer un format simple (email, LinkedIn, appel à 3)",
+      "reciprocity": "Offrir quelque chose en retour"
+    },
+    "possible_formats": [
+      "Email d'introduction (le client met les deux en copie)",
+      "Message LinkedIn",
+      "Appel à trois (le client présente brièvement)",
+      "Présentation lors d'un événement",
+      "Le client mentionne votre solution dans une conversation"
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Sandrine Lecomte",
+      "role": "Directrice Juridique",
+      "company": "IndustriePlus",
+      "company_size": "200 employés, industrie manufacturière",
+      "sector": "Industrie",
+      "personality": "influential_client",
+      "psychology": {
+        "type": "dominant",
+        "communication_style": "Directe, professionnelle, réseau solide",
+        "relationship_quality": "Très bonne, vous avez fait ses preuves",
+        "network_influence": "Connue dans son secteur, membre de plusieurs clubs"
+      },
+      "client_history": {
+        "client_since": "14 mois",
+        "results": "Temps de cycle des contrats réduit de 50%, 0 deadline ratée",
+        "notable_success": "A géré un M&A avec 200 contrats sans problème grâce à votre outil"
+      },
+      "connection_to_target": {
+        "target_company": "TechCorp",
+        "target_contact": "Marie Petit, General Counsel",
+        "relationship_type": "Anciennes collègues, restées proches, se voient régulièrement",
+        "context": "Marie lui a récemment parlé de ses galères avec la gestion des contrats"
+      }
+    }
+  },
+
+  "introduction_scenarios": [
+    {
+      "context": "Amener le sujet de la cible",
+      "good_approach": "Sandrine, au fait, on travaille actuellement avec des entreprises tech de 400-600 personnes, et je sais que vous connaissez pas mal de monde dans ce secteur. Est-ce que le nom TechCorp vous dit quelque chose ?",
+      "bad_approach": "Vous pourriez me mettre en contact avec quelqu'un chez TechCorp ?",
+      "why": "Sonder la relation avant de demander"
+    },
+    {
+      "context": "Le client confirme la connexion",
+      "prospect_says": "TechCorp ? Oui, je connais Marie Petit, leur DirJur, on était ensemble chez Legrand. On s'est vues il y a 3 semaines. Pourquoi ?",
+      "good_response": "Intéressant ! En fait, TechCorp correspond exactement à notre cible. Et Marie, elle a les mêmes enjeux que vous aviez il y a 14 mois. Vous pensez que ce serait pertinent pour elle ?",
+      "bad_response": "Super ! Vous pouvez me l'envoyer par email ?",
+      "why": "Montrer la pertinence pour la cible, pas juste demander une faveur"
+    },
+    {
+      "context": "Formuler la demande d'introduction",
+      "good_approach": "Ce que je vous propose : je vous prépare un email de 3 lignes que vous pourriez envoyer à Marie, juste pour dire que vous travaillez avec nous et que ça pourrait l'intéresser. Moi je fais le suivi. Ça vous va ?",
+      "bad_approach": "Vous pouvez nous mettre en contact ?",
+      "why": "Être précis sur le format et réduire l'effort"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Appel de suivi avec une cliente historique. Vous savez qu'elle connaît Marie Petit de TechCorp grâce à LinkedIn. Vous voulez une introduction.",
+      "prospect_first_response": "Ah, bonjour ! Comment ça va ? Alors, quoi de neuf chez ContractFlow ?"
+    },
+    "objectives": [
+      "Confirmer la relation avec la cible (TechCorp / Marie Petit)",
+      "Montrer la pertinence pour la cible",
+      "Obtenir l'accord pour une introduction",
+      "Proposer un format simple (email)",
+      "S'assurer que le client est à l'aise"
+    ],
+    "success_criteria": [
+      "Confirmer que le client connaît bien la cible",
+      "Le client comprend pourquoi c'est pertinent",
+      "Accord pour faire une intro par email",
+      "Format et timing validés"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "relationship": "Relation forte avec la cible",
+        "willingness": "Partante pour aider"
+      },
+      "medium": {
+        "relationship": "Connaît la cible mais pas intimement",
+        "willingness": "OK mais veut être sûre que c'est pertinent"
+      },
+      "expert": {
+        "relationship": "Connaît la cible mais relation délicate",
+        "willingness": "Réticente, protège son réseau"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Rechercher les connexions avant l'appel",
+    "Sonder la relation avant de demander",
+    "Montrer la valeur pour la cible, pas juste pour vous",
+    "Proposer un format simple et précis",
+    "Accepter un non sans insister",
+    "Remercier chaleureusement"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["ok je lui envoie un mot", "je préfère ne pas", "je lui en parle et je vous dis"],
+    "min_exchanges": 6,
+    "max_exchanges": 15,
+    "auto_end_enabled": true
+  }
+}

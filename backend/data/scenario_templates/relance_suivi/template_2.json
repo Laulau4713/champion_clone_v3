@@ -1,0 +1,147 @@
+{
+  "template_id": "relance_suivi_2",
+  "skill_slug": "relance_suivi",
+  "name": "Relance - Réactiver un ancien prospect",
+  "description": "Réactivez un prospect perdu il y a 6 mois avec un prétexte valable.",
+
+  "product": {
+    "name": "FormaPro LMS",
+    "tagline": "La formation professionnelle digitalisée",
+    "how_it_works": {
+      "summary": "Plateforme LMS pour entreprises avec création de contenus et suivi des compétences",
+      "key_features": [
+        "Création de parcours sur-mesure",
+        "Vidéos interactives et quizz",
+        "Suivi des compétences et certifications",
+        "Reporting RH automatisé"
+      ]
+    },
+    "pricing": {
+      "plan": "Pro à 8€/utilisateur/mois",
+      "new_feature": "Nouvelle IA de création de contenus (sorti ce mois)"
+    }
+  },
+
+  "relance_methodology": {
+    "reactivation_triggers": [
+      "Nouvelle fonctionnalité majeure",
+      "Changement de réglementation",
+      "Actualité du secteur du prospect",
+      "Départ/arrivée d'un décideur",
+      "Anniversaire de l'échange précédent",
+      "Succès client similaire à partager"
+    ],
+    "message_structure": {
+      "hook": "Raison légitime de reprendre contact",
+      "value": "Ce qui a changé depuis notre dernier échange",
+      "bridge": "Lien avec leur situation",
+      "call_to_action": "Proposition concrète et légère"
+    },
+    "dont_do": [
+      "Faire comme si rien ne s'était passé",
+      "Reprendre là où on s'était arrêté",
+      "Ignorer le temps passé",
+      "Être trop pushy"
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Émilie Fournier",
+      "role": "Responsable Formation",
+      "company": "BatiGroupe",
+      "company_size": "400 employés, BTP",
+      "sector": "Construction / BTP",
+      "personality": "open_but_burned",
+      "psychology": {
+        "type": "affectif",
+        "communication_style": "Chaleureuse mais prudente",
+        "previous_objection": "Budget refusé par la direction il y a 6 mois",
+        "current_context": "Nouvelles obligations Qualiopi, budget formation augmenté"
+      },
+      "history": {
+        "first_contact": "Il y a 8 mois",
+        "cycle": "3 RDV, démo, proposition",
+        "outcome": "Projet non retenu - budget coupé",
+        "relationship": "Bon feeling, elle était déçue de ne pas signer"
+      },
+      "new_context": [
+        "L'entreprise a obtenu un marché public qui exige Qualiopi",
+        "Le budget formation a été multiplié par 2",
+        "Le DG veut digitaliser la formation (nouvelle directive)"
+      ]
+    }
+  },
+
+  "reactivation_scenarios": [
+    {
+      "context": "Prétexte légitime pour reprendre contact",
+      "good_opening": "Bonjour Émilie, c'est [Nom] de FormaPro. On s'était parlé il y a 6 mois pour votre projet formation. Je ne sais pas si vous avez suivi, mais on vient de sortir une IA de création de contenus qui réduit par 10 le temps de création des modules. Vu vos enjeux, j'ai pensé à vous.",
+      "bad_opening": "Bonjour, je vous rappelle pour savoir si vous avez avancé sur le projet formation...",
+      "why": "Apporter une nouveauté, pas juste 'relancer'"
+    },
+    {
+      "context": "Réponse du prospect - le contexte a changé",
+      "prospect_says": "Ah, FormaPro ! Oui je me souviens, c'était vraiment dommage à l'époque. Vous savez, les choses ont changé ici...",
+      "good_response": "Ah oui ? Racontez-moi, qu'est-ce qui a évolué de votre côté ?",
+      "bad_response": "Super ! Donc on peut reprendre le projet ?",
+      "why": "Écouter d'abord, ne pas foncer tête baissée"
+    },
+    {
+      "context": "Nouveau contexte favorable",
+      "prospect_says": "On a décroché un gros marché public, et maintenant on doit être certifié Qualiopi. La direction a débloqué du budget pour la formation.",
+      "good_response": "Félicitations pour le marché ! Qualiopi c'est effectivement un gros sujet. Vous avez un délai pour la certification ?",
+      "bad_response": "Parfait, on peut donc refaire une démo ?",
+      "why": "Qualifier le nouveau contexte avant de proposer quoi que ce soit"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Vous rappelez une prospect perdue il y a 6 mois suite au lancement de votre nouvelle feature IA.",
+      "prospect_first_response": "(ton agréablement surpris) Oh, bonjour ! FormaPro, oui bien sûr je me souviens de vous. Comment allez-vous ? Ça fait un moment !"
+    },
+    "objectives": [
+      "Rappeler le contexte passé sans remuer le couteau",
+      "Présenter un prétexte valable (nouvelle feature)",
+      "Qualifier le nouveau contexte",
+      "Relancer le cycle de vente si opportunité"
+    ],
+    "success_criteria": [
+      "Comprendre ce qui a changé depuis 6 mois",
+      "Identifier si une nouvelle opportunité existe",
+      "Obtenir un RDV pour présenter les nouveautés",
+      "Réactiver la relation commerciale"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "context": "Le contexte a changé favorablement",
+        "openness": "Contente de vous entendre, veut reprendre"
+      },
+      "medium": {
+        "context": "Le contexte est neutre, faut créer l'intérêt",
+        "openness": "Polie mais pas chaude"
+      },
+      "expert": {
+        "context": "A trouvé une solution alternative entre temps",
+        "openness": "Déjà équipée, pas intéressée"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Avoir un prétexte légitime pour reprendre contact",
+    "Reconnaître le passé sans s'y attarder",
+    "Qualifier le nouveau contexte avant de vendre",
+    "Adapter son discours aux changements",
+    "Ne pas repartir de zéro (capitaliser sur la relation)",
+    "Proposer quelque chose de nouveau, pas le même pitch"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["on se revoit la semaine prochaine", "envoyez-moi les infos sur la nouvelle feature", "on a déjà trouvé une solution désolée"],
+    "min_exchanges": 6,
+    "max_exchanges": 15,
+    "auto_end_enabled": true
+  }
+}

@@ -49,6 +49,38 @@ export interface ProspectProfile {
   objections: string[];
 }
 
+// V2 Scenario types (from backend)
+export interface ScenarioProspectV2 {
+  name?: string;
+  role?: string;
+  company?: string;
+  personality?: string;
+  pain_points?: string[];
+  hidden_need?: string;
+}
+
+export interface ScenarioObjection {
+  expressed: string;
+  hidden?: string;
+}
+
+export interface ScenarioSolution {
+  product_name?: string;
+  value_proposition?: string;
+  key_benefits?: string[];
+  pricing_hint?: string;
+  differentiator?: string;
+}
+
+export interface ScenarioV2 {
+  title?: string;
+  context?: string;
+  prospect?: ScenarioProspectV2;
+  objections?: ScenarioObjection[];
+  solution?: ScenarioSolution;
+  product_pitch?: string;
+}
+
 export interface TrainingSession {
   id: number;
   user_id: string;
@@ -456,14 +488,22 @@ export interface QuizResult {
 // V2 Voice Training
 export interface VoiceSessionStartResponse {
   session_id: number;
-  level: DifficultyLevel;
-  scenario: TrainingScenario;
-  prospect_message: string;
+  level?: DifficultyLevel;
+  scenario?: ScenarioV2;
+  skill?: {
+    slug: string;
+    name: string;
+    evaluation_criteria?: string[];
+  };
+  prospect_message?: string;
   prospect_audio_base64?: string;
-  mood: MoodState;
-  jauge: number;
-  jauge_visible: boolean;
-  config: LevelConfig;
+  mood?: MoodState;
+  current_mood?: MoodState;
+  jauge?: number | null;
+  current_gauge?: number;
+  jauge_visible?: boolean;
+  config?: LevelConfig;
+  opening_message?: string | { text: string; audio_base64?: string };
 }
 
 export interface VoiceSessionMessageResponse {
@@ -478,6 +518,13 @@ export interface VoiceSessionMessageResponse {
   detected_patterns?: DetectedPattern[];
   event?: SituationalEvent;
   reversal?: Reversal;
+  feedback?: {
+    jauge?: number;
+    jauge_delta?: number;
+    positive_actions: string[];
+    negative_actions: string[];
+    tips: string[];
+  };
 }
 
 export interface LevelConfig {
@@ -593,4 +640,79 @@ export interface AchievementUnlockResult {
   total_xp_gained: number;
   level_up: boolean;
   new_level?: number;
+}
+
+// ============ SESSION REPORT TYPES (Phase 3) ============
+
+export interface PatternAggregate {
+  pattern: string;
+  label: string;
+  count: number;
+  examples: string[];
+  advice?: string;  // Only for negative patterns
+}
+
+export interface ReportMessage {
+  role: 'user' | 'prospect';
+  content: string;
+  gauge_after: number;
+  gauge_impact: number | null;
+  mood: string | null;
+  patterns_detected: string[];
+  behavioral_cue: string | null;
+  is_event: boolean;
+  event_type: string | null;
+  timestamp: string;
+}
+
+export interface SessionReport {
+  // Header
+  session_id: number;
+  skill_name: string;
+  skill_slug: string | null;
+  sector_name: string | null;
+  sector_slug: string | null;
+  level: DifficultyLevel;
+  duration_seconds: number;
+  completed_at: string | null;
+  status: string;
+
+  // Score global
+  final_score: number;
+  final_gauge: number;
+  starting_gauge: number;
+  gauge_progression: number;
+  converted: boolean;
+  passed: boolean;
+
+  // Patterns
+  positive_patterns: PatternAggregate[];
+  negative_patterns: PatternAggregate[];
+  positive_count: number;
+  negative_count: number;
+
+  // Objections
+  hidden_objections: HiddenObjection[];
+  discovered_objections: string[];
+
+  // Events
+  triggered_events: SituationalEvent[];
+  reversal_triggered: boolean;
+  reversal_type: string | null;
+
+  // Blockers
+  conversion_blockers: string[];
+
+  // Conseils
+  personalized_tips: string[];
+  points_forts: string[];
+  axes_amelioration: string[];
+  conseil_principal: string;
+
+  // Conversation
+  messages: ReportMessage[];
+  message_count: number;
+
+  // Graphique
+  gauge_history: Array<{ timestamp: string; value: number; reason?: string }>;
 }

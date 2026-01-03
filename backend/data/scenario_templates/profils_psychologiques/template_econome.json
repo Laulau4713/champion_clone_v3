@@ -1,0 +1,161 @@
+{
+  "template_id": "profils_psy_econome",
+  "skill_slug": "profils_psychologiques",
+  "name": "Profil Économe - Le négociateur",
+  "description": "Adaptez votre discours à un prospect focalisé sur le prix et le ROI, qui négocie chaque centime.",
+
+  "product": {
+    "name": "TravelSmart Business",
+    "tagline": "Voyages d'affaires optimisés",
+    "how_it_works": {
+      "summary": "Plateforme de réservation voyages avec politique travel intégrée et reporting",
+      "key_features": [
+        "Réservation vol/hôtel/train en un clic",
+        "Politique travel automatisée",
+        "Reporting et analytics dépenses",
+        "Négociation tarifs hôtels"
+      ]
+    },
+    "pricing": {
+      "entry_price": "0€ abonnement + 5€/réservation",
+      "popular_plan": "Flat 200€/mois (réservations illimitées)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "1500+ entreprises",
+      "average_savings": "23% d'économies en moyenne",
+      "roi": "ROI positif dès le 1er mois"
+    },
+    "testimonials": [
+      {
+        "name": "Jacques Martin",
+        "company": "ConseilPro (50 voyageurs)",
+        "quote": "On économise 40K€/an. L'outil est rentabilisé en 2 semaines."
+      }
+    ]
+  },
+
+  "profil_psychologique": {
+    "type": "econome",
+    "nom_complet": "L'Économe (É de SÉDAIÉ)",
+    "caracteristiques": {
+      "besoin_principal": "Obtenir le meilleur prix, maximiser le ROI",
+      "peur_principale": "Payer trop cher, se faire avoir",
+      "comportement_achat": "Compare tout, négocie dur",
+      "question_cle": "Combien ça coûte vraiment?",
+      "signaux": ["Demande le prix très tôt", "Compare avec concurrents", "Cherche des remises"]
+    },
+    "ce_qui_le_convainc": [
+      "ROI chiffré et prouvé",
+      "Comparaisons prix transparentes",
+      "Garantie satisfaction ou remboursé",
+      "Cas clients avec économies réalisées",
+      "Modèle de prix simple"
+    ],
+    "ce_qui_le_fait_fuir": [
+      "Prix flou ou à la demande",
+      "Frais cachés",
+      "Incapacité à justifier le prix",
+      "Refus de négocier",
+      "ROI non quantifiable"
+    ],
+    "adaptation_discours": {
+      "ton": "Factuel, chiffré, direct",
+      "mots_cles": ["économies", "ROI", "rentable", "gratuit", "sans surcoût", "inclus"],
+      "preuves_a_fournir": ["Calculateur ROI", "Comparatifs prix", "Cas clients chiffrés"],
+      "eviter": ["Vendre la qualité avant le prix", "Prix sur devis uniquement"]
+    }
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Nathalie Ferrand",
+      "role": "Directrice Administrative et Financière",
+      "company": "AuditConsult",
+      "company_size": "120 consultants, beaucoup de déplacements",
+      "sector": "Audit et conseil",
+      "personality": "econome",
+      "psychology": {
+        "type": "econome",
+        "communication_style": "Directe, demande les prix rapidement, calcule en temps réel",
+        "decision_speed": "Peut décider vite si le ROI est clair",
+        "priority": "Réduire les coûts voyage de 20%"
+      },
+      "current_situation": "Réservations par les consultants eux-mêmes, pas de contrôle ni de négociation hôtels",
+      "pain_points": [
+        "Dépenses voyages en hausse de 30% cette année",
+        "Aucun pouvoir de négociation avec les hôtels",
+        "Consultants qui réservent en dernière minute (surcoût)",
+        "Pas de visibilité sur les dépenses"
+      ],
+      "hidden_need": "Doit présenter un plan d'économies au COMEX dans 1 mois"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Votre concurrent est 20% moins cher",
+      "type": "price_comparison",
+      "response_approach": "Comparer le TCO complet, pas juste le prix affiché"
+    },
+    {
+      "objection": "On peut faire ça en interne pour moins cher",
+      "type": "build_vs_buy",
+      "response_approach": "Calculer le vrai coût du temps passé"
+    },
+    {
+      "objection": "Je veux une remise de 30%",
+      "type": "negotiation",
+      "response_approach": "Proposer un engagement volume ou durée"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Elle a demandé un benchmark de 3 prestataires. Elle veut du concret et du chiffré.",
+      "prospect_first_response": "Bonjour. Écoutez, j'ai peu de temps. Dites-moi votre prix et ce que vous faites de mieux que les autres."
+    },
+    "objectives": [
+      "Comprendre son contexte budgétaire",
+      "Démontrer le ROI avec des chiffres",
+      "Traiter les objections prix",
+      "Positionner une étude personnalisée d'économies"
+    ],
+    "success_criteria": [
+      "ROI démontré avec ses données",
+      "Objections prix traitées",
+      "RDV pour étude d'économies planifié"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "negotiation": "Négociatrice mais raisonnable",
+        "budget": "A du budget si le ROI est prouvé"
+      },
+      "medium": {
+        "negotiation": "Pousse pour des remises importantes",
+        "budget": "Budget serré, doit arbitrer"
+      },
+      "expert": {
+        "negotiation": "Très dure, met en concurrence agressivement",
+        "budget": "Veut le maximum pour le minimum"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Parler ROI avant prix",
+    "Chiffrer les économies réalisées",
+    "Comparer le TCO complet",
+    "Négocier sur la valeur, pas le prix",
+    "Proposer des contreparties aux remises"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["envoyez-moi un devis", "je compare et je reviens", "merci pour ces infos"],
+    "min_exchanges": 7,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

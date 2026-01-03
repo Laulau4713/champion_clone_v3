@@ -1,0 +1,162 @@
+{
+  "template_id": "checklist_bebedc_1",
+  "skill_slug": "checklist_bebedc",
+  "name": "BEBEDC - Projet cybersécurité PME",
+  "description": "Qualifier un projet de sécurité informatique avec un DSI évasif sur le budget et les délais.",
+
+  "product": {
+    "name": "SecureGuard Pro",
+    "tagline": "Protection cybersécurité tout-en-un pour PME",
+    "how_it_works": {
+      "summary": "Suite de sécurité managée incluant firewall, antivirus, backup et monitoring 24/7",
+      "key_features": [
+        "Firewall nouvelle génération",
+        "Protection endpoint sur tous les postes",
+        "Backup automatique chiffré",
+        "SOC 24/7 avec alertes en temps réel"
+      ]
+    },
+    "pricing": {
+      "entry_price": "500€/mois (jusqu'à 50 postes)",
+      "popular_plan": "Pro à 900€/mois (jusqu'à 100 postes + SOC)"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients": "450+ PME protégées",
+      "attacks_blocked": "15 000+ menaces/jour",
+      "uptime": "99.99%"
+    },
+    "testimonials": [
+      {
+        "name": "Jean-Marc Dupuis",
+        "company": "Comptex (65 postes)",
+        "quote": "Depuis SecureGuard, plus une seule alerte de ransomware. On dort tranquille."
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Franck Leblanc",
+      "role": "Directeur des Systèmes d'Information",
+      "company": "LogiServices",
+      "company_size": "120 employés, 85 postes informatiques",
+      "sector": "Services logistiques",
+      "personality": "evasive_technical",
+      "psychology": {
+        "type": "analytique",
+        "communication_style": "Technique, aime les détails, mais flou sur les aspects business",
+        "decision_speed": "Délègue la décision budgétaire au DG",
+        "priority": "Ne pas avoir de problème technique"
+      },
+      "current_situation": "Firewall vieillissant, antivirus basique, pas de backup formalisé. A eu une frayeur avec un phishing.",
+      "pain_points": [
+        "Inquiet depuis l'attaque de phishing du mois dernier",
+        "Le DG lui met la pression pour 'sécuriser tout ça'",
+        "Budget IT limité, doit justifier chaque euro",
+        "Pas d'équipe sécurité dédiée"
+      ],
+      "hidden_need": "Veut se couvrir personnellement en cas d'incident"
+    }
+  },
+
+  "bebedc_elements": {
+    "besoin": {
+      "question_cle": "Qu'est-ce qui vous amène à chercher une solution de sécurité?",
+      "validation_required": "Besoin explicite et quantifié",
+      "red_flags": ["Juste un benchmark", "On regarde pour voir"]
+    },
+    "enjeux": {
+      "question_cle": "Quels seraient les impacts d'un incident de sécurité?",
+      "validation_required": "Enjeux business identifiés (pas que techniques)",
+      "red_flags": ["Pas de réponse claire", "Enjeux minimisés"]
+    },
+    "budget": {
+      "question_cle": "Quelle enveloppe avez-vous prévue pour ce projet?",
+      "validation_required": "Fourchette budgétaire ou processus d'allocation",
+      "red_flags": ["Aucun budget défini", "On verra après le devis"]
+    },
+    "echeance": {
+      "question_cle": "Quelle est votre échéance idéale de déploiement?",
+      "validation_required": "Date ou événement déclencheur",
+      "red_flags": ["Pas d'urgence", "Quand on aura le temps"]
+    },
+    "decideurs": {
+      "question_cle": "Qui d'autre sera impliqué dans cette décision?",
+      "validation_required": "Circuit de décision et signataires identifiés",
+      "red_flags": ["Je décide seul (peu crédible)", "Je ne sais pas"]
+    },
+    "concurrents": {
+      "question_cle": "Vous regardez d'autres solutions en parallèle?",
+      "validation_required": "Position dans la compétition",
+      "red_flags": ["On consulte 10 prestataires", "Appel d'offres"]
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Je n'ai pas encore de budget validé",
+      "type": "budget",
+      "hidden": "Il ne veut pas donner sa fourchette"
+    },
+    {
+      "objection": "C'est le DG qui décide, moi je fais la technique",
+      "type": "authority",
+      "hidden": "Il minimise son influence pour éviter de s'engager"
+    },
+    {
+      "objection": "On compare avec plusieurs prestataires",
+      "type": "competition",
+      "hidden": "Cherche à négocier le prix"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Second RDV après une première découverte. Le DSI doit vous donner plus d'infos pour avancer.",
+      "prospect_first_response": "Rebonjour. Alors, j'ai réfléchi à notre discussion. Qu'est-ce que vous vouliez me demander?"
+    },
+    "objectives": [
+      "Valider chaque élément du BEBEDC",
+      "Identifier les red flags et les traiter",
+      "Obtenir accès au DG si nécessaire",
+      "Qualifier le timing réel du projet"
+    ],
+    "success_criteria": [
+      "Au moins 5/6 éléments BEBEDC validés",
+      "Budget fourchette obtenue",
+      "Prochaine étape avec le bon interlocuteur"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "openness": "Répond assez ouvertement aux questions",
+        "budget": "A une enveloppe définie"
+      },
+      "medium": {
+        "openness": "Évasif sur budget et timeline",
+        "budget": "Doit demander au DG"
+      },
+      "expert": {
+        "openness": "Très évasif, répond à côté",
+        "budget": "Refuse de parler budget"
+      }
+    }
+  },
+
+  "techniques_to_practice": [
+    "Questions directes mais non agressives",
+    "Reformulation pour valider la compréhension",
+    "Justifier pourquoi on pose ces questions",
+    "Proposer des fourchettes pour débloquer le budget",
+    "Identifier et adresser les red flags"
+  ],
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "merci pour ces précisions", "on en reparle"],
+    "min_exchanges": 8,
+    "max_exchanges": 18,
+    "auto_end_enabled": true
+  }
+}

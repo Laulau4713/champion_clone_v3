@@ -77,6 +77,35 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
     return user
 
 
+async def require_enterprise_access(current_user: User = Depends(get_current_user)) -> User:
+    """
+    Dependency to require Enterprise plan access.
+
+    Used for Champion V1 features (video analysis, pattern extraction).
+    Non-enterprise users should use the Skills/Learning system instead.
+
+    Raises HTTPException 403 if user doesn't have Enterprise plan.
+    """
+    from fastapi import HTTPException
+
+    from models import SubscriptionPlan
+
+    if current_user.subscription_plan != SubscriptionPlan.ENTERPRISE.value:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "ENTERPRISE_REQUIRED",
+                "message": "La fonctionnalité Champion est réservée aux comptes Enterprise.",
+                "suggestion": "Utilisez les sessions d'entraînement Skills pour vous former, "
+                "ou contactez-nous pour découvrir l'offre Enterprise.",
+                "current_plan": current_user.subscription_plan,
+                "upgrade_url": "/enterprise",
+            },
+        )
+
+    return current_user
+
+
 # ============================================
 # Endpoints
 # ============================================
@@ -126,6 +155,12 @@ async def login(request: Request, body: UserLogin, db: AsyncSession = Depends(ge
 
     # Find user by email
     user = await user_repo.get_by_email(body.email)
+
+    # DEBUG
+    logger.info("login_attempt", email=body.email, user_found=user is not None)
+    if user:
+        pwd_valid = verify_password(body.password, user.hashed_password)
+        logger.info("password_check", valid=pwd_valid, hash_prefix=user.hashed_password[:20])
 
     # Verify user exists and password is correct
     if not user or not verify_password(body.password, user.hashed_password):

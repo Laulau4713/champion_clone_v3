@@ -1,0 +1,102 @@
+{
+  "product_id": "crm_pme_1",
+  "name": "SimpleCRM Pro",
+  "tagline": "Le CRM pensé pour les PME françaises",
+  "category": "CRM",
+
+  "how_it_works": {
+    "summary": "CRM cloud simple et complet. Gestion des contacts, opportunités, devis et factures. Interface intuitive, prise en main en 30 minutes.",
+    "key_features": [
+      "Gestion contacts et entreprises",
+      "Pipeline de ventes visuel",
+      "Devis et factures intégrés",
+      "Rappels et tâches automatiques",
+      "App mobile iOS/Android"
+    ],
+    "technical_requirements": "Navigateur web, app mobile disponible",
+    "implementation_time": "1 jour (import données) à 1 semaine (configuration complète)"
+  },
+
+  "integrations": [
+    "Gmail / Outlook",
+    "Calendrier Google / Microsoft",
+    "Slack",
+    "Zapier",
+    "Sage / EBP",
+    "Téléphonie VoIP"
+  ],
+
+  "support": {
+    "onboarding": "Accompagnement personnalisé 1h inclus",
+    "support": "Support FR par téléphone et email",
+    "documentation": "Tutoriels vidéo et base de connaissances",
+    "csm": "Account manager dédié dès 10 utilisateurs"
+  },
+
+  "pricing": {
+    "model": "par_utilisateur",
+    "entry_price": "29€/utilisateur/mois",
+    "popular_plan": "Pro à 49€/utilisateur/mois",
+    "enterprise": "Sur devis (dès 50 utilisateurs)",
+    "engagement": "Mensuel ou annuel (-25%)",
+    "free_trial": "30 jours gratuits"
+  },
+
+  "proof": {
+    "testimonials": [
+      {
+        "name": "Pierre Durand",
+        "role": "Directeur Commercial",
+        "company": "Batipro (25 employés)",
+        "quote": "On a enfin un outil que toute l'équipe utilise vraiment",
+        "result": "+30% de deals closés, zéro opportunité perdue"
+      }
+    ],
+    "case_studies": [
+      {
+        "client": "AgenceWeb42",
+        "sector": "Services",
+        "problem": "Suivis clients dans Excel, opportunités perdues",
+        "solution": "Migration vers SimpleCRM en 3 jours",
+        "results": {
+          "deals_closed": "+35%",
+          "response_time": "-50%",
+          "satisfaction_client": "+20 points NPS"
+        }
+      }
+    ],
+    "stats": {
+      "clients_count": "5000+ PME",
+      "satisfaction": "4.7/5",
+      "nps": "68",
+      "data_hosted_france": true
+    },
+    "notable_clients": ["Groupe Michel", "TransLogistic", "Cuisines Martin"]
+  },
+
+  "competition": {
+    "main_competitors": [
+      {
+        "name": "Salesforce",
+        "positioning": "Leader mondial enterprise",
+        "strengths": ["Très complet", "Écosystème vaste"],
+        "weaknesses": ["Très cher", "Complexe", "Nécessite un admin dédié"],
+        "price_comparison": "5x plus cher minimum"
+      },
+      {
+        "name": "Pipedrive",
+        "positioning": "CRM simple pour startups",
+        "strengths": ["Interface claire", "Prix correct"],
+        "weaknesses": ["Pas de facturation", "Support anglais", "Données hors France"],
+        "price_comparison": "Prix similaire, moins de fonctionnalités locales"
+      }
+    ],
+    "our_differentiator": "Seul CRM français avec devis/factures intégrés et conformité RGPD native. Support téléphonique en français.",
+    "switch_cost": {
+      "migration_time": "1-3 jours",
+      "data_import": "Import CSV automatique + assistance gratuite",
+      "training_needed": "30 min de prise en main",
+      "risk": "Période de transition accompagnée"
+    }
+  }
+}

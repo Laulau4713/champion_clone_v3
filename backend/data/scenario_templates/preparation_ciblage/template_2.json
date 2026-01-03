@@ -1,0 +1,102 @@
+{
+  "template_id": "preparation_ciblage_2",
+  "skill_slug": "preparation_ciblage",
+  "name": "Premier contact - Cabinet conseil",
+  "description": "Vous préparez un appel avec un cabinet de conseil en croissance. L'enjeu est de comprendre leur organisation commerciale.",
+
+  "product": {
+    "name": "SimpleCRM Pro",
+    "tagline": "Le CRM pensé pour les PME françaises",
+    "how_it_works": {
+      "summary": "CRM cloud avec devis/factures intégrés",
+      "key_features": ["Pipeline visuel", "Devis en 2 clics", "App mobile"]
+    },
+    "pricing": {
+      "entry_price": "29€/utilisateur/mois",
+      "popular_plan": "Pro à 49€/utilisateur/mois"
+    }
+  },
+
+  "proof": {
+    "stats": {
+      "clients_count": "5000+ PME",
+      "satisfaction": "4.7/5"
+    },
+    "testimonials": [
+      {
+        "name": "Claire Dupont",
+        "company": "ConseilRH",
+        "quote": "On a gagné 5h par semaine sur l'administratif"
+      }
+    ]
+  },
+
+  "prospect": {
+    "decision_maker": {
+      "name": "Laurent Bernard",
+      "role": "Associé Fondateur",
+      "company": "Stratégie & Conseil",
+      "company_size": "12 consultants",
+      "sector": "Conseil en stratégie",
+      "personality": "analytical",
+      "current_situation": "Gère les clients dans Excel, les consultants ont chacun leurs méthodes",
+      "pain_points": [
+        "Pas de vision globale sur le pipe commercial",
+        "Temps perdu sur les devis et factures",
+        "Difficile de suivre les opportunités en cours"
+      ],
+      "hidden_need": "Veut structurer pour préparer une croissance à 20 consultants"
+    }
+  },
+
+  "possible_objections": [
+    {
+      "objection": "Excel fonctionne très bien pour nous",
+      "type": "status_quo",
+      "hidden": "Peur que les consultants n'adoptent pas l'outil"
+    },
+    {
+      "objection": "C'est combien par mois?",
+      "type": "price",
+      "hidden": "Veut comparer au temps perdu actuellement"
+    }
+  ],
+
+  "scenario_flow": {
+    "opening": {
+      "context": "Le prospect a téléchargé un livre blanc sur votre site: 'Comment structurer sa force commerciale'",
+      "prospect_first_response": "Oui, Laurent Bernard. Vous m'appelez suite au téléchargement je suppose?"
+    },
+    "objectives": [
+      "Comprendre l'organisation commerciale actuelle",
+      "Quantifier le temps perdu (opportunités perdues, admin)",
+      "Proposer une démo personnalisée"
+    ],
+    "success_criteria": [
+      "Démo planifiée avec le bon interlocuteur",
+      "Taille du pipe et nombre d'opportunités estimés",
+      "Délai de décision identifié"
+    ],
+    "difficulty_modifiers": {
+      "easy": {
+        "dm_availability": "A du temps, veut vraiment changer",
+        "cooperation_level": "high"
+      },
+      "medium": {
+        "dm_availability": "Entre deux RDV clients, pressé",
+        "cooperation_level": "medium"
+      },
+      "expert": {
+        "dm_availability": "Sceptique, a testé 3 CRM qui ont échoué",
+        "cooperation_level": "low"
+      }
+    }
+  },
+
+  "conversation_rules": {
+    "end_triggers": ["au revoir", "merci bonne journée", "on se rappelle"],
+    "min_exchanges": 5,
+    "max_exchanges": 12,
+    "auto_end_enabled": true
+  }
+}
