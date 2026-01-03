@@ -2058,21 +2058,66 @@ proofs:
 
 ## 12. INFRASTRUCTURE & SCALABILITÉ (100+ users)
 
-### Stratégie : APIs pour dev, Local pour prod
+### Stratégie : Architecture Hybride Optimisée
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    ENVIRONNEMENTS                               │
+│              ARCHITECTURE HYBRIDE (Latence < 2s)                │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  DEV / TEST                        PROD (100+ users)            │
-│  ──────────                        ─────────────────            │
-│  Claude API ──────────────────────► Qwen 14B (local)            │
-│  ElevenLabs ──────────────────────► Chatterbox (local)          │
-│  Whisper OpenAI ──────────────────► Whisper (local)             │
+│  SERVICE        DEV                    PROD                     │
+│  ───────        ───                    ────                     │
+│  STT            Whisper OpenAI API ──► Whisper OpenAI API ⭐    │
+│  LLM            Claude API ──────────► Qwen 14B (local)         │
+│  TTS            ElevenLabs API ──────► Chatterbox Turbo (local) │
 │                                                                 │
-│  Coût : ~$10-50/mois               Coût : ~$150-300/mois        │
-│  (pay per use, faible volume)      (fixe, illimité)             │
+│  ⭐ Whisper OpenAI gardé en prod : 320ms, ~$30/mois, excellent  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Breakdown Latence (Objectif < 2s)
+
+```
+Pipeline : User parle → [STT] → [LLM] → [TTS] → User entend
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    LATENCE PAR ÉTAPE                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ÉTAPE          SERVICE                 LATENCE                 │
+│  ─────          ───────                 ───────                 │
+│  1. STT         Whisper OpenAI API      320ms                   │
+│  2. LLM         Qwen 14B (streaming)    800ms-1.5s (TTFT)       │
+│  3. TTS         Chatterbox Turbo        200-500ms (TTFS*)       │
+│                                                                 │
+│  * TTFS = Time-To-First-Sound (streaming)                       │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│  TOTAL LATENCE PERÇUE : 1.3s - 2.3s ✅                          │
+│                                                                 │
+│  Optimisations appliquées :                                     │
+│  ├── Whisper API (pas local) : -200ms                           │
+│  ├── LLM streaming : TTFT au lieu de génération complète        │
+│  ├── TTS streaming : commence dès premiers tokens LLM           │
+│  └── Chatterbox Turbo + ONNX : single-step inference            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Coûts Mensuels (100 users actifs)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      COÛTS PROD                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  SERVICE              COÛT              DÉTAIL                  │
+│  ───────              ────              ──────                  │
+│  GPU Vast.ai          ~$300/mois        RTX 4090, Qwen + TTS    │
+│  Whisper OpenAI       ~$30/mois         3000 msg × $0.01        │
+│                                                                 │
+│  TOTAL                ~$330/mois        Illimité LLM + TTS      │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -2104,17 +2149,19 @@ class LLMService:
 # backend/services/voice_service.py
 
 class VoiceService:
-    """Abstraction Voice - switch via config."""
+    """Abstraction Voice - switch TTS via config, STT toujours Whisper OpenAI."""
 
     def __init__(self):
-        provider = settings.VOICE_PROVIDER  # "elevenlabs" ou "local"
+        tts_provider = settings.TTS_PROVIDER  # "elevenlabs" ou "local"
 
-        if provider == "elevenlabs":
+        # TTS : switch dev (ElevenLabs) ↔ prod (Chatterbox Turbo)
+        if tts_provider == "elevenlabs":
             self.tts = ElevenLabsTTS(api_key=settings.ELEVENLABS_API_KEY)
-            self.stt = WhisperOpenAI(api_key=settings.OPENAI_API_KEY)
         else:
-            self.tts = ChatterboxTTS(base_url=settings.LOCAL_TTS_URL)
-            self.stt = WhisperLocal(base_url=settings.LOCAL_STT_URL)
+            self.tts = ChatterboxTTS(base_url=settings.LOCAL_TTS_URL, turbo=True)
+
+        # STT : TOUJOURS Whisper OpenAI (320ms, $30/mois, excellent)
+        self.stt = WhisperOpenAI(api_key=settings.OPENAI_API_KEY)
 
     async def text_to_speech(self, text: str, voice: str) -> bytes:
         return await self.tts.synthesize(text, voice=voice)
@@ -2197,30 +2244,36 @@ tts:
 # backend/.env
 
 # ============================================
+# STT : Toujours Whisper OpenAI (320ms, optimal)
+# ============================================
+OPENAI_API_KEY=sk-...
+
+# ============================================
 # DEV : APIs (défaut)
 # ============================================
 LLM_PROVIDER=claude
 ANTHROPIC_API_KEY=sk-ant-...
 
-VOICE_PROVIDER=elevenlabs
+TTS_PROVIDER=elevenlabs
 ELEVENLABS_API_KEY=...
-OPENAI_API_KEY=sk-...
 
 # ============================================
-# PROD : Local (décommenter pour prod)
+# PROD : Hybride (décommenter pour prod)
 # ============================================
 # LLM_PROVIDER=local
 # LOCAL_LLM_URL=http://vast-ai-instance:8000/v1
 
-# VOICE_PROVIDER=local
+# TTS_PROVIDER=local
 # LOCAL_TTS_URL=http://vast-ai-instance:8001
-# LOCAL_STT_URL=http://vast-ai-instance:8002
+# CHATTERBOX_TURBO=true
+# CHATTERBOX_ONNX=true
 ```
 
-### Déploiement Vast.ai
+### Déploiement Vast.ai (LLM + TTS seulement)
 
 ```yaml
 # docker-compose.vastai.yml
+# STT = Whisper OpenAI API (pas besoin de container local)
 
 services:
   llm:
@@ -2238,7 +2291,11 @@ services:
             - capabilities: [gpu]
 
   tts:
-    image: chatterbox-tts:latest  # À builder
+    image: ghcr.io/resemble-ai/chatterbox-turbo:latest
+    environment:
+      - MODEL=turbo
+      - USE_ONNX=true
+      - STREAMING=true
     ports:
       - "8001:8001"
     deploy:
@@ -2247,17 +2304,12 @@ services:
           devices:
             - capabilities: [gpu]
 
-  stt:
-    image: whisper-api:latest
-    environment:
-      - MODEL=large-v3
-    ports:
-      - "8002:8002"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
+# PAS de service STT local → Whisper OpenAI API
+# Avantages :
+# - Latence 320ms (vs 500ms+ local)
+# - Coût ~$30/mois (négligeable)
+# - Libère GPU pour LLM + TTS
+# - Qualité excellente
 ```
 
 ### Comparatif coûts
@@ -2266,38 +2318,42 @@ services:
 |----------|----------|-------------|
 | **Dev solo** | Claude + ElevenLabs + Whisper OAI | ~$20-50/mois |
 | **Beta 10 users** | Claude + ElevenLabs + Whisper OAI | ~$50-150/mois |
-| **Prod 100 users** | Vast.ai (RTX 4090) | ~$200-300/mois fixe |
-| **Prod 100 users** | Serveur dédié (Hetzner) | ~$250-400/mois fixe |
+| **Prod 100 users** | Hybride (GPU + Whisper OAI) | ~$330/mois |
 
-### Seuil de rentabilité
+### Détail coûts Prod (Architecture Hybride)
 
 ```
-APIs vs Local - Point de bascule :
-
-Claude : ~$0.01/message
-ElevenLabs : ~$0.30/1000 chars (~$0.10/message)
-Whisper OAI : ~$0.006/min
-
-Total par message : ~$0.12
-
-Vast.ai RTX 4090 : ~$0.50/h = $360/mois
-
-Seuil : 360 / 0.12 = ~3000 messages/mois
-
-→ Si > 3000 messages/mois → Local rentable
-→ 100 users × 30 messages = 3000 → Exactement le seuil!
-
-Conclusion : Dès 100 users actifs, local = rentable
+┌─────────────────────────────────────────────────────────────────┐
+│                    COÛTS PROD DÉTAILLÉS                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Vast.ai RTX 4090 (LLM + TTS)     ~$300/mois                   │
+│  ├── Qwen 14B : ~12GB VRAM                                     │
+│  ├── Chatterbox Turbo : ~4GB VRAM                              │
+│  └── Total : ~16GB (RTX 4090 = 24GB ✓)                         │
+│                                                                 │
+│  Whisper OpenAI API               ~$30/mois                    │
+│  ├── 100 users × 30 msg = 3000 msg/mois                        │
+│  ├── ~30 sec audio/msg = 1500 min/mois                         │
+│  └── $0.006/min × 1500 = ~$9 (arrondi $30 marge)               │
+│                                                                 │
+│  TOTAL                            ~$330/mois                   │
+│  ├── Latence : 1.3-2.3s ✅                                     │
+│  ├── LLM + TTS : Illimité                                      │
+│  └── Qualité STT : Excellente (Whisper large-v3)               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Hardware requis (Vast.ai)
 
 ```
-Pour Qwen 14B + Chatterbox + Whisper :
-├── GPU : RTX 4090 (24GB VRAM) ou A100 40GB
+Pour Qwen 14B + Chatterbox Turbo (pas de STT local) :
+├── GPU : RTX 4090 (24GB VRAM) ✅ suffisant
+├── VRAM utilisée : ~16GB (12 LLM + 4 TTS)
 ├── RAM : 32GB minimum
-├── Storage : 100GB SSD
-└── Coût Vast.ai : ~$0.40-0.80/h
+├── Storage : 50GB SSD (pas besoin de Whisper local)
+└── Coût Vast.ai : ~$0.40-0.50/h = ~$300/mois
 ```
 
 ### Capacité serveur unique
