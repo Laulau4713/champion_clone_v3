@@ -6,54 +6,50 @@
 
 ## 1. Démarrer les serveurs
 
-### Backend (port 8000)
+### Docker Compose (recommandé)
+```bash
+cd /home/laurent/champion-clone-dev
+source .env
+docker-compose up -d
+```
+
+### Vérifier que tout tourne
+```bash
+docker-compose ps
+docker-compose logs -f  # Suivre les logs
+```
+
+### Sans Docker (développement)
+
+#### Backend (port 8000)
 ```bash
 cd /home/laurent/champion-clone-dev/backend
 source venv/bin/activate
 python main.py
 ```
 
-### Frontend (port 3002)
+#### Frontend (port 3000)
 ```bash
 cd /home/laurent/champion-clone-dev/frontend
-npm run dev -- -p 3002
-```
-
-### Les deux en parallèle (2 terminaux)
-```bash
-# Terminal 1 - Backend
-cd /home/laurent/champion-clone-dev/backend && source venv/bin/activate && python main.py
-
-# Terminal 2 - Frontend
-cd /home/laurent/champion-clone-dev/frontend && npm run dev -- -p 3002
+npm run dev
 ```
 
 ---
 
 ## 2. Arrêter les serveurs
 
-### Méthode douce (CTRL+C dans le terminal)
-
-### Forcer l'arrêt
+### Docker
 ```bash
-# Tuer le backend
-pkill -f "python main.py"
-
-# Tuer le frontend
-pkill -f "next dev"
-
-# Tuer tout Node.js (attention si autres apps node)
-pkill -f node
-
-# Libérer un port spécifique
-lsof -ti:8000 | xargs kill -9  # Backend
-lsof -ti:3002 | xargs kill -9  # Frontend
+docker-compose stop      # Arrêter
+docker-compose down      # Arrêter et supprimer containers
+docker-compose restart frontend  # Redémarrer un service
 ```
 
-### Vérifier les ports utilisés
+### Sans Docker
 ```bash
-lsof -i:8000  # Backend
-lsof -i:3002  # Frontend
+# CTRL+C dans le terminal ou:
+pkill -f "python main.py"
+pkill -f "next dev"
 ```
 
 ---
@@ -62,149 +58,178 @@ lsof -i:3002  # Frontend
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:3002 |
+| Frontend | http://localhost:3000 |
 | Backend API | http://localhost:8000 |
-| Login | http://localhost:3002/login |
-| Achievements | http://localhost:3002/achievements |
-| Admin | http://localhost:3002/admin |
+| Login | http://localhost:3000/login |
+| Training V2 | http://localhost:3000/training |
+| Dashboard | http://localhost:3000/dashboard |
+| Admin | http://localhost:3000/admin |
 | API Health | http://localhost:8000/health |
 
 ---
 
 ## 4. Comptes de test
 
-### Admin (accès complet + panel admin)
+### Compte Demo (Premium - illimité)
 ```
-Email:    admin@champion-test.com
-Password: Admin123!
-```
-
-### Premium (accès complet sans admin)
-```
-Email:    premium@champion-test.com
-Password: Premium123!
+Email:    demo@test.com
+Password: demo1234
+Plan:     pro
 ```
 
-### Essai gratuit (accès limité, 0 sessions utilisées)
+### Admin Enterprise
+```
+Email:    admin@test.com
+Password: demo1234
+Plan:     enterprise
+Role:     admin
+```
+
+### Essai gratuit (3 sessions max)
 ```
 Email:    trial@champion-test.com
 Password: Trial123!
+Plan:     free
 ```
 
 ---
 
 ## 5. Commandes utiles
 
+### Rebuild frontend après modifications
+```bash
+source .env
+docker-compose build frontend
+docker-compose up -d frontend
+```
+
+### Rebuild sans cache
+```bash
+source .env
+docker-compose build --no-cache frontend
+docker-compose up -d frontend
+```
+
+### Voir les logs
+```bash
+docker-compose logs backend --tail=50
+docker-compose logs frontend --tail=50
+```
+
+### Accéder au shell d'un container
+```bash
+docker exec -it champion-clone-dev-backend-1 bash
+docker exec -it champion-clone-dev-frontend-1 sh
+```
+
 ### Tester l'API
 ```bash
 # Health check
 curl http://localhost:8000/health
 
-# Login (récupérer token) - utiliser Python car le ! pose problème avec curl/bash
-python3 -c "
-import requests
-r = requests.post('http://localhost:8000/auth/login', json={
-    'email': 'admin@champion-test.com',
-    'password': 'Admin123!'
-})
-print(r.json())
+# Login
+curl -s -X POST "http://localhost:8000/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@test.com","password":"demo1234"}'
+```
+
+---
+
+## 6. Base de données
+
+### Lister les utilisateurs
+```bash
+docker-compose exec backend python -c "
+import asyncio
+from sqlalchemy import select
+from database import AsyncSessionLocal
+from models import User
+
+async def list_users():
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(User).limit(10))
+        for u in result.scalars():
+            print(f'{u.email} | {u.subscription_plan} | {u.role}')
+
+asyncio.run(list_users())
+" 2>&1 | grep -v "INFO sqlalchemy"
+```
+
+### Passer un user en Premium
+```bash
+docker-compose exec backend python -c "
+import asyncio
+from sqlalchemy import select
+from database import AsyncSessionLocal
+from models import User
+
+async def upgrade():
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(User).where(User.email == 'demo@test.com'))
+        user = result.scalar_one_or_none()
+        if user:
+            user.subscription_plan = 'pro'
+            user.trial_sessions_used = 0
+            await session.commit()
+            print('OK')
+
+asyncio.run(upgrade())
 "
 ```
 
-### Reset sessions trial
+### Reset mot de passe
 ```bash
-cd /home/laurent/champion-clone-dev/backend
-source venv/bin/activate
-python3 -c "
+docker-compose exec backend python -c "
 import asyncio
+import bcrypt
+from sqlalchemy import select
 from database import AsyncSessionLocal
 from models import User
-from sqlalchemy import select
 
 async def reset():
-    async with AsyncSessionLocal() as db:
-        result = await db.execute(select(User).where(User.email == 'trial@champion-test.com'))
-        user = result.scalar_one()
-        user.trial_sessions_used = 0
-        await db.commit()
-        print('✅ Trial sessions reset to 0')
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(User).where(User.email == 'demo@test.com'))
+        user = result.scalar_one_or_none()
+        if user:
+            user.hashed_password = bcrypt.hashpw('demo1234'.encode(), bcrypt.gensalt()).decode()
+            await session.commit()
+            print('OK')
 
 asyncio.run(reset())
 "
 ```
 
-### Rebuild frontend
-```bash
-cd /home/laurent/champion-clone-dev/frontend
-npm run build
-```
-
 ---
 
-## 6. Troubleshooting
+## 7. Troubleshooting
 
-### "Port already in use"
+### "Permission denied" sur .next
 ```bash
-# Méthode standard
-lsof -ti:PORT | xargs kill -9
-
-# Si processus root (nécessite sudo)
-sudo fuser -k 8000/tcp
-sudo fuser -k 3002/tcp
+docker exec --user root champion-clone-dev-frontend-1 rm -rf /app/.next
+docker-compose build frontend
+docker-compose up -d frontend
 ```
 
-### Frontend affiche que du HTML
-Ouvrir dans un **navigateur** (pas curl). Next.js nécessite JavaScript.
+### "TRIAL_EXPIRED" - Sessions épuisées
+Passer le compte en premium (voir section 6).
 
-### 401 Unauthorized
-Token expiré. Se reconnecter via /login.
-
-### Base de données corrompue
+### Container en boucle de restart
 ```bash
-cd /home/laurent/champion-clone-dev/backend
-rm champion_clone.db
-python main.py  # Recréera la DB
-# Puis recréer les comptes de test (voir ci-dessous)
+docker-compose logs frontend --tail=30  # Voir l'erreur
+docker-compose build --no-cache frontend  # Rebuild complet
+docker-compose up -d frontend
 ```
 
-### Recréer/reset les comptes de test
+### 401 Unauthorized / Token expiré
+Se reconnecter via /login.
+
+### 403 sur le dashboard
+Le compte n'a pas les permissions. Utiliser un compte enterprise pour les features champions.
+
+### Ports déjà utilisés
 ```bash
-cd /home/laurent/champion-clone-dev/backend
-source venv/bin/activate
-python3 << 'EOF'
-import asyncio
-from database import AsyncSessionLocal
-from models import User
-from sqlalchemy import select
-from services.auth import hash_password
-
-async def reset_accounts():
-    async with AsyncSessionLocal() as db:
-        accounts = [
-            ('admin@champion-test.com', 'Admin123!', 'pro', 'admin'),
-            ('premium@champion-test.com', 'Premium123!', 'pro', 'user'),
-            ('trial@champion-test.com', 'Trial123!', 'free', 'user'),
-        ]
-        for email, pwd, plan, role in accounts:
-            result = await db.execute(select(User).where(User.email == email))
-            user = result.scalar_one_or_none()
-            if user:
-                user.hashed_password = hash_password(pwd)
-                print(f"✓ Updated: {email}")
-            else:
-                new_user = User(
-                    email=email,
-                    hashed_password=hash_password(pwd),
-                    full_name=email.split('@')[0].title(),
-                    subscription_plan=plan,
-                    role=role,
-                    is_active=True
-                )
-                db.add(new_user)
-                print(f"✓ Created: {email}")
-        await db.commit()
-        print("Done!")
-
-asyncio.run(reset_accounts())
-EOF
+docker-compose down
+lsof -ti:8000 | xargs kill -9
+lsof -ti:3000 | xargs kill -9
+docker-compose up -d
 ```

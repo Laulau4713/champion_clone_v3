@@ -1,532 +1,282 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Clock, X, Trophy, Target, AlertCircle, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  Mic,
+  Target,
+  Sparkles,
+  Lock,
+  CheckCircle2,
+  Zap,
+  Eye,
+  EyeOff,
+  Lightbulb,
+  AlertTriangle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChatInterface } from "@/components/training/ChatInterface";
-import { ResponseInput } from "@/components/training/ResponseInput";
-import { FeedbackPanel } from "@/components/training/FeedbackPanel";
-import { ScenarioCard } from "@/components/training/ScenarioCard";
-import { ScoreCircle } from "@/components/training/ScoreCircle";
-import { useTrainingStore } from "@/store/training-store";
-import { useAuthStore } from "@/store/auth-store";
-import { formatDuration, generateId } from "@/lib/utils";
-import { getScenarios, startTraining, respondTraining, endTraining } from "@/lib/api";
-import type { TrainingScenario, ChatMessage, SessionSummary } from "@/types";
+import { learningAPI, authAPI } from "@/lib/api";
+import { TrialBadge } from "@/components/ui/trial-badge";
+import { PremiumModal } from "@/components/ui/premium-modal";
+import type { Skill, DifficultyLevel, User } from "@/types";
 
-type TrainingPhase = "select" | "training" | "summary";
+const difficultyConfig: Record<DifficultyLevel, {
+  label: string;
+  color: string;
+  bgColor: string;
+  description: string;
+  features: { icon: React.ReactNode; text: string }[];
+}> = {
+  easy: {
+    label: "Facile",
+    color: "text-green-400",
+    bgColor: "bg-green-500/20 border-green-500/30",
+    description: "Idéal pour débuter",
+    features: [
+      { icon: <Eye className="h-4 w-4" />, text: "Jauge visible" },
+      { icon: <Lightbulb className="h-4 w-4" />, text: "Indices activés" },
+      { icon: <CheckCircle2 className="h-4 w-4" />, text: "Prospect bienveillant" },
+    ],
+  },
+  medium: {
+    label: "Moyen",
+    color: "text-yellow-400",
+    bgColor: "bg-yellow-500/20 border-yellow-500/30",
+    description: "Pour progresser",
+    features: [
+      { icon: <Eye className="h-4 w-4" />, text: "Jauge visible" },
+      { icon: <AlertTriangle className="h-4 w-4" />, text: "Objections cachées" },
+      { icon: <Zap className="h-4 w-4" />, text: "Événements imprévus" },
+    ],
+  },
+  expert: {
+    label: "Expert",
+    color: "text-red-400",
+    bgColor: "bg-red-500/20 border-red-500/30",
+    description: "Le vrai défi",
+    features: [
+      { icon: <EyeOff className="h-4 w-4" />, text: "Jauge cachée" },
+      { icon: <AlertTriangle className="h-4 w-4" />, text: "Reversals possibles" },
+      { icon: <Lock className="h-4 w-4" />, text: "Aucun indice" },
+    ],
+  },
+};
 
-function TrainingPageContent() {
-  const searchParams = useSearchParams();
+export default function TrainingPage() {
   const router = useRouter();
-  const championId = searchParams.get("champion");
 
-  const { user } = useAuthStore();
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-  const [phase, setPhase] = useState<TrainingPhase>("select");
-  const [scenarios, setScenarios] = useState<TrainingScenario[]>([]);
-  const [selectedScenario, setSelectedScenario] = useState<TrainingScenario | null>(null);
-  const [selectedScenarioIndex, setSelectedScenarioIndex] = useState<number>(0);
-  const [isTyping, setIsTyping] = useState(false);
-  const [isLoadingScenarios, setIsLoadingScenarios] = useState(false);
-  const [isStartingSession, setIsStartingSession] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
-
-  const [currentFeedback, setCurrentFeedback] = useState<{
-    strengths: string[];
-    improvements: string[];
-    suggestions: string[];
-    championWouldSay?: string;
-  } | null>(null);
-
-  const {
-    sessionId,
-    messages,
-    currentScore,
-    elapsedSeconds,
-    championName,
-    startSession,
-    addUserMessage,
-    addChampionMessage,
-    setTyping,
-    updateTimer,
-    reset,
-  } = useTrainingStore();
-
-  // Load scenarios from API
   useEffect(() => {
-    const loadScenarios = async () => {
-      if (!championId) return;
+    loadContent();
+  }, []);
 
-      setIsLoadingScenarios(true);
-      setError(null);
-
-      try {
-        const response = await getScenarios(parseInt(championId), 3);
-        setScenarios(response.scenarios);
-      } catch (err: unknown) {
-        const error = err as { response?: { data?: { detail?: string } } };
-        setError(error.response?.data?.detail || "Erreur lors du chargement des scénarios");
-        // Fallback to mock scenarios if API fails
-        setScenarios([]);
-      } finally {
-        setIsLoadingScenarios(false);
-      }
-    };
-
-    loadScenarios();
-  }, [championId]);
-
-  // Timer effect
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (phase === "training") {
-      interval = setInterval(() => {
-        updateTimer();
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [phase, updateTimer]);
-
-  const handleSelectScenario = (scenario: TrainingScenario, index: number) => {
-    setSelectedScenario(scenario);
-    setSelectedScenarioIndex(index);
-  };
-
-  const handleStartTraining = async () => {
-    if (!selectedScenario || !championId) return;
-
-    setIsStartingSession(true);
-    setError(null);
-
+  const loadContent = async () => {
     try {
-      const response = await startTraining({
-        champion_id: parseInt(championId),
-        user_id: user?.id?.toString() || "anonymous",
-        scenario_index: selectedScenarioIndex,
-      });
+      const [skillsRes, userRes] = await Promise.all([
+        learningAPI.getSkills(),
+        authAPI.me().catch(() => ({ data: null })),
+      ]);
 
-      // Start session in store
-      reset();
-      startSession({
-        sessionId: response.session_id,
-        championId: parseInt(championId),
-        championName: response.champion_name,
-        scenario: selectedScenario,
-        firstMessage: response.first_message,
-      });
-
-      setPhase("training");
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || "Erreur lors du démarrage de la session");
+      setSkills(skillsRes.data || []);
+      if (userRes.data) {
+        setUser(userRes.data);
+      }
+    } catch (error) {
+      console.error("Error loading content:", error);
     } finally {
-      setIsStartingSession(false);
+      setLoading(false);
     }
   };
 
-  const handleEndSession = useCallback(async () => {
-    if (!sessionId) {
-      setPhase("summary");
+  const isFreeUser = user?.subscription_plan === "free";
+
+  const handleSkillClick = (skill: Skill, index: number) => {
+    // Free users can only access first skill
+    if (isFreeUser && index > 0) {
+      setShowPremiumModal(true);
       return;
     }
-
-    try {
-      const summary = await endTraining(sessionId);
-      setSessionSummary(summary);
-    } catch (err) {
-      console.error("Error ending session:", err);
-    }
-
-    setPhase("summary");
-  }, [sessionId]);
-
-  const handleSendMessage = useCallback(async (content: string) => {
-    if (!sessionId) return;
-
-    addUserMessage(content);
-    setIsTyping(true);
-    setTyping(true);
-
-    try {
-      const response = await respondTraining({
-        session_id: sessionId,
-        user_response: content,
-      });
-
-      // Update feedback
-      setCurrentFeedback({
-        strengths: [],
-        improvements: [],
-        suggestions: response.suggestions,
-        championWouldSay: response.feedback,
-      });
-
-      // Add champion response
-      addChampionMessage(response.champion_response, response.score, response.feedback);
-
-      // Check if session is complete
-      if (response.session_complete) {
-        handleEndSession();
-      }
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      addChampionMessage(
-        "Désolé, une erreur est survenue. Veuillez réessayer.",
-        currentScore
-      );
-      console.error("Training respond error:", error.response?.data?.detail);
-    } finally {
-      setIsTyping(false);
-      setTyping(false);
-    }
-  }, [sessionId, addUserMessage, addChampionMessage, setTyping, currentScore, handleEndSession]);
-
-  const handleNewSession = () => {
-    reset();
-    setSelectedScenario(null);
-    setCurrentFeedback(null);
-    setSessionSummary(null);
-    setPhase("select");
+    // Navigate to session with skill pre-selected
+    router.push(`/training/session/new?skill=${skill.slug}`);
   };
 
-  // Convert store messages to ChatMessage format for ChatInterface
-  const chatMessages: ChatMessage[] = messages.map((m) => ({
-    id: m.id || generateId(),
-    content: m.content,
-    timestamp: m.timestamp,
-    score: m.score,
-    feedback: m.feedback,
-    role: m.role === "champion" ? "assistant" : "user",
-  }));
-
-  // No champion selected
-  if (!championId) {
+  if (loading) {
     return (
-      <div className="min-h-[calc(100vh-6rem)] flex items-center justify-center px-4">
-        <Card className="glass border-white/10 max-w-md w-full">
-          <CardContent className="p-8 text-center">
-            <AlertCircle className="h-12 w-12 text-warning-400 mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">Aucun champion sélectionné</h2>
-            <p className="text-muted-foreground mb-6">
-              Vous devez d&apos;abord créer et analyser un champion pour commencer l&apos;entraînement.
-            </p>
-            <Button
-              onClick={() => router.push("/upload")}
-              className="bg-gradient-primary hover:opacity-90"
-            >
-              Créer un champion
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gradient-dark flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        >
+          <Sparkles className="h-8 w-8 text-primary-400" />
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-6rem)]">
-      {/* Background */}
-      <div className="absolute inset-0 gradient-mesh opacity-20" />
-
-      <AnimatePresence mode="wait">
-        {/* Scenario Selection Phase */}
-        {phase === "select" && (
-          <motion.div
-            key="select"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12"
-          >
-            <div className="text-center mb-12">
-              <h1 className="text-3xl lg:text-4xl font-bold mb-4">
-                Choisissez votre <span className="gradient-text">scénario</span>
+    <div className="min-h-screen bg-gradient-dark pt-8 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-primary-500/20">
+                <Mic className="h-6 w-6 text-primary-400" />
+              </div>
+              <h1 className="text-3xl font-bold gradient-text">
+                Entraînement
               </h1>
-              <p className="text-muted-foreground max-w-xl mx-auto">
-                Sélectionnez un scénario d&apos;entraînement adapté à votre niveau
-              </p>
             </div>
-
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3 max-w-xl mx-auto"
-              >
-                <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
-                <span className="text-sm text-destructive">{error}</span>
-              </motion.div>
+            {user && (
+              <TrialBadge
+                sessionsUsed={user.trial_sessions_used}
+                sessionsMax={user.trial_sessions_max}
+                isPremium={user.subscription_plan !== "free"}
+              />
             )}
+          </div>
+          <p className="text-muted-foreground">
+            Choisissez une compétence et entraînez-vous avec des simulations de vente
+          </p>
+        </motion.div>
 
-            {isLoadingScenarios ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="h-12 w-12 animate-spin text-primary-500 mb-4" />
-                <p className="text-muted-foreground">Génération des scénarios...</p>
-              </div>
-            ) : scenarios.length === 0 ? (
-              <div className="text-center py-12">
-                <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Aucun scénario disponible</p>
-                <Button
-                  onClick={() => router.push("/upload")}
-                  variant="outline"
-                  className="mt-4"
+        {/* Difficulty Levels Reminder */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8"
+        >
+          <h2 className="text-lg font-semibold mb-4">Niveaux de difficulté</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {(["easy", "medium", "expert"] as DifficultyLevel[]).map((level, index) => {
+              const config = difficultyConfig[level];
+              return (
+                <motion.div
+                  key={level}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + index * 0.05 }}
                 >
-                  Créer un champion
-                </Button>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  {scenarios.map((scenario, index) => (
-                    <ScenarioCard
-                      key={scenario.id}
-                      scenario={scenario}
-                      isSelected={selectedScenario?.id === scenario.id}
-                      onClick={() => handleSelectScenario(scenario, index)}
-                    />
-                  ))}
-                </div>
+                  <Card className={cn("border", config.bgColor)}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <Badge className={cn(config.bgColor, config.color)}>
+                          {config.label}
+                        </Badge>
+                      </div>
+                      <CardDescription className={config.color}>
+                        {config.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <ul className="space-y-1">
+                        {config.features.map((feature, i) => (
+                          <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span className={config.color}>{feature.icon}</span>
+                            {feature.text}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
 
-                {selectedScenario && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-center"
+        {/* Skills List */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h2 className="text-lg font-semibold mb-4">Compétences à travailler</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {skills.map((skill, index) => {
+              const isLocked = isFreeUser && index > 0;
+
+              return (
+                <motion.div
+                  key={skill.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + index * 0.03 }}
+                >
+                  <Card
+                    className={cn(
+                      "h-full flex flex-col cursor-pointer transition-all",
+                      isLocked
+                        ? "opacity-60"
+                        : "hover:border-primary-500/50 hover:shadow-lg hover:shadow-primary-500/10"
+                    )}
+                    onClick={() => handleSkillClick(skill, index)}
                   >
-                    <Button
-                      onClick={handleStartTraining}
-                      disabled={isStartingSession}
-                      size="lg"
-                      className="bg-gradient-primary hover:opacity-90 text-white px-12 py-6 text-lg"
-                    >
-                      {isStartingSession ? (
-                        <>
-                          <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                          Démarrage...
-                        </>
-                      ) : (
-                        <>
-                          <Target className="h-5 w-5 mr-2" />
-                          Démarrer l&apos;entraînement
-                        </>
-                      )}
-                    </Button>
-                  </motion.div>
-                )}
-              </>
+                    <CardHeader className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <CardTitle className="text-lg">{skill.name}</CardTitle>
+                        {isLocked && (
+                          <Lock className="h-5 w-5 text-yellow-500" />
+                        )}
+                      </div>
+                      <CardDescription className="line-clamp-2">
+                        {skill.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          {skill.scenarios_required} scénarios requis
+                        </span>
+                        {isLocked ? (
+                          <Button size="sm" variant="outline" onClick={(e) => {
+                            e.stopPropagation();
+                            setShowPremiumModal(true);
+                          }}>
+                            <Lock className="h-4 w-4 mr-1" />
+                            Premium
+                          </Button>
+                        ) : (
+                          <Button size="sm" className="bg-gradient-primary">
+                            <Target className="h-4 w-4 mr-1" />
+                            S&apos;entraîner
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+
+            {skills.length === 0 && (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Aucune compétence disponible pour le moment</p>
+              </div>
             )}
-          </motion.div>
-        )}
-
-        {/* Training Phase */}
-        {phase === "training" && (
-          <motion.div
-            key="training"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="relative h-[calc(100vh-6rem)] flex"
-          >
-            {/* Main chat area */}
-            <div className="flex-1 flex flex-col lg:w-[60%]">
-              {/* Top bar */}
-              <div className="glass border-b border-white/10 px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Badge
-                      variant="outline"
-                      className="border-primary-500/50 text-primary-400"
-                    >
-                      {selectedScenario?.name}
-                    </Badge>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      {formatDuration(elapsedSeconds)}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <ScoreCircle score={currentScore} size={48} strokeWidth={4} />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleEndSession}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-4 w-4 mr-1" />
-                      Terminer
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chat interface */}
-              <ChatInterface
-                messages={chatMessages}
-                isTyping={isTyping}
-              />
-
-              {/* Response input */}
-              <ResponseInput
-                onSubmit={handleSendMessage}
-                isLoading={isTyping}
-                placeholder="Répondez au prospect..."
-              />
-            </div>
-
-            {/* Feedback panel - desktop only */}
-            <div className="hidden lg:block w-[40%] border-l border-white/10 bg-black/20">
-              <FeedbackPanel
-                score={currentScore}
-                strengths={currentFeedback?.strengths}
-                improvements={currentFeedback?.improvements}
-                suggestions={currentFeedback?.suggestions}
-                championWouldSay={currentFeedback?.championWouldSay}
-              />
-            </div>
-          </motion.div>
-        )}
-
-        {/* Summary Phase */}
-        {phase === "summary" && (
-          <motion.div
-            key="summary"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="relative mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-12"
-          >
-            <Card className="glass border-white/10">
-              <CardContent className="p-8 text-center">
-                <div className="mb-8">
-                  <Trophy className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Session terminée!</h2>
-                  <p className="text-muted-foreground">
-                    Voici le résumé de votre entraînement
-                  </p>
-                </div>
-
-                <div className="flex justify-center mb-8">
-                  <ScoreCircle
-                    score={sessionSummary?.overall_score ?? currentScore}
-                    size={160}
-                    strokeWidth={12}
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                  <div className="p-4 rounded-lg bg-white/5">
-                    <div className="text-2xl font-bold">
-                      {sessionSummary?.total_exchanges ?? messages.length}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Échanges</div>
-                  </div>
-                  <div className="p-4 rounded-lg bg-white/5">
-                    <div className="text-2xl font-bold">
-                      {sessionSummary
-                        ? formatDuration(sessionSummary.duration_seconds)
-                        : formatDuration(elapsedSeconds)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Durée</div>
-                  </div>
-                  <div className="p-4 rounded-lg bg-white/5">
-                    <div className="text-2xl font-bold gradient-text">
-                      {selectedScenario?.difficulty === "easy"
-                        ? "Facile"
-                        : selectedScenario?.difficulty === "medium"
-                        ? "Moyen"
-                        : "Difficile"}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Niveau</div>
-                  </div>
-                </div>
-
-                {/* Summary feedback from API */}
-                {sessionSummary && (
-                  <div className="text-left mb-8 space-y-4">
-                    {sessionSummary.feedback_summary && (
-                      <div className="p-4 rounded-lg bg-white/5">
-                        <p className="text-sm text-muted-foreground mb-1">Résumé</p>
-                        <p className="text-sm">{sessionSummary.feedback_summary}</p>
-                      </div>
-                    )}
-
-                    {sessionSummary.strengths && sessionSummary.strengths.length > 0 && (
-                      <div className="p-4 rounded-lg bg-success-500/10 border border-success-500/20">
-                        <p className="text-sm text-success-400 font-medium mb-2">Points forts</p>
-                        <ul className="text-sm space-y-1">
-                          {sessionSummary.strengths.map((s, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span className="text-success-400">✓</span>
-                              {s}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {sessionSummary.areas_for_improvement && sessionSummary.areas_for_improvement.length > 0 && (
-                      <div className="p-4 rounded-lg bg-warning-500/10 border border-warning-500/20">
-                        <p className="text-sm text-warning-400 font-medium mb-2">À améliorer</p>
-                        <ul className="text-sm space-y-1">
-                          {sessionSummary.areas_for_improvement.map((a, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span className="text-warning-400">→</span>
-                              {a}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex gap-4">
-                  <Button
-                    onClick={handleNewSession}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    Nouveau scénario
-                  </Button>
-                  <Button
-                    onClick={() => router.push("/dashboard")}
-                    className="flex-1 bg-gradient-primary hover:opacity-90"
-                  >
-                    Voir le dashboard
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// Loading component for Suspense
-function TrainingLoading() {
-  return (
-    <div className="min-h-[calc(100vh-6rem)] flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4" />
-        <p className="text-muted-foreground">Chargement...</p>
+          </div>
+        </motion.div>
       </div>
-    </div>
-  );
-}
 
-// Wrap with Suspense for useSearchParams
-export default function TrainingPage() {
-  return (
-    <Suspense fallback={<TrainingLoading />}>
-      <TrainingPageContent />
-    </Suspense>
+      {/* Premium Modal */}
+      <PremiumModal
+        open={showPremiumModal}
+        onOpenChange={setShowPremiumModal}
+      />
+    </div>
   );
 }

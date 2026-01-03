@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import {
@@ -39,9 +39,12 @@ import { ReversalAlert, ReversalType } from "@/components/training/ReversalAlert
 import { EventNotification, EventType } from "@/components/training/EventNotification";
 import { SessionPreparation } from "@/components/training/SessionPreparation";
 import { ConversationEndModal } from "@/components/training/ConversationEndModal";
+import { SalesHelperAccordion } from "@/components/training/SalesHelperAccordion";
 import { PremiumModal } from "@/components/ui/premium-modal";
 import { voiceAPI } from "@/lib/api";
 import { useVoiceSession, VoiceMessage, AutoEndInfo } from "@/hooks/useVoiceSession";
+import { useConversationPhase, convertScenarioToPlaybook } from "@/hooks/useConversationPhase";
+import type { SalesPlaybook } from "@/types/playbook";
 import type { SessionEnded } from "@/lib/websocket";
 import type {
   DifficultyLevel,
@@ -142,6 +145,20 @@ export default function TrainingSessionPage() {
     sessionId: session?.session_id || 0,
     onSessionEnded: handleSessionEnded,
   });
+
+  // Intelligence contextuelle - détection de phase et objections
+  const conversationContext = useConversationPhase({
+    messages: localMessages.map((m) => ({ role: m.role, text: m.text })),
+    currentJauge,
+    conversionPossible,
+    prospectMood: currentMood,
+  });
+
+  // Convertir le scénario en playbook pour l'aide à la vente
+  const playbook = useMemo(() => {
+    if (!session?.scenario) return null;
+    return convertScenarioToPlaybook(session.scenario as Record<string, unknown>);
+  }, [session?.scenario]);
 
   // Convert WebSocket messages to local message format
   useEffect(() => {
@@ -681,92 +698,21 @@ export default function TrainingSessionPage() {
 
         {/* Main content */}
         <main className="flex-1 pt-20 pb-40 flex">
-          {/* Left sidebar - Helper panel for easy and medium levels */}
-          {(level === "easy" || level === "medium") && session?.scenario && (
-            <div className="hidden lg:block fixed left-4 top-24 w-72 max-h-[calc(100vh-120px)] overflow-y-auto">
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-4">
-                <h3 className="font-semibold text-sm flex items-center gap-2 text-primary-400">
-                  <HelpCircle className="h-4 w-4" />
-                  Aide à la vente
-                </h3>
-
-                {/* Prospect */}
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Prospect</p>
-                  <p className="text-sm font-medium">{session.scenario.prospect?.name}</p>
-                  <p className="text-xs text-muted-foreground">{session.scenario.prospect?.role} - {session.scenario.prospect?.company}</p>
-                </div>
-
-                {/* Pain Points */}
-                {session.scenario.prospect?.pain_points && session.scenario.prospect.pain_points.length > 0 && (
-                  <div className="space-y-1">
-                    <p className="text-xs text-orange-400 font-medium">Problèmes</p>
-                    <ul className="text-xs space-y-0.5">
-                      {session.scenario.prospect.pain_points.map((p, i) => (
-                        <li key={i} className="text-muted-foreground">• {p}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Solution */}
-                {session.scenario.solution && (
-                  <div className="p-2 rounded-lg bg-primary-500/10 border border-primary-500/20 space-y-1">
-                    <p className="text-xs text-primary-400 font-medium flex items-center gap-1">
-                      <Package className="h-3 w-3" />
-                      {session.scenario.solution.product_name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{session.scenario.solution.value_proposition}</p>
-                    {session.scenario.solution.key_benefits && (
-                      <ul className="text-xs space-y-0.5 mt-1">
-                        {session.scenario.solution.key_benefits.slice(0, 2).map((b, i) => (
-                          <li key={i} className="text-green-300 flex items-start gap-1">
-                            <CheckCircle2 className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                            {b}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                )}
-
-                {/* Pitch */}
-                {session.scenario.product_pitch && (
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-primary-500/10 to-secondary-500/10 border border-primary-500/20">
-                    <p className="text-xs text-primary-400 font-medium mb-1">Votre pitch</p>
-                    <p className="text-xs italic text-muted-foreground leading-relaxed">
-                      &quot;{session.scenario.product_pitch}&quot;
-                    </p>
-                  </div>
-                )}
-
-                {/* Script - phrases clés (easy mode only) */}
-                {level === "easy" && (
-                  <div className="space-y-2 pt-2 border-t border-white/10">
-                    <p className="text-xs text-yellow-400 font-medium">Phrases clés</p>
-                    <ul className="text-xs space-y-1.5 text-muted-foreground">
-                      <li className="p-1.5 rounded bg-white/5">
-                        &quot;Quels sont vos principaux défis actuellement ?&quot;
-                      </li>
-                      <li className="p-1.5 rounded bg-white/5">
-                        &quot;Comment gérez-vous cela aujourd&apos;hui ?&quot;
-                      </li>
-                      <li className="p-1.5 rounded bg-white/5">
-                        &quot;Qu&apos;est-ce qui serait important pour vous ?&quot;
-                      </li>
-                      <li className="p-1.5 rounded bg-white/5">
-                        &quot;Si je comprends bien, vous cherchez...&quot;
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
+          {/* Left sidebar - Sales Helper Accordion for easy and medium levels */}
+          {(level === "easy" || level === "medium") && session?.scenario && playbook && (
+            <div className="hidden lg:block fixed left-4 top-24 w-96 h-[calc(100vh-120px)] rounded-xl bg-white/5 border border-white/10 overflow-hidden">
+              <SalesHelperAccordion
+                playbook={playbook as Partial<SalesPlaybook>}
+                context={conversationContext}
+                level={level}
+                className="h-full"
+              />
             </div>
           )}
 
           <div className={cn(
             "flex-1 mx-auto px-4 flex flex-col",
-            (level === "easy" || level === "medium") ? "lg:ml-80 lg:mr-72 max-w-3xl" : "max-w-4xl"
+            (level === "easy" || level === "medium") ? "lg:ml-[26rem] lg:mr-72 max-w-3xl" : "max-w-4xl"
           )}>
             {/* Jauge sidebar for desktop */}
             <div className="hidden lg:block fixed right-8 top-24 w-64">

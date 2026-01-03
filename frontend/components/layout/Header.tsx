@@ -12,7 +12,7 @@ import {
   Shield,
   LayoutDashboard,
   BookOpen,
-  Target,
+  Mic,
   Upload,
   Trophy,
   ChevronDown,
@@ -34,7 +34,7 @@ import { authAPI } from "@/lib/api";
 const authNavLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, premiumOnly: false, enterpriseOnly: false },
   { href: "/learn", label: "Apprendre", icon: BookOpen, premiumOnly: false, enterpriseOnly: false },
-  { href: "/training", label: "Training", icon: Target, premiumOnly: false, enterpriseOnly: false },
+  { href: "/training", label: "Entraînement", icon: Mic, premiumOnly: false, enterpriseOnly: false },
   { href: "/achievements", label: "Trophées", icon: Trophy, premiumOnly: false, enterpriseOnly: false },
   // Champion features - Enterprise only
   { href: "/upload", label: "Champion", icon: Upload, premiumOnly: false, enterpriseOnly: true },
@@ -179,14 +179,8 @@ export function Header() {
                   </DropdownMenu>
                 </>
               ) : (
-                /* Non-authenticated: Features + Connexion + Essai gratuit */
+                /* Non-authenticated: Connexion + Essai gratuit */
                 <>
-                  <Link
-                    href="/features"
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    En savoir plus
-                  </Link>
                   <Button
                     asChild
                     variant="ghost"
@@ -294,13 +288,6 @@ export function Header() {
                 ) : (
                   /* Non-authenticated mobile */
                   <div className="space-y-2">
-                    <Link
-                      href="/features"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5"
-                    >
-                      En savoir plus
-                    </Link>
                     <Button
                       asChild
                       variant="ghost"

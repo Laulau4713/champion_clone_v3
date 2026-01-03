@@ -15,8 +15,8 @@ import structlog
 
 logger = structlog.get_logger()
 
-# Chemin vers les templates
-TEMPLATES_DIR = Path(__file__).parent.parent / "data" / "scenario_templates"
+# Chemin vers les templates (hors de /data pour éviter le conflit avec le volume Docker)
+TEMPLATES_DIR = Path(__file__).parent.parent / "scenario_templates"
 
 
 def load_scenario_template(skill_slug: str, variant: int | None = None, difficulty: str = "easy") -> dict | None:
@@ -260,6 +260,44 @@ def get_template_count() -> dict:
     return stats
 
 
+def _extract_objections(template: dict) -> list:
+    """
+    Extrait les objections depuis différentes structures de template.
+
+    Supporte:
+    - possible_objections (templates standard)
+    - conversation_phases (templates situations_difficiles)
+    """
+    # Essayer possible_objections d'abord (format standard)
+    possible_objections = template.get("possible_objections", [])
+    if possible_objections:
+        return [
+            {
+                "expressed": obj.get("expressed", obj.get("objection", "")),
+                "hidden": obj.get("hidden", ""),
+                "type": obj.get("type", "general"),
+            }
+            for obj in possible_objections
+        ]
+
+    # Sinon, essayer conversation_phases (situations_difficiles)
+    conversation_phases = template.get("conversation_phases", [])
+    if conversation_phases:
+        objections = []
+        for phase in conversation_phases:
+            if phase.get("client_behavior"):
+                objections.append(
+                    {
+                        "expressed": phase.get("client_behavior", ""),
+                        "hidden": phase.get("your_goal", ""),
+                        "type": phase.get("phase", "general"),
+                    }
+                )
+        return objections[:4]  # Max 4 objections
+
+    return []
+
+
 def convert_template_to_scenario(template: dict) -> dict:
     """
     Convertit un template en format scénario compatible avec training_service_v2.
@@ -277,6 +315,106 @@ def convert_template_to_scenario(template: dict) -> dict:
     decision_maker = prospect_info.get("decision_maker", {})
     gatekeeper = prospect_info.get("gatekeeper", {})
 
+    # Extraire les infos produit
+    product = template.get("product", {})
+    pricing = product.get("pricing", {})
+    how_it_works = product.get("how_it_works", {})
+
+    # Extraire pain_points et hidden_need du prospect
+    # Support pour templates "situations_difficiles" qui utilisent incident_context
+    pain_points = decision_maker.get("pain_points", [])
+    hidden_need = decision_maker.get("hidden_need")
+
+    # Si pas de pain_points, essayer d'extraire depuis incident_context ou error_details
+    if not pain_points:
+        # Template "situations_difficiles - client agressif"
+        incident_context = decision_maker.get("incident_context", {})
+        if incident_context:
+            pain_points = []
+            if incident_context.get("what_happened"):
+                pain_points.append(incident_context["what_happened"])
+            if incident_context.get("financial_impact"):
+                pain_points.append(f"Impact financier: {incident_context['financial_impact']}")
+            if incident_context.get("reputation_impact"):
+                pain_points.append(incident_context["reputation_impact"])
+
+        # Template "situations_difficiles - erreur"
+        if not pain_points:
+            error_details = template.get("error_details", {})
+            if error_details:
+                pain_points = []
+                if error_details.get("what_happened"):
+                    pain_points.append(error_details["what_happened"])
+                if error_details.get("impact_for_client"):
+                    pain_points.append(error_details["impact_for_client"])
+                if error_details.get("discovery_risk"):
+                    pain_points.append(error_details["discovery_risk"])
+
+        # Template "situations_difficiles - résiliation"
+        if not pain_points:
+            retention_context = decision_maker.get("retention_context", {}) or template.get("retention_context", {})
+            if retention_context:
+                pain_points = []
+                if retention_context.get("reason_given"):
+                    pain_points.append(retention_context["reason_given"])
+                if retention_context.get("real_reason"):
+                    pain_points.append(retention_context["real_reason"])
+                if retention_context.get("relationship_history"):
+                    pain_points.append(retention_context["relationship_history"])
+
+    # Si pas de hidden_need, essayer depuis psychology
+    if not hidden_need:
+        psychology = decision_maker.get("psychology", {})
+        hidden_need = (
+            psychology.get("what_he_needs")
+            or psychology.get("what_she_needs")
+            or psychology.get("underlying_emotion")
+            or psychology.get("real_motivation")
+        )
+
+    # Construire l'objet solution au format attendu par le frontend
+    solution = None
+    if product:
+        # Construire pricing_hint depuis les infos de pricing
+        pricing_hint = None
+        if pricing:
+            if pricing.get("entry_price"):
+                pricing_hint = f"À partir de {pricing.get('entry_price')}"
+            elif pricing.get("popular_plan"):
+                pricing_hint = pricing.get("popular_plan")
+
+        # Extraire key_benefits depuis différentes sources
+        key_benefits = how_it_works.get("key_features", [])
+
+        # Si pas de key_benefits, essayer différentes méthodologies (situations_difficiles)
+        if not key_benefits:
+            # Essayer crisis_methodology (client agressif)
+            methodology = template.get("crisis_methodology", {})
+            if not methodology:
+                # Essayer proactive_error_methodology (erreur)
+                methodology = template.get("proactive_error_methodology", {})
+            if not methodology:
+                # Essayer retention_methodology (résiliation)
+                methodology = template.get("retention_methodology", {})
+
+            if methodology:
+                # Utiliser les "do" ou "steps" comme bénéfices
+                key_benefits = methodology.get("do", [])[:4]
+                if not key_benefits:
+                    steps = methodology.get("steps", {})
+                    if isinstance(steps, dict):
+                        key_benefits = list(steps.values())[:4]
+
+        solution = {
+            "product_name": product.get("name"),
+            "value_proposition": product.get("tagline"),
+            "key_benefits": key_benefits,
+            "pricing_hint": pricing_hint,
+            "differentiator": how_it_works.get("summary") or product.get("context", {}).get("service"),
+        }
+        # Nettoyer les valeurs None dans solution
+        solution = {k: v for k, v in solution.items() if v is not None}
+
     # Construire le scénario
     scenario = {
         "title": template.get("name", "Scénario d'entraînement"),
@@ -286,12 +424,12 @@ def convert_template_to_scenario(template: dict) -> dict:
         "prospect": {
             "name": decision_maker.get("name", "Le prospect"),
             "role": decision_maker.get("role", "Professionnel"),
-            "company": decision_maker.get("company", "Entreprise"),
-            "company_size": decision_maker.get("company_size", "PME"),
+            "company": decision_maker.get("company", prospect_info.get("company", "Entreprise")),
+            "company_size": decision_maker.get("company_size", prospect_info.get("company_size", "PME")),
             "sector": prospect_info.get("sector", decision_maker.get("sector")),
             "personality": decision_maker.get("personality", "neutral"),
-            "pain_points": decision_maker.get("pain_points", []),
-            "hidden_need": decision_maker.get("hidden_need"),
+            "pain_points": pain_points,
+            "hidden_need": hidden_need,
             "current_situation": decision_maker.get("current_situation"),
             "hidden_objections": prospect_info.get("hidden_objections", []),
         },
@@ -303,7 +441,15 @@ def convert_template_to_scenario(template: dict) -> dict:
         }
         if gatekeeper
         else None,
-        "product": template.get("product", {}),
+        # Champs au niveau racine pour le frontend
+        "pain_points": pain_points,
+        "hidden_need": hidden_need,
+        "solution": solution,
+        "product_pitch": product.get("tagline"),
+        # Objections visibles (celles que le prospect peut exprimer)
+        "objections": _extract_objections(template),
+        # Données internes pour l'agent
+        "product": product,
         "proof": template.get("proof", {}),
         "competition": template.get("competition", {}),
         "scenario_flow": template.get("scenario_flow", {}),
@@ -315,17 +461,6 @@ def convert_template_to_scenario(template: dict) -> dict:
         "conversation_rules": template.get(
             "conversation_rules", {"min_exchanges": 5, "max_exchanges": 15, "auto_end_enabled": True}
         ),
-        "solution": template.get("product", {}).get("name"),
-        "product_pitch": template.get("product", {}).get("tagline"),
-        # Objections visibles (celles que le prospect peut exprimer)
-        "objections": [
-            {
-                "expressed": obj.get("expressed", obj.get("objection")),
-                "hidden": obj.get("hidden", ""),
-                "type": obj.get("type", "general"),
-            }
-            for obj in template.get("possible_objections", [])
-        ],
     }
 
     # Nettoyer les valeurs None

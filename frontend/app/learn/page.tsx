@@ -5,12 +5,10 @@ import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   BookOpen,
-  Play,
   Trophy,
   Clock,
   CheckCircle2,
   Lock,
-  Mic,
   Target,
   Sparkles,
 } from "lucide-react";
@@ -25,21 +23,18 @@ import { TrialBadge } from "@/components/ui/trial-badge";
 import { PremiumModal } from "@/components/ui/premium-modal";
 import type { Cours, Skill, DifficultyLevel, User } from "@/types";
 
-const difficultyConfig: Record<DifficultyLevel, { label: string; color: string; description: string }> = {
+const difficultyConfig: Record<DifficultyLevel, { label: string; color: string }> = {
   easy: {
     label: "Facile",
     color: "bg-green-500/20 text-green-400 border-green-500/30",
-    description: "Jauge visible, indices activés, prospect bienveillant",
   },
   medium: {
     label: "Moyen",
     color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    description: "Objections cachées, événements situationnels",
   },
   expert: {
     label: "Expert",
     color: "bg-red-500/20 text-red-400 border-red-500/30",
-    description: "Jauge cachée, reversals, prospect agressif",
   },
 };
 
@@ -52,13 +47,12 @@ interface UserProgressData {
 function LearnPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") || "training";
+  const initialTab = searchParams.get("tab") || "courses";
 
   const [cours, setCours] = useState<Cours[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [progress, setProgress] = useState<UserProgressData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel>("easy");
   const [user, setUser] = useState<User | null>(null);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
@@ -90,10 +84,6 @@ function LearnPageContent() {
     }
   };
 
-  const startVoiceTraining = (level: DifficultyLevel) => {
-    router.push(`/training/setup?level=${level}`);
-  };
-
   const progressPercentage = progress && progress.skills_total > 0
     ? (progress.skills_validated / progress.skills_total) * 100
     : 0;
@@ -102,8 +92,8 @@ function LearnPageContent() {
 
   // Trial users (free plan) have limited access
   const isFreeUser = user?.subscription_plan === "free";
-  const TRIAL_MAX_COURSE_ORDER = 1; // Only first course accessible
-  const TRIAL_MAX_QUIZ_INDEX = 0; // Only first quiz accessible
+  const TRIAL_MAX_COURSE_ORDER = 1;
+  const TRIAL_MAX_QUIZ_INDEX = 0;
 
   const canAccessCourse = (order: number) => {
     if (!isFreeUser) return true;
@@ -133,7 +123,7 @@ function LearnPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-dark pt-28 pb-12">
+    <div className="min-h-screen bg-gradient-dark pt-8 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -143,7 +133,7 @@ function LearnPageContent() {
         >
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-3xl font-bold gradient-text">
-              Parcours d&apos;Apprentissage
+              Apprendre
             </h1>
             {user && (
               <TrialBadge
@@ -154,7 +144,7 @@ function LearnPageContent() {
             )}
           </div>
           <p className="text-muted-foreground">
-            Maîtrisez les techniques de vente avec nos cours et entraînements vocaux
+            Cours et quiz pour maîtriser les techniques de vente
           </p>
         </motion.div>
 
@@ -187,10 +177,6 @@ function LearnPageContent() {
         {/* Main Content Tabs */}
         <Tabs defaultValue={initialTab} className="space-y-6">
           <TabsList className="glass">
-            <TabsTrigger value="training" className="gap-2">
-              <Mic className="h-4 w-4" />
-              Entraînement Vocal
-            </TabsTrigger>
             <TabsTrigger value="courses" className="gap-2">
               <BookOpen className="h-4 w-4" />
               Cours
@@ -201,117 +187,6 @@ function LearnPageContent() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Voice Training Tab */}
-          <TabsContent value="training">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-6"
-            >
-              <h3 className="text-xl font-semibold">Choisissez votre niveau</h3>
-
-              <div className="grid gap-4 md:grid-cols-3">
-                {(["easy", "medium", "expert"] as DifficultyLevel[]).map((level) => {
-                  const config = difficultyConfig[level];
-                  const isSelected = selectedLevel === level;
-
-                  return (
-                    <motion.div
-                      key={level}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Card
-                        className={cn(
-                          "cursor-pointer transition-all border-2",
-                          isSelected
-                            ? "border-primary-500 bg-primary-500/10"
-                            : "border-transparent hover:border-white/10"
-                        )}
-                        onClick={() => setSelectedLevel(level)}
-                      >
-                        <CardHeader>
-                          <Badge className={cn("w-fit", config.color)}>
-                            {config.label}
-                          </Badge>
-                          <CardTitle className="mt-2">
-                            Niveau {config.label}
-                          </CardTitle>
-                          <CardDescription>
-                            {config.description}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <ul className="space-y-2 text-sm text-muted-foreground">
-                            {level === "easy" && (
-                              <>
-                                <li className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-green-400" />
-                                  Jauge émotionnelle visible
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-green-400" />
-                                  Indices et conseils
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-green-400" />
-                                  Prospect réceptif
-                                </li>
-                              </>
-                            )}
-                            {level === "medium" && (
-                              <>
-                                <li className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-yellow-400" />
-                                  Objections cachées
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-yellow-400" />
-                                  Événements imprévus
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-yellow-400" />
-                                  Indices limités
-                                </li>
-                              </>
-                            )}
-                            {level === "expert" && (
-                              <>
-                                <li className="flex items-center gap-2">
-                                  <Lock className="h-4 w-4 text-red-400" />
-                                  Jauge cachée
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <Lock className="h-4 w-4 text-red-400" />
-                                  Reversals de dernière minute
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <Lock className="h-4 w-4 text-red-400" />
-                                  Aucun indice
-                                </li>
-                              </>
-                            )}
-                          </ul>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              <div className="flex justify-center pt-4">
-                <Button
-                  onClick={() => startVoiceTraining(selectedLevel)}
-                  size="lg"
-                  className="bg-gradient-primary hover:opacity-90 text-white gap-2"
-                >
-                  <Play className="h-5 w-5" />
-                  Démarrer l&apos;entraînement {difficultyConfig[selectedLevel].label}
-                </Button>
-              </div>
-            </motion.div>
-          </TabsContent>
-
           {/* Courses Tab */}
           <TabsContent value="courses">
             <motion.div
@@ -320,7 +195,6 @@ function LearnPageContent() {
               className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
             >
               {cours.map((course, index) => {
-                // Use order property (or fallback to day for backward compatibility)
                 const courseOrder = course.order ?? course.day ?? index + 1;
                 const isCompleted = courseOrder < currentCourse;
                 const levelConfig = difficultyConfig[course.level];

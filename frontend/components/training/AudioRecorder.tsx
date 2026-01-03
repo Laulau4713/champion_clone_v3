@@ -24,6 +24,12 @@ export function AudioRecorder({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const isRecordingRef = useRef(false);
+
+  // Keep ref in sync with state for keyboard handler
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
 
   useEffect(() => {
     return () => {
@@ -32,6 +38,8 @@ export function AudioRecorder({
   }, []);
 
   const startRecording = useCallback(async () => {
+    if (disabled || isProcessing) return;
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream, {
@@ -78,10 +86,10 @@ export function AudioRecorder({
     } catch (error) {
       console.error("Error starting recording:", error);
     }
-  }, [onRecordingComplete]);
+  }, [onRecordingComplete, disabled, isProcessing]);
 
   const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
+    if (mediaRecorderRef.current && isRecordingRef.current) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
 
@@ -90,7 +98,35 @@ export function AudioRecorder({
         timerRef.current = null;
       }
     }
-  }, [isRecording]);
+  }, []);
+
+  // Keyboard shortcut: Space to toggle recording
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle Space key
+      if (e.code !== "Space") return;
+
+      // Don't trigger if user is typing in an input/textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
+
+      // Don't trigger if disabled or processing
+      if (disabled || isProcessing) return;
+
+      // Prevent default space behavior (scrolling)
+      e.preventDefault();
+
+      // Toggle recording
+      if (isRecordingRef.current) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [disabled, isProcessing, startRecording, stopRecording]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -99,7 +135,7 @@ export function AudioRecorder({
   };
 
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex flex-col items-center gap-2", className)}>
       <AnimatePresence mode="wait">
         {isProcessing ? (
           <motion.div
@@ -156,6 +192,7 @@ export function AudioRecorder({
               variant="destructive"
               size="icon"
               className="h-12 w-12 rounded-full"
+              title="Arrêter (Espace)"
             >
               <Square className="h-5 w-5" />
             </Button>
@@ -166,6 +203,7 @@ export function AudioRecorder({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
+            className="flex flex-col items-center gap-1"
           >
             <Button
               onClick={startRecording}
@@ -175,12 +213,24 @@ export function AudioRecorder({
                 "bg-gradient-primary hover:opacity-90",
                 "shadow-lg shadow-primary-500/25"
               )}
+              title="Enregistrer (Espace)"
             >
               <Mic className="h-6 w-6" />
             </Button>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Keyboard shortcut hint */}
+      {!isProcessing && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-xs text-muted-foreground"
+        >
+          {isRecording ? "Espace pour arrêter" : "Espace pour parler"}
+        </motion.p>
+      )}
     </div>
   );
 }

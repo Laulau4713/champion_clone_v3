@@ -46,7 +46,21 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    const status = error.response?.status;
+    const errorCode = error.response?.data?.detail?.code;
+
+    // Business-level 403 errors (not auth errors) - don't try to refresh
+    const businessErrors = [
+      'ENTERPRISE_REQUIRED',
+      'SUBSCRIPTION_REQUIRED',
+      'PLAN_UPGRADE_REQUIRED',
+      'FEATURE_NOT_AVAILABLE',
+    ];
+    if (status === 403 && businessErrors.includes(errorCode)) {
+      return Promise.reject(error);
+    }
+
+    if (status === 401 || status === 403) {
       if (typeof window !== 'undefined') {
         const refreshToken = localStorage.getItem('refresh_token');
 
@@ -208,14 +222,34 @@ export const learningAPI = {
 };
 
 // ============ VOICE API (V2) ============
+export interface VoiceSessionListItem {
+  id: number;
+  skill_name: string;
+  skill_slug: string;
+  level: string;
+  status: string;
+  score: number | null;
+  current_gauge: number;
+  starting_gauge: number;
+  converted: boolean;
+  created_at: string;
+  completed_at: string | null;
+  duration_seconds: number | null;
+}
+
 export const voiceAPI = {
   // Config
   getConfig: () => api.get<VoiceConfig>('/voice/config'),
+
+  // List user's sessions
+  getSessions: (params?: { status?: string; limit?: number }) =>
+    api.get<VoiceSessionListItem[]>('/voice/sessions', { params }),
 
   // Session management
   startSession: (data: {
     skill_slug: string;
     sector_slug?: string;
+    level?: string;
   }) => api.post<VoiceSessionStartResponse>('/voice/session/start', data),
 
   sendMessage: (sessionId: number, data: {

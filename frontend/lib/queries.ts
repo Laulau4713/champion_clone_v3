@@ -12,6 +12,7 @@ import {
   getTrainingSessions,
   healthCheck,
   learningAPI,
+  voiceAPI,
 } from './api';
 
 // Query keys
@@ -21,6 +22,7 @@ export const queryKeys = {
   champion: (id: number) => ['champion', id] as const,
   scenarios: (championId: number) => ['scenarios', championId] as const,
   sessions: ['sessions'] as const,
+  voiceSessions: ['voiceSessions'] as const,
   skillsProgress: ['skillsProgress'] as const,
   userProgress: ['userProgress'] as const,
 };
@@ -34,13 +36,12 @@ export const useHealth = () =>
   });
 
 // Champions
-export const useChampions = () =>
+export const useChampions = (options?: { enabled?: boolean }) =>
   useQuery({
     queryKey: queryKeys.champions,
     queryFn: getChampions,
     retry: false,
-    // Return empty array on 403 (enterprise-only feature)
-    placeholderData: [],
+    enabled: options?.enabled ?? true,
   });
 
 export const useChampion = (id: number) =>
@@ -115,13 +116,22 @@ export const useEndTraining = () => {
   });
 };
 
-export const useTrainingSessions = () =>
+export const useTrainingSessions = (options?: { enabled?: boolean }) =>
   useQuery({
     queryKey: queryKeys.sessions,
     queryFn: getTrainingSessions,
     retry: false,
-    // Return empty array on 403 (enterprise-only feature)
-    placeholderData: [],
+    enabled: options?.enabled ?? true,
+  });
+
+// Voice Sessions (V2)
+export const useVoiceSessions = (options?: { status?: string; limit?: number }) =>
+  useQuery({
+    queryKey: queryKeys.voiceSessions,
+    queryFn: async () => {
+      const res = await voiceAPI.getSessions(options);
+      return res.data;
+    },
   });
 
 // Learning Progress

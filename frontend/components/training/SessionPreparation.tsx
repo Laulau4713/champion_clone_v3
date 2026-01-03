@@ -12,14 +12,21 @@ import {
   Lightbulb,
   FileText,
   ArrowRight,
+  ArrowLeft,
   Package,
   Star,
   DollarSign,
+  Eye,
+  EyeOff,
+  Zap,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent } from "@/components/ui/card";
+import type { DifficultyLevel } from "@/types";
 
 interface ProspectInfo {
   name?: string;
@@ -51,10 +58,58 @@ interface ScenarioInfo {
 interface SessionPreparationProps {
   scenario: ScenarioInfo | null;
   skillName: string;
-  level: string;
+  level: DifficultyLevel;
   onStart: () => void;
+  onBack?: () => void;
+  onLevelChange?: (level: DifficultyLevel) => void;
   isLoading?: boolean;
 }
+
+const difficultyConfig: Record<DifficultyLevel, {
+  label: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  description: string;
+  features: { icon: React.ReactNode; text: string }[];
+}> = {
+  easy: {
+    label: "Facile",
+    color: "text-green-400",
+    bgColor: "bg-green-500/20",
+    borderColor: "border-green-500/50",
+    description: "Idéal pour débuter",
+    features: [
+      { icon: <Eye className="h-3 w-3" />, text: "Jauge visible" },
+      { icon: <Lightbulb className="h-3 w-3" />, text: "Indices activés" },
+      { icon: <CheckCircle2 className="h-3 w-3" />, text: "Prospect bienveillant" },
+    ],
+  },
+  medium: {
+    label: "Moyen",
+    color: "text-yellow-400",
+    bgColor: "bg-yellow-500/20",
+    borderColor: "border-yellow-500/50",
+    description: "Pour progresser",
+    features: [
+      { icon: <Eye className="h-3 w-3" />, text: "Jauge visible" },
+      { icon: <AlertCircle className="h-3 w-3" />, text: "Objections cachées" },
+      { icon: <Zap className="h-3 w-3" />, text: "Événements imprévus" },
+    ],
+  },
+  expert: {
+    label: "Expert",
+    color: "text-red-400",
+    bgColor: "bg-red-500/20",
+    borderColor: "border-red-500/50",
+    description: "Le vrai défi",
+    features: [
+      { icon: <EyeOff className="h-3 w-3" />, text: "Jauge cachée" },
+      { icon: <AlertCircle className="h-3 w-3" />, text: "Reversals possibles" },
+      { icon: <Lock className="h-3 w-3" />, text: "Aucun indice" },
+    ],
+  },
+};
 
 /**
  * Page de préparation avant une session de training.
@@ -65,6 +120,8 @@ export function SessionPreparation({
   skillName,
   level,
   onStart,
+  onBack,
+  onLevelChange,
   isLoading = false,
 }: SessionPreparationProps) {
   if (!scenario) {
@@ -124,15 +181,29 @@ export function SessionPreparation({
   };
 
   const scriptPhrases = generateScript();
+  const levelConfig = difficultyConfig[level];
 
   return (
-    <div className="min-h-screen bg-gradient-dark pt-28 pb-12">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="h-screen bg-gradient-dark overflow-y-auto">
+      <div className="max-w-4xl mx-auto px-4 pt-8 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
+          {/* Back button */}
+          {onBack && (
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={onBack}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm">Retour</span>
+            </motion.button>
+          )}
+
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold gradient-text mb-2">
@@ -143,17 +214,6 @@ export function SessionPreparation({
             </p>
             <div className="flex items-center justify-center gap-2 mt-4">
               <Badge variant="outline">{skillName}</Badge>
-              <Badge
-                className={cn(
-                  level === "easy" && "bg-green-500/20 text-green-400",
-                  level === "medium" && "bg-yellow-500/20 text-yellow-400",
-                  level === "expert" && "bg-red-500/20 text-red-400"
-                )}
-              >
-                {level === "easy" && "Facile"}
-                {level === "medium" && "Moyen"}
-                {level === "expert" && "Expert"}
-              </Badge>
             </div>
           </div>
 
@@ -495,34 +555,107 @@ export function SessionPreparation({
             </div>
           </motion.div>
 
-          {/* Bouton de démarrage */}
+          {/* Choix du niveau de difficulté */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-center pt-4"
+            transition={{ delay: 0.45 }}
+            className="glass rounded-2xl p-6"
           >
-            <Button
-              size="lg"
-              onClick={onStart}
-              disabled={isLoading}
-              className="bg-gradient-primary px-8 py-6 text-lg"
-            >
-              {isLoading ? (
-                "Préparation..."
-              ) : (
-                <>
-                  Commencer la Session
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </>
-              )}
-            </Button>
-            <p className="text-xs text-muted-foreground mt-3">
-              La session démarrera avec le message d&apos;ouverture du prospect
-            </p>
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary-400" />
+              Niveau de difficulté
+            </h2>
+
+            <div className="grid gap-3 md:grid-cols-3">
+              {(["easy", "medium", "expert"] as DifficultyLevel[]).map((lvl) => {
+                const config = difficultyConfig[lvl];
+                const isSelected = level === lvl;
+
+                return (
+                  <Card
+                    key={lvl}
+                    className={cn(
+                      "cursor-pointer transition-all border-2",
+                      isSelected
+                        ? cn(config.borderColor, config.bgColor)
+                        : "border-transparent hover:border-white/20"
+                    )}
+                    onClick={() => onLevelChange?.(lvl)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge className={cn(config.bgColor, config.color)}>
+                          {config.label}
+                        </Badge>
+                        {isSelected && (
+                          <CheckCircle2 className={cn("h-5 w-5", config.color)} />
+                        )}
+                      </div>
+                      <p className={cn("text-xs mb-2", config.color)}>
+                        {config.description}
+                      </p>
+                      <ul className="space-y-1">
+                        {config.features.map((feature, i) => (
+                          <li key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <span className={config.color}>{feature.icon}</span>
+                            {feature.text}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           </motion.div>
+
+          {/* Spacer pour le bouton sticky */}
+          <div className="h-24" />
         </motion.div>
       </div>
+
+      {/* Boutons d'action - Sticky en bas */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-white/10 p-4 z-50"
+      >
+        <div className="max-w-4xl mx-auto flex items-center justify-center gap-4">
+          {onBack && (
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={onBack}
+              disabled={isLoading}
+              className="px-6"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Retour
+            </Button>
+          )}
+          <Button
+            size="lg"
+            onClick={onStart}
+            disabled={isLoading}
+            className={cn(
+              "px-8 text-lg",
+              "bg-gradient-primary text-white",
+              "hover:opacity-90"
+            )}
+          >
+            {isLoading ? (
+              "Préparation..."
+            ) : (
+              <>
+                <Zap className="h-5 w-5 mr-2" />
+                Démarrer en {levelConfig.label}
+              </>
+            )}
+          </Button>
+        </div>
+      </motion.div>
     </div>
   );
 }

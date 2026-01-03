@@ -626,6 +626,78 @@ async def get_voice_session_report(
     return report
 
 
+class VoiceSessionSummary(BaseModel):
+    """Summary of a voice training session for listing."""
+
+    id: int
+    skill_name: str
+    skill_slug: str
+    level: str
+    status: str
+    score: float | None
+    current_gauge: int
+    starting_gauge: int
+    converted: bool
+    created_at: str
+    completed_at: str | None
+    duration_seconds: int | None
+
+
+@router.get("/voice/sessions", response_model=list[VoiceSessionSummary])
+async def list_voice_sessions(
+    status: str | None = Query(None, description="Filter by status: active, completed, abandoned"),
+    limit: int = Query(50, ge=1, le=100, description="Max sessions to return"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    List voice training sessions (V2) for the current user.
+
+    Returns a summary of each session including score and gauge progression.
+    Used by the dashboard to display training history.
+    """
+    from models import Skill, VoiceTrainingSession
+
+    query = (
+        select(VoiceTrainingSession, Skill)
+        .join(Skill, VoiceTrainingSession.skill_id == Skill.id)
+        .where(VoiceTrainingSession.user_id == current_user.id)
+        .order_by(VoiceTrainingSession.created_at.desc())
+        .limit(limit)
+    )
+
+    if status:
+        query = query.where(VoiceTrainingSession.status == status)
+
+    result = await db.execute(query)
+    rows = result.all()
+
+    sessions = []
+    for session, skill in rows:
+        duration = None
+        if session.completed_at and session.created_at:
+            duration = int((session.completed_at - session.created_at).total_seconds())
+
+        sessions.append(
+            VoiceSessionSummary(
+                id=session.id,
+                skill_name=skill.name,
+                skill_slug=skill.slug,
+                level=session.level,
+                status=session.status,
+                score=session.score,
+                current_gauge=session.current_gauge,
+                starting_gauge=session.starting_gauge,
+                converted=session.converted or False,
+                created_at=session.created_at.isoformat() if session.created_at else "",
+                completed_at=session.completed_at.isoformat() if session.completed_at else None,
+                duration_seconds=duration,
+            )
+        )
+
+    return sessions
+
+
 @router.get("/voice/config")
 async def get_voice_config(current_user: User = Depends(get_current_user)):
     """

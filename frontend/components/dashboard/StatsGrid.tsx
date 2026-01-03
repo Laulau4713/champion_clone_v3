@@ -96,14 +96,14 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
     },
     {
       title: "Score moyen",
-      value: `${avgScore.toFixed(1)}/10`,
+      value: `${Math.round(avgScore)}/100`,
       change: undefined,
       icon: Zap,
       iconColor: "text-purple-400",
     },
     {
       title: "Meilleur score",
-      value: `${stats.bestScore.toFixed(1)}/10`,
+      value: `${Math.round(stats.bestScore)}/100`,
       change: undefined,
       icon: Trophy,
       iconColor: "text-yellow-400",

@@ -279,7 +279,8 @@ class TrainingServiceV2:
             # 2. Fallback sur ContentAgent si pas de template
             logger.info("scenario_fallback_to_content_agent", skill=skill.slug)
             content_agent = ContentAgent(db=self.db, llm_client=None)
-            scenario = await content_agent.generate_scenario(skill=skill, level=level, sector=sector, use_cache=True)
+            # Don't cache fallback scenarios to allow variety
+            scenario = await content_agent.generate_scenario(skill=skill, level=level, sector=sector, use_cache=False)
 
         # Initialiser les objections cachées si activées
         hidden_objections = []

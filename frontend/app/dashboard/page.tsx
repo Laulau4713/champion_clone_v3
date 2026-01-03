@@ -22,7 +22,8 @@ import { StatsGrid } from "@/components/dashboard/StatsGrid";
 import { ProgressChart } from "@/components/dashboard/ProgressChart";
 import { SessionsTable } from "@/components/dashboard/SessionsTable";
 import { ChampionCard } from "@/components/dashboard/ChampionCard";
-import { useTrainingSessions, useChampions, useSkillsProgress } from "@/lib/queries";
+import { useTrainingSessions, useChampions, useSkillsProgress, useVoiceSessions } from "@/lib/queries";
+import type { VoiceSessionListItem } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";
 import { useAuthStore } from "@/store/auth-store";
 import type { ProgressData, SessionHistory, Champion } from "@/types";
@@ -66,27 +67,56 @@ function DashboardSkeleton() {
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const { data: sessionsResponse, isLoading: loadingSessions } = useTrainingSessions();
-  const { data: championsResponse, isLoading: loadingChampions } = useChampions();
-  const { data: skillsProgress } = useSkillsProgress();
 
   // Check if user is on free plan
   const isFreeUser = user?.subscription_plan === "free";
+  const isEnterpriseUser = user?.subscription_plan === "enterprise";
   const trialSessionsUsed = user?.trial_sessions_used || 0;
   const trialSessionsMax = user?.trial_sessions_max || 3;
 
-  // Extract data from API responses
+  // Fetch voice sessions (V2) for all users
+  const { data: voiceSessions, isLoading: loadingVoiceSessions } = useVoiceSessions();
+
+  // Only fetch champions and champion-based sessions for enterprise users
+  const { data: sessionsResponse, isLoading: loadingSessions } = useTrainingSessions({
+    enabled: isEnterpriseUser,
+  });
+  const { data: championsResponse, isLoading: loadingChampions } = useChampions({
+    enabled: isEnterpriseUser,
+  });
+  const { data: skillsProgress } = useSkillsProgress();
+
+  // Extract data from API responses - Use voice sessions for non-enterprise
   const sessions = useMemo(() => {
+    // For non-enterprise users, use voice sessions (V2)
+    if (!isEnterpriseUser) {
+      if (!voiceSessions) return [];
+      return voiceSessions.map((vs: VoiceSessionListItem) => ({
+        id: vs.id,
+        created_at: vs.created_at,
+        started_at: vs.created_at,
+        overall_score: vs.score,
+        score: vs.score,
+        duration_seconds: vs.duration_seconds,
+        scenario: { name: vs.skill_name },
+        champion_name: vs.skill_name,
+        status: vs.status,
+        current_gauge: vs.current_gauge,
+        starting_gauge: vs.starting_gauge,
+      }));
+    }
+    // For enterprise users, use champion sessions (V1)
     if (!sessionsResponse) return [];
-    // Handle both { sessions: [...] } and direct array responses
-    const data = sessionsResponse.data || sessionsResponse;
-    return Array.isArray(data) ? data : data.sessions || [];
-  }, [sessionsResponse]);
+    const response = sessionsResponse as any;
+    const data = response?.data || response;
+    return Array.isArray(data) ? data : data?.sessions || [];
+  }, [isEnterpriseUser, voiceSessions, sessionsResponse]);
 
   const champions: Champion[] = useMemo(() => {
     if (!championsResponse) return [];
-    const data = championsResponse.data || championsResponse;
-    return Array.isArray(data) ? data : data.champions || [];
+    const response = championsResponse as any;
+    const data = response?.data || response;
+    return Array.isArray(data) ? data : data?.champions || [];
   }, [championsResponse]);
 
   // Calculate stats from real data
@@ -170,17 +200,22 @@ export default function DashboardPage() {
   // Pattern mastery data (placeholder - would need real data from API)
   const patternData = useMemo(() => {
     // This would ideally come from an API endpoint analyzing patterns
-    // For now, generate based on session performance
-    const baseScore = stats.avgScore * 10;
+    // For now, generate based on session performance (score is already 0-100)
+    const baseScore = stats.avgScore;
     return [
-      { name: "Openings", mastered: Math.min(100, Math.round(baseScore + Math.random() * 10)) },
-      { name: "Objections", mastered: Math.min(100, Math.round(baseScore - 10 + Math.random() * 15)) },
-      { name: "Closings", mastered: Math.min(100, Math.round(baseScore - 5 + Math.random() * 12)) },
-      { name: "Rapport", mastered: Math.min(100, Math.round(baseScore + 5 + Math.random() * 8)) },
+      { name: "Openings", mastered: Math.min(100, Math.max(0, Math.round(baseScore + 5))) },
+      { name: "Objections", mastered: Math.min(100, Math.max(0, Math.round(baseScore - 10))) },
+      { name: "Closings", mastered: Math.min(100, Math.max(0, Math.round(baseScore - 5))) },
+      { name: "Rapport", mastered: Math.min(100, Math.max(0, Math.round(baseScore + 10))) },
     ];
   }, [stats.avgScore]);
 
-  if (loadingSessions || loadingChampions) {
+  // Show loading state: for enterprise check champion data, for others check voice sessions
+  const isLoading = isEnterpriseUser
+    ? (loadingSessions || loadingChampions)
+    : loadingVoiceSessions;
+
+  if (isLoading) {
     return <DashboardSkeleton />;
   }
 
@@ -387,8 +422,8 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
-        {/* Champions Section - Only for premium users */}
-        {!isFreeUser && champions.length > 0 && (
+        {/* Champions Section - Only for enterprise users */}
+        {isEnterpriseUser && champions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -412,8 +447,8 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
-        {/* Empty state for champions - Only for premium users */}
-        {!isFreeUser && champions.length === 0 && (
+        {/* Empty state for champions - Only for enterprise users */}
+        {isEnterpriseUser && champions.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

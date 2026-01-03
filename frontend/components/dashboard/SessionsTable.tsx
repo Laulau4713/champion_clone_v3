@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Eye, MoreVertical, Calendar, Clock, Trophy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,14 @@ interface SessionsTableProps {
 }
 
 export function SessionsTable({ sessions, onViewSession }: SessionsTableProps) {
+  const router = useRouter();
+
+  const handleViewSession = (id: number) => {
+    // Navigate to the report page for this session
+    router.push(`/training/report/${id}`);
+    onViewSession?.(id);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -91,7 +100,7 @@ export function SessionsTable({ sessions, onViewSession }: SessionsTableProps) {
                             getScoreColor(session.score)
                           )}
                         >
-                          {session.score.toFixed(1)}/10
+                          {Math.round(session.score)}/100
                         </span>
                       </div>
                     </td>
@@ -105,8 +114,9 @@ export function SessionsTable({ sessions, onViewSession }: SessionsTableProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onViewSession?.(session.id)}
+                        onClick={() => handleViewSession(session.id)}
                         className="h-8 w-8"
+                        title="Voir le rapport"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
