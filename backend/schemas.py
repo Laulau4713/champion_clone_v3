@@ -302,3 +302,187 @@ class SuccessResponse(BaseModel):
 
     success: bool
     message: str
+
+
+# ============================================
+# Enriched Scenario Data Schemas (Phase 1)
+# ============================================
+
+
+class HowItWorksSchema(BaseModel):
+    """How the product/service works."""
+
+    summary: str = Field(..., description="Brief summary of how it works")
+    key_features: list[str] = Field(default_factory=list, description="Main features")
+    technical_requirements: str | None = Field(None, description="Technical requirements")
+    implementation_time: str | None = Field(None, description="Time to implement")
+
+
+class SupportSchema(BaseModel):
+    """Support and onboarding details."""
+
+    onboarding: str | None = Field(None, description="Onboarding process")
+    support: str | None = Field(None, description="Support channels and hours")
+    documentation: str | None = Field(None, description="Documentation available")
+    csm: str | None = Field(None, description="Customer Success Manager details")
+    sla: str | None = Field(None, description="SLA details")
+
+
+class PricingSchema(BaseModel):
+    """Pricing information."""
+
+    model: str = Field(..., description="Pricing model: flat, per_user, usage")
+    entry_price: str | None = Field(None, description="Entry-level price")
+    popular_plan: str | None = Field(None, description="Most popular plan")
+    enterprise: str | None = Field(None, description="Enterprise pricing")
+    engagement: str | None = Field(None, description="Commitment options")
+    free_trial: str | None = Field(None, description="Free trial details")
+    minimum: str | None = Field(None, description="Minimum purchase")
+
+
+class ProductInfoCreate(BaseModel):
+    """Schema for creating a ProductInfo."""
+
+    slug: str = Field(..., min_length=1, max_length=100, description="Unique slug")
+    name: str = Field(..., min_length=1, max_length=255, description="Product name")
+    tagline: str = Field(..., min_length=1, max_length=500, description="Product tagline")
+    category: str | None = Field(None, description="Product category")
+    how_it_works: HowItWorksSchema | None = None
+    integrations: list[str] | None = None
+    support_included: SupportSchema | None = None
+    pricing: PricingSchema | None = None
+
+
+class ProductInfoResponse(BaseModel):
+    """Schema for ProductInfo response."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    slug: str
+    name: str
+    tagline: str
+    category: str | None = None
+    how_it_works: dict[str, Any] | None = None
+    integrations: list[str] | None = None
+    support_included: dict[str, Any] | None = None
+    pricing: dict[str, Any] | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class TestimonialSchema(BaseModel):
+    """Customer testimonial."""
+
+    name: str = Field(..., description="Customer name")
+    role: str = Field(..., description="Customer role/title")
+    company: str = Field(..., description="Company name and size")
+    quote: str = Field(..., description="Testimonial quote")
+    result: str | None = Field(None, description="Measurable result")
+
+
+class CaseStudySchema(BaseModel):
+    """Case study details."""
+
+    client: str = Field(..., description="Client name")
+    sector: str | None = Field(None, description="Client sector")
+    problem: str = Field(..., description="Problem they faced")
+    solution: str = Field(..., description="Solution implemented")
+    results: dict[str, Any] = Field(default_factory=dict, description="Measurable results")
+
+
+class StatsSchema(BaseModel):
+    """Product statistics."""
+
+    clients_count: str | None = Field(None, description="Number of clients")
+    satisfaction: str | None = Field(None, description="Satisfaction rating")
+    nps: str | None = Field(None, description="Net Promoter Score")
+    uptime: str | None = Field(None, description="Uptime percentage")
+    attacks_blocked: str | None = Field(None, description="Security-specific stat")
+
+
+class ProofElementsCreate(BaseModel):
+    """Schema for creating ProofElements."""
+
+    product_id: int = Field(..., description="Associated product ID")
+    testimonials: list[TestimonialSchema] | None = None
+    case_studies: list[CaseStudySchema] | None = None
+    stats: StatsSchema | None = None
+    notable_clients: list[str] | None = None
+
+
+class ProofElementsResponse(BaseModel):
+    """Schema for ProofElements response."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    product_id: int
+    testimonials: list[dict[str, Any]] | None = None
+    case_studies: list[dict[str, Any]] | None = None
+    stats: dict[str, Any] | None = None
+    notable_clients: list[str] | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class CompetitorSchema(BaseModel):
+    """Competitor information."""
+
+    name: str = Field(..., description="Competitor name")
+    positioning: str = Field(..., description="Market positioning")
+    strengths: list[str] = Field(default_factory=list, description="Their strengths")
+    weaknesses: list[str] = Field(default_factory=list, description="Their weaknesses")
+    price_comparison: str | None = Field(None, description="Price comparison")
+
+
+class SwitchCostSchema(BaseModel):
+    """Cost of switching from competitor."""
+
+    migration_time: str | None = Field(None, description="Time to migrate")
+    data_import: str | None = Field(None, description="Data import capabilities")
+    training_needed: str | None = Field(None, description="Training requirements")
+    risk: str | None = Field(None, description="Migration risk assessment")
+    difficulty: str | None = Field(None, description="Migration difficulty")
+
+
+class CompetitionInfoCreate(BaseModel):
+    """Schema for creating CompetitionInfo."""
+
+    product_id: int = Field(..., description="Associated product ID")
+    main_competitors: list[CompetitorSchema] | None = None
+    our_differentiator: str | None = Field(None, description="Key differentiator")
+    switch_cost: SwitchCostSchema | None = None
+
+
+class CompetitionInfoResponse(BaseModel):
+    """Schema for CompetitionInfo response."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    product_id: int
+    main_competitors: list[dict[str, Any]] | None = None
+    our_differentiator: str | None = None
+    switch_cost: dict[str, Any] | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class EnrichedScenarioData(BaseModel):
+    """
+    Complete enriched scenario data combining product, proof, and competition.
+
+    This is used in scenario templates and generated scenarios.
+    """
+
+    product: ProductInfoCreate
+    proof: ProofElementsCreate | None = None
+    competition: CompetitionInfoCreate | None = None
+
+
+class ProductInfoWithRelations(ProductInfoResponse):
+    """ProductInfo with all related proof and competition data."""
+
+    proof_elements: list[ProofElementsResponse] = Field(default_factory=list)
+    competition_info: list[CompetitionInfoResponse] = Field(default_factory=list)

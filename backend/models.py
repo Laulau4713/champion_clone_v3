@@ -1261,3 +1261,196 @@ class UserXP(Base):
 
     def __repr__(self) -> str:
         return f"<UserXP(user_id={self.user_id}, xp={self.total_xp}, level={self.level})>"
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ENRICHED SCENARIO DATA MODELS (Phase 1)
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class ProductInfo(Base):
+    """
+    Detailed product/service information for training scenarios.
+
+    Contains all info a salesperson needs: how it works, integrations,
+    support, pricing. Can be referenced by multiple scenarios.
+    """
+
+    __tablename__ = "product_infos"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    slug: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)  # Ex: "MarketAuto Pro"
+    tagline: Mapped[str] = mapped_column(String(500), nullable=False)  # Ex: "Automatisez 80% de vos tâches marketing"
+
+    # Product category for filtering
+    category: Mapped[str | None] = mapped_column(String(100), nullable=True)  # saas, service, physical, etc.
+
+    # COMMENT ÇA MARCHE
+    how_it_works: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # {
+    #   "summary": "Solution SaaS qui automatise...",
+    #   "key_features": ["Emails automatiques", "Scoring leads", "Analytics"],
+    #   "technical_requirements": "Navigateur web, connexion API CRM",
+    #   "implementation_time": "2-5 jours selon complexité"
+    # }
+
+    # INTÉGRATIONS
+    integrations: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # ["Salesforce", "HubSpot", "Pipedrive", "Zapier", "API REST"]
+
+    # SUPPORT & ONBOARDING
+    support_included: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # {
+    #   "onboarding": "Formation 2h incluse",
+    #   "support": "Chat + Email 9h-18h",
+    #   "documentation": "Base de connaissances complète",
+    #   "csm": "Customer Success Manager dédié (plan Pro)"
+    # }
+
+    # PRICING
+    pricing: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # {
+    #   "model": "par_utilisateur",  # flat, par_utilisateur, usage
+    #   "entry_price": "49€/mois",
+    #   "popular_plan": "Pro à 149€/mois",
+    #   "enterprise": "Sur devis",
+    #   "engagement": "Mensuel ou annuel (-20%)",
+    #   "free_trial": "14 jours sans CB"
+    # }
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+    # Relationships
+    proof_elements: Mapped[list["ProofElements"]] = relationship(
+        "ProofElements", back_populates="product", cascade="all, delete-orphan"
+    )
+    competition_info: Mapped[list["CompetitionInfo"]] = relationship(
+        "CompetitionInfo", back_populates="product", cascade="all, delete-orphan"
+    )
+
+    def __repr__(self) -> str:
+        return f"<ProductInfo(slug='{self.slug}', name='{self.name}')>"
+
+
+class ProofElements(Base):
+    """
+    Social proof and testimonials for a product.
+
+    Contains testimonials, case studies, stats, and notable clients
+    to help the salesperson build credibility.
+    """
+
+    __tablename__ = "proof_elements"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    product_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("product_infos.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+
+    # TÉMOIGNAGES CLIENTS
+    testimonials: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # [
+    #   {
+    #     "name": "Sophie Martin",
+    #     "role": "Directrice Marketing",
+    #     "company": "TechCorp (150 employés)",
+    #     "quote": "On a doublé nos leads qualifiés en 3 mois",
+    #     "result": "+120% de leads, -40% de temps admin"
+    #   }
+    # ]
+
+    # ÉTUDES DE CAS
+    case_studies: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # [
+    #   {
+    #     "client": "LogiStart",
+    #     "sector": "E-commerce",
+    #     "problem": "Équipe marketing de 2 personnes débordée",
+    #     "solution": "Automatisation des emails et nurturing",
+    #     "results": {"leads": "+85%", "time_saved": "15h/semaine", "roi_months": 2}
+    #   }
+    # ]
+
+    # STATISTIQUES
+    stats: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # {
+    #   "clients_count": "2000+ entreprises",
+    #   "satisfaction": "4.8/5 sur G2",
+    #   "nps": "72",
+    #   "uptime": "99.9%"
+    # }
+
+    # CLIENTS NOTABLES (logos)
+    notable_clients: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # ["BlaBlaCar", "Doctolib", "ManoMano", "Qonto"]
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+    # Relationships
+    product: Mapped["ProductInfo"] = relationship("ProductInfo", back_populates="proof_elements")
+
+    def __repr__(self) -> str:
+        return f"<ProofElements(product_id={self.product_id})>"
+
+
+class CompetitionInfo(Base):
+    """
+    Competition information for a product.
+
+    Helps salespeople handle competitor objections and
+    position their solution effectively.
+    """
+
+    __tablename__ = "competition_infos"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    product_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("product_infos.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+
+    # CONCURRENTS PRINCIPAUX
+    main_competitors: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # [
+    #   {
+    #     "name": "HubSpot",
+    #     "positioning": "Leader établi, très complet",
+    #     "strengths": ["Écosystème complet", "Brand recognition"],
+    #     "weaknesses": ["Prix élevé", "Complexe à configurer", "Support US"],
+    #     "price_comparison": "2-3x plus cher à fonctionnalités égales"
+    #   }
+    # ]
+
+    # NOTRE DIFFÉRENCIATEUR
+    our_differentiator: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # "Seule solution qui combine automation marketing ET IA prédictive
+    #  à un prix PME. Setup en 2 jours vs 2 semaines chez les concurrents."
+
+    # FACILITÉ DE MIGRATION
+    switch_cost: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # {
+    #   "migration_time": "1-2 jours",
+    #   "data_import": "Import automatique depuis HubSpot, Mailchimp, etc.",
+    #   "training_needed": "2h de formation suffisent",
+    #   "risk": "Migration assistée gratuite, on récupère vos données"
+    # }
+
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+    # Relationships
+    product: Mapped["ProductInfo"] = relationship("ProductInfo", back_populates="competition_info")
+
+    def __repr__(self) -> str:
+        return f"<CompetitionInfo(product_id={self.product_id})>"

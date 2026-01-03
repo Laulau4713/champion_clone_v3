@@ -275,9 +275,38 @@ async def handle_user_message(
                     "event_type": response.event_type,
                     "feedback": response.feedback,
                     "conversion_possible": response.conversion_possible,
+                    # Phase 2: Détection fin de conversation
+                    "session_ended": response.session_ended,
+                    "end_type": response.end_type,
+                    "redirect_url": response.redirect_url,
+                    # Phase 7: Effets vocaux
+                    "sounds_before": response.sounds_before,
+                    "visual_actions": response.visual_actions,
+                    "detected_emotion": response.detected_emotion,
                     "timestamp": datetime.utcnow().isoformat(),
                 }
             )
+
+            # Phase 2: Si la conversation est terminée automatiquement, envoyer l'évaluation
+            if response.session_ended:
+                logger.info(
+                    "conversation_auto_ended_ws",
+                    session_id=session_id,
+                    end_type=response.end_type,
+                )
+                # Terminer la session et envoyer l'évaluation
+                result = await service.end_session(session_id=session_id, user=user)
+                await websocket.send_json(
+                    {
+                        "type": "session_ended",
+                        "session_id": session_id,
+                        "status": result["status"],
+                        "evaluation": result["evaluation"],
+                        "end_type": response.end_type,
+                        "redirect_url": response.redirect_url,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
         except Exception as e:
             logger.error("websocket_message_error", error=str(e))

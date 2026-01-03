@@ -44,6 +44,12 @@ from models import (
 )
 from services.event_service import EventService
 from services.jauge_service import BehavioralDetector, JaugeService
+from services.scenario_adapter import adapt_scenario_to_sector
+from services.scenario_loader import (
+    convert_template_to_scenario,
+    load_scenario_template,
+)
+from services.voice_effects import voice_effects_service
 from services.voice_service import voice_service
 
 try:
@@ -55,6 +61,89 @@ except ImportError:
 
 settings = get_settings()
 logger = structlog.get_logger()
+
+# ==========================================
+# DÉTECTION FIN DE CONVERSATION (Phase 2)
+# ==========================================
+
+END_PATTERNS_FR = [
+    # Formules de politesse
+    "au revoir",
+    "à bientôt",
+    "bonne journée",
+    "bonne fin de journée",
+    "bonne continuation",
+    "à la prochaine",
+    "à très vite",
+    # Remerciements de fin
+    "merci pour votre temps",
+    "merci de m'avoir reçu",
+    "je vous laisse",
+    "je ne vous retiens pas plus",
+    "je vous souhaite une bonne",
+    # Anglais (au cas où)
+    "goodbye",
+    "bye",
+    "see you",
+    "take care",
+]
+
+END_PATTERNS_PROSPECT = [
+    # Le prospect met fin
+    "je dois vous laisser",
+    "j'ai un autre appel",
+    "on se rappelle",
+    "envoyez-moi ça par email",
+    "je reviendrai vers vous",
+    "merci, au revoir",
+    "bonne journée à vous aussi",
+    "je vous recontacte",
+    "on reste en contact",
+    "je n'ai plus de questions",
+    "c'est noté",
+    "je vais réfléchir",
+]
+
+
+def detect_conversation_end(
+    user_message: str,
+    prospect_response: str,
+    exchange_count: int,
+    min_exchanges: int = 4,
+) -> tuple[bool, str | None]:
+    """
+    Détecte si la conversation est terminée.
+
+    Args:
+        user_message: Le dernier message de l'utilisateur
+        prospect_response: La réponse du prospect
+        exchange_count: Nombre d'échanges dans la conversation
+        min_exchanges: Minimum d'échanges requis avant de pouvoir terminer
+
+    Returns:
+        (is_ended, end_type)
+        end_type: "mutual_goodbye" | "prospect_ended" | "user_ending" | "prospect_ending" | None
+    """
+    if exchange_count < min_exchanges:
+        return False, None
+
+    user_lower = user_message.lower()
+    prospect_lower = prospect_response.lower()
+
+    user_said_bye = any(p in user_lower for p in END_PATTERNS_FR)
+    prospect_said_bye = any(p in prospect_lower for p in END_PATTERNS_FR + END_PATTERNS_PROSPECT)
+
+    if user_said_bye and prospect_said_bye:
+        return True, "mutual_goodbye"
+    elif prospect_said_bye and not user_said_bye:
+        # Le prospect veut partir mais l'user n'a pas dit au revoir
+        # On laisse l'user répondre une dernière fois
+        return False, "prospect_ending"
+    elif user_said_bye and not prospect_said_bye:
+        # L'user dit au revoir, le prospect devrait répondre poliment
+        return False, "user_ending"
+
+    return False, None
 
 
 @dataclass
@@ -71,6 +160,14 @@ class ProspectResponseV2:
     event_type: str | None
     feedback: dict | None
     conversion_possible: bool
+    # Phase 2: Détection fin de conversation
+    session_ended: bool = False
+    end_type: str | None = None  # mutual_goodbye, prospect_ending, user_ending
+    redirect_url: str | None = None  # /training/report/{session_id}
+    # Phase 7: Effets vocaux
+    sounds_before: list[str] | None = None  # Sons à jouer avant le TTS
+    visual_actions: list[str] | None = None  # Actions visuelles pour le frontend
+    detected_emotion: str | None = None  # Émotion détectée dans les annotations
 
     def to_dict(self) -> dict:
         return {
@@ -84,6 +181,12 @@ class ProspectResponseV2:
             "event_type": self.event_type,
             "feedback": self.feedback,
             "conversion_possible": self.conversion_possible,
+            "session_ended": self.session_ended,
+            "end_type": self.end_type,
+            "redirect_url": self.redirect_url,
+            "sounds_before": self.sounds_before,
+            "visual_actions": self.visual_actions,
+            "detected_emotion": self.detected_emotion,
         }
 
 
@@ -150,9 +253,31 @@ class TrainingServiceV2:
         jauge_service = JaugeService(level=level, level_config=level_config)
         event_service = EventService(level=level, level_config=level_config)
 
-        # Générer le scénario
-        content_agent = ContentAgent(db=self.db, llm_client=None)
-        scenario = await content_agent.generate_scenario(skill=skill, level=level, sector=sector, use_cache=True)
+        # Générer le scénario - Priorité aux templates (Phase 4)
+        scenario = None
+
+        # 1. Essayer de charger un template pré-défini
+        template = load_scenario_template(skill_slug=skill.slug, difficulty=level)
+        if template:
+            # Adapter au secteur si fourni (Phase 5: adaptation sectorielle enrichie)
+            if sector_slug:
+                template = adapt_scenario_to_sector(template, sector_slug, level)
+            elif sector:
+                # Fallback: utiliser le slug du sector DB
+                template = adapt_scenario_to_sector(template, sector.slug, level)
+            # Convertir le template au format scénario
+            scenario = convert_template_to_scenario(template)
+            logger.info(
+                "scenario_from_template",
+                skill=skill.slug,
+                template_id=template.get("template_id"),
+                sector=sector_slug or (sector.slug if sector else None),
+            )
+        else:
+            # 2. Fallback sur ContentAgent si pas de template
+            logger.info("scenario_fallback_to_content_agent", skill=skill.slug)
+            content_agent = ContentAgent(db=self.db, llm_client=None)
+            scenario = await content_agent.generate_scenario(skill=skill, level=level, sector=sector, use_cache=True)
 
         # Initialiser les objections cachées si activées
         hidden_objections = []
@@ -223,13 +348,28 @@ class TrainingServiceV2:
             if behavioral_cue:
                 opening_text = f"{behavioral_cue} {opening_text}"
 
+        # Phase 7: Préparer la réponse vocale avec effets
+        personality = scenario.get("prospect", {}).get("personality", "neutral")
+        voice_prep = voice_effects_service.prepare_tts_response(
+            text=opening_text,
+            mood=initial_mood.mood,
+            gauge=starting_jauge,
+        )
+
+        # Utiliser le texte nettoyé pour le TTS
+        tts_text = voice_prep["clean_text"]
+        tts_settings = voice_prep["tts_settings"]
+
         # Convertir en audio
         audio_base64 = None
-        personality = scenario.get("prospect", {}).get("personality", "neutral")
-
         if voice_service.is_configured().get("elevenlabs"):
             try:
-                audio_bytes, _ = await voice_service.text_to_speech(text=opening_text, personality=personality)
+                audio_bytes, _ = await voice_service.text_to_speech(
+                    text=tts_text,
+                    personality=personality,
+                    stability=tts_settings.stability,
+                    similarity_boost=tts_settings.similarity_boost,
+                )
                 audio_base64 = voice_service.audio_to_base64(audio_bytes)
             except Exception as e:
                 logger.error("tts_error_opening", error=str(e))
@@ -253,6 +393,14 @@ class TrainingServiceV2:
         # Préparer la réponse
         show_jauge = level_config.get("feedback_settings", {}).get("show_gauge", level == "easy")
 
+        # Extraire les objections du scénario pour la préparation
+        scenario_objections = scenario.get("objections", [])
+        if not scenario_objections:
+            # Fallback: construire les objections à partir des hidden_objections
+            scenario_objections = [
+                {"expressed": obj.get("expressed", ""), "hidden": obj.get("hidden", "")} for obj in hidden_objections
+            ]
+
         return {
             "session_id": session.id,
             "scenario": {
@@ -263,7 +411,12 @@ class TrainingServiceV2:
                     "role": scenario.get("prospect", {}).get("role"),
                     "company": scenario.get("prospect", {}).get("company"),
                     "personality": personality,
+                    "pain_points": scenario.get("prospect", {}).get("pain_points", []),
+                    "hidden_need": scenario.get("prospect", {}).get("hidden_need"),
                 },
+                "objections": scenario_objections,
+                "solution": scenario.get("solution"),
+                "product_pitch": scenario.get("product_pitch"),
             },
             "skill": {"slug": skill.slug, "name": skill.name, "evaluation_criteria": skill.evaluation_criteria},
             "level": level,
@@ -438,7 +591,7 @@ class TrainingServiceV2:
             if behavioral_cue:
                 prospect_text = f"{behavioral_cue} {prospect_text}"
 
-        # Convertir en audio
+        # Phase 7: Préparer la réponse vocale avec effets
         scenario = session.scenario_json
         personality = scenario.get("prospect", {}).get("personality", "neutral")
         if mood_state.mood in ["hostile", "aggressive"]:
@@ -446,10 +599,29 @@ class TrainingServiceV2:
         elif mood_state.mood in ["interested", "ready_to_buy"]:
             personality = "friendly"
 
+        voice_prep = voice_effects_service.prepare_tts_response(
+            text=prospect_text,
+            mood=mood_state.mood,
+            gauge=new_jauge,
+        )
+
+        # Utiliser le texte nettoyé pour le TTS
+        tts_text = voice_prep["clean_text"]
+        tts_settings = voice_prep["tts_settings"]
+
+        # Extraire les actions visuelles et sons pour le frontend
+        visual_actions = voice_prep["actions"]
+        sounds_before = voice_prep["sounds_before"]
+
         audio_base64_response = None
         if voice_service.is_configured().get("elevenlabs"):
             try:
-                audio_bytes, _ = await voice_service.text_to_speech(text=prospect_text, personality=personality)
+                audio_bytes, _ = await voice_service.text_to_speech(
+                    text=tts_text,
+                    personality=personality,
+                    stability=tts_settings.stability,
+                    similarity_boost=tts_settings.similarity_boost,
+                )
                 audio_base64_response = voice_service.audio_to_base64(audio_bytes)
             except Exception as e:
                 logger.error("tts_error_response", error=str(e))
@@ -482,6 +654,30 @@ class TrainingServiceV2:
                 "tips": self._generate_tips(patterns, mood_state.mood),
             }
 
+        # Phase 2: Détection automatique de fin de conversation
+        # Compter les messages utilisateur (= nombre d'échanges)
+        user_messages_count = sum(1 for m in history if m.role == "user") + 1  # +1 pour le message actuel
+        session_ended, end_type = detect_conversation_end(
+            user_message=user_text,
+            prospect_response=prospect_text,
+            exchange_count=user_messages_count,
+            min_exchanges=4,
+        )
+
+        redirect_url = None
+        if session_ended:
+            # Terminer automatiquement la session
+            logger.info(
+                "conversation_auto_ended",
+                session_id=session.id,
+                end_type=end_type,
+                exchange_count=user_messages_count,
+            )
+            # Marquer la session comme terminée (l'évaluation sera faite par end_session)
+            session.status = "ending"
+            await self.db.commit()
+            redirect_url = f"/training/report/{session.id}"
+
         return ProspectResponseV2(
             text=prospect_text,
             audio_base64=audio_base64_response,
@@ -493,6 +689,13 @@ class TrainingServiceV2:
             event_type=event.type if event else None,
             feedback=feedback,
             conversion_possible=conversion_possible,
+            session_ended=session_ended,
+            end_type=end_type,
+            redirect_url=redirect_url,
+            # Phase 7: Effets vocaux
+            sounds_before=sounds_before if sounds_before else None,
+            visual_actions=visual_actions if visual_actions else None,
+            detected_emotion=voice_prep.get("emotion"),
         )
 
     async def _generate_prospect_response(
@@ -929,3 +1132,234 @@ Analyse et complète cette évaluation en JSON (garde le score proche de {base_s
             "created_at": session.created_at.isoformat(),
             "completed_at": session.completed_at.isoformat() if session.completed_at else None,
         }
+
+    async def get_session_report(self, session_id: int, user: User) -> dict | None:
+        """
+        Génère un rapport détaillé de la session pour la page /training/report/[id].
+
+        Inclut:
+        - Métriques globales (score, jauge, progression)
+        - Patterns positifs/négatifs agrégés avec comptage
+        - Messages avec annotations
+        - Conseils personnalisés
+        """
+        session = await self.db.get(VoiceTrainingSession, session_id)
+        if not session or session.user_id != user.id:
+            return None
+
+        skill = await self.db.get(Skill, session.skill_id)
+        sector = await self.db.get(Sector, session.sector_id) if session.sector_id else None
+
+        # Récupérer les messages
+        messages_result = await self.db.execute(
+            select(VoiceTrainingMessage)
+            .where(VoiceTrainingMessage.session_id == session_id)
+            .order_by(VoiceTrainingMessage.created_at)
+        )
+        messages = messages_result.scalars().all()
+
+        # Calculer la durée
+        duration_seconds = 0
+        if session.created_at and session.completed_at:
+            duration_seconds = int((session.completed_at - session.created_at).total_seconds())
+        else:
+            # Estimer à partir des messages
+            duration_seconds = sum(m.duration_seconds or 0 for m in messages if m.role == "user")
+
+        # Agréger les patterns positifs
+        positive_patterns = self._aggregate_patterns(session.positive_actions or [], "positive")
+        negative_patterns = self._aggregate_patterns(session.negative_actions or [], "negative")
+
+        # Extraire les exemples des messages
+        for pattern in positive_patterns + negative_patterns:
+            pattern["examples"] = self._find_pattern_examples(messages, pattern["pattern"])
+
+        # Construire les messages annotés
+        annotated_messages = []
+        running_gauge = session.starting_gauge
+        for m in messages:
+            gauge_after = running_gauge + (m.gauge_impact or 0) if m.role == "user" else running_gauge
+            if m.role == "user":
+                running_gauge = gauge_after
+
+            patterns_detected = []
+            if m.detected_patterns:
+                patterns_detected = [
+                    p.get("pattern", p) if isinstance(p, dict) else p
+                    for p in m.detected_patterns.get("positive", []) + m.detected_patterns.get("negative", [])
+                ]
+
+            annotated_messages.append(
+                {
+                    "role": m.role,
+                    "content": m.text,
+                    "gauge_after": gauge_after,
+                    "gauge_impact": m.gauge_impact,
+                    "mood": m.prospect_mood,
+                    "patterns_detected": patterns_detected,
+                    "behavioral_cue": m.behavioral_cues[0] if m.behavioral_cues else None,
+                    "is_event": m.is_event,
+                    "event_type": m.event_type,
+                    "timestamp": m.created_at.isoformat(),
+                }
+            )
+
+        # Conseils personnalisés basés sur les patterns négatifs
+        personalized_tips = self._generate_personalized_tips(
+            negative_patterns, session.conversion_blockers or [], session.current_gauge - session.starting_gauge
+        )
+
+        # Récupérer l'évaluation existante ou en générer une
+        evaluation = session.feedback_json or {}
+        overall_score = session.score or evaluation.get("overall_score", 0)
+
+        return {
+            # Header
+            "session_id": session.id,
+            "skill_name": skill.name if skill else "Inconnu",
+            "skill_slug": skill.slug if skill else None,
+            "sector_name": sector.name if sector else None,
+            "sector_slug": sector.slug if sector else None,
+            "level": session.level,
+            "duration_seconds": duration_seconds,
+            "completed_at": session.completed_at.isoformat() if session.completed_at else None,
+            "status": session.status,
+            # Score global
+            "final_score": overall_score,
+            "final_gauge": session.current_gauge,
+            "starting_gauge": session.starting_gauge,
+            "gauge_progression": session.current_gauge - session.starting_gauge,
+            "converted": session.converted,
+            "passed": overall_score >= (skill.pass_threshold if skill else 60),
+            # Patterns
+            "positive_patterns": positive_patterns,
+            "negative_patterns": negative_patterns,
+            "positive_count": len(session.positive_actions or []),
+            "negative_count": len(session.negative_actions or []),
+            # Objections
+            "hidden_objections": session.hidden_objections or [],
+            "discovered_objections": session.discovered_objections or [],
+            # Événements
+            "triggered_events": session.triggered_events or [],
+            "reversal_triggered": session.reversal_triggered,
+            "reversal_type": session.reversal_type,
+            # Blockers
+            "conversion_blockers": session.conversion_blockers or [],
+            # Conseils
+            "personalized_tips": personalized_tips,
+            "points_forts": evaluation.get("points_forts", []),
+            "axes_amelioration": evaluation.get("axes_amelioration", []),
+            "conseil_principal": evaluation.get("conseil_principal", self._get_main_advice(session, overall_score)),
+            # Conversation
+            "messages": annotated_messages,
+            "message_count": len(messages),
+            # Graphique jauge
+            "gauge_history": session.gauge_history or [],
+        }
+
+    def _aggregate_patterns(self, actions: list, pattern_type: str) -> list[dict]:
+        """Agrège les actions en patterns avec comptage."""
+        from collections import Counter
+
+        PATTERN_LABELS = {
+            # Positifs
+            "reformulation": "Bonne reformulation",
+            "open_question": "Question ouverte pertinente",
+            "empathy": "Empathie démontrée",
+            "active_listening": "Écoute active",
+            "value_proposition": "Proposition de valeur claire",
+            "objection_handling": "Objection bien gérée",
+            "closing_attempt": "Tentative de closing",
+            "rapport_building": "Construction de relation",
+            "needs_discovery": "Découverte des besoins",
+            "social_proof": "Preuve sociale utilisée",
+            # Négatifs
+            "interruption": "Interruption du prospect",
+            "closed_question_spam": "Trop de questions fermées",
+            "budget_question_too_early": "Question budget trop tôt",
+            "monologue": "Monologue trop long",
+            "aggressive_pitch": "Pitch trop agressif",
+            "ignored_objection": "Objection ignorée",
+            "lost_temper": "Perte de calme",
+            "denigrated_competitor": "Dénigrement concurrent",
+            "pressure_tactics": "Tactique de pression",
+            "lying": "Information inexacte",
+        }
+
+        PATTERN_ADVICE = {
+            "interruption": "Attendez 2 secondes après que le prospect ait fini de parler",
+            "closed_question_spam": "Alternez avec des questions ouvertes (Comment? Pourquoi?)",
+            "budget_question_too_early": "Découvrez d'abord les besoins avant de parler budget",
+            "monologue": "Faites des pauses et posez des questions pour valider la compréhension",
+            "aggressive_pitch": "Adoptez une approche consultative plutôt que commerciale",
+            "ignored_objection": "Reformulez l'objection pour montrer que vous l'avez entendue",
+            "lost_temper": "Respirez et restez professionnel, même face à l'agressivité",
+            "denigrated_competitor": "Concentrez-vous sur vos forces plutôt que leurs faiblesses",
+            "pressure_tactics": "Laissez le prospect décider à son rythme",
+        }
+
+        counter = Counter(actions)
+        patterns = []
+
+        for action, count in counter.most_common():
+            pattern = {
+                "pattern": action,
+                "label": PATTERN_LABELS.get(action, action.replace("_", " ").title()),
+                "count": count,
+                "examples": [],
+            }
+            if pattern_type == "negative":
+                pattern["advice"] = PATTERN_ADVICE.get(action, "")
+            patterns.append(pattern)
+
+        return patterns
+
+    def _find_pattern_examples(self, messages: list, pattern: str) -> list[str]:
+        """Trouve des exemples de messages où le pattern a été détecté."""
+        examples = []
+        for m in messages:
+            if m.role == "user" and m.detected_patterns:
+                all_patterns = m.detected_patterns.get("positive", []) + m.detected_patterns.get("negative", [])
+                for p in all_patterns:
+                    p_name = p.get("pattern", p) if isinstance(p, dict) else p
+                    if p_name == pattern:
+                        # Tronquer le texte si trop long
+                        text = m.text[:100] + "..." if len(m.text) > 100 else m.text
+                        examples.append(text)
+                        break
+            if len(examples) >= 2:
+                break
+        return examples
+
+    def _generate_personalized_tips(
+        self, negative_patterns: list[dict], blockers: list[str], gauge_progression: int
+    ) -> list[str]:
+        """Génère des conseils personnalisés basés sur l'analyse."""
+        tips = []
+
+        # Conseils basés sur les blockers
+        if "lost_temper" in blockers:
+            tips.append("Travaille ta gestion des émotions face à un prospect difficile")
+        if "denigrated_competitor" in blockers:
+            tips.append("Ne dénigre jamais la concurrence - mets en avant tes propres forces")
+
+        # Conseils basés sur les patterns négatifs fréquents
+        for pattern in negative_patterns[:3]:
+            if pattern["count"] >= 2:
+                if pattern["advice"]:
+                    tips.append(pattern["advice"])
+
+        # Conseils basés sur la progression
+        if gauge_progression < -10:
+            tips.append("La relation s'est dégradée - travaille l'empathie et l'écoute active")
+        elif gauge_progression < 10:
+            tips.append("Progression limitée - utilise plus de questions ouvertes pour engager")
+
+        # Si pas de tips, en ajouter des génériques
+        if not tips:
+            if gauge_progression >= 20:
+                tips.append("Continue comme ça ! Ta progression est excellente.")
+            else:
+                tips.append("Continue à pratiquer les fondamentaux de la découverte")
+
+        return tips[:5]  # Max 5 conseils
