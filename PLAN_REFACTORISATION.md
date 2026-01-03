@@ -2056,6 +2056,217 @@ proofs:
 
 ---
 
+## 12. INFRASTRUCTURE & SCALABILITÉ (100+ users)
+
+### Stratégie : APIs pour dev, Local pour prod
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ENVIRONNEMENTS                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  DEV / TEST                        PROD (100+ users)            │
+│  ──────────                        ─────────────────            │
+│  Claude API ──────────────────────► Qwen 14B (local)            │
+│  ElevenLabs ──────────────────────► Chatterbox (local)          │
+│  Whisper OpenAI ──────────────────► Whisper (local)             │
+│                                                                 │
+│  Coût : ~$10-50/mois               Coût : ~$150-300/mois        │
+│  (pay per use, faible volume)      (fixe, illimité)             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Services abstraits (switch dev ↔ prod)
+
+```python
+# backend/services/llm_service.py
+
+class LLMService:
+    """Abstraction LLM - switch via config."""
+
+    def __init__(self):
+        provider = settings.LLM_PROVIDER  # "claude" ou "local"
+
+        if provider == "claude":
+            self.client = ClaudeClient(api_key=settings.ANTHROPIC_API_KEY)
+        else:
+            self.client = LocalLLMClient(
+                base_url=settings.LOCAL_LLM_URL,  # Vast.ai endpoint
+                model="qwen2.5-14b-instruct"
+            )
+
+    async def generate(self, prompt: str, system: str = None) -> str:
+        return await self.client.generate(prompt, system=system)
+```
+
+```python
+# backend/services/voice_service.py
+
+class VoiceService:
+    """Abstraction Voice - switch via config."""
+
+    def __init__(self):
+        provider = settings.VOICE_PROVIDER  # "elevenlabs" ou "local"
+
+        if provider == "elevenlabs":
+            self.tts = ElevenLabsTTS(api_key=settings.ELEVENLABS_API_KEY)
+            self.stt = WhisperOpenAI(api_key=settings.OPENAI_API_KEY)
+        else:
+            self.tts = ChatterboxTTS(base_url=settings.LOCAL_TTS_URL)
+            self.stt = WhisperLocal(base_url=settings.LOCAL_STT_URL)
+
+    async def text_to_speech(self, text: str, voice: str) -> bytes:
+        return await self.tts.synthesize(text, voice=voice)
+
+    async def speech_to_text(self, audio: bytes) -> str:
+        return await self.stt.transcribe(audio)
+```
+
+### Configuration .env
+
+```bash
+# backend/.env
+
+# ============================================
+# DEV : APIs (défaut)
+# ============================================
+LLM_PROVIDER=claude
+ANTHROPIC_API_KEY=sk-ant-...
+
+VOICE_PROVIDER=elevenlabs
+ELEVENLABS_API_KEY=...
+OPENAI_API_KEY=sk-...
+
+# ============================================
+# PROD : Local (décommenter pour prod)
+# ============================================
+# LLM_PROVIDER=local
+# LOCAL_LLM_URL=http://vast-ai-instance:8000/v1
+
+# VOICE_PROVIDER=local
+# LOCAL_TTS_URL=http://vast-ai-instance:8001
+# LOCAL_STT_URL=http://vast-ai-instance:8002
+```
+
+### Déploiement Vast.ai
+
+```yaml
+# docker-compose.vastai.yml
+
+services:
+  llm:
+    image: vllm/vllm-openai:latest
+    command: >
+      --model Qwen/Qwen2.5-14B-Instruct
+      --tensor-parallel-size 1
+      --max-model-len 8192
+    ports:
+      - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+  tts:
+    image: chatterbox-tts:latest  # À builder
+    ports:
+      - "8001:8001"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+  stt:
+    image: whisper-api:latest
+    environment:
+      - MODEL=large-v3
+    ports:
+      - "8002:8002"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+```
+
+### Comparatif coûts
+
+| Scénario | Provider | Coût estimé |
+|----------|----------|-------------|
+| **Dev solo** | Claude + ElevenLabs + Whisper OAI | ~$20-50/mois |
+| **Beta 10 users** | Claude + ElevenLabs + Whisper OAI | ~$50-150/mois |
+| **Prod 100 users** | Vast.ai (RTX 4090) | ~$200-300/mois fixe |
+| **Prod 100 users** | Serveur dédié (Hetzner) | ~$250-400/mois fixe |
+
+### Seuil de rentabilité
+
+```
+APIs vs Local - Point de bascule :
+
+Claude : ~$0.01/message
+ElevenLabs : ~$0.30/1000 chars (~$0.10/message)
+Whisper OAI : ~$0.006/min
+
+Total par message : ~$0.12
+
+Vast.ai RTX 4090 : ~$0.50/h = $360/mois
+
+Seuil : 360 / 0.12 = ~3000 messages/mois
+
+→ Si > 3000 messages/mois → Local rentable
+→ 100 users × 30 messages = 3000 → Exactement le seuil!
+
+Conclusion : Dès 100 users actifs, local = rentable
+```
+
+### Hardware requis (Vast.ai)
+
+```
+Pour Qwen 14B + Chatterbox + Whisper :
+├── GPU : RTX 4090 (24GB VRAM) ou A100 40GB
+├── RAM : 32GB minimum
+├── Storage : 100GB SSD
+└── Coût Vast.ai : ~$0.40-0.80/h
+```
+
+### Capacité serveur unique
+
+```
+1x RTX 4090 :
+├── LLM : ~20-30 tokens/sec
+├── TTS : ~1.5x realtime (1 sec audio = 0.7 sec génération)
+├── STT : ~10x realtime
+│
+├── Sessions simultanées : 50-100
+├── Latence réponse : 2-5 sec (acceptable)
+└── ⚠️ Si >100 simultanés : ajouter 2ème GPU
+```
+
+### Migration Dev → Prod
+
+```
+Phase 1 (maintenant) : Dev avec APIs
+├── Développer avec Claude/ElevenLabs
+├── Tester fonctionnalités
+└── Coût minimal
+
+Phase 2 (beta) : Test avec quelques users
+├── Toujours APIs
+├── Mesurer usage réel
+└── Valider product-market fit
+
+Phase 3 (prod) : Switch vers local
+├── Déployer sur Vast.ai
+├── Changer .env : LLM_PROVIDER=local
+├── Tester performances
+└── Basculer le trafic
+```
+
+---
+
 ## RÉSUMÉ ARCHITECTURE FINALE
 
 ```
