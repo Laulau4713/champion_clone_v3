@@ -55,8 +55,14 @@ export default function RegisterPage() {
 
       router.push('/login?registered=true');
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || 'Erreur lors de l\'inscription');
+      const error = err as { response?: { data?: { detail?: string | Array<{ msg: string }> } } };
+      const detail = error.response?.data?.detail;
+      // Handle Pydantic validation errors (array of objects with msg)
+      if (Array.isArray(detail)) {
+        setError(detail.map(e => e.msg).join(', '));
+      } else {
+        setError(detail || 'Erreur lors de l\'inscription');
+      }
     } finally {
       setLoading(false);
     }

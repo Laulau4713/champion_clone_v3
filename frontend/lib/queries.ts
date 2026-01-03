@@ -38,6 +38,9 @@ export const useChampions = () =>
   useQuery({
     queryKey: queryKeys.champions,
     queryFn: getChampions,
+    retry: false,
+    // Return empty array on 403 (enterprise-only feature)
+    placeholderData: [],
   });
 
 export const useChampion = (id: number) =>
@@ -116,6 +119,9 @@ export const useTrainingSessions = () =>
   useQuery({
     queryKey: queryKeys.sessions,
     queryFn: getTrainingSessions,
+    retry: false,
+    // Return empty array on 403 (enterprise-only feature)
+    placeholderData: [],
   });
 
 // Learning Progress
