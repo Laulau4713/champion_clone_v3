@@ -208,7 +208,9 @@ class TrainingServiceV2:
             self.claude = None
             logger.warning("anthropic_not_available", message="Claude API not configured")
 
-    async def create_session(self, user: User, skill_slug: str, sector_slug: str | None = None) -> dict:
+    async def create_session(
+        self, user: User, skill_slug: str, sector_slug: str | None = None, level: str = "easy"
+    ) -> dict:
         """
         Crée une session avec initialisation des mécaniques V2.
         """
@@ -222,7 +224,7 @@ class TrainingServiceV2:
         if sector_slug:
             sector = await self.db.scalar(select(Sector).where(Sector.slug == sector_slug))
 
-        # Récupérer la progression utilisateur
+        # Récupérer la progression utilisateur (pour tracking, mais level vient du paramètre)
         progress = await self.db.scalar(select(UserProgress).where(UserProgress.user_id == user.id))
         if not progress:
             progress = UserProgress(user_id=user.id)
@@ -230,7 +232,7 @@ class TrainingServiceV2:
             await self.db.commit()
             await self.db.refresh(progress)
 
-        level = progress.current_level
+        # Note: level vient du paramètre, pas de progress.current_level
 
         # Récupérer la config du niveau
         level_db = await self.db.scalar(select(DifficultyLevel).where(DifficultyLevel.level == level))
@@ -390,8 +392,8 @@ class TrainingServiceV2:
             hidden_objections_count=len(hidden_objections),
         )
 
-        # Préparer la réponse
-        show_jauge = level_config.get("feedback_settings", {}).get("show_gauge", level == "easy")
+        # Préparer la réponse - jauge toujours visible (outil de feedback, pas une difficulté)
+        show_jauge = True
 
         # Extraire les objections du scénario pour la préparation
         scenario_objections = scenario.get("objections", [])
@@ -639,10 +641,10 @@ class TrainingServiceV2:
         self.db.add(prospect_message)
         await self.db.commit()
 
-        # Générer le feedback (visible selon config du niveau)
+        # Générer le feedback - jauge toujours visible (outil de feedback, pas une difficulté)
         feedback = None
         feedback_settings = level_config.get("feedback_settings", {}) if level_db else {}
-        show_jauge = feedback_settings.get("show_gauge", session.level == "easy")
+        show_jauge = True  # Toujours visible pour aider le commercial
         show_tips = feedback_settings.get("show_tips", session.level == "easy")
 
         if show_tips or session.level == "easy":

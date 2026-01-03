@@ -413,6 +413,7 @@ class VoiceSessionStartRequest(BaseModel):
 
     skill_slug: str
     sector_slug: str | None = None
+    level: str = "easy"  # easy, medium, expert
 
 
 class VoiceMessageRequest(BaseModel):
@@ -495,7 +496,10 @@ async def start_voice_training_session(
 
     try:
         session = await service.create_session(
-            user=current_user, skill_slug=request.skill_slug, sector_slug=request.sector_slug
+            user=current_user,
+            skill_slug=request.skill_slug,
+            sector_slug=request.sector_slug,
+            level=request.level,
         )
 
         # Increment trial counter for free users
