@@ -10,7 +10,7 @@ gunicorn==21.2.0              # Production WSGI server
 
 # Database
 sqlalchemy==2.0.25
-psycopg2-binary==2.9.9        # PostgreSQL sync driver
+psycopg2-binary==2.9.11        # PostgreSQL sync driver
 asyncpg==0.29.0               # PostgreSQL async driver
 aiosqlite==0.22.1             # SQLite async (dev only)
 alembic==1.13.1               # Database migrations
