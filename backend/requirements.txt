@@ -48,7 +48,7 @@ flower==2.0.1                 # Celery monitoring UI (optional)
 aiofiles==23.2.1
 structlog==24.1.0
 httpx==0.28.1                 # Async HTTP client
-orjson==3.9.15                # Fast JSON serialization
+orjson==3.11.5                # Fast JSON serialization
 
 # Monitoring & Metrics
 prometheus-client==0.19.0     # Prometheus metrics
