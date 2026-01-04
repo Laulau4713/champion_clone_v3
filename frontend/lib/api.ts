@@ -278,6 +278,41 @@ export const voiceAPI = {
     api.post<{ text: string }>('/voice/stt', { audio_base64: audioBase64 }),
 };
 
+// ============ TRAINING V3 API (Playbook + Module) ============
+import type {
+  PlaybookSummary,
+  ModuleSummary,
+  V3SessionStartResponse,
+  V3MessageResponse,
+  V3SessionEndResponse,
+} from '@/types';
+
+export const trainingV3API = {
+  // List available playbooks (products)
+  getPlaybooks: () => api.get<PlaybookSummary[]>('/playbooks'),
+
+  // List available modules (methodologies)
+  getModules: () => api.get<ModuleSummary[]>('/modules'),
+
+  // Start a V3 session with playbook + module
+  startSession: (data: { playbook_id: string; module_id: string }) =>
+    api.post<V3SessionStartResponse>('/v3/session/start', data),
+
+  // Send a message in a V3 session
+  sendMessage: (sessionId: string, message: string) =>
+    api.post<V3MessageResponse>(`/v3/session/${sessionId}/message`, { message }),
+
+  // End a V3 session and get report
+  endSession: (sessionId: string, closingAchieved: boolean = false) =>
+    api.post<V3SessionEndResponse>(`/v3/session/${sessionId}/end`, {
+      closing_achieved: closingAchieved,
+    }),
+
+  // Get V3 session status
+  getSession: (sessionId: string) =>
+    api.get(`/v3/session/${sessionId}`),
+};
+
 // ============ PAYMENTS API ============
 export interface PaymentStatus {
   enabled: boolean;

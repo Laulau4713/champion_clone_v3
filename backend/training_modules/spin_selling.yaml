@@ -1,0 +1,200 @@
+# backend/training_modules/spin_selling.yaml
+# Module de formation : SPIN Selling
+# Methode de questionnement pour ventes complexes
+
+module:
+  id: spin_selling
+  name: "SPIN Selling"
+  description: "Maîtriser le questionnement SPIN pour les ventes complexes"
+  category: discovery
+
+  # ============================================
+  # OBJECTIF PEDAGOGIQUE
+  # ============================================
+  objective: |
+    Maîtriser la méthode SPIN Selling pour conduire des entretiens
+    de découverte efficaces en ventes B2B complexes.
+
+    SPIN signifie :
+    - Situation : Questions sur le contexte actuel
+    - Problème : Questions sur les difficultés rencontrées
+    - Implication : Questions sur les conséquences des problèmes
+    - Need-payoff : Questions sur la valeur de la solution
+
+  # ============================================
+  # CE QUE L'ELEVE DOIT ACCOMPLIR
+  # ============================================
+  checklist:
+    - id: situation
+      label: "Situation"
+      description: "Poser des questions sur le contexte actuel du prospect"
+      question_hint: "Comment gérez-vous actuellement... ?"
+      detection_patterns:
+        - "comment.*actuellement|aujourd'hui.*comment"
+        - "quelle.*organisation|quel.*processus"
+        - "combien de.*personnes|équipe"
+        - "quels outils.*utilisez"
+        - "depuis quand|depuis combien"
+      weight: 10
+      required: true
+      max_questions: 3  # Ne pas trop s'attarder sur la situation
+
+    - id: problem
+      label: "Problème"
+      description: "Identifier les difficultés et frustrations"
+      question_hint: "Qu'est-ce qui vous pose le plus de difficultés ?"
+      detection_patterns:
+        - "difficile|difficulté|problème|frustration"
+        - "qu'est-ce qui.*pose|cause"
+        - "insatisfait|mécontent|agacé"
+        - "ne fonctionne pas|marche pas"
+        - "limite|limitation|contrainte"
+      weight: 20
+      required: true
+
+    - id: implication
+      label: "Implication"
+      description: "Explorer les conséquences des problèmes identifiés"
+      question_hint: "Quel impact cela a-t-il sur votre activité ?"
+      detection_patterns:
+        - "impact|conséquence|effet|résultat"
+        - "que se passe.*si|quand"
+        - "combien.*coûte|perd"
+        - "affecte|influence|répercussion"
+        - "risque|danger|menace"
+        - "à long terme|sur le long"
+      weight: 30
+      required: true
+
+    - id: need_payoff
+      label: "Need-Payoff"
+      description: "Faire visualiser la valeur de la solution"
+      question_hint: "Si vous pouviez résoudre ce problème, qu'est-ce que cela changerait ?"
+      detection_patterns:
+        - "si vous pouviez|imaginez que"
+        - "qu'est-ce que.*changerait|apporterait"
+        - "quel.*bénéfice|avantage"
+        - "comment.*améliorerait"
+        - "valeur|gain|économie"
+        - "idéalement|dans l'idéal"
+      weight: 40
+      required: true
+
+  # ============================================
+  # INSTRUCTIONS POUR LE PROSPECT
+  # ============================================
+  prospect_instructions: |
+    Tu es un prospect pour une session SPIN Selling.
+
+    COMPORTEMENT :
+    - Pour les questions SITUATION : Réponds factuellement
+    - Pour les questions PROBLÈME : Mentionne 1-2 difficultés
+    - Pour les questions IMPLICATION : Quantifie l'impact si on te le demande
+    - Pour les questions NEED-PAYOFF : Montre de l'intérêt si bien formulées
+
+    PROGRESSION :
+    - Au début : Réponses courtes, peu engagé
+    - Si bonnes questions d'implication : Tu t'ouvres davantage
+    - Si bonnes questions need-payoff : Tu visualises la solution
+
+    NE PAS :
+    - Révéler les problèmes sans qu'on te questionne
+    - Quantifier l'impact spontanément
+    - Montrer de l'enthousiasme trop tôt
+
+  # ============================================
+  # EVALUATION
+  # ============================================
+  evaluation:
+    scoring:
+      per_element_base: 10
+      quality_bonus: 5
+      sequence_bonus: 10  # Bonus si ordre S-P-I-N respecté
+      implication_depth_bonus: 15  # Bonus pour creuser les implications
+
+    mastery_threshold: 70
+
+    levels:
+      excellent:
+        min_score: 90
+        elements_required: 4
+        description: "Maîtrise du SPIN avec séquençage optimal"
+      good:
+        min_score: 70
+        elements_required: 4
+        description: "Bon questionnement SPIN, séquence à améliorer"
+      partial:
+        min_score: 50
+        elements_required: 3
+        description: "SPIN partiel, manque d'implications ou need-payoff"
+      insufficient:
+        min_score: 0
+        elements_required: 0
+        description: "Questionnement insuffisant"
+
+  # ============================================
+  # RISQUES SI ELEMENTS MANQUANTS
+  # ============================================
+  risks_if_missing:
+    situation:
+      risk: "Manque de contexte"
+      consequence: "Questions génériques, prospect ne se sent pas compris"
+      coaching_tip: "2-3 questions de situation suffisent pour établir le contexte"
+    problem:
+      risk: "Pas de problème identifié"
+      consequence: "Impossible de créer de la valeur sans problème à résoudre"
+      coaching_tip: "Les questions de problème révèlent les douleurs exploitables"
+    implication:
+      risk: "Pas d'urgence créée"
+      consequence: "Le prospect ne voit pas l'importance d'agir maintenant"
+      coaching_tip: "Les implications transforment un petit problème en priorité"
+    need_payoff:
+      risk: "Valeur non perçue"
+      consequence: "Le prospect ne visualise pas les bénéfices"
+      coaching_tip: "Faites-lui décrire lui-même la valeur de la solution"
+
+  # ============================================
+  # MATRICE DE RESULTATS
+  # ============================================
+  result_matrix:
+    module_success_closing_success:
+      label: "SPIN MASTER"
+      emoji: "star"
+      message: "Excellent ! Questionnement SPIN parfait et closing réussi."
+
+    module_success_closing_fail:
+      label: "BON SPIN - TIMING A REVOIR"
+      emoji: "target"
+      message: "Bon questionnement mais le prospect n'était pas encore prêt à closer."
+
+    module_fail_closing_success:
+      label: "CLOSING PREMATURE"
+      emoji: "warning"
+      message: "Closing obtenu mais découverte incomplète. Risque de mauvaise qualification."
+
+    module_fail_closing_fail:
+      label: "SPIN INCOMPLET"
+      emoji: "cross"
+      message: "Questionnement insuffisant. Travaillez surtout les Implications et Need-Payoff."
+
+  # ============================================
+  # FEEDBACK ET COACHING
+  # ============================================
+  feedback_templates:
+    element_detected:
+      positive: "Bien ! Question de type {element} posée."
+      with_quality: "Excellente question {element} ! Bien formulée."
+
+    element_missing:
+      gentle: "Pensez à poser des questions {element}."
+      direct: "ATTENTION : Pas de questions {element}. {risk}"
+
+    sequence_feedback:
+      correct: "Bon séquençage S → P → I → N"
+      incorrect: "Attention à l'ordre : commencez par Situation, puis Problème, Implication, Need-Payoff"
+
+    session_summary:
+      intro: "Voici votre bilan SPIN Selling :"
+      elements_section: "Types de questions posées : {count}/4"
+      score_section: "Score : {score}/100"
+      recommendation: "Focus : {missing_elements}"

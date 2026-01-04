@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   User,
@@ -45,8 +46,11 @@ import type {
 interface SalesHelperAccordionProps {
   playbook: Partial<SalesPlaybook>;
   context: ConversationContext;
-  level: "easy" | "medium" | "expert";
   className?: string;
+  /** Si true, masque l'accordéon entièrement */
+  hidden?: boolean;
+  /** Callback pour toggle la visibilité */
+  onToggleHidden?: (hidden: boolean) => void;
 }
 
 interface SectionConfig {
@@ -144,11 +148,14 @@ const PHASE_LABELS: Record<ConversationPhase, string> = {
 export function SalesHelperAccordion({
   playbook,
   context,
-  level,
   className,
+  hidden = false,
+  onToggleHidden,
 }: SalesHelperAccordionProps) {
   // Sections ouvertes (accordéon multi-ouvert possible)
   const [openSections, setOpenSections] = useState<string[]>(["prospect"]);
+  // Mode expert = affichage réduit (remplace l'ancien système de levels)
+  const [expertMode, setExpertMode] = useState(false);
 
   // Détermine les sections pertinentes et highlighted
   const { relevantSections, highlightedSection } = useMemo(() => {
@@ -187,6 +194,23 @@ export function SalesHelperAccordion({
     );
   }, [context.detectedObjectionType, playbook.objectionResponses]);
 
+  // Si masqué, afficher juste un bouton pour réafficher
+  if (hidden) {
+    return (
+      <div className={cn("p-4", className)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onToggleHidden?.(false)}
+          className="w-full"
+        >
+          <Target className="h-4 w-4 mr-2" />
+          Afficher l&apos;aide
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("flex flex-col h-full", className)}>
       {/* Header avec indicateur de phase */}
@@ -196,33 +220,59 @@ export function SalesHelperAccordion({
             <Target className="h-4 w-4 text-primary-400" />
             Aide à la vente
           </h3>
-          <Badge
-            variant="outline"
-            className={cn(
-              "text-xs",
-              context.phase === "objection" && "border-red-500/50 text-red-400",
-              context.phase === "closing" && "border-green-500/50 text-green-400",
-              context.phase === "discovery" && "border-yellow-500/50 text-yellow-400"
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className={cn(
+                "text-xs",
+                context.phase === "objection" && "border-red-500/50 text-red-400",
+                context.phase === "closing" && "border-green-500/50 text-green-400",
+                context.phase === "discovery" && "border-yellow-500/50 text-yellow-400"
+              )}
+            >
+              {PHASE_LABELS[context.phase]}
+            </Badge>
+            {/* Toggle masquer */}
+            {onToggleHidden && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onToggleHidden(true)}
+                className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+              >
+                Masquer
+              </Button>
             )}
-          >
-            {PHASE_LABELS[context.phase]}
-          </Badge>
+          </div>
         </div>
 
-        {/* Barre de progression conversation */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{context.exchangeCount} échanges</span>
-          <span>•</span>
-          <span>Jauge: {context.currentJauge}%</span>
-          {context.conversionPossible && (
-            <>
-              <span>•</span>
-              <span className="text-green-400 flex items-center gap-1">
-                <Sparkles className="h-3 w-3" />
-                Conversion possible
-              </span>
-            </>
-          )}
+        {/* Barre de progression conversation + toggle expert */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>{context.exchangeCount} échanges</span>
+            <span>•</span>
+            <span>Jauge: {context.currentJauge}%</span>
+            {context.conversionPossible && (
+              <>
+                <span>•</span>
+                <span className="text-green-400 flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  Conversion possible
+                </span>
+              </>
+            )}
+          </div>
+          <button
+            onClick={() => setExpertMode(!expertMode)}
+            className={cn(
+              "text-[10px] px-2 py-0.5 rounded-full border transition-colors",
+              expertMode
+                ? "bg-primary-500/20 border-primary-500/50 text-primary-400"
+                : "border-white/20 text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {expertMode ? "Mode expert" : "Mode guidé"}
+          </button>
         </div>
       </div>
 
@@ -298,7 +348,7 @@ export function SalesHelperAccordion({
                     sectionId={section.id}
                     playbook={playbook}
                     context={context}
-                    level={level}
+                    expertMode={expertMode}
                     matchedObjection={matchedObjection}
                   />
                 </AccordionContent>
@@ -319,7 +369,7 @@ interface SectionContentProps {
   sectionId: HelperSectionId;
   playbook: Partial<SalesPlaybook>;
   context: ConversationContext;
-  level: "easy" | "medium" | "expert";
+  expertMode: boolean;
   matchedObjection: ObjectionResponse | null;
 }
 
@@ -327,14 +377,14 @@ function SectionContent({
   sectionId,
   playbook,
   context,
-  level,
+  expertMode,
   matchedObjection,
 }: SectionContentProps) {
   switch (sectionId) {
     case "prospect":
       return <ProspectSection prospect={playbook.prospect} />;
     case "pitch":
-      return <PitchSection pitch={playbook.pitch} level={level} />;
+      return <PitchSection pitch={playbook.pitch} expertMode={expertMode} />;
     case "questions":
       return <QuestionsSection pitch={playbook.pitch} phase={context.phase} />;
     case "solution":
@@ -436,10 +486,10 @@ function ProspectSection({ prospect }: { prospect?: SalesPlaybook["prospect"] })
 
 function PitchSection({
   pitch,
-  level,
+  expertMode,
 }: {
   pitch?: SalesPlaybook["pitch"];
-  level: string;
+  expertMode: boolean;
 }) {
   if (!pitch) {
     return <p className="text-xs text-muted-foreground">Pitch non disponible</p>;
@@ -447,7 +497,7 @@ function PitchSection({
 
   return (
     <div className="space-y-3">
-      {/* Accroche 30s */}
+      {/* Accroche 30s - toujours visible */}
       <div className="p-3 rounded-lg bg-gradient-to-r from-primary-500/10 to-secondary-500/10 border border-primary-500/20">
         <div className="flex items-center gap-2 mb-2">
           <Clock className="h-3 w-3 text-primary-400" />
@@ -456,8 +506,8 @@ function PitchSection({
         <p className="text-xs leading-relaxed whitespace-pre-line">{pitch.hook30s}</p>
       </div>
 
-      {/* Pitch 2min (visible en easy/medium) */}
-      {(level === "easy" || level === "medium") && (
+      {/* Pitch 2min (masqué en mode expert) */}
+      {!expertMode && (
         <div className="p-3 rounded-lg bg-white/5 border border-white/10">
           <div className="flex items-center gap-2 mb-2">
             <MessageSquare className="h-3 w-3 text-muted-foreground" />
@@ -469,8 +519,8 @@ function PitchSection({
         </div>
       )}
 
-      {/* Phrases clés */}
-      {level === "easy" && (
+      {/* Phrases clés (masquées en mode expert) */}
+      {!expertMode && (
         <div className="space-y-2">
           <p className="text-xs text-yellow-400 font-medium">Phrases clés</p>
 

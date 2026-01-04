@@ -1,615 +1,361 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import {
   ArrowLeft,
   Send,
   Loader2,
-  AlertTriangle,
   CheckCircle2,
   XCircle,
-  Lightbulb,
-  Zap,
+  Target,
   MessageSquare,
-  Mic,
-  Wifi,
-  WifiOff,
-  AlertCircle,
-  HelpCircle,
-  Package,
+  User,
+  Bot,
+  Trophy,
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { JaugeEmotionnelle } from "@/components/training/JaugeEmotionnelle";
-import { AudioRecorder } from "@/components/training/AudioRecorder";
-import { AudioPlayer } from "@/components/training/AudioPlayer";
-import { ReversalAlert, ReversalType } from "@/components/training/ReversalAlert";
-import { EventNotification, EventType } from "@/components/training/EventNotification";
-import { SessionPreparation } from "@/components/training/SessionPreparation";
-import { ConversationEndModal } from "@/components/training/ConversationEndModal";
-import { SalesHelperAccordion } from "@/components/training/SalesHelperAccordion";
-import { PremiumModal } from "@/components/ui/premium-modal";
-import { voiceAPI } from "@/lib/api";
-import { useVoiceSession, VoiceMessage, AutoEndInfo } from "@/hooks/useVoiceSession";
-import { useConversationPhase, convertScenarioToPlaybook } from "@/hooks/useConversationPhase";
-import type { SalesPlaybook } from "@/types/playbook";
-import type { SessionEnded } from "@/lib/websocket";
+import { Progress } from "@/components/ui/progress";
+import { trainingV3API } from "@/lib/api";
 import type {
-  DifficultyLevel,
-  MoodState,
-  VoiceSessionStartResponse,
-  VoiceSessionSummary,
-  DetectedPattern,
+  V3SessionStartResponse,
+  V3MessageResponse,
+  V3SessionEndResponse,
+  V3JaugeState,
+  V3ModuleData,
+  V3PlaybookData,
 } from "@/types";
 
 interface Message {
   id: string;
   role: "user" | "prospect";
   text: string;
-  audioBase64?: string;
-  mood?: MoodState;
-  jauge?: number;
-  jaugeDelta?: number;
-  behavioralCue?: string;
-  isEvent?: boolean;
-  eventType?: string;
-  patterns?: DetectedPattern[];
+  evaluation?: {
+    detected?: Array<{ id: string; label: string; quality: string }>;
+  };
   timestamp: Date;
 }
 
-export default function TrainingSessionPage() {
+// Mood colors
+const moodColors: Record<string, string> = {
+  hostile: "text-red-500",
+  aggressive: "text-red-400",
+  skeptical: "text-orange-400",
+  neutral: "text-gray-400",
+  interested: "text-green-400",
+  ready: "text-green-500",
+  ready_to_buy: "text-green-500",
+};
+
+export default function V3SessionPage() {
   const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
-
   const sessionId = params.id as string;
-  const level = (searchParams.get("level") as DifficultyLevel) || "easy";
-  const skillSlug = searchParams.get("skill") || "cold_calling";
-  const sectorSlug = searchParams.get("sector") || undefined;
 
-  const [session, setSession] = useState<VoiceSessionStartResponse | null>(null);
-  const [localMessages, setLocalMessages] = useState<Message[]>([]);
+  // Session state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [sessionData, setSessionData] = useState<V3SessionStartResponse | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
-  const [isStarting, setIsStarting] = useState(true);
-  const [localError, setLocalError] = useState<string | null>(null);
-  const [jaugeDelta, setJaugeDelta] = useState(0);
-  const [hint, setHint] = useState<string | null>(null);
-  const [sessionComplete, setSessionComplete] = useState(false);
-  const [summary, setSummary] = useState<VoiceSessionSummary | null>(null);
-  const [inputMode, setInputMode] = useState<"text" | "voice">("text");
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const [eventNotification, setEventNotification] = useState<{type: string; message: string} | null>(null);
-  const [httpLoading, setHttpLoading] = useState(false);
-  const [showPreparation, setShowPreparation] = useState(true);
-  const [readyToStart, setReadyToStart] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [jauge, setJauge] = useState<V3JaugeState | null>(null);
+  const [detectedElements, setDetectedElements] = useState<string[]>([]);
+
+  // End session state
+  const [sessionEnded, setSessionEnded] = useState(false);
+  const [endResult, setEndResult] = useState<V3SessionEndResponse | null>(null);
+  const [ending, setEnding] = useState(false);
+
+  // UI state
+  const [showChecklist, setShowChecklist] = useState(true);
+  const [showPlaybook, setShowPlaybook] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Handle session ended from WebSocket
-  const handleSessionEnded = useCallback((evaluation: SessionEnded["evaluation"]) => {
-    setSessionComplete(true);
-    setSummary({
-      session_id: session?.session_id || 0,
-      level: level,
-      duration_seconds: 0,
-      final_jauge: evaluation.final_jauge,
-      starting_jauge: 50,
-      jauge_progression: evaluation.jauge_progression,
-      conversion_achieved: evaluation.converted,
-      detected_patterns: [],
-      hidden_objections_discovered: 0,
-      hidden_objections_total: 0,
-      events_handled: 0,
-      reversals_recovered: 0,
-      strengths: evaluation.points_forts,
-      improvements: evaluation.axes_amelioration,
-      overall_feedback: evaluation.conseil_principal,
-    });
-  }, [session?.session_id, level]);
-
-  // WebSocket hook - only active when we have a session
-  const {
-    isConnected,
-    isConnecting,
-    isProspectThinking,
-    messages: wsMessages,
-    currentJauge,
-    currentMood,
-    conversionPossible,
-    feedback,
-    error: wsError,
-    activeReversal,
-    activeEvent,
-    dismissReversal,
-    dismissEvent,
-    // Phase 2: Fin automatique de conversation
-    autoEndInfo,
-    connect,
-    disconnect,
-    sendMessage: wsSendMessage,
-    endSession: wsEndSession,
-  } = useVoiceSession({
-    sessionId: session?.session_id || 0,
-    onSessionEnded: handleSessionEnded,
-  });
-
-  // Intelligence contextuelle - détection de phase et objections
-  const conversationContext = useConversationPhase({
-    messages: localMessages.map((m) => ({ role: m.role, text: m.text })),
-    currentJauge,
-    conversionPossible,
-    prospectMood: currentMood,
-  });
-
-  // Convertir le scénario en playbook pour l'aide à la vente
-  const playbook = useMemo(() => {
-    if (!session?.scenario) return null;
-    return convertScenarioToPlaybook(session.scenario as Record<string, unknown>);
-  }, [session?.scenario]);
-
-  // Convert WebSocket messages to local message format
+  // Load session data on mount
   useEffect(() => {
-    if (wsMessages.length > 0) {
-      const convertedMessages: Message[] = wsMessages.map((msg: VoiceMessage) => ({
-        id: msg.id,
-        role: msg.role,
-        text: msg.text,
-        audioBase64: msg.audioBase64,
-        mood: msg.mood as MoodState | undefined,
-        jauge: undefined,
-        jaugeDelta: msg.jaugeDelta,
-        behavioralCue: msg.behavioralCue,
-        isEvent: msg.isEvent,
-        eventType: msg.eventType,
-        patterns: [],
-        timestamp: msg.timestamp,
-      }));
-      setLocalMessages(convertedMessages);
+    loadSession();
+  }, [sessionId]);
 
-      // Update jaugeDelta from last prospect message
-      const lastProspect = wsMessages.filter(m => m.role === "prospect").pop();
-      if (lastProspect?.jaugeDelta !== undefined) {
-        setJaugeDelta(lastProspect.jaugeDelta);
-      }
-    }
-  }, [wsMessages]);
-
-  // Combine errors
-  const error = localError || wsError;
-
-  // Start HTTP session, then connect WebSocket
-  const startNewSession = useCallback(async () => {
-    setIsStarting(true);
-    setLocalError(null);
-
-    try {
-      const response = await voiceAPI.startSession({
-        skill_slug: skillSlug,
-        sector_slug: sectorSlug
-      });
-      const data = response.data;
-
-      setSession(data);
-
-      // Add initial prospect message to local state
-      // Handle opening_message as either string or object {text, audio_base64}
-      const rawOpening = data.opening_message;
-      const openingText = typeof rawOpening === 'object' && rawOpening?.text
-        ? rawOpening.text
-        : (typeof rawOpening === 'string' ? rawOpening : "");
-      const openingAudio = typeof rawOpening === 'object' && rawOpening?.audio_base64
-        ? rawOpening.audio_base64
-        : data.prospect_audio_base64;
-
-      const initialMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "prospect",
-        text: openingText,
-        audioBase64: openingAudio,
-        mood: data.mood || data.current_mood || "neutral",
-        jauge: data.jauge || data.current_gauge || 50,
-        timestamp: new Date(),
-      };
-      if (openingText) {
-        setLocalMessages([initialMessage]);
-      }
-
-      // Update URL with session ID
-      window.history.replaceState(
-        null,
-        "",
-        `/training/session/${data.session_id}?level=${level}`
-      );
-    } catch (err: unknown) {
-      console.error("Error starting session:", err);
-
-      // Handle trial expired (402)
-      const axiosError = err as { response?: { status: number; data?: { code?: string } } };
-      if (axiosError.response?.status === 402 && axiosError.response?.data?.code === "TRIAL_EXPIRED") {
-        setShowPremiumModal(true);
-        setLocalError("Votre essai gratuit est terminé. Passez à Premium pour continuer.");
-      } else {
-        setLocalError("Impossible de démarrer la session. Veuillez réessayer.");
-      }
-    } finally {
-      setIsStarting(false);
-    }
-  }, [level]);
-
-  // Connect WebSocket when session is ready AND user has finished preparation
-  useEffect(() => {
-    // En mode facile, attendre que l'utilisateur soit prêt
-    // En mode moyen/expert, démarrer dès que la préparation est terminée
-    const canConnect = level === "easy"
-      ? !showPreparation && readyToStart
-      : !showPreparation;
-
-    if (session?.session_id && !isConnected && !isConnecting && canConnect) {
-      connect();
-    }
-  }, [session?.session_id, isConnected, isConnecting, connect, showPreparation, readyToStart, level]);
-
-  // Handler for starting the session after preparation
-  const handleStartAfterPreparation = useCallback(() => {
-    setShowPreparation(false);
-    // En mode moyen/expert, démarrer directement
-    if (level !== "easy") {
-      setReadyToStart(true);
-    }
-  }, [level]);
-
-  // Handler pour démarrer vraiment la session (mode facile)
-  const handleReadyToStart = useCallback(() => {
-    setReadyToStart(true);
-  }, []);
-
-  // Disconnect WebSocket on unmount
-  useEffect(() => {
-    return () => {
-      disconnect();
-    };
-  }, [disconnect]);
-
-  // Start session on mount
-  useEffect(() => {
-    if (sessionId === "new") {
-      startNewSession();
-    }
-  }, [sessionId, startNewSession]);
-
-  // Auto-scroll to bottom
+  // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [localMessages]);
+  }, [messages]);
 
-  // Send message via HTTP (fallback when WebSocket not available)
-  const sendMessage = useCallback(async (text: string, audioBase64?: string) => {
-    if ((!text.trim() && !audioBase64) || isProspectThinking) return;
-    if (!session?.session_id) return;
+  const loadSession = async () => {
+    try {
+      // Get session status to retrieve stored data
+      const response = await trainingV3API.getSession(sessionId);
 
-    setLocalError(null);
-    setHint(null);
-    setInputText("");
+      if (response.data) {
+        // Session exists, get initial state
+        setJauge(response.data.jauge);
+        setDetectedElements(response.data.module_progress?.detected || []);
 
-    // Add user message to local state
+        // For now, we need to store session data in localStorage or make another call
+        // Since we just created the session, redirect to the session with data
+        const storedData = sessionStorage.getItem(`v3_session_${sessionId}`);
+        if (storedData) {
+          const parsed = JSON.parse(storedData);
+          setSessionData(parsed);
+          setMessages([{
+            id: "1",
+            role: "prospect",
+            text: parsed.first_message,
+            timestamp: new Date(),
+          }]);
+          setJauge(parsed.jauge);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading session:", err);
+      setError("Session introuvable");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Store session data when navigating from training page
+  useEffect(() => {
+    // Check if we have session data in URL state
+    const storedData = sessionStorage.getItem(`v3_session_${sessionId}`);
+    if (storedData && !sessionData) {
+      const parsed = JSON.parse(storedData);
+      setSessionData(parsed);
+      setMessages([{
+        id: "1",
+        role: "prospect",
+        text: parsed.first_message,
+        timestamp: new Date(),
+      }]);
+      setJauge(parsed.jauge);
+      setLoading(false);
+    }
+  }, [sessionId, sessionData]);
+
+  const handleSendMessage = async () => {
+    if (!inputText.trim() || sending) return;
+
     const userMessage: Message = {
-      id: crypto.randomUUID(),
+      id: Date.now().toString(),
       role: "user",
-      text: text,
+      text: inputText.trim(),
       timestamp: new Date(),
     };
-    setLocalMessages(prev => [...prev, userMessage]);
 
-    // If WebSocket connected, use it
-    if (isConnected) {
-      wsSendMessage(text || "", audioBase64);
-      return;
-    }
+    setMessages(prev => [...prev, userMessage]);
+    setInputText("");
+    setSending(true);
 
-    // Otherwise use HTTP fallback
     try {
-      setHttpLoading(true);
-      const response = await voiceAPI.sendMessage(session.session_id, {
-        text: text || undefined,
-        audio_base64: audioBase64,
-      });
-      const data = response.data;
+      const response = await trainingV3API.sendMessage(sessionId, userMessage.text);
+      const data = response.data as V3MessageResponse;
 
-      // Add prospect response
-      const prospectMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "prospect",
-        text: data.text,
-        audioBase64: data.audio_base64,
-        mood: data.mood,
-        jauge: data.jauge,
-        jaugeDelta: data.jauge_delta,
-        behavioralCue: data.behavioral_cue,
-        timestamp: new Date(),
-      };
-      setLocalMessages(prev => [...prev, prospectMessage]);
-      setJaugeDelta(data.jauge_delta);
+      if (data.success) {
+        // Update jauge
+        if (data.jauge) {
+          setJauge(data.jauge);
+        }
 
-      // Handle tips from feedback (V2) or hint (V1)
-      const tips = data.feedback?.tips;
-      if (tips && tips.length > 0) {
-        setHint(tips[0]);
-      } else if (data.hint) {
-        setHint(data.hint);
-      }
+        // Update detected elements
+        if (data.evaluation?.detected) {
+          const newDetected = data.evaluation.detected.map(d => d.id);
+          setDetectedElements(prev => [...new Set([...prev, ...newDetected])]);
+        }
 
-      if (data.session_complete) {
-        setSessionComplete(true);
+        // Add prospect response
+        if (data.prospect_response) {
+          const prospectMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: "prospect",
+            text: data.prospect_response,
+            evaluation: data.evaluation,
+            timestamp: new Date(),
+          };
+          setMessages(prev => [...prev, prospectMessage]);
+        }
+
+        // Check if session auto-completed
+        if (data.session_complete) {
+          handleEndSession(true);
+        }
       }
     } catch (err) {
       console.error("Error sending message:", err);
-      setLocalError("Erreur lors de l'envoi du message");
+      setError("Erreur lors de l'envoi du message");
     } finally {
-      setHttpLoading(false);
+      setSending(false);
     }
-  }, [isProspectThinking, isConnected, wsSendMessage, session?.session_id]);
+  };
 
-  // End session via WebSocket
-  const endSession = useCallback(() => {
-    if (!isConnected) return;
-    wsEndSession();
-  }, [isConnected, wsEndSession]);
+  const handleEndSession = async (closingAchieved: boolean = false) => {
+    if (ending) return;
+    setEnding(true);
+
+    try {
+      const response = await trainingV3API.endSession(sessionId, closingAchieved);
+      const data = response.data as V3SessionEndResponse;
+
+      if (data.success) {
+        setEndResult(data);
+        setSessionEnded(true);
+      }
+    } catch (err) {
+      console.error("Error ending session:", err);
+      setError("Erreur lors de la fin de session");
+    } finally {
+      setEnding(false);
+    }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage(inputText);
+      handleSendMessage();
     }
   };
 
-  const handleRecordingComplete = (audioBase64: string) => {
-    sendMessage("", audioBase64);
-  };
-
-  // Loading state (starting session or connecting WebSocket)
-  if (isStarting || (session && isConnecting)) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-dark flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <Loader2 className="h-12 w-12 animate-spin text-primary-400 mx-auto mb-4" />
-          <p className="text-muted-foreground">
-            {isConnecting ? "Connexion en temps réel..." : "Préparation de votre session..."}
-          </p>
-        </motion.div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary-400" />
       </div>
     );
   }
 
-  // Error state
-  if (error && !session) {
+  if (error && !sessionData) {
     return (
-      <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl p-8 max-w-md text-center"
-        >
-          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Erreur</h2>
-          <p className="text-muted-foreground mb-6">{error}</p>
-          <div className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={() => router.push("/learn")}>
-              Retour
+      <div className="min-h-screen bg-gradient-dark flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="pt-6 text-center">
+            <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+            <p className="text-lg font-medium mb-2">Erreur</p>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => router.push("/training")}>
+              Retour à l&apos;entraînement
             </Button>
-            <Button onClick={startNewSession}>Réessayer</Button>
-          </div>
-        </motion.div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  // Preparation view - show before starting the session
-  if (session && showPreparation) {
-    const scenarioData = session.scenario || {};
-    const prospectData = scenarioData.prospect || {};
-
+  // Session ended - show results
+  if (sessionEnded && endResult) {
     return (
-      <SessionPreparation
-        scenario={{
-          title: scenarioData.title,
-          context: scenarioData.context,
-          prospect: {
-            name: prospectData.name,
-            role: prospectData.role,
-            company: prospectData.company,
-            personality: prospectData.personality,
-          },
-          opening_message: session.opening_message,
-          pain_points: prospectData.pain_points || [],
-          hidden_need: prospectData.hidden_need,
-          objections: scenarioData.objections || [],
-          solution: scenarioData.solution,
-          product_pitch: scenarioData.product_pitch,
-        }}
-        skillName={session.skill?.name || skillSlug}
-        level={level}
-        onStart={handleStartAfterPreparation}
-        isLoading={isConnecting}
-      />
-    );
-  }
-
-  // Ready screen for easy level - wait for user to click before starting
-  if (level === "easy" && !readyToStart && session) {
-    return (
-      <div className="min-h-screen bg-gradient-dark pt-28 pb-12">
-        <div className="max-w-2xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass rounded-2xl p-8 text-center"
-          >
-            <div className="w-20 h-20 rounded-full bg-primary-500/20 flex items-center justify-center mx-auto mb-6">
-              <MessageSquare className="h-10 w-10 text-primary-400" />
-            </div>
-
-            <h1 className="text-2xl font-bold mb-4">Prêt à commencer ?</h1>
-
-            <p className="text-muted-foreground mb-6">
-              Le prospect va vous appeler. Quand vous êtes prêt, cliquez sur le bouton ci-dessous pour démarrer la conversation.
-            </p>
-
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6 text-left">
-              <p className="text-sm text-muted-foreground mb-2">Rappel :</p>
-              <p className="text-sm">
-                <span className="font-medium">{session.scenario?.prospect?.name}</span>
-                {" - "}
-                {session.scenario?.prospect?.role} chez {session.scenario?.prospect?.company}
-              </p>
-              {session.scenario?.solution && (
-                <p className="text-sm text-primary-300 mt-2">
-                  Votre solution : <span className="font-medium">{session.scenario.solution.product_name}</span>
-                </p>
-              )}
-            </div>
-
-            <Button
-              size="lg"
-              onClick={handleReadyToStart}
-              className="bg-gradient-primary px-8 py-6 text-lg"
-            >
-              Démarrer la conversation
-            </Button>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
-
-  // Summary view
-  if (summary) {
-    return (
-      <div className="min-h-screen bg-gradient-dark pt-28 pb-12">
+      <div className="min-h-screen bg-gradient-dark pt-8 pb-12">
         <div className="max-w-3xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass rounded-2xl p-8"
           >
-            <div className="text-center mb-8">
-              {summary.conversion_achieved ? (
-                <>
-                  <CheckCircle2 className="h-16 w-16 text-green-400 mx-auto mb-4" />
-                  <h1 className="text-2xl font-bold gradient-text mb-2">
-                    Conversion Réussie !
-                  </h1>
-                </>
-              ) : (
-                <>
-                  <XCircle className="h-16 w-16 text-orange-400 mx-auto mb-4" />
-                  <h1 className="text-2xl font-bold mb-2">Session Terminée</h1>
-                </>
-              )}
-              <p className="text-muted-foreground">
-                Niveau {level} - {Math.floor(summary.duration_seconds / 60)}min{" "}
-                {summary.duration_seconds % 60}s
-              </p>
+            {/* Result Header */}
+            <Card className="mb-6">
+              <CardContent className="pt-6 text-center">
+                <div className="text-6xl mb-4">{endResult.final_result.emoji}</div>
+                <h1 className="text-2xl font-bold mb-2">{endResult.final_result.label}</h1>
+                <p className="text-muted-foreground">{endResult.final_result.message}</p>
+              </CardContent>
+            </Card>
+
+            {/* Score */}
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  Score: {endResult.evaluation.score}/100
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Progress value={endResult.evaluation.score} className="h-3 mb-4" />
+                <p className="text-sm text-muted-foreground">
+                  Niveau: {endResult.evaluation.level} - {endResult.evaluation.level_description}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Elements Detected */}
+            <div className="grid gap-6 md:grid-cols-2 mb-6">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Éléments détectés ({endResult.evaluation.elements_detected.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {endResult.evaluation.elements_detected.map((el) => (
+                      <div key={el.id} className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-green-500/10 text-green-500">
+                          {el.label}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">{el.quality}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <XCircle className="h-4 w-4 text-red-500" />
+                    Éléments manquants ({endResult.evaluation.elements_missing.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {endResult.evaluation.elements_missing.map((el) => (
+                      <div key={el.id} className="flex flex-col">
+                        <Badge variant="outline" className="bg-red-500/10 text-red-500 w-fit">
+                          {el.label}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground mt-1">{el.description}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="text-center p-4 rounded-xl bg-white/5">
-                <p className="text-2xl font-bold text-primary-400">
-                  {summary.final_jauge}
-                </p>
-                <p className="text-sm text-muted-foreground">Jauge Finale</p>
-              </div>
-              <div className="text-center p-4 rounded-xl bg-white/5">
-                <p
-                  className={cn(
-                    "text-2xl font-bold",
-                    summary.jauge_progression >= 0
-                      ? "text-green-400"
-                      : "text-red-400"
-                  )}
-                >
-                  {summary.jauge_progression >= 0 ? "+" : ""}
-                  {summary.jauge_progression}
-                </p>
-                <p className="text-sm text-muted-foreground">Progression</p>
-              </div>
-              <div className="text-center p-4 rounded-xl bg-white/5">
-                <p className="text-2xl font-bold text-yellow-400">
-                  {summary.detected_patterns?.length || 0}
-                </p>
-                <p className="text-sm text-muted-foreground">Patterns</p>
-              </div>
-            </div>
-
-            {/* Strengths & Improvements */}
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div>
-                <h3 className="font-semibold text-green-400 mb-3 flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5" />
-                  Points Forts
-                </h3>
-                <ul className="space-y-2">
-                  {summary.strengths.map((s, i) => (
-                    <li
-                      key={i}
-                      className="text-sm text-muted-foreground flex items-start gap-2"
-                    >
-                      <span className="text-green-400 mt-1">•</span>
-                      {s}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold text-orange-400 mb-3 flex items-center gap-2">
-                  <Zap className="h-5 w-5" />
-                  Axes d&apos;Amélioration
-                </h3>
-                <ul className="space-y-2">
-                  {summary.improvements.map((i, idx) => (
-                    <li
-                      key={idx}
-                      className="text-sm text-muted-foreground flex items-start gap-2"
-                    >
-                      <span className="text-orange-400 mt-1">•</span>
-                      {i}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Feedback */}
-            <div className="p-4 rounded-xl bg-primary-500/10 border border-primary-500/20 mb-6">
-              <p className="text-sm">{summary.overall_feedback}</p>
-            </div>
+            {/* Coaching */}
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="text-base">Conseil de coaching</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">{endResult.final_result.coaching}</p>
+                <div className="mt-4 p-3 bg-primary-500/10 rounded-lg">
+                  <p className="text-sm font-medium text-primary-400">
+                    Prochaine étape: {endResult.final_result.next_focus}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Actions */}
-            <div className="flex gap-3 justify-center">
-              <Button variant="outline" onClick={() => router.push("/learn")}>
+            <div className="flex gap-4 justify-center">
+              <Button variant="outline" onClick={() => router.push("/training")}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour
               </Button>
-              <Button onClick={startNewSession}>Nouvelle Session</Button>
+              <Button onClick={() => window.location.reload()}>
+                Recommencer
+              </Button>
             </div>
           </motion.div>
         </div>
@@ -617,346 +363,254 @@ export default function TrainingSessionPage() {
     );
   }
 
-  // Main session view
+  const moduleData = sessionData?.module_data as V3ModuleData | undefined;
+  const playbookData = sessionData?.playbook_data as V3PlaybookData | undefined;
+
   return (
-    <TooltipProvider>
-      <div className="min-h-screen bg-gradient-dark flex flex-col">
-        {/* V2 Mechanics Alerts */}
-        <ReversalAlert
-          type={(activeReversal?.type as ReversalType) || "last_minute_doubt"}
-          message={activeReversal?.message || ""}
-          jaugeDrop={activeReversal?.jaugeDrop}
-          isVisible={!!activeReversal}
-          onDismiss={dismissReversal}
-        />
-
-        <EventNotification
-          type={(activeEvent?.type as EventType) || "phone_interruption"}
-          message={activeEvent?.message || ""}
-          testDescription={activeEvent?.testDescription}
-          isVisible={!!activeEvent}
-          onDismiss={dismissEvent}
-        />
-
-        {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push("/learn")}
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Quitter
-            </Button>
-
-            <div className="flex items-center gap-3">
-              {/* Connection status */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className={cn(
-                    "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs",
-                    isConnected
-                      ? "bg-green-500/20 text-green-400"
-                      : "bg-red-500/20 text-red-400"
-                  )}>
-                    {isConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-                    {isConnected ? "Connecté" : "Déconnecté"}
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isConnected ? "Connexion temps réel active" : "Reconnexion en cours..."}
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Conversion possible indicator */}
-              {conversionPossible && (
-                <Badge className="bg-green-500/20 text-green-400 animate-pulse">
-                  Conversion possible !
-                </Badge>
-              )}
-
-              <Badge
-                className={cn(
-                  level === "easy" && "bg-green-500/20 text-green-400",
-                  level === "medium" && "bg-yellow-500/20 text-yellow-400",
-                  level === "expert" && "bg-red-500/20 text-red-400"
-                )}
-              >
-                {level === "easy" && "Facile"}
-                {level === "medium" && "Moyen"}
-                {level === "expert" && "Expert"}
-              </Badge>
-            </div>
-
-            <Button variant="outline" size="sm" onClick={endSession}>
-              Terminer
-            </Button>
-          </div>
-        </header>
-
-        {/* Main content */}
-        <main className="flex-1 pt-20 pb-40 flex">
-          {/* Left sidebar - Sales Helper Accordion for easy and medium levels */}
-          {(level === "easy" || level === "medium") && session?.scenario && playbook && (
-            <div className="hidden lg:block fixed left-4 top-24 w-96 h-[calc(100vh-120px)] rounded-xl bg-white/5 border border-white/10 overflow-hidden">
-              <SalesHelperAccordion
-                playbook={playbook as Partial<SalesPlaybook>}
-                context={conversationContext}
-                level={level}
-                className="h-full"
-              />
-            </div>
-          )}
-
-          <div className={cn(
-            "flex-1 mx-auto px-4 flex flex-col",
-            (level === "easy" || level === "medium") ? "lg:ml-[26rem] lg:mr-72 max-w-3xl" : "max-w-4xl"
-          )}>
-            {/* Jauge sidebar for desktop */}
-            <div className="hidden lg:block fixed right-8 top-24 w-64">
-              <JaugeEmotionnelle
-                value={currentJauge}
-                delta={jaugeDelta}
-                mood={currentMood as MoodState}
-                visible={session?.config?.show_jauge ?? level === "easy"}
-                threshold={session?.config?.conversion_threshold ?? 75}
-              />
-
-              {/* Real-time feedback */}
-              <AnimatePresence>
-                {feedback && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="mt-4 p-3 rounded-xl bg-white/5 border border-white/10"
-                  >
-                    {feedback.positive_actions.length > 0 && (
-                      <div className="mb-2">
-                        <p className="text-xs text-green-400 font-medium mb-1">Bien joué :</p>
-                        {feedback.positive_actions.map((action, i) => (
-                          <p key={i} className="text-xs text-muted-foreground">• {action}</p>
-                        ))}
-                      </div>
-                    )}
-                    {feedback.tips.length > 0 && (
-                      <div>
-                        <p className="text-xs text-yellow-400 font-medium mb-1">Conseil :</p>
-                        {feedback.tips.map((tip, i) => (
-                          <p key={i} className="text-xs text-muted-foreground">• {tip}</p>
-                        ))}
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Hint */}
-              <AnimatePresence>
-                {hint && (session?.config?.hints_enabled ?? level === "easy") && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="mt-4 p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20"
-                  >
-                    <div className="flex items-start gap-2">
-                      <Lightbulb className="h-4 w-4 text-yellow-400 mt-0.5" />
-                      <p className="text-sm text-yellow-200">{hint}</p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Mobile jauge */}
-            <div className="lg:hidden mb-4">
-              <JaugeEmotionnelle
-                value={currentJauge}
-                delta={jaugeDelta}
-                mood={currentMood as MoodState}
-                visible={session?.config?.show_jauge ?? level === "easy"}
-                threshold={session?.config?.conversion_threshold ?? 75}
-              />
-            </div>
-
-            {/* Messages */}
-            <ScrollArea ref={scrollRef} className="flex-1 pr-4">
-              <div className="space-y-4 pb-4">
-                {localMessages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={cn(
-                      "flex",
-                      message.role === "user" ? "justify-end" : "justify-start"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "max-w-[80%] rounded-2xl p-4",
-                        message.role === "user"
-                          ? "bg-primary-500/20 border border-primary-500/30"
-                          : "glass"
-                      )}
-                    >
-                      {/* Behavioral cue */}
-                      {message.behavioralCue && (
-                        <p className="text-xs text-muted-foreground italic mb-2">
-                          {message.behavioralCue}
-                        </p>
-                      )}
-
-                      {/* Message text */}
-                      <p className="text-sm">{message.text}</p>
-
-                      {/* Audio player */}
-                      {message.audioBase64 && (
-                        <div className="mt-3">
-                          <AudioPlayer
-                            audioBase64={message.audioBase64}
-                            autoPlay={message.role === "prospect"}
-                          />
-                        </div>
-                      )}
-
-                      {/* Detected patterns */}
-                      {message.patterns && message.patterns.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-1">
-                          {message.patterns.map((pattern, i) => (
-                            <Tooltip key={i}>
-                              <TooltipTrigger>
-                                <Badge
-                                  className={cn(
-                                    "text-xs",
-                                    pattern.type === "positive"
-                                      ? "bg-green-500/20 text-green-400"
-                                      : "bg-red-500/20 text-red-400"
-                                  )}
-                                >
-                                  {pattern.type === "positive" ? "+" : ""}
-                                  {pattern.points}
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{pattern.action}</p>
-                                {pattern.description && (
-                                  <p className="text-xs text-muted-foreground">
-                                    {pattern.description}
-                                  </p>
-                                )}
-                              </TooltipContent>
-                            </Tooltip>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-
-                {isProspectThinking && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex justify-start"
-                  >
-                    <div className="glass rounded-2xl p-4">
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span className="text-sm text-muted-foreground">
-                          Le prospect réfléchit...
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
+    <div className="min-h-screen bg-gradient-dark flex flex-col">
+      {/* Header */}
+      <div className="border-b border-border/50 bg-background/95 backdrop-blur sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => router.push("/training")}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div>
+                <h1 className="font-semibold">
+                  {playbookData?.product?.name || "Session"} × {moduleData?.name || "Module"}
+                </h1>
+                <p className="text-xs text-muted-foreground">
+                  Session {sessionId}
+                </p>
               </div>
-            </ScrollArea>
-          </div>
-        </main>
+            </div>
 
-        {/* Input area */}
-        <div className="fixed bottom-0 left-0 right-0 glass border-t border-white/10 p-4">
-          <div className="max-w-4xl mx-auto">
-            {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+            {/* Jauge */}
+            {jauge && (
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-sm font-medium">{jauge.value}%</div>
+                  <div className={cn("text-xs", moodColors[jauge.mood] || "text-gray-400")}>
+                    {jauge.mood}
+                  </div>
+                </div>
+                <div className="w-24">
+                  <Progress value={jauge.value} className="h-2" />
+                </div>
+              </div>
             )}
 
-            <div className="flex items-end gap-3">
-              {/* Mode toggle */}
-              <div className="flex gap-1 p-1 rounded-lg bg-white/5">
-                <Button
-                  variant={inputMode === "text" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setInputMode("text")}
-                  className="h-8"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={inputMode === "voice" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setInputMode("voice")}
-                  className="h-8"
-                >
-                  <Mic className="h-4 w-4" />
-                </Button>
-              </div>
-
-              {inputMode === "text" ? (
-                <>
-                  <Textarea
-                    ref={inputRef}
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={isConnected ? "Votre réponse au prospect..." : "Connexion en cours..."}
-                    disabled={isProspectThinking || sessionComplete || !isConnected}
-                    className="flex-1 min-h-[48px] max-h-32 resize-none"
-                  />
-                  <Button
-                    onClick={() => sendMessage(inputText)}
-                    disabled={!inputText.trim() || isProspectThinking || sessionComplete || !isConnected}
-                    className="h-12 w-12 rounded-full bg-gradient-primary"
-                  >
-                    <Send className="h-5 w-5" />
-                  </Button>
-                </>
-              ) : (
-                <div className="flex-1 flex justify-center">
-                  <AudioRecorder
-                    onRecordingComplete={handleRecordingComplete}
-                    disabled={isProspectThinking || sessionComplete || !isConnected}
-                  />
-                </div>
-              )}
-            </div>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => handleEndSession(false)}
+              disabled={ending}
+            >
+              {ending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Terminer"}
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Premium Modal */}
-      <PremiumModal
-        open={showPremiumModal}
-        onOpenChange={setShowPremiumModal}
-      />
+      {/* Main Content */}
+      <div className="flex-1 flex">
+        {/* Sidebar - Checklist & Playbook */}
+        <div className="w-80 border-r border-border/50 hidden lg:block">
+          <div className="p-4 space-y-4">
+            {/* Module Checklist */}
+            <Card>
+              <CardHeader
+                className="pb-2 cursor-pointer"
+                onClick={() => setShowChecklist(!showChecklist)}
+              >
+                <CardTitle className="text-sm flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-primary-400" />
+                    {moduleData?.name || "Checklist"}
+                  </span>
+                  {showChecklist ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </CardTitle>
+              </CardHeader>
+              <AnimatePresence>
+                {showChecklist && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                  >
+                    <CardContent className="pt-0">
+                      <div className="space-y-2">
+                        {moduleData?.checklist?.map((item) => {
+                          const isDetected = detectedElements.includes(item.id);
+                          return (
+                            <div
+                              key={item.id}
+                              className={cn(
+                                "flex items-center gap-2 p-2 rounded text-sm",
+                                isDetected ? "bg-green-500/10" : "bg-muted/50"
+                              )}
+                            >
+                              {isDetected ? (
+                                <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                              ) : (
+                                <div className="h-4 w-4 rounded-full border border-muted-foreground/50 shrink-0" />
+                              )}
+                              <span className={isDetected ? "text-green-500" : "text-muted-foreground"}>
+                                {item.label}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Card>
 
-      {/* Phase 2: Modal de fin de conversation automatique */}
-      {autoEndInfo && (
-        <ConversationEndModal
-          isVisible={true}
-          endType={autoEndInfo.endType}
-          redirectUrl={autoEndInfo.redirectUrl}
-          sessionId={session?.session_id || 0}
-          autoRedirectDelay={3000}
-        />
-      )}
-    </TooltipProvider>
+            {/* Playbook Info */}
+            {playbookData && (
+              <Card>
+                <CardHeader
+                  className="pb-2 cursor-pointer"
+                  onClick={() => setShowPlaybook(!showPlaybook)}
+                >
+                  <CardTitle className="text-sm flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4 text-primary-400" />
+                      Aide-mémoire
+                    </span>
+                    {showPlaybook ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </CardTitle>
+                </CardHeader>
+                <AnimatePresence>
+                  {showPlaybook && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                    >
+                      <CardContent className="pt-0 space-y-3">
+                        {playbookData.pitch?.hook_30s && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">Accroche</p>
+                            <p className="text-sm">{playbookData.pitch.hook_30s}</p>
+                          </div>
+                        )}
+                        {playbookData.pitch?.discovery_questions?.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">Questions découverte</p>
+                            <ul className="text-sm space-y-1">
+                              {playbookData.pitch.discovery_questions.slice(0, 3).map((q, i) => (
+                                <li key={i} className="text-muted-foreground">• {q}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </CardContent>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Card>
+            )}
+          </div>
+        </div>
+
+        {/* Chat Area */}
+        <div className="flex-1 flex flex-col">
+          <ScrollArea ref={scrollRef} className="flex-1 p-4">
+            <div className="max-w-2xl mx-auto space-y-4">
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={cn(
+                    "flex gap-3",
+                    message.role === "user" ? "justify-end" : "justify-start"
+                  )}
+                >
+                  {message.role === "prospect" && (
+                    <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center shrink-0">
+                      <Bot className="h-4 w-4 text-primary-400" />
+                    </div>
+                  )}
+                  <div
+                    className={cn(
+                      "max-w-[80%] rounded-lg px-4 py-2",
+                      message.role === "user"
+                        ? "bg-primary-500 text-white"
+                        : "bg-muted"
+                    )}
+                  >
+                    <p className="text-sm">{message.text}</p>
+                    {message.evaluation?.detected && message.evaluation.detected.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {message.evaluation.detected.map((d) => (
+                          <Badge
+                            key={d.id}
+                            variant="outline"
+                            className="text-xs bg-green-500/10 text-green-500"
+                          >
+                            ✓ {d.label}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {message.role === "user" && (
+                    <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center shrink-0">
+                      <User className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+
+              {sending && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex gap-3"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center">
+                    <Bot className="h-4 w-4 text-primary-400" />
+                  </div>
+                  <div className="bg-muted rounded-lg px-4 py-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </ScrollArea>
+
+          {/* Input */}
+          <div className="border-t border-border/50 p-4">
+            <div className="max-w-2xl mx-auto flex gap-2">
+              <Textarea
+                ref={inputRef}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Écrivez votre message..."
+                className="min-h-[44px] max-h-32 resize-none"
+                disabled={sending || sessionEnded}
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!inputText.trim() || sending || sessionEnded}
+                className="shrink-0"
+              >
+                {sending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

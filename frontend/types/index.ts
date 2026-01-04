@@ -716,3 +716,154 @@ export interface SessionReport {
   // Graphique
   gauge_history: Array<{ timestamp: string; value: number; reason?: string }>;
 }
+
+// ============ V3 TRAINING SYSTEM TYPES (Playbook + Module) ============
+
+// Playbook (produit à vendre)
+export interface PlaybookSummary {
+  id: string;
+  name: string;
+  company: string;
+  sector: string;
+}
+
+// Module de formation (méthodologie)
+export interface ModuleSummary {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+}
+
+// Session V3
+export interface V3SessionStartResponse {
+  success: boolean;
+  session_id: string;
+  first_message: string;
+  prospect: V3Prospect;
+  playbook_data: V3PlaybookData;
+  module_data: V3ModuleData;
+  jauge: V3JaugeState;
+}
+
+export interface V3Prospect {
+  name: string;
+  persona: string;
+  company_type: string;
+  pain_points: string[];
+  hidden_objections: Array<{
+    type: string;
+    label: string;
+    hidden_meaning: string;
+  }>;
+  decision_context: {
+    budget: string;
+    timing: string;
+    decision_maker: string;
+    competitors_looking: boolean;
+  };
+}
+
+export interface V3PlaybookData {
+  id: string;
+  product: {
+    name: string;
+    company: string;
+  };
+  pitch: {
+    hook_30s: string;
+    discovery_questions: string[];
+    key_phrases: string[];
+  };
+  objections: Array<{
+    type: string;
+    label: string;
+    response: string;
+    proof: string;
+  }>;
+  proofs: {
+    global_stats: Record<string, string>;
+    testimonials: Array<{
+      name: string;
+      role: string;
+      company: string;
+      quote: string;
+    }>;
+  };
+  benefits: Record<string, string[]>;
+}
+
+export interface V3ModuleData {
+  id: string;
+  name: string;
+  checklist: Array<{
+    id: string;
+    label: string;
+    description: string;
+  }>;
+}
+
+export interface V3JaugeState {
+  value: number;
+  mood: string;
+  behavior: string;
+}
+
+export interface V3MessageResponse {
+  success: boolean;
+  prospect_response?: string;
+  evaluation: {
+    detected?: Array<{
+      id: string;
+      label: string;
+      quality: string;
+    }>;
+    progress?: {
+      detected: string[];
+      scores: Record<string, number>;
+    };
+  };
+  jauge: V3JaugeState;
+  behaviors: {
+    patterns?: {
+      positive: Array<{ pattern: string; action: string }>;
+      negative: Array<{ pattern: string; action: string }>;
+    };
+    modifications?: Array<{
+      action: string;
+      delta: number;
+      new_value: number;
+      reason: string;
+    }>;
+  };
+  session_complete: boolean;
+}
+
+export interface V3SessionEndResponse {
+  success: boolean;
+  session_id: string;
+  evaluation: {
+    score: number;
+    level: string;
+    level_description: string;
+    elements_detected: Array<{
+      id: string;
+      label: string;
+      quality: string;
+    }>;
+    elements_missing: Array<{
+      id: string;
+      label: string;
+      description: string;
+    }>;
+  };
+  final_result: {
+    result_key: string;
+    emoji: string;
+    label: string;
+    message: string;
+    coaching: string;
+    next_focus: string;
+  };
+  report: Record<string, unknown>;
+}

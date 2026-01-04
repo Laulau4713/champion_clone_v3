@@ -1,0 +1,279 @@
+# backend/training_modules/objection_handling.yaml
+# Module de formation : Gestion des Objections
+# Traiter efficacement les objections commerciales
+
+module:
+  id: objection_handling
+  name: "Gestion des Objections"
+  description: "Maîtriser le traitement des objections commerciales"
+  category: objection
+
+  # ============================================
+  # OBJECTIF PEDAGOGIQUE
+  # ============================================
+  objective: |
+    Apprendre à accueillir, comprendre et traiter les objections
+    pour les transformer en opportunités de vente.
+
+    Les 5 étapes du traitement d'objection :
+    1. Accueillir : Ne pas contredire, montrer de l'empathie
+    2. Creuser : Comprendre la vraie objection derrière
+    3. Reformuler : S'assurer d'avoir compris
+    4. Répondre : Apporter une réponse adaptée
+    5. Vérifier : Confirmer que l'objection est levée
+
+  # ============================================
+  # CE QUE L'ELEVE DOIT ACCOMPLIR
+  # ============================================
+  checklist:
+    - id: acknowledge
+      label: "Accueillir"
+      description: "Accueillir l'objection avec empathie, sans contredire"
+      question_hint: "Je comprends votre préoccupation..."
+      detection_patterns:
+        - "je comprends|je vois|j'entends"
+        - "c'est une question.*pertinente|légitime"
+        - "vous avez raison de|normal de"
+        - "effectivement|en effet"
+        - "merci de partager|soulever"
+      weight: 15
+      required: true
+
+    - id: dig_deeper
+      label: "Creuser"
+      description: "Poser des questions pour comprendre la vraie objection"
+      question_hint: "Qu'est-ce qui vous fait dire ça ?"
+      detection_patterns:
+        - "qu'est-ce qui.*fait dire|penser"
+        - "pouvez-vous.*préciser|développer"
+        - "concrètement|précisément"
+        - "c'est-à-dire|par exemple"
+        - "qu'entendez-vous par"
+      weight: 25
+      required: true
+
+    - id: reformulate
+      label: "Reformuler"
+      description: "Reformuler pour confirmer la compréhension"
+      question_hint: "Si je comprends bien, votre préoccupation est..."
+      detection_patterns:
+        - "si je comprends|si j'ai bien compris"
+        - "en d'autres termes|autrement dit"
+        - "vous.*dites que|ce que j'entends"
+        - "votre préoccupation.*est|serait"
+        - "donc.*pour vous"
+      weight: 20
+      required: true
+
+    - id: respond
+      label: "Répondre"
+      description: "Apporter une réponse adaptée à l'objection"
+      question_hint: "Voici comment nous adressons ce point..."
+      detection_patterns:
+        - "justement|précisément"
+        - "c'est pour ça que|raison pour laquelle"
+        - "notre solution|notre approche"
+        - "concrètement.*permet|offre"
+        - "d'autres clients.*même|similaire"
+        - "par exemple|notamment"
+      weight: 25
+      required: true
+
+    - id: verify
+      label: "Vérifier"
+      description: "S'assurer que l'objection est levée"
+      question_hint: "Est-ce que cela répond à votre préoccupation ?"
+      detection_patterns:
+        - "est-ce que.*répond|rassure"
+        - "cela vous.*convient|satisfait"
+        - "avez-vous d'autres|autre question"
+        - "on peut avancer|continuer"
+        - "c'est plus clair"
+      weight: 15
+      required: true
+
+  # ============================================
+  # TYPES D'OBJECTIONS
+  # ============================================
+  objection_types:
+    - type: price
+      label: "Prix"
+      examples:
+        - "C'est trop cher"
+        - "On n'a pas le budget"
+        - "Votre concurrent est moins cher"
+      response_hints:
+        - Questionner sur le critère de comparaison
+        - Ramener au coût de l'inaction
+        - Parler ROI, pas prix
+
+    - type: timing
+      label: "Timing"
+      examples:
+        - "Ce n'est pas le bon moment"
+        - "On verra l'année prochaine"
+        - "On a d'autres priorités"
+      response_hints:
+        - Comprendre les vraies priorités
+        - Quantifier le coût de l'attente
+        - Proposer un démarrage progressif
+
+    - type: authority
+      label: "Autorité"
+      examples:
+        - "Je dois en parler à mon directeur"
+        - "Ce n'est pas moi qui décide"
+        - "Il faut que j'en réfère"
+      response_hints:
+        - Proposer d'impliquer le décideur
+        - Fournir des arguments pour convaincre
+        - Offrir de présenter ensemble
+
+    - type: need
+      label: "Besoin"
+      examples:
+        - "On n'a pas vraiment besoin de ça"
+        - "Notre solution actuelle suffit"
+        - "Ce n'est pas une priorité"
+      response_hints:
+        - Revenir sur les problèmes identifiés
+        - Quantifier l'impact des problèmes
+        - Challenger le statu quo
+
+    - type: trust
+      label: "Confiance"
+      examples:
+        - "Je ne connais pas votre entreprise"
+        - "Vous êtes trop petits/grands"
+        - "On a eu une mauvaise expérience"
+      response_hints:
+        - Références clients similaires
+        - Garanties et engagements
+        - Témoignages concrets
+
+  # ============================================
+  # INSTRUCTIONS POUR LE PROSPECT
+  # ============================================
+  prospect_instructions: |
+    Tu es un prospect qui a des objections à exprimer.
+
+    COMPORTEMENT :
+    - Exprime 2-3 objections pendant la conversation
+    - Commence par des objections de surface (prix, timing)
+    - Cache une vraie objection dessous (besoin, confiance, autorité)
+
+    REACTIONS :
+    - Si le commercial contredit directement : Braque-toi, renforce l'objection
+    - Si le commercial accueille avec empathie : Ouvre-toi un peu plus
+    - Si le commercial creuse bien : Révèle la vraie objection
+    - Si bonne réponse + vérification : Accepte que l'objection soit levée
+
+    OBJECTIONS A UTILISER :
+    1. D'abord : "C'est intéressant mais c'est un peu cher"
+    2. Si bien traité : "Et puis je dois en parler à mon directeur"
+    3. Vraie objection cachée : "En fait, on a eu une mauvaise expérience avec un concurrent"
+
+  # ============================================
+  # EVALUATION
+  # ============================================
+  evaluation:
+    scoring:
+      per_element_base: 10
+      quality_bonus: 5
+      empathy_bonus: 10  # Bonus pour empathie montrée
+      hidden_objection_bonus: 20  # Bonus pour avoir trouvé l'objection cachée
+
+    mastery_threshold: 70
+
+    levels:
+      excellent:
+        min_score: 90
+        elements_required: 5
+        description: "Gestion parfaite des objections avec empathie"
+      good:
+        min_score: 70
+        elements_required: 4
+        description: "Bonnes techniques, vérification parfois oubliée"
+      partial:
+        min_score: 50
+        elements_required: 3
+        description: "Traitement basique, manque de profondeur"
+      insufficient:
+        min_score: 0
+        elements_required: 0
+        description: "Objections mal gérées ou ignorées"
+
+  # ============================================
+  # RISQUES SI ELEMENTS MANQUANTS
+  # ============================================
+  risks_if_missing:
+    acknowledge:
+      risk: "Confrontation"
+      consequence: "Le prospect se braque et renforce son objection"
+      coaching_tip: "Toujours accueillir avant de répondre. 'Je comprends' n'est pas 'Je suis d'accord'"
+    dig_deeper:
+      risk: "Mauvaise réponse"
+      consequence: "Vous répondez à côté car vous n'avez pas la vraie objection"
+      coaching_tip: "La première objection n'est jamais la vraie. Creusez !"
+    reformulate:
+      risk: "Malentendu"
+      consequence: "Vous et le prospect ne parlez pas de la même chose"
+      coaching_tip: "Reformulez pour montrer que vous avez écouté"
+    respond:
+      risk: "Objection non traitée"
+      consequence: "L'objection reste et bloque la vente"
+      coaching_tip: "Adaptez votre réponse au type d'objection identifié"
+    verify:
+      risk: "Fausse victoire"
+      consequence: "Vous pensez avoir levé l'objection mais elle revient"
+      coaching_tip: "Toujours vérifier : 'Est-ce que cela répond à votre préoccupation ?'"
+
+  # ============================================
+  # MATRICE DE RESULTATS
+  # ============================================
+  result_matrix:
+    module_success_closing_success:
+      label: "EXPERT OBJECTIONS"
+      emoji: "shield"
+      message: "Parfait ! Objections traitées avec brio et vente conclue."
+
+    module_success_closing_fail:
+      label: "OBJECTIONS OK - CLOSING A REVOIR"
+      emoji: "target"
+      message: "Bonnes techniques sur les objections mais le closing n'a pas suivi."
+
+    module_fail_closing_success:
+      label: "CLOSING FORCE"
+      emoji: "warning"
+      message: "Vente conclue mais objections mal traitées. Risque de remord de l'acheteur."
+
+    module_fail_closing_fail:
+      label: "OBJECTIONS NON TRAITEES"
+      emoji: "cross"
+      message: "Les objections ont bloqué la vente. Travaillez l'accueil et le creusage."
+
+  # ============================================
+  # FEEDBACK ET COACHING
+  # ============================================
+  feedback_templates:
+    element_detected:
+      positive: "Bien ! Étape '{element}' réalisée."
+      with_quality: "Excellente technique '{element}' !"
+
+    element_missing:
+      gentle: "N'oubliez pas l'étape '{element}'."
+      direct: "ATTENTION : '{element}' manquant. {risk}"
+
+    empathy_feedback:
+      good: "Bonne empathie montrée face à l'objection"
+      missing: "Attention à ne pas contredire directement - accueillez d'abord"
+
+    hidden_objection:
+      found: "Bravo ! Vous avez découvert l'objection cachée !"
+      missed: "Il y avait une objection cachée derrière. Creusez davantage."
+
+    session_summary:
+      intro: "Voici votre bilan Gestion des Objections :"
+      elements_section: "Étapes maîtrisées : {count}/5"
+      score_section: "Score : {score}/100"
+      recommendation: "Travaillez : {missing_elements}"

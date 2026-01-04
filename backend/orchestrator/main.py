@@ -279,3 +279,131 @@ class ChampionCloneOrchestrator:
         """Get status of all agents."""
         self._load_agents()
         return {agent_type.value: agent.get_status() for agent_type, agent in self.agents.items()}
+
+    # ============================================
+    # TRAINING DIRECT ACCESS
+    # ============================================
+
+    async def handle_training_start(
+        self,
+        playbook_id: str,
+        module_id: str,
+        user_id: str = "anonymous",
+    ) -> dict:
+        """
+        Démarre une session de training directement.
+
+        Args:
+            playbook_id: ID du playbook (ex: "automate_ai")
+            module_id: ID du module (ex: "bebedc", "spin_selling")
+            user_id: ID de l'utilisateur
+
+        Returns:
+            Dict avec session_id, first_message, playbook_data, module_data
+        """
+        self._load_agents()
+        training_agent = self.agents.get(AgentType.TRAINING)
+
+        if not training_agent:
+            return {"success": False, "error": "Training agent not available"}
+
+        logger.info(
+            "training_start_request",
+            playbook_id=playbook_id,
+            module_id=module_id,
+            user_id=user_id,
+        )
+
+        return await training_agent.create_session(
+            playbook_id=playbook_id,
+            module_id=module_id,
+            user_id=user_id,
+        )
+
+    async def handle_training_message(
+        self,
+        session_id: str,
+        message: str,
+    ) -> dict:
+        """
+        Traite un message dans une session de training.
+
+        Args:
+            session_id: ID de la session
+            message: Message de l'utilisateur
+
+        Returns:
+            Dict avec prospect_response, evaluation, jauge
+        """
+        self._load_agents()
+        training_agent = self.agents.get(AgentType.TRAINING)
+
+        if not training_agent:
+            return {"success": False, "error": "Training agent not available"}
+
+        return await training_agent.process_message(
+            session_id=session_id,
+            message=message,
+        )
+
+    async def handle_training_end(
+        self,
+        session_id: str,
+        closing_achieved: bool = False,
+    ) -> dict:
+        """
+        Termine une session de training et génère le rapport.
+
+        Args:
+            session_id: ID de la session
+            closing_achieved: Si le closing a été obtenu
+
+        Returns:
+            Dict avec evaluation, final_result, report
+        """
+        self._load_agents()
+        training_agent = self.agents.get(AgentType.TRAINING)
+
+        if not training_agent:
+            return {"success": False, "error": "Training agent not available"}
+
+        logger.info(
+            "training_end_request",
+            session_id=session_id,
+            closing_achieved=closing_achieved,
+        )
+
+        return await training_agent.end_session(
+            session_id=session_id,
+            closing_achieved=closing_achieved,
+        )
+
+    async def get_training_session_status(self, session_id: str) -> dict:
+        """Retourne le statut d'une session de training."""
+        self._load_agents()
+        training_agent = self.agents.get(AgentType.TRAINING)
+
+        if not training_agent:
+            return {"success": False, "error": "Training agent not available"}
+
+        return await training_agent.get_session_status(session_id)
+
+    async def list_playbooks(self) -> list[dict]:
+        """Liste les playbooks disponibles."""
+        self._load_agents()
+        training_agent = self.agents.get(AgentType.TRAINING)
+
+        if not training_agent:
+            return []
+
+        return await training_agent.playbook_service.list_playbooks()
+
+    async def list_modules(self) -> list[dict]:
+        """Liste les modules de formation disponibles."""
+        self._load_agents()
+        training_agent = self.agents.get(AgentType.TRAINING)
+
+        if not training_agent:
+            return []
+
+        return await training_agent.module_service.list_modules()

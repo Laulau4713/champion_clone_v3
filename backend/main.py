@@ -106,7 +106,9 @@ if not settings.REFRESH_TOKEN_SECRET:
 
 # Import routers
 from api.routers import achievements, admin, audit, auth, champions, learning, payments, training
-from api.routers import websocket as ws_router
+
+# V2 websocket removed - was for voice training V2
+# from api.routers import websocket as ws_router
 from database import close_db, init_db
 
 # Import domain exceptions
@@ -183,7 +185,8 @@ app.include_router(learning.router)
 app.include_router(payments.router)
 app.include_router(audit.router)
 app.include_router(achievements.router)
-app.include_router(ws_router.router)
+# V2 websocket removed
+# app.include_router(ws_router.router)
 
 
 # ============================================

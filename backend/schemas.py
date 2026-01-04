@@ -486,3 +486,78 @@ class ProductInfoWithRelations(ProductInfoResponse):
 
     proof_elements: list[ProofElementsResponse] = Field(default_factory=list)
     competition_info: list[CompetitionInfoResponse] = Field(default_factory=list)
+
+
+# ============================================
+# Training V3 Schemas (Playbook + Module)
+# ============================================
+
+
+class PlaybookSummary(BaseModel):
+    """Summary of an available playbook."""
+
+    id: str
+    name: str
+    company: str = ""
+    sector: str = ""
+
+
+class ModuleSummary(BaseModel):
+    """Summary of an available training module."""
+
+    id: str
+    name: str
+    description: str = ""
+    category: str = ""
+
+
+class V3SessionStartRequest(BaseModel):
+    """Request to start a V3 training session."""
+
+    playbook_id: str = Field(..., description="Playbook ID (e.g., 'automate_ai')")
+    module_id: str = Field(..., description="Module ID (e.g., 'bebedc', 'spin_selling')")
+
+
+class V3SessionStartResponse(BaseModel):
+    """Response when starting a V3 training session."""
+
+    success: bool
+    session_id: str
+    first_message: str
+    prospect: dict = Field(default_factory=dict)
+    playbook_data: dict = Field(default_factory=dict)
+    module_data: dict = Field(default_factory=dict)
+    jauge: dict = Field(default_factory=dict)
+
+
+class V3MessageRequest(BaseModel):
+    """Request to send a message in V3 training."""
+
+    message: str = Field(..., min_length=1, description="User's message")
+
+
+class V3MessageResponse(BaseModel):
+    """Response from processing a V3 training message."""
+
+    success: bool
+    prospect_response: str | None = None
+    evaluation: dict = Field(default_factory=dict)
+    jauge: dict = Field(default_factory=dict)
+    behaviors: dict = Field(default_factory=dict)
+    session_complete: bool = False
+
+
+class V3SessionEndRequest(BaseModel):
+    """Request to end a V3 training session."""
+
+    closing_achieved: bool = Field(False, description="Whether the closing was achieved")
+
+
+class V3SessionEndResponse(BaseModel):
+    """Response when ending a V3 training session."""
+
+    success: bool
+    session_id: str
+    evaluation: dict = Field(default_factory=dict)
+    final_result: dict = Field(default_factory=dict)
+    report: dict = Field(default_factory=dict)

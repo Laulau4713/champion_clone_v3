@@ -1,0 +1,232 @@
+# backend/training_modules/bebedc.yaml
+# Module de formation : Checklist BEBEDC
+# Qualification complète du prospect avant proposition
+
+module:
+  id: bebedc
+  name: "Checklist BEBEDC"
+  description: "Qualification complète du prospect avant proposition"
+  category: discovery  # discovery | objection | closing | negotiation
+
+  # ============================================
+  # OBJECTIF PEDAGOGIQUE
+  # ============================================
+  objective: |
+    Maîtriser la qualification BEBEDC pour ne jamais faire
+    de proposition à un prospect non qualifié.
+
+    BEBEDC signifie :
+    - Besoin : Identifier le besoin réel (pas juste exprimé)
+    - Enjeu : Comprendre l'impact business si rien ne change
+    - Budget : Qualifier le budget disponible
+    - Échéance : Identifier le timing de décision
+    - Décideur : Confirmer le pouvoir de décision
+    - Compétiteur : Identifier la concurrence
+
+  # ============================================
+  # CE QUE L'ELEVE DOIT ACCOMPLIR
+  # ============================================
+  checklist:
+    - id: besoin
+      label: "Besoin"
+      description: "Identifier le besoin réel (pas juste exprimé)"
+      question_hint: "Qu'est-ce qui vous pose problème aujourd'hui ?"
+      detection_patterns:
+        - "besoin|problème|difficulté|défi|frustration"
+        - "qu'est-ce qui.*pose problème"
+        - "quel est votre.*principal"
+        - "quelle situation.*améliorer"
+        - "pourquoi.*cherchez"
+      weight: 15
+      required: true
+
+    - id: enjeu
+      label: "Enjeu"
+      description: "Comprendre l'impact business si rien ne change"
+      question_hint: "Quel impact ça a sur votre activité ?"
+      detection_patterns:
+        - "impact|conséquence|coût|risque|enjeu"
+        - "que se passe.*(si|quand)"
+        - "combien.*coûte"
+        - "quel effet"
+        - "qu'est-ce que ça.*représente"
+        - "chiffrer|quantifier"
+      weight: 20
+      required: true
+
+    - id: budget
+      label: "Budget"
+      description: "Qualifier le budget disponible"
+      question_hint: "Avez-vous une enveloppe prévue pour ce type de projet ?"
+      detection_patterns:
+        - "budget|enveloppe|investissement|combien"
+        - "quel.*montant"
+        - "fourchette"
+        - "prévu.*financ"
+        - "capacité.*investir"
+      weight: 15
+      required: true
+
+    - id: echeance
+      label: "Échéance"
+      description: "Identifier le timing de décision"
+      question_hint: "Quand souhaiteriez-vous avoir mis en place une solution ?"
+      detection_patterns:
+        - "échéance|timing|deadline|quand|date"
+        - "délai|urgence|rapidement"
+        - "calendrier|planning"
+        - "objectif de temps"
+        - "à quelle date"
+      weight: 15
+      required: true
+
+    - id: decideur
+      label: "Décideur"
+      description: "Confirmer le pouvoir de décision"
+      question_hint: "Qui d'autre est impliqué dans cette décision ?"
+      detection_patterns:
+        - "décideur|décision|valider|approuver"
+        - "qui.*impliqué"
+        - "qui.*décide"
+        - "votre direction|votre manager"
+        - "processus.*décision"
+        - "comité|commission"
+      weight: 20
+      required: true
+
+    - id: competiteur
+      label: "Compétiteur"
+      description: "Identifier la concurrence"
+      question_hint: "Avez-vous d'autres solutions en considération ?"
+      detection_patterns:
+        - "concurrent|compétiteur|alternative|autre solution"
+        - "avez-vous.*regardé"
+        - "comparé|comparaison"
+        - "en parallèle"
+        - "d'autres.*fournisseurs"
+      weight: 15
+      required: false  # Pas obligatoire mais important
+
+  # ============================================
+  # INSTRUCTIONS POUR LE PROSPECT
+  # ============================================
+  prospect_instructions: |
+    Tu es un prospect réaliste pour une session de formation BEBEDC.
+
+    COMPORTEMENT :
+    - Ne révèle PAS tout spontanément
+    - Réponds aux questions posées, pas plus
+    - Si on te demande le besoin, donne-le
+    - Si on te demande l'enjeu, quantifie l'impact
+    - Si on te demande le budget, donne une fourchette
+    - Si on ne te pose pas la question, ne donne pas l'info
+
+    OBJECTIONS CACHEES (ne les révèle que si bien questionné) :
+    - Tu as déjà un concurrent en vue
+    - Ton manager doit valider
+    - Le budget n'est pas encore confirmé
+
+  # ============================================
+  # EVALUATION
+  # ============================================
+  evaluation:
+    scoring:
+      # Points par élément découvert
+      per_element_base: 10
+      # Bonus pour question bien formulée
+      quality_bonus: 5
+      # Malus pour question trop directe
+      direct_question_penalty: -3
+
+    mastery_threshold: 70  # Score minimum pour maîtrise
+
+    levels:
+      excellent:
+        min_score: 90
+        elements_required: 6
+        description: "Qualification complète et méthodique"
+      good:
+        min_score: 70
+        elements_required: 5
+        description: "Bonne qualification, quelques éléments manquants"
+      partial:
+        min_score: 50
+        elements_required: 3
+        description: "Qualification partielle, éléments clés manquants"
+      insufficient:
+        min_score: 0
+        elements_required: 0
+        description: "Qualification insuffisante"
+
+  # ============================================
+  # RISQUES SI ELEMENTS MANQUANTS
+  # ============================================
+  risks_if_missing:
+    besoin:
+      risk: "Proposition hors sujet"
+      consequence: "Le prospect ne se reconnaît pas dans votre offre"
+      coaching_tip: "Toujours commencer par comprendre le problème avant de parler solution"
+    enjeu:
+      risk: "Pas d'urgence créée"
+      consequence: "Le prospect repousse la décision indéfiniment"
+      coaching_tip: "Quantifiez l'impact : combien ça coûte de ne rien faire ?"
+    budget:
+      risk: "Mauvaise surprise à la signature"
+      consequence: "Négociation de dernière minute, deal perdu"
+      coaching_tip: "Abordez le budget tôt pour éviter les surprises"
+    echeance:
+      risk: "Pas de date de décision"
+      consequence: "Le deal traîne, finit en 'ghost'"
+      coaching_tip: "Créez un calendrier partagé avec des jalons"
+    decideur:
+      risk: "Interlocuteur sans pouvoir"
+      consequence: "Tout est à refaire avec le vrai décideur"
+      coaching_tip: "Identifiez le VRAI décideur dès le début"
+    competiteur:
+      risk: "Objection tardive"
+      consequence: "Le prospect compare et choisit l'autre"
+      coaching_tip: "Connaître ses concurrents permet de mieux se positionner"
+
+  # ============================================
+  # MATRICE DE RESULTATS
+  # ============================================
+  result_matrix:
+    # MODULE REUSSI (>= mastery_threshold) × CLOSING
+    module_success_closing_success:
+      label: "VICTOIRE COMPLETE"
+      emoji: "trophy"
+      message: "Bravo ! Qualification complète ET closing réussi."
+
+    module_success_closing_fail:
+      label: "QUALIFICATION OK - CLOSING A TRAVAILLER"
+      emoji: "target"
+      message: "Bonne qualification mais le closing n'a pas abouti. Le prospect était-il vraiment prêt ?"
+
+    # MODULE ECHOUE (< mastery_threshold) × CLOSING
+    module_fail_closing_success:
+      label: "CHANCE - RISQUE ELEVE"
+      emoji: "warning"
+      message: "Closing réussi mais qualification incomplète. En situation réelle, risque de problèmes post-vente."
+
+    module_fail_closing_fail:
+      label: "ECHEC - A RETRAVAILLER"
+      emoji: "cross"
+      message: "Ni qualification ni closing. Revoyez les fondamentaux BEBEDC."
+
+  # ============================================
+  # FEEDBACK ET COACHING
+  # ============================================
+  feedback_templates:
+    element_detected:
+      positive: "Excellent ! Vous avez bien identifié {element}."
+      with_quality: "Parfait ! Question bien formulée pour découvrir {element}."
+
+    element_missing:
+      gentle: "Pensez à explorer {element} - c'est essentiel pour qualifier."
+      direct: "ATTENTION : {element} non qualifié. Risque : {risk}."
+
+    session_summary:
+      intro: "Voici votre bilan de qualification BEBEDC :"
+      elements_section: "Éléments découverts : {count}/6"
+      score_section: "Score : {score}/100"
+      recommendation: "Focus recommandé : {missing_elements}"

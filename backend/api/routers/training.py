@@ -399,56 +399,8 @@ async def get_session(
 
 
 # ============================================
-# VOICE TRAINING ENDPOINTS V2
+# UTILITIES FOR TRAINING
 # ============================================
-
-from pydantic import BaseModel
-
-from services.training_service_v2 import TrainingServiceV2
-from services.voice_service import voice_service
-
-
-class VoiceSessionStartRequest(BaseModel):
-    """Request to start a voice training session."""
-
-    skill_slug: str
-    sector_slug: str | None = None
-    level: str = "easy"  # easy, medium, expert
-
-
-class VoiceMessageRequest(BaseModel):
-    """Request to send a message in voice training."""
-
-    audio_base64: str | None = None
-    text: str | None = None
-
-
-class ProspectResponseSchemaV2(BaseModel):
-    """Response from the prospect in voice training V2."""
-
-    text: str
-    audio_base64: str | None = None
-    mood: str  # hostile, aggressive, skeptical, neutral, interested, ready_to_buy
-    jauge: int  # -1 if hidden (medium/expert levels)
-    jauge_delta: int  # 0 if hidden
-    behavioral_cue: str | None = None  # (soupir), (prend des notes), etc.
-    is_event: bool = False  # True if this is a situational event
-    event_type: str | None = None
-    feedback: dict | None = None
-    conversion_possible: bool = False
-
-
-# Keep old schema for backwards compatibility
-class ProspectResponseSchema(BaseModel):
-    """Response from the prospect in voice training (legacy)."""
-
-    text: str
-    audio_base64: str | None = None
-    emotion: str
-    should_interrupt: bool
-    interruption_reason: str | None = None
-    feedback: dict | None = None
-
 
 # Free trial constants
 FREE_TRIAL_MAX_SESSIONS = 3
@@ -459,25 +411,84 @@ def is_premium_user(user: User) -> bool:
     return user.subscription_plan in ("starter", "pro", "enterprise")
 
 
-@router.post("/voice/session/start")
-async def start_voice_training_session(
-    request: VoiceSessionStartRequest,
+# NOTE: V2 voice endpoints have been removed.
+# Use V3 endpoints below (/playbooks, /modules, /v3/session/*)
+
+
+# ============================================
+# TRAINING V3 - PLAYBOOK + MODULE SYSTEM
+# ============================================
+
+from orchestrator.main import ChampionCloneOrchestrator
+from schemas import (
+    ModuleSummary,
+    PlaybookSummary,
+    V3MessageRequest,
+    V3MessageResponse,
+    V3SessionEndRequest,
+    V3SessionEndResponse,
+    V3SessionStartRequest,
+    V3SessionStartResponse,
+)
+
+# Singleton orchestrator instance
+_orchestrator: ChampionCloneOrchestrator | None = None
+
+
+def get_orchestrator() -> ChampionCloneOrchestrator:
+    """Get or create the orchestrator singleton."""
+    global _orchestrator
+    if _orchestrator is None:
+        _orchestrator = ChampionCloneOrchestrator()
+    return _orchestrator
+
+
+@router.get("/playbooks", response_model=list[PlaybookSummary])
+async def list_playbooks(
+    current_user: User = Depends(get_current_user),
+):
+    """
+    List available playbooks (V3).
+
+    Playbooks contain product information, pitch elements, and objection handling.
+    Used with a training module to create complete training sessions.
+    """
+    orchestrator = get_orchestrator()
+    playbooks = await orchestrator.list_playbooks()
+    return [PlaybookSummary(**p) for p in playbooks]
+
+
+@router.get("/modules", response_model=list[ModuleSummary])
+async def list_modules(
+    current_user: User = Depends(get_current_user),
+):
+    """
+    List available training modules (V3).
+
+    Modules define the training methodology (BEBEDC, SPIN Selling, etc.)
+    and the evaluation criteria for each session.
+    """
+    orchestrator = get_orchestrator()
+    modules = await orchestrator.list_modules()
+    return [ModuleSummary(**m) for m in modules]
+
+
+@router.post("/v3/session/start", response_model=V3SessionStartResponse)
+async def start_v3_session(
+    request: V3SessionStartRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Start a new voice training session (V2 with emotional jauge).
+    Start a new V3 training session with playbook + module.
 
-    Uses the pedagogical skills/sectors system with V2 mechanics:
-    - Emotional jauge (0-100)
-    - Hidden objections (medium/expert)
-    - Situational events (medium/expert)
-    - Reversals (expert)
+    This new system replaces the level-based approach (easy/medium/hard)
+    with a more structured methodology:
 
-    Free trial users get 3 free sessions (easy/medium only).
-    Returns 402 if trial expired and not premium.
+    - **playbook_id**: The product/company to sell (e.g., 'automate_ai')
+    - **module_id**: The training methodology (e.g., 'bebedc', 'spin_selling')
 
-    Returns scenario, opening message with audio, and initial jauge/mood.
+    Returns the first prospect message and session context.
     """
     # Check trial/premium status
     if not is_premium_user(current_user):
@@ -486,249 +497,130 @@ async def start_voice_training_session(
                 status_code=402,
                 detail={
                     "code": "TRIAL_EXPIRED",
-                    "message": "Votre essai gratuit est termin\u00e9. Passez \u00e0 Premium pour continuer.",
+                    "message": "Votre essai gratuit est terminé. Passez à Premium pour continuer.",
                     "sessions_used": current_user.trial_sessions_used,
                     "max_sessions": FREE_TRIAL_MAX_SESSIONS,
                 },
             )
 
-    service = TrainingServiceV2(db)
+    orchestrator = get_orchestrator()
 
     try:
-        session = await service.create_session(
-            user=current_user,
-            skill_slug=request.skill_slug,
-            sector_slug=request.sector_slug,
-            level=request.level,
+        result = await orchestrator.handle_training_start(
+            playbook_id=request.playbook_id,
+            module_id=request.module_id,
+            user_id=str(current_user.id),
         )
+
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to start session"))
 
         # Increment trial counter for free users
         if not is_premium_user(current_user):
             current_user.trial_sessions_used += 1
             await db.commit()
 
-        return session
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return V3SessionStartResponse(**result)
+
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error("voice_session_start_error", error=str(e))
+        logger.error("v3_session_start_error", error=str(e))
         raise HTTPException(status_code=500, detail=f"Failed to start session: {str(e)}")
 
 
-@router.post("/voice/session/{session_id}/message", response_model=ProspectResponseSchemaV2)
-async def send_voice_message(
-    session_id: int,
-    request: VoiceMessageRequest,
+@router.post("/v3/session/{session_id}/message", response_model=V3MessageResponse)
+async def send_v3_message(
+    session_id: str,
+    request: V3MessageRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
 ):
     """
-    Send a message (audio or text) and receive prospect response (V2).
+    Send a message in a V3 training session.
 
-    If audio_base64 is provided, it will be transcribed via Whisper.
+    The system will:
+    1. Evaluate the message according to the module criteria
+    2. Update the emotional jauge based on detected patterns
+    3. Generate a realistic prospect response
 
-    V2 Response includes:
-    - mood: Current emotional state of the prospect
-    - jauge: Emotional jauge value (0-100, or -1 if hidden)
-    - jauge_delta: Change since last message
-    - behavioral_cue: Visual cue like "(soupir)" or "(prend des notes)"
-    - is_event: True if this is a situational event
-    - conversion_possible: Whether closing could succeed now
-    - feedback: Tips and pattern analysis (in easy mode)
+    Returns evaluation feedback, jauge state, and prospect response.
     """
-    if not request.audio_base64 and not request.text:
-        raise HTTPException(status_code=400, detail="audio_base64 or text required")
-
-    service = TrainingServiceV2(db)
+    orchestrator = get_orchestrator()
 
     try:
-        response = await service.process_user_message(
-            session_id=session_id, user=current_user, audio_base64=request.audio_base64, text=request.text
+        result = await orchestrator.handle_training_message(
+            session_id=session_id,
+            message=request.message,
         )
-        return response.to_dict()
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to process message"))
+
+        return V3MessageResponse(**result)
+
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error("voice_message_error", error=str(e))
+        logger.error("v3_message_error", error=str(e), session_id=session_id)
         raise HTTPException(status_code=500, detail=f"Failed to process message: {str(e)}")
 
 
-@router.post("/voice/session/{session_id}/end")
-async def end_voice_training_session(
-    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+@router.post("/v3/session/{session_id}/end", response_model=V3SessionEndResponse)
+async def end_v3_session(
+    session_id: str,
+    request: V3SessionEndRequest,
+    current_user: User = Depends(get_current_user),
 ):
     """
-    End the voice training session and get final evaluation (V2).
+    End a V3 training session and get the final report.
 
-    Returns detailed V2 evaluation including:
-    - overall_score: Final score (0-100)
-    - final_jauge: Where the emotional jauge ended
-    - jauge_progression: Change from start to end
-    - positive_actions_count / negative_actions_count
-    - converted: Whether the prospect was won over
-    - points_forts / axes_amelioration
-    - conseil_principal: Main advice for improvement
+    The report includes:
+    - Module evaluation (elements detected/missing, score)
+    - Final result (module success × closing success matrix)
+    - Detailed recommendations and coaching tips
     """
-    service = TrainingServiceV2(db)
+    orchestrator = get_orchestrator()
 
     try:
-        result = await service.end_session(session_id=session_id, user=current_user)
-        return result
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        result = await orchestrator.handle_training_end(
+            session_id=session_id,
+            closing_achieved=request.closing_achieved,
+        )
+
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to end session"))
+
+        return V3SessionEndResponse(**result)
+
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error("voice_session_end_error", error=str(e))
+        logger.error("v3_session_end_error", error=str(e), session_id=session_id)
         raise HTTPException(status_code=500, detail=f"Failed to end session: {str(e)}")
 
 
-@router.get("/voice/session/{session_id}")
-async def get_voice_session(
-    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
-):
-    """
-    Get details of a voice training session (V2).
-
-    Returns full session data including:
-    - current_jauge / starting_jauge
-    - jauge_history: Timeline of jauge changes
-    - positive_actions / negative_actions: Detected patterns
-    - messages: Full conversation with behavioral analysis
-    """
-    service = TrainingServiceV2(db)
-    session = await service.get_session(session_id, current_user)
-
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-
-    return session
-
-
-@router.get("/voice/session/{session_id}/report")
-async def get_voice_session_report(
-    session_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
-):
-    """
-    Get detailed report for a voice training session (Phase 3).
-
-    Returns a structured report for the /training/report/[id] page including:
-    - Header: skill, sector, level, duration
-    - Scores: final_score, gauge progression, conversion status
-    - Patterns: aggregated positive/negative patterns with counts and examples
-    - Messages: annotated conversation with gauge impacts
-    - Tips: personalized improvement advice
-    """
-    service = TrainingServiceV2(db)
-    report = await service.get_session_report(session_id, current_user)
-
-    if not report:
-        raise HTTPException(status_code=404, detail="Session not found")
-
-    return report
-
-
-class VoiceSessionSummary(BaseModel):
-    """Summary of a voice training session for listing."""
-
-    id: int
-    skill_name: str
-    skill_slug: str
-    level: str
-    status: str
-    score: float | None
-    current_gauge: int
-    starting_gauge: int
-    converted: bool
-    created_at: str
-    completed_at: str | None
-    duration_seconds: int | None
-
-
-@router.get("/voice/sessions", response_model=list[VoiceSessionSummary])
-async def list_voice_sessions(
-    status: str | None = Query(None, description="Filter by status: active, completed, abandoned"),
-    limit: int = Query(50, ge=1, le=100, description="Max sessions to return"),
+@router.get("/v3/session/{session_id}")
+async def get_v3_session_status(
+    session_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
 ):
     """
-    List voice training sessions (V2) for the current user.
+    Get the current status of a V3 training session.
 
-    Returns a summary of each session including score and gauge progression.
-    Used by the dashboard to display training history.
+    Returns session metadata, progress, and jauge state.
     """
-    from models import Skill, VoiceTrainingSession
-
-    query = (
-        select(VoiceTrainingSession, Skill)
-        .join(Skill, VoiceTrainingSession.skill_id == Skill.id)
-        .where(VoiceTrainingSession.user_id == current_user.id)
-        .order_by(VoiceTrainingSession.created_at.desc())
-        .limit(limit)
-    )
-
-    if status:
-        query = query.where(VoiceTrainingSession.status == status)
-
-    result = await db.execute(query)
-    rows = result.all()
-
-    sessions = []
-    for session, skill in rows:
-        duration = None
-        if session.completed_at and session.created_at:
-            duration = int((session.completed_at - session.created_at).total_seconds())
-
-        sessions.append(
-            VoiceSessionSummary(
-                id=session.id,
-                skill_name=skill.name,
-                skill_slug=skill.slug,
-                level=session.level,
-                status=session.status,
-                score=session.score,
-                current_gauge=session.current_gauge,
-                starting_gauge=session.starting_gauge,
-                converted=session.converted or False,
-                created_at=session.created_at.isoformat() if session.created_at else "",
-                completed_at=session.completed_at.isoformat() if session.completed_at else None,
-                duration_seconds=duration,
-            )
-        )
-
-    return sessions
-
-
-@router.get("/voice/config")
-async def get_voice_config(current_user: User = Depends(get_current_user)):
-    """
-    Check voice service configuration status.
-
-    Returns which services are available (ElevenLabs, Whisper).
-    """
-    return {"status": "ok", "services": voice_service.is_configured()}
-
-
-@router.get("/voice/voices")
-async def list_available_voices(current_user: User = Depends(get_current_user)):
-    """List available ElevenLabs voices."""
-    if not voice_service.is_configured().get("elevenlabs"):
-        raise HTTPException(status_code=503, detail="ElevenLabs not configured")
+    orchestrator = get_orchestrator()
 
     try:
-        voices = await voice_service.get_elevenlabs_voices()
-        return {"voices": voices}
+        result = await orchestrator.get_training_session_status(session_id)
+
+        if not result.get("success"):
+            raise HTTPException(status_code=404, detail=result.get("error", "Session not found"))
+
+        return result
+
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/voice/quota")
-async def check_voice_quota(current_user: User = Depends(get_current_user)):
-    """Check ElevenLabs character quota."""
-    if not voice_service.is_configured().get("elevenlabs"):
-        raise HTTPException(status_code=503, detail="ElevenLabs not configured")
-
-    try:
-        quota = await voice_service.check_elevenlabs_quota()
-        return quota
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("v3_session_status_error", error=str(e), session_id=session_id)
+        raise HTTPException(status_code=500, detail=f"Failed to get session status: {str(e)}")

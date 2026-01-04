@@ -1,0 +1,223 @@
+# backend/training_modules/closing.yaml
+# Module de formation : Techniques de Closing
+# Conclure efficacement une vente
+
+module:
+  id: closing
+  name: "Techniques de Closing"
+  description: "Maîtriser les techniques pour conclure une vente"
+  category: closing
+
+  # ============================================
+  # OBJECTIF PEDAGOGIQUE
+  # ============================================
+  objective: |
+    Apprendre à identifier les signaux d'achat et utiliser
+    les bonnes techniques de closing au bon moment.
+
+    Les clés du closing :
+    - Détecter les signaux d'achat
+    - Choisir la bonne technique de closing
+    - Gérer le silence après le prix
+    - Obtenir un engagement clair
+
+  # ============================================
+  # CE QUE L'ELEVE DOIT ACCOMPLIR
+  # ============================================
+  checklist:
+    - id: buying_signals
+      label: "Signaux d'achat"
+      description: "Identifier et rebondir sur les signaux d'achat"
+      question_hint: "Quand pourriez-vous commencer ?"
+      detection_patterns:
+        - "vous semblez.*intéressé|je sens que"
+        - "si j'ai bien compris.*prêt"
+        - "vous avez mentionné|vous disiez"
+        - "ce que vous cherchez|correspond"
+      weight: 20
+      required: true
+
+    - id: summary_close
+      label: "Résumé avant closing"
+      description: "Récapituler les bénéfices avant de closer"
+      question_hint: "En résumé, vous gagneriez..."
+      detection_patterns:
+        - "en résumé|pour résumer|récapitul"
+        - "donc.*vous.*gagnez|économisez|obtenez"
+        - "les avantages.*sont|bénéfices"
+        - "concrètement.*vous aurez"
+      weight: 15
+      required: true
+
+    - id: assumptive_close
+      label: "Closing assumé"
+      description: "Proposer naturellement la suite"
+      question_hint: "On démarre quand ?"
+      detection_patterns:
+        - "on démarre|on commence|on y va"
+        - "je vous envoie|je prépare"
+        - "pour la mise en place"
+        - "la prochaine étape"
+        - "vous préférez.*ou"
+      weight: 25
+      required: false
+
+    - id: alternative_close
+      label: "Closing alternatif"
+      description: "Proposer deux options positives"
+      question_hint: "Vous préférez l'option A ou B ?"
+      detection_patterns:
+        - "vous préférez.*ou"
+        - "plutôt.*ou.*plutôt"
+        - "quelle option|quel format"
+        - "mensuel.*annuel|starter.*premium"
+      weight: 20
+      required: false
+
+    - id: silence_after_price
+      label: "Silence après le prix"
+      description: "Ne pas parler en premier après l'annonce du prix"
+      question_hint: "(Attendre la réaction du prospect)"
+      detection_patterns:
+        - "voilà le tarif|voici le prix"
+        - "l'investissement.*est"
+        - "ça représente"
+      weight: 20
+      required: true
+      special_rule: "check_silence"
+
+    - id: clear_commitment
+      label: "Engagement clair"
+      description: "Obtenir un oui/non clair, pas un 'peut-être'"
+      question_hint: "Est-ce qu'on avance ensemble ?"
+      detection_patterns:
+        - "on avance|on signe|on part"
+        - "vous êtes.*partant|d'accord"
+        - "je peux compter.*votre|confirmation"
+        - "c'est un oui|c'est ok"
+      weight: 20
+      required: true
+
+  # ============================================
+  # INSTRUCTIONS POUR LE PROSPECT
+  # ============================================
+  prospect_instructions: |
+    Tu es un prospect en phase de closing.
+
+    ETAT INITIAL :
+    - Tu es intéressé (jauge 70-80)
+    - Tu as encore quelques hésitations normales
+    - Tu attends que le commercial te guide vers la décision
+
+    COMPORTEMENT :
+    - Donne des signaux d'achat subtils ("c'est intéressant", "ça pourrait marcher")
+    - Attends que le commercial propose de conclure
+    - Si bon closing assumé : accepte facilement
+    - Si closing trop agressif : recule
+    - Si le commercial parle en premier après le prix : négocie
+
+    REACTIONS AU PRIX :
+    - Si le commercial se tait après le prix : "Ok, c'est dans notre budget"
+    - Si le commercial justifie immédiatement : "Hmm, c'est un peu cher..."
+
+  # ============================================
+  # EVALUATION
+  # ============================================
+  evaluation:
+    scoring:
+      per_element_base: 10
+      quality_bonus: 5
+      timing_bonus: 10  # Bonus pour closing au bon moment
+      silence_bonus: 15  # Bonus pour silence après prix
+
+    mastery_threshold: 70
+
+    levels:
+      excellent:
+        min_score: 90
+        elements_required: 5
+        description: "Closing maîtrisé avec timing parfait"
+      good:
+        min_score: 70
+        elements_required: 4
+        description: "Bon closing, quelques ajustements de timing"
+      partial:
+        min_score: 50
+        elements_required: 3
+        description: "Closing basique, techniques à diversifier"
+      insufficient:
+        min_score: 0
+        elements_required: 0
+        description: "Closing insuffisant ou absent"
+
+  # ============================================
+  # RISQUES SI ELEMENTS MANQUANTS
+  # ============================================
+  risks_if_missing:
+    buying_signals:
+      risk: "Signaux ignorés"
+      consequence: "Le prospect était prêt mais vous n'avez pas saisi l'opportunité"
+      coaching_tip: "Écoutez les phrases comme 'ça m'intéresse', 'combien ça coûte'"
+    summary_close:
+      risk: "Pas de récap"
+      consequence: "Le prospect ne visualise pas la valeur avant de décider"
+      coaching_tip: "Toujours résumer les 3 bénéfices clés avant de proposer"
+    assumptive_close:
+      risk: "Closing timide"
+      consequence: "Le prospect attend que vous proposiez mais rien ne vient"
+      coaching_tip: "Assumez la vente : 'On démarre quand ?'"
+    silence_after_price:
+      risk: "Justification immédiate"
+      consequence: "Vous semblez douter du prix, le prospect négocie"
+      coaching_tip: "Silence = force. Laissez le prospect réagir en premier"
+    clear_commitment:
+      risk: "Pas d'engagement"
+      consequence: "Le prospect part avec un 'je réfléchis' = deal perdu"
+      coaching_tip: "Cherchez toujours un engagement binaire : oui ou non"
+
+  # ============================================
+  # MATRICE DE RESULTATS
+  # ============================================
+  result_matrix:
+    module_success_closing_success:
+      label: "CLOSER EXPERT"
+      emoji: "trophy"
+      message: "Bravo ! Vous avez closé avec les bonnes techniques au bon moment."
+
+    module_success_closing_fail:
+      label: "BONNES TECHNIQUES - PROSPECT PAS PRET"
+      emoji: "target"
+      message: "Techniques de closing correctes mais le prospect n'était pas assez qualifié."
+
+    module_fail_closing_success:
+      label: "CLOSING CHANCEUX"
+      emoji: "warning"
+      message: "Deal signé mais techniques incomplètes. Risque sur des deals plus complexes."
+
+    module_fail_closing_fail:
+      label: "CLOSING A TRAVAILLER"
+      emoji: "cross"
+      message: "Le closing doit être travaillé. Pratiquez les techniques de base."
+
+  # ============================================
+  # FEEDBACK ET COACHING
+  # ============================================
+  feedback_templates:
+    element_detected:
+      positive: "Bien joué ! Technique '{element}' utilisée."
+      with_quality: "Excellente utilisation de '{element}' !"
+
+    element_missing:
+      gentle: "Pensez à utiliser la technique '{element}'."
+      direct: "ATTENTION : '{element}' manquant. {risk}"
+
+    timing_feedback:
+      too_early: "Closing trop tôt - le prospect n'était pas encore prêt"
+      too_late: "Closing trop tard - vous avez manqué des signaux d'achat"
+      perfect: "Timing parfait pour le closing !"
+
+    session_summary:
+      intro: "Voici votre bilan Closing :"
+      elements_section: "Techniques utilisées : {count}/6"
+      score_section: "Score : {score}/100"
+      recommendation: "Travaillez : {missing_elements}"

@@ -1,0 +1,360 @@
+# Playbook Commercial - AutomateAI
+# Version: 1.0
+# Produit: Box d'automatisation avec IA locale
+
+meta:
+  id: automate_ai
+  version: "1.0"
+  product_slug: automate_ai
+  skills_compatible:
+    - cold_calling
+    - objection_handling
+    - closing
+    - discovery
+    - bebedc
+
+company:
+  name: AutomateAI
+  baseline: "L'IA qui travaille pour vous"
+  sector: "IA / Automatisation"
+  founded: "2022"
+  size: "18 employes"
+  location: "Paris"
+  positioning: |
+    Liberer les equipes des taches administratives repetitives
+    pour qu'elles se concentrent sur ce qui compte vraiment.
+
+product:
+  name: AutomateAI Box
+  type: "SaaS + Hardware"
+
+  problem:
+    title: "Les taches administratives tuent la productivite"
+    description: |
+      Dans une entreprise moyenne, chaque employe perd 2 a 4 heures par jour
+      sur des taches repetitives et sans valeur ajoutee.
+    impacts:
+      - "20h/semaine perdues par employe administratif"
+      - "Cout cache : 15-25k/an par employe en temps perdu"
+      - "Erreurs humaines : 3-5% sur les taches repetitives"
+    pains_by_persona:
+      dirigeant:
+        - "Je paie des gens qualifies pour faire du copier-coller"
+        - "On rate des opportunites car on est noyes dans l'admin"
+      daf:
+        - "Les erreurs de saisie me coutent cher"
+        - "Le reporting prend 2 jours chaque mois"
+      manager:
+        - "Mon equipe est demotivee par les taches repetitives"
+        - "Les bons partent, je garde ceux qui acceptent la routine"
+
+  how_it_works:
+    summary: |
+      On installe une petite box dans vos locaux avec des IA specialisees
+      qui apprennent vos process et automatisent vos taches repetitives.
+    steps:
+      - title: "Audit (1 journee)"
+        description: "On identifie les taches repetitives et chronophages"
+      - title: "Installation (2 heures)"
+        description: "Mini-serveur dans vos locaux, aucune donnee ne sort"
+      - title: "Configuration (1-2 semaines)"
+        description: "On programme les agents IA selon VOS process"
+      - title: "Formation (2 jours)"
+        description: "Formation pratique avec vos vrais cas d'usage"
+    technology: |
+      Multi-agents specialises : chaque IA fait UNE tache et la fait bien.
+      Agent Tri, Agent Reponse, Agent Extraction, Agent Saisie...
+    differentiator: |
+      TOUT tourne en LOCAL. Vos donnees ne sortent JAMAIS.
+      100% conforme RGPD par design.
+
+  benefits:
+    main: "Gagnez 10-15h par semaine et par employe administratif"
+    categories:
+      temps:
+        - "10-15h gagnees par semaine par employe"
+        - "Reporting automatique en temps reel"
+        - "Plus de recherche de documents"
+      argent:
+        - "ROI moyen de 300% la premiere annee"
+        - "Economie de 15-25k/an par employe"
+        - "Pas besoin de recruter pour absorber la croissance"
+      qualite:
+        - "0 erreur sur les taches repetitives"
+        - "Traitement 24h/24, 7j/7"
+        - "Tracabilite complete des actions"
+      humain:
+        - "Equipes recentrees sur les taches a valeur ajoutee"
+        - "Motivation et engagement en hausse"
+        - "Reduction du turnover"
+
+  pricing:
+    model: "Box (achat) + Abonnement mensuel"
+    box:
+      price: "2 500 HT"
+      includes:
+        - "Mini-serveur"
+        - "Installation"
+        - "Garantie 3 ans"
+    offers:
+      - name: Starter
+        price: "490/mois"
+        includes:
+          - "5 agents IA"
+          - "Support email"
+        target: "TPE, 1-10 employes"
+      - name: Business
+        price: "990/mois"
+        includes:
+          - "15 agents IA"
+          - "Support prioritaire"
+          - "Optimisation trimestrielle"
+        target: "PME, 10-50 employes"
+    engagement: "12 mois (mensuel +20%)"
+    guarantees:
+      - "30 jours satisfait ou rembourse"
+      - "Audit gratuit sans engagement"
+      - "ROI garanti ou prolongation gratuite"
+
+pitch:
+  hook_30s: |
+    Vous savez combien d'heures vos equipes perdent chaque semaine
+    a trier des emails, saisir des donnees ou faire des reporting ?
+    En moyenne, c'est 15 a 20 heures par personne.
+    Chez AutomateAI, on installe une box avec des IA locales
+    qui automatisent ces taches repetitives.
+    Resultat : vos equipes se concentrent sur ce qui compte,
+    et vous economisez l'equivalent d'un mi-temps par employe.
+
+  pitch_2min: |
+    Je vais etre direct : vos equipes administratives perdent
+    probablement 15 a 20 heures par semaine sur des taches repetitives.
+
+    Trier des emails, repondre aux memes questions, saisir des donnees,
+    chercher des documents, faire des reporting...
+    Des taches qu'un robot pourrait faire.
+
+    Le probleme c'est que jusqu'ici, les solutions d'automatisation
+    c'etait soit trop complexe, soit ca envoyait vos donnees dans le cloud,
+    soit ca coutait une fortune.
+
+    Nous, on a cree AutomateAI Box.
+
+    C'est un mini-serveur qu'on installe chez vous avec des IA specialisees.
+    Chaque IA fait UNE tache et la fait parfaitement.
+    On les programme selon VOS process.
+    Vos donnees restent chez VOUS, 100% RGPD.
+
+    Nos clients gagnent en moyenne 12 heures par semaine par employe.
+    A 30 de l'heure charge, ca fait 1 500 d'economie par mois
+    pour un abonnement a 490.
+
+    On fait un audit gratuit pour mesurer votre potentiel ?
+
+  discovery_questions:
+    situation:
+      - "Combien de personnes avez-vous sur des fonctions administratives ?"
+      - "Quelles sont les taches qui prennent le plus de temps ?"
+      - "Comment gerez-vous le tri des emails aujourd'hui ?"
+    pain:
+      - "Qu'est-ce qui vous frustre le plus dans la gestion administrative ?"
+      - "Avez-vous deja calcule le cout de ces taches repetitives ?"
+      - "Que pourrait faire votre equipe si elle avait 10h de plus par semaine ?"
+    impact:
+      - "Combien vous coute une erreur de saisie en moyenne ?"
+      - "Que se passe-t-il quand un email client tombe dans les limbes ?"
+    decision:
+      - "Qui d'autre serait concerne par ce type de decision ?"
+      - "Qu'est-ce qui vous ferait dire 'oui, on y va' ?"
+
+  key_phrases:
+    hooks:
+      - "Combien d'heures perdez-vous chaque semaine a faire le travail d'un robot ?"
+      - "Et si vos equipes pouvaient enfin se concentrer sur ce qui compte ?"
+    transitions:
+      - "Ce que vous decrivez, c'est exactement ce que notre client X vivait..."
+      - "Justement, c'est pour ca qu'on a concu..."
+    proofs:
+      - "Notre client Dupont & Fils a reduit son temps admin de 60%"
+      - "En moyenne, nos clients voient le ROI en 3 mois"
+    closings:
+      - "On fait un audit gratuit la semaine prochaine ?"
+      - "Qu'est-ce qui vous empecherait de tester pendant 30 jours ?"
+
+objections:
+  - type: budget
+    label: "Trop cher"
+    variants:
+      - "On n'a pas le budget"
+      - "2500 + 490/mois c'est costaud"
+      - "On peut pas se permettre ca maintenant"
+    hidden_meaning: "Je ne vois pas le ROI"
+    response: |
+      Je comprends, c'est un investissement.
+
+      Faisons le calcul ensemble :
+      Vous avez 3 personnes sur l'administratif.
+      Si chacune gagne 10h par semaine, ca fait 30h.
+      A 25 de l'heure charge, ca fait 3 000 par mois.
+
+      L'abonnement est a 490.
+      Vous economisez 2 500 par mois des le premier mois.
+      La box est rentabilisee en 1 mois.
+
+      Et si le ROI n'est pas la apres 30 jours, on vous rembourse.
+    proof: "Dupont & Fils : ROI atteint en 6 semaines"
+
+  - type: timing
+    label: "Pas le moment"
+    variants:
+      - "Rappelez-moi dans 6 mois"
+      - "On est en plein rush"
+      - "C'est pas le moment"
+    hidden_meaning: "J'ai pas la bande passante pour un nouveau projet"
+    response: |
+      Je comprends, vous avez beaucoup a gerer.
+
+      Justement, combien de temps vos equipes perdent chaque semaine
+      sur ces taches repetitives ?
+
+      Chaque mois qu'on attend, c'est 60h de perdues.
+      Et l'installation prend 2h. La formation 2 jours.
+      Ce n'est pas un projet de 6 mois.
+
+      On peut commencer par un audit gratuit d'1h ?
+    proof: "Cout de l'attente : 60h/mois perdues"
+
+  - type: trust
+    label: "Je vous connais pas"
+    variants:
+      - "AutomateAI... jamais entendu parler"
+      - "C'est quoi votre boite ?"
+      - "Vous etes fiables ?"
+    hidden_meaning: "Peur de me faire avoir"
+    response: |
+      Question legitime.
+
+      On existe depuis 2022, on equipe 47 PME.
+      Certifie par l'ANSSI.
+      Hebergement 100% France.
+
+      Et surtout : 30 jours d'essai sans engagement.
+      Si ca ne marche pas, on rembourse.
+    proof: "47 clients, ANSSI, essai gratuit"
+
+  - type: status_quo
+    label: "Ca fonctionne comme ca"
+    variants:
+      - "On a toujours fait comme ca"
+      - "Pourquoi changer ?"
+      - "Notre systeme actuel nous convient"
+    hidden_meaning: "Flemme de changer / peur du changement"
+    response: |
+      Je comprends. Si ca fonctionne, pourquoi toucher ?
+
+      Mais laissez-moi vous poser une question :
+      combien d'heures par semaine vos equipes passent sur des taches
+      qu'elles trouvent ennuyeuses ?
+
+      Le vrai cout du statu quo, c'est pas juste le temps perdu.
+      C'est la motivation qui baisse, les talents qui partent.
+
+      Un audit gratuit permet de mesurer ce cout cache.
+      Sans engagement.
+    proof: "Turnover admin reduit de 40% chez nos clients"
+
+  - type: competition
+    label: "On a deja quelqu'un"
+    variants:
+      - "On a deja un prestataire"
+      - "Mon neveu gere l'informatique"
+      - "On utilise deja des outils"
+    hidden_meaning: "Pourquoi changer ce qui existe ?"
+    response: |
+      Tres bien. Et est-ce qu'ils automatisent vos taches admin ?
+
+      La plupart des prestataires font de la maintenance IT.
+      Nous, on automatise les PROCESS.
+
+      C'est complementaire. On ne remplace pas votre prestataire,
+      on ajoute une couche d'automatisation.
+    proof: "Cabinet Martin : prestataire + nous = combo gagnant"
+
+  - type: decision
+    label: "C'est pas moi qui decide"
+    variants:
+      - "Faut que j'en parle a mon associe"
+      - "Le DG doit valider"
+      - "Je dois en referer a ma hierarchie"
+    hidden_meaning: "Je veux pas decider seul"
+    response: |
+      Bien sur. Je peux vous preparer un dossier synthetique
+      pour votre associe.
+
+      Et si vous voulez, je peux participer
+      a un call avec vous deux pour repondre a ses questions.
+
+      Qu'est-ce qui serait le plus utile pour lui ?
+    proof: "Proposer support pour convaincre le decideur"
+
+  - type: technical
+    label: "C'est trop technique"
+    variants:
+      - "On n'est pas tech ici"
+      - "Ca a l'air complique"
+      - "On n'a pas les competences"
+    hidden_meaning: "Peur de ne pas savoir utiliser"
+    response: |
+      Justement, c'est notre job de gerer la technique.
+
+      L'installation prend 2h, on s'occupe de tout.
+      La formation est pratique, sur VOS cas d'usage.
+      Et le support est inclus.
+
+      Vos equipes n'ont pas besoin de competences techniques.
+      Elles utilisent une interface simple, comme un email.
+    proof: "100% de nos clients non-tech utilisent la solution"
+
+proofs:
+  global_stats:
+    clients: "47 PME equipees"
+    satisfaction: "4.8/5"
+    main_result: "12h/semaine gagnees en moyenne"
+    roi_moyen: "300% la premiere annee"
+
+  testimonials:
+    - client_name: "Pierre Dupont"
+      client_role: "DG"
+      company: "Dupont & Fils"
+      sector: "Negoce BTP"
+      size: "35 employes"
+      problem_before: |
+        4 personnes admin, 20h/semaine chacun sur taches repetitives.
+        Erreurs de saisie frequentes. Retards de facturation.
+      results:
+        - "60% de reduction du temps admin"
+        - "0 erreur de saisie"
+        - "ROI atteint en 6 semaines"
+      quote: |
+        On a absorbe 30% de croissance sans recruter personne.
+
+    - client_name: "Sophie Martin"
+      client_role: "DAF"
+      company: "Cabinet Martin"
+      sector: "Expertise comptable"
+      size: "22 employes"
+      problem_before: |
+        Reporting mensuel : 2 jours complets.
+        Tri emails clients : 3h/jour.
+      results:
+        - "Reporting automatique en temps reel"
+        - "Tri emails : 30 min/jour"
+        - "ROI atteint en 2 mois"
+      quote: |
+        Je ne pourrais plus m'en passer. Ca a change notre quotidien.
+
+  certifications:
+    - "Certifie ANSSI"
+    - "Hebergement 100% France"
+    - "Conforme RGPD"
+    - "ISO 27001 en cours"
