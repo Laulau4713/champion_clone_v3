@@ -4,7 +4,7 @@
 # Excludes heavy ML dependencies (torch, whisper) for faster CI runs
 
 # FastAPI & Server
-fastapi==0.109.2
+fastapi==0.128.0
 uvicorn[standard]==0.27.1
 python-multipart==0.0.9
 gunicorn==21.2.0
