@@ -42,7 +42,7 @@ kombu==5.3.4
 
 # Utilities
 aiofiles==23.2.1
-structlog==24.1.0
+structlog==25.5.0
 httpx==0.28.1
 orjson==3.11.5
 
