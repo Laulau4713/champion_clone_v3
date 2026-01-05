@@ -39,7 +39,7 @@ python-jose[cryptography]==3.3.0  # JWT tokens
 passlib[bcrypt]==1.7.4        # Password hashing
 
 # Async Task Queue
-celery[redis]==5.3.6          # Celery with Redis support
+celery[redis]==5.6.2          # Celery with Redis support
 redis==5.0.1                  # Redis client
 kombu==5.3.4                  # Message transport for Celery
 flower==2.0.1                 # Celery monitoring UI (optional)
